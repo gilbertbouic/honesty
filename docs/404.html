@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Honesty League</title>
+    <script>
+      (function () {
+        var base = location.hostname.endsWith("github.io") ? "/honesty" : "";
+        var path = location.pathname.replace(new RegExp("^" + base), "") || "/";
+        if (path === "/index.html") path = "/";
+        location.replace(base + "/#" + (path === "/" ? "/" : path));
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

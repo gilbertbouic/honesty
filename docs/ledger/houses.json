@@ -1,0 +1,125 @@
+{
+  "season": 1,
+  "note": "Seeded houses. Initials and offices only. Not a finding of misconduct.",
+  "houses": [
+    {
+      "id": "chamber-ram",
+      "handle": "Hon. R. M.",
+      "seat": "chamber",
+      "body": "National Assembly · constituency",
+      "points": 62,
+      "lastChoice": "recuse",
+      "lastReason": {
+        "en": "I will not sign a file where the bidder paid for my party. Recusal is the reusable rule.",
+        "fr": "Je ne signerai pas un dossier dont le soumissionnaire a payé mon parti. Le déport est la règle réutilisable."
+      }
+    },
+    {
+      "id": "chamber-empty",
+      "handle": "Minister of Works",
+      "seat": "chamber",
+      "body": "Cabinet",
+      "points": 0,
+      "emptyChair": true
+    },
+    {
+      "id": "service-proc",
+      "handle": "Procurement middle band",
+      "seat": "service",
+      "circuitId": "procurement",
+      "band": "middle",
+      "body": "Central Procurement Board",
+      "points": 48,
+      "lastChoice": "republish",
+      "lastReason": {
+        "en": "Publish the sheet. If safety is the issue, retender with the inspection on the face of the bid.",
+        "fr": "Publier la grille. Si la sécurité est l’enjeu, relancer avec l’inspection sur l’offre."
+      }
+    },
+    {
+      "id": "service-mra",
+      "handle": "Revenue front line",
+      "seat": "service",
+      "circuitId": "revenue",
+      "band": "front-line",
+      "body": "Mauritius Revenue Authority",
+      "points": 41,
+      "lastChoice": "recuse"
+    },
+    {
+      "id": "service-stall",
+      "handle": "Licences front line",
+      "seat": "service",
+      "circuitId": "licences",
+      "band": "front-line",
+      "body": "Municipal council",
+      "points": 22,
+      "lastChoice": "quiet"
+    },
+    {
+      "id": "service-health",
+      "handle": "Health senior",
+      "seat": "service",
+      "circuitId": "health",
+      "band": "senior",
+      "body": "Regional hospital",
+      "points": 18,
+      "emptyChair": true
+    },
+    {
+      "id": "mandate-undp",
+      "handle": "UNDP country office",
+      "seat": "mandate",
+      "circuitId": "partners",
+      "band": "middle",
+      "body": "Port Louis MCO",
+      "points": 55,
+      "lastChoice": "recuse",
+      "lastReason": {
+        "en": "Missed audits close the partner. Year-end pressure is not a rule.",
+        "fr": "Des audits manqués ferment le partenaire. La pression de fin d’année n’est pas une règle."
+      }
+    },
+    {
+      "id": "mandate-who",
+      "handle": "WHO administration",
+      "seat": "mandate",
+      "circuitId": "procurement",
+      "band": "front-line",
+      "body": "Port Louis",
+      "points": 33,
+      "lastChoice": "award"
+    },
+    {
+      "id": "mandate-empty",
+      "handle": "Resident Coordinator office",
+      "seat": "mandate",
+      "circuitId": "immunity",
+      "band": "senior",
+      "body": "Anglo-Mauritius House",
+      "points": 0,
+      "emptyChair": true
+    },
+    {
+      "id": "gallery-a",
+      "handle": "Watchdog · Bambous",
+      "seat": "gallery",
+      "points": 36,
+      "lastChoice": "republish"
+    },
+    {
+      "id": "gallery-b",
+      "handle": "Watchdog · Port Louis",
+      "seat": "gallery",
+      "points": 29,
+      "lastChoice": "recuse"
+    },
+    {
+      "id": "gallery-c",
+      "handle": "Watchdog · Rodrigues",
+      "seat": "gallery",
+      "points": 14,
+      "lastChoice": "quiet"
+    }
+  ]
+}

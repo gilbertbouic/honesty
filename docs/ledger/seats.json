@@ -1,0 +1,28 @@
+{
+  "season": 1,
+  "seats": [
+    {
+      "id": "gallery",
+      "title": { "en": "Gallery", "fr": "Galerie" },
+      "who": { "en": "Laypeople", "fr": "Citoyens" }
+    },
+    {
+      "id": "service",
+      "title": { "en": "Service", "fr": "Service" },
+      "who": { "en": "Civil service circuits", "fr": "Circuits de la fonction publique" }
+    },
+    {
+      "id": "chamber",
+      "title": { "en": "Chamber", "fr": "Chambre" },
+      "who": { "en": "Elected office", "fr": "Mandat électif" }
+    },
+    {
+      "id": "mandate",
+      "title": { "en": "Mandate", "fr": "Mandat" },
+      "who": {
+        "en": "UN system and treaty bodies",
+        "fr": "Système ONU et organes conventionnels"
+      }
+    }
+  ]
+}

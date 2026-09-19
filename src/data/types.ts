@@ -23,6 +23,7 @@ export type Dilemma = {
   id: string;
   week: number;
   headline: Copy;
+  opensAt: string;
   closesAt: string;
   variants: DilemmaVariant[];
 };

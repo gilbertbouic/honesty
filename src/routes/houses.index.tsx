@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GlassHouse } from "@/components/glass-house";
 import { SEAT_META, UI } from "@/data/copy";
 import type { HouseRecord, Seat } from "@/data/types";
 import { t } from "@/lib/i18n";
 import { isHonestMark, leagueField } from "@/lib/honest-mark";
+import { deskIsOpen } from "@/lib/clock";
 import { useLeague } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,14 @@ function HousesPage() {
   const handle = useLeague((s) => s.handle);
   const answers = useLeague((s) => s.answers);
   const [filter, setFilter] = useState<Seat | "all">("all");
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    const tick = () => setOpen(deskIsOpen());
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, []);
 
   const field = useMemo(() => {
     const self: HouseRecord | null =
@@ -42,6 +51,7 @@ function HousesPage() {
       <p className="text-xs uppercase tracking-[0.2em] text-muted">{t(UI.houses, lang)}</p>
       <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t(UI.points, lang)}</h1>
       <p className="mt-3 max-w-xl text-sm text-muted">{t(UI.honestHint, lang)}</p>
+      {!open ? <p className="mt-2 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p> : null}
       <div className="mt-6 flex flex-wrap gap-2">
         {(["all", "gallery", "service", "chamber", "mandate"] as const).map((s) => (
           <button

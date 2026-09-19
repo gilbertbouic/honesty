@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LIVE_DILEMMA } from "@/data/dilemmas";
+import { countdownTarget } from "@/lib/clock";
 import { cn } from "@/lib/utils";
 
 function parts(ms: number) {
@@ -13,7 +13,6 @@ function parts(ms: number) {
 }
 
 export function Countdown({ className }: { className?: string }) {
-  const close = new Date(LIVE_DILEMMA.closesAt).getTime();
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
@@ -22,7 +21,7 @@ export function Countdown({ className }: { className?: string }) {
     return () => window.clearInterval(id);
   }, []);
 
-  const p = now === null ? { d: 0, h: 0, m: 0, sec: 0 } : parts(close - now);
+  const p = now === null ? { d: 0, h: 0, m: 0, sec: 0 } : parts(countdownTarget(now) - now);
 
   return (
     <div className={cn("flex items-end gap-3 font-mono tabular-nums", className)}>

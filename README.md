@@ -2,7 +2,7 @@
 
 **Season 1** · a [Mkweli](https://mkweli.tech) product
 
-**Play now:** [gilbertbouic.github.io/honesty](https://gilbertbouic.github.io/honesty/)
+**Play now:** [gilbertbouic.github.io/honesty](https://gilbertbouic.github.io/honesty/) (rehearsal until **Friday 25 September 2026, 09:00 Mauritius**)
 
 Citizens, civil servants, elected officials, and UN-system staff answer the same weekly dilemma **in public** and score Honesty Points. Silence is an Empty Chair. The top three sitting houses receive a public QR that reads *I scored as HONEST with Mkweli*.
 
@@ -31,7 +31,7 @@ The app listens on port 8080. The Pages site can also be opened as static files 
 
 ## Season 1 rules
 
-- Four seats: Gallery, Service, Chamber, Mandate.
+- Public desk **opens Friday 25 September 2026, 09:00 Mauritius**. Week 1 closes Friday 2 October, 16:00 Mauritius.
 - Service and Mandate pick a circuit (procurement, licences, implementing partners, and the rest).
 - Every published rule is public. There is no private booth.
 - Honesty Points: declared rule, written reason, public-desk multiplier, band modifier.

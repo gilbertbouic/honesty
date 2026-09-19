@@ -25,8 +25,8 @@ function About() {
       </p>
       <p className="text-muted">
         {fr
-          ? "Saison 1. Destination prévue : honesty.mkweli.tech. Le registre public est le dépôt GitHub."
-          : "Season 1. Intended home: honesty.mkweli.tech. The public ledger is the GitHub repository."}
+          ? "Saison 1. Le pupitre public ouvre vendredi 25 septembre 2026, 09 h 00 Maurice. Site prévu : honesty.mkweli.tech."
+          : "Season 1. The public desk opens Friday 25 September 2026, 09:00 Mauritius. Intended home: honesty.mkweli.tech."}
       </p>
       <p>
         <a href="https://mkweli.tech" className="text-primary">

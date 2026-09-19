@@ -1,0 +1,309 @@
+{
+  "season": 1,
+  "id": "w1-connected-bidder",
+  "week": 1,
+  "headline": {
+    "en": "The connected name is not the cheapest.",
+    "fr": "Le nom lié n’est pas le moins-disant."
+  },
+  "opensAt": "2026-09-25T09:00:00+04:00",
+  "closesAt": "2026-10-02T16:00:00+04:00",
+  "variants": [
+    {
+      "circuitId": "gallery",
+      "prompt": {
+        "en": "A contractor who paid for a party fête last year is the second-cheapest bidder on a public works job near your house. The cheapest bidder has two failed safety inspections. You sit on a neighbourhood committee that will be asked for a view. What rule will you reuse next time?",
+        "fr": "Un entrepreneur qui a payé la fête du parti l’an dernier est le second moins-disant sur un chantier près de chez vous. Le moins-disant a deux contrôles de sécurité manqués. Votre comité de quartier sera consulté. Quelle règle réutiliserez-vous la prochaine fois ?"
+      },
+      "choices": [
+        {
+          "id": "award",
+          "label": {
+            "en": "Award and keep moving. Speed is a public good.",
+            "fr": "Adjuger et avancer. La rapidité est un bien public."
+          }
+        },
+        {
+          "id": "recuse",
+          "label": {
+            "en": "Recuse, name the link, and leave the file to someone else.",
+            "fr": "Se déporter, nommer le lien, et laisser le dossier à autrui."
+          }
+        },
+        {
+          "id": "republish",
+          "label": {
+            "en": "Halt, publish the scoring sheet, and retender.",
+            "fr": "Arrêter, publier la grille, et relancer."
+          }
+        },
+        {
+          "id": "quiet",
+          "label": {
+            "en": "Note the link in a closed minute and award the connected bidder.",
+            "fr": "Noter le lien en procès-verbal clos et adjuger au soumissionnaire lié."
+          }
+        }
+      ]
+    },
+    {
+      "circuitId": "procurement",
+      "prompt": {
+        "en": "You chair evaluation. The second-cheapest bidder funded last year’s party fête. The cheapest bidder failed two safety inspections. Do you award, recuse, republish, or bury the link?",
+        "fr": "Vous présidez l’évaluation. Le second moins-disant a financé la fête du parti. Le moins-disant a échoué à deux inspections. Adjugez-vous, vous déportez-vous, relancez-vous, ou enterrez-vous le lien ?"
+      },
+      "choices": [
+        {
+          "id": "award",
+          "label": {
+            "en": "Award and keep moving. Speed is a public good.",
+            "fr": "Adjuger et avancer. La rapidité est un bien public."
+          }
+        },
+        {
+          "id": "recuse",
+          "label": {
+            "en": "Recuse, name the link, and leave the file to someone else.",
+            "fr": "Se déporter, nommer le lien, et laisser le dossier à autrui."
+          }
+        },
+        {
+          "id": "republish",
+          "label": {
+            "en": "Halt, publish the scoring sheet, and retender.",
+            "fr": "Arrêter, publier la grille, et relancer."
+          }
+        },
+        {
+          "id": "quiet",
+          "label": {
+            "en": "Note the link in a closed minute and award the connected bidder.",
+            "fr": "Noter le lien en procès-verbal clos et adjuger au soumissionnaire lié."
+          }
+        }
+      ]
+    },
+    {
+      "circuitId": "health",
+      "prompt": {
+        "en": "A device supplier offers a “conference” in Lisbon if their kit is added to the formulary. A cheaper kit has a thinner service record. You sit on the hospital products committee.",
+        "fr": "Un fournisseur de dispositifs offre une « conférence » à Lisbonne si son kit entre au formulaire. Un kit moins cher a un service plus mince. Vous siégez au comité des produits."
+      },
+      "choices": [
+        {
+          "id": "award",
+          "label": {
+            "en": "Add the connected kit. Continuity of service matters.",
+            "fr": "Ajouter le kit lié. La continuité du service compte."
+          }
+        },
+        {
+          "id": "recuse",
+          "label": {
+            "en": "Refuse the conference, recuse, and publish the scoring.",
+            "fr": "Refuser la conférence, se déporter, publier la grille."
+          }
+        },
+        {
+          "id": "republish",
+          "label": {
+            "en": "Reopen the listing with named conflict rules.",
+            "fr": "Rouvrir la liste avec des règles de conflit nommées."
+          }
+        },
+        {
+          "id": "quiet",
+          "label": {
+            "en": "Decline the trip in writing, then still list the kit.",
+            "fr": "Refuser le voyage par écrit, puis lister le kit quand même."
+          }
+        }
+      ]
+    },
+    {
+      "circuitId": "licences",
+      "prompt": {
+        "en": "Two stall applications. One file is complete. The other is connected to a councillor. Market day is Friday.",
+        "fr": "Deux dossiers d’étal. L’un est complet. L’autre est lié à un conseiller. Le marché est vendredi."
+      },
+      "choices": [
+        {
+          "id": "award",
+          "label": {
+            "en": "Give the connected stall. Keep the peace.",
+            "fr": "Donner l’étal lié. Garder la paix."
+          }
+        },
+        {
+          "id": "recuse",
+          "label": {
+            "en": "Recuse and send both files to another inspector.",
+            "fr": "Se déporter et envoyer les deux dossiers ailleurs."
+          }
+        },
+        {
+          "id": "republish",
+          "label": {
+            "en": "Publish the allocation list and the scoring rule.",
+            "fr": "Publier la liste d’attribution et la règle."
+          }
+        },
+        {
+          "id": "quiet",
+          "label": {
+            "en": "Award the complete file, quietly tell the councillor later.",
+            "fr": "Adjuger le dossier complet, prévenir le conseiller plus tard."
+          }
+        }
+      ]
+    },
+    {
+      "circuitId": "revenue",
+      "prompt": {
+        "en": "A repeat importer is short a certificate. The queue is long. A facilitation fee is implied. Your section target is behind.",
+        "fr": "Un importateur habituel n’a pas le certificat. La file est longue. Un « frais de facilitation » est suggéré. Votre cible de section est en retard."
+      },
+      "choices": [
+        {
+          "id": "award",
+          "label": {
+            "en": "Release the consignment. Collect later.",
+            "fr": "Libérer le lot. Recouvrer plus tard."
+          }
+        },
+        {
+          "id": "recuse",
+          "label": {
+            "en": "Refuse, log the approach, hand the file up.",
+            "fr": "Refuser, consigner l’approche, transmettre."
+          }
+        },
+        {
+          "id": "republish",
+          "label": {
+            "en": "Hold the goods and publish the missing-document rule.",
+            "fr": "Retenir et publier la règle des pièces manquantes."
+          }
+        },
+        {
+          "id": "quiet",
+          "label": {
+            "en": "Take nothing, but move the file to the front.",
+            "fr": "Ne rien prendre, mais avancer le dossier."
+          }
+        }
+      ]
+    },
+    {
+      "circuitId": "chamber",
+      "prompt": {
+        "en": "Cabinet wants the connected bidder awarded before a by-election. You are the minister who signs. The cheapest bidder has two failed inspections.",
+        "fr": "Le cabinet veut adjuger au soumissionnaire lié avant une partielle. Vous signez. Le moins-disant a deux inspections manquées."
+      },
+      "choices": [
+        {
+          "id": "award",
+          "label": {
+            "en": "Award and keep moving. Speed is a public good.",
+            "fr": "Adjuger et avancer. La rapidité est un bien public."
+          }
+        },
+        {
+          "id": "recuse",
+          "label": {
+            "en": "Recuse, name the link, and leave the file to someone else.",
+            "fr": "Se déporter, nommer le lien, et laisser le dossier à autrui."
+          }
+        },
+        {
+          "id": "republish",
+          "label": {
+            "en": "Halt, publish the scoring sheet, and retender.",
+            "fr": "Arrêter, publier la grille, et relancer."
+          }
+        },
+        {
+          "id": "quiet",
+          "label": {
+            "en": "Note the link in a closed minute and award the connected bidder.",
+            "fr": "Noter le lien en procès-verbal clos et adjuger au soumissionnaire lié."
+          }
+        }
+      ]
+    },
+    {
+      "circuitId": "partners",
+      "prompt": {
+        "en": "The connected implementing partner is a former ministry unit of your deputy. It is the only partner that can spend the remaining allocation before year-end. Two audits were missed.",
+        "fr": "Le partenaire lié est une ancienne unité ministérielle de votre adjoint. Seul, il peut dépenser le reliquat avant la fin d’année. Deux audits ont été manqués."
+      },
+      "choices": [
+        {
+          "id": "award",
+          "label": {
+            "en": "Reallocate to the same director. Absorption matters.",
+            "fr": "Réallouer au même directeur. L’absorption compte."
+          }
+        },
+        {
+          "id": "recuse",
+          "label": {
+            "en": "Suspend, recuse the deputy, and retender the partner.",
+            "fr": "Suspendre, déporter l’adjoint, relancer le partenaire."
+          }
+        },
+        {
+          "id": "republish",
+          "label": {
+            "en": "Return the money rather than spend it badly.",
+            "fr": "Rendre l’argent plutôt que mal le dépenser."
+          }
+        },
+        {
+          "id": "quiet",
+          "label": {
+            "en": "Redesign the terms of reference around the same director.",
+            "fr": "Réécrire les termes de référence autour du même directeur."
+          }
+        }
+      ]
+    },
+    {
+      "circuitId": "climate-funds",
+      "prompt": {
+        "en": "A climate readiness grant is approved. The only eligible local consultant wrote the proposal.",
+        "fr": "Un don de préparation climatique est approuvé. Le seul consultant local éligible a rédigé la proposition."
+      },
+      "choices": [
+        {
+          "id": "award",
+          "label": {
+            "en": "Award and keep moving. Speed is a public good.",
+            "fr": "Adjuger et avancer. La rapidité est un bien public."
+          }
+        },
+        {
+          "id": "recuse",
+          "label": {
+            "en": "Recuse, name the link, and leave the file to someone else.",
+            "fr": "Se déporter, nommer le lien, et laisser le dossier à autrui."
+          }
+        },
+        {
+          "id": "republish",
+          "label": {
+            "en": "Halt, publish the scoring sheet, and retender.",
+            "fr": "Arrêter, publier la grille, et relancer."
+          }
+        },
+        {
+          "id": "quiet",
+          "label": {
+            "en": "Note the link in a closed minute and award the connected bidder.",
+            "fr": "Noter le lien en procès-verbal clos et adjuger au soumissionnaire lié."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,11 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GlassHouse } from "@/components/glass-house";
 import { Button } from "@/components/ui/button";
 import { SEAT_META, UI } from "@/data/copy";
 import { CIRCUITS } from "@/data/circuits";
 import { LIVE_DILEMMA } from "@/data/dilemmas";
 import type { Band, Seat } from "@/data/types";
+import { deskIsOpen } from "@/lib/clock";
 import { t } from "@/lib/i18n";
 import { scoreAnswer } from "@/lib/score";
 import { useLeague } from "@/lib/store";
@@ -29,6 +30,14 @@ function Play() {
   const setBand = useLeague((s) => s.setBand);
   const recordAnswer = useLeague((s) => s.recordAnswer);
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const tick = () => setOpen(deskIsOpen());
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, []);
 
   const already = answers.find((a) => a.dilemmaId === LIVE_DILEMMA.id);
   const variant = useMemo(() => variantFor(seat, circuitId), [seat, circuitId]);
@@ -45,7 +54,7 @@ function Play() {
         : [];
 
   function submit() {
-    if (!choiceId || !seat) return;
+    if (!open || !choiceId || !seat) return;
     const scored = scoreAnswer({
       hasChoice: true,
       reason,
@@ -68,6 +77,7 @@ function Play() {
       <div>
         <p className="text-xs uppercase tracking-[0.2em] text-muted">{t(UI.play, lang)}</p>
         <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t(LIVE_DILEMMA.headline, lang)}</h1>
+        {!open ? <p className="mt-4 max-w-xl text-sm text-muted">{t(UI.deskLocked, lang)}</p> : null}
 
         <div className="mt-8">
           <p className="text-xs uppercase tracking-[0.18em] text-muted">{t(UI.chooseSeat, lang)}</p>
@@ -158,8 +168,8 @@ function Play() {
               </span>
             </label>
             <div>
-              <Button size="lg" disabled={!choiceId} onClick={submit}>
-                {t(UI.publicDesk, lang)}
+              <Button size="lg" disabled={!open || !choiceId} onClick={submit}>
+                {t(open ? UI.publicDesk : UI.weekOpens, lang)}
               </Button>
             </div>
             {already ? (

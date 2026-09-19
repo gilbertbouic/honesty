@@ -41,8 +41,22 @@ export const UI = {
   circuits: { en: "Circuits", fr: "Circuits" },
   method: { en: "Method", fr: "Méthode" },
   about: { en: "About", fr: "À propos" },
-  weekLive: { en: "Week 3 is live", fr: "La semaine 3 est ouverte" },
+  weekLive: { en: "Week 1 is live", fr: "La semaine 1 est ouverte" },
+  weekOpens: {
+    en: "Season 1 opens Friday 25 September",
+    fr: "La saison 1 ouvre vendredi 25 septembre",
+  },
   closes: { en: "Public Desk closes", fr: "Le pupitre public ferme" },
+  opens: { en: "Public Desk opens", fr: "Le pupitre public ouvre" },
+  deskLocked: {
+    en: "The public desk opens Friday 25 September, 09:00 Mauritius. Walk the houses. Publishing waits.",
+    fr: "Le pupitre public ouvre vendredi 25 septembre, 09 h 00 Maurice. Parcourez les maisons. La publication attend.",
+  },
+  rehearsal: {
+    en: "Rehearsal field until the desk opens. These scores are not the public season.",
+    fr: "Champ de répétition jusqu’à l’ouverture. Ces scores ne sont pas la saison publique.",
+  },
+  previewDesk: { en: "Walk the desk", fr: "Parcourir le pupitre" },
   empty: { en: "Empty Chair", fr: "Chaise vide" },
   points: { en: "Honesty Points", fr: "Points d’honnêteté" },
   publicDesk: { en: "Publish this rule", fr: "Publier cette règle" },

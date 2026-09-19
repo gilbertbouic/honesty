@@ -33,13 +33,14 @@ const SHARED_CHOICES = [
 
 export const DILEMMAS: Dilemma[] = [
   {
-    id: "w3-connected-bidder",
-    week: 3,
+    id: "w1-connected-bidder",
+    week: 1,
     headline: {
       en: "The connected name is not the cheapest.",
       fr: "Le nom lié n’est pas le moins-disant.",
     },
-    closesAt: "2026-09-25T16:00:00+04:00",
+    opensAt: "2026-09-25T09:00:00+04:00",
+    closesAt: "2026-10-02T16:00:00+04:00",
     variants: [
       {
         circuitId: "gallery",

@@ -14,8 +14,22 @@ const UI = {
   circuits: { en: "Circuits", fr: "Circuits" },
   method: { en: "Method", fr: "Méthode" },
   about: { en: "About", fr: "À propos" },
-  weekLive: { en: "Week 3 is live", fr: "La semaine 3 est ouverte" },
+  weekLive: { en: "Week 1 is live", fr: "La semaine 1 est ouverte" },
+  weekOpens: {
+    en: "Season 1 opens Friday 25 September",
+    fr: "La saison 1 ouvre vendredi 25 septembre",
+  },
   closes: { en: "Public Desk closes", fr: "Le pupitre public ferme" },
+  opens: { en: "Public Desk opens", fr: "Le pupitre public ouvre" },
+  deskLocked: {
+    en: "The public desk opens Friday 25 September, 09:00 Mauritius. Walk the houses. Publishing waits.",
+    fr: "Le pupitre public ouvre vendredi 25 septembre, 09 h 00 Maurice. Parcourez les maisons. La publication attend.",
+  },
+  rehearsal: {
+    en: "Rehearsal field until the desk opens. These scores are not the public season.",
+    fr: "Champ de répétition jusqu’à l’ouverture. Ces scores ne sont pas la saison publique.",
+  },
+  previewDesk: { en: "Walk the desk", fr: "Parcourir le pupitre" },
   empty: { en: "Empty Chair", fr: "Chaise vide" },
   points: { en: "Honesty Points", fr: "Points d’honnêteté" },
   publicDesk: { en: "Publish this rule", fr: "Publier cette règle" },
@@ -198,9 +212,19 @@ function glass(points, empty, compact) {
   </svg>`;
 }
 
+function opensAt() {
+  return DATA.week?.opensAt ? new Date(DATA.week.opensAt).getTime() : Date.now();
+}
+function closesAt() {
+  return DATA.week?.closesAt ? new Date(DATA.week.closesAt).getTime() : Date.now();
+}
+function deskOpen() {
+  return Date.now() >= opensAt();
+}
+
 function countdownHtml() {
-  const end = DATA.week?.closesAt ? new Date(DATA.week.closesAt).getTime() : Date.now();
-  const left = Math.max(0, end - Date.now());
+  const target = deskOpen() ? closesAt() : opensAt();
+  const left = Math.max(0, target - Date.now());
   const d = Math.floor(left / 86400000);
   const h = Math.floor((left % 86400000) / 3600000);
   const m = Math.floor((left % 3600000) / 60000);
@@ -233,20 +257,22 @@ function navHtml() {
 
 function pageArena() {
   const week = DATA.week;
+  const open = deskOpen();
   return `<section class="hero">
     <div>
-      <p class="kicker">${t(UI.weekLive)}</p>
+      <p class="kicker">${t(open ? UI.weekLive : UI.weekOpens)}</p>
       <h1>${t(week.headline)}</h1>
       <p class="muted">${t(UI.tag)}</p>
+      ${open ? "" : `<p class="muted" style="margin-top:1rem">${t(UI.rehearsal)}</p>`}
       <div class="row">
-        <a class="btn" href="#/play">${t(UI.sit)}</a>
+        <a class="btn" href="#/play">${t(open ? UI.sit : UI.previewDesk)}</a>
         <a class="btn ghost" href="#/houses">${t(UI.houses)}</a>
       </div>
     </div>
     <div class="card">
-      <p class="kicker">${t(UI.closes)}</p>
+      <p class="kicker">${t(open ? UI.closes : UI.opens)}</p>
       ${countdownHtml()}
-      <p class="muted" style="margin-top:1rem;font-size:.75rem">Friday 16:00 · Mauritius</p>
+      <p class="muted" style="margin-top:1rem;font-size:.75rem">${open ? "Friday 16:00 · Mauritius" : "Friday 25 September · 09:00 Mauritius"}</p>
     </div>
   </section>
   <section class="seats">
@@ -268,10 +294,12 @@ function pagePlay() {
   const variant = variantFor();
   const already = state.answers.find((a) => a.dilemmaId === week.id);
   const words = wordCount(state.reason);
+  const open = deskOpen();
   return `<div class="play-grid">
     <div>
       <p class="kicker">${t(UI.play)}</p>
       <h1>${t(week.headline)}</h1>
+      ${open ? "" : `<p class="muted" style="margin-top:1rem;max-width:36rem">${t(UI.deskLocked)}</p>`}
       <p class="kicker" style="margin-top:2rem">${t(UI.chooseSeat)}</p>
       <div class="seats" style="grid-template-columns:repeat(2,1fr);margin-top:.75rem">
         ${SEATS.map((s) => {
@@ -303,7 +331,7 @@ function pagePlay() {
                 <textarea id="reason">${state.reason}</textarea>
                 <span class="muted" style="font-size:.75rem">${words} ${t(UI.words)}</span>
               </label>
-              <div class="row"><button type="button" class="btn" id="publish" ${state.choiceId ? "" : "disabled"}>${t(UI.publicDesk)}</button></div>
+              <div class="row"><button type="button" class="btn" id="publish" ${open && state.choiceId ? "" : "disabled"}>${t(open ? UI.publicDesk : UI.weekOpens)}</button></div>
               ${already ? `<p class="muted" style="margin-top:1rem">${t(UI.points)} this week: ${already.points}</p>` : ""}
             </section>`
           : ""
@@ -343,9 +371,11 @@ function pageReveal() {
 function pageHouses() {
   const all = field();
   const list = (state.filter === "all" ? all : all.filter((h) => h.seat === state.filter)).slice().sort((a, b) => b.points - a.points);
+  const open = deskOpen();
   return `<p class="kicker">${t(UI.houses)}</p>
     <h1>${t(UI.points)}</h1>
     <p class="muted" style="max-width:36rem">${t(UI.honestHint)}</p>
+    ${open ? "" : `<p class="muted" style="max-width:36rem;margin-top:.75rem">${t(UI.rehearsal)}</p>`}
     <div class="row" style="margin-top:1.5rem">
       ${["all", ...SEATS]
         .map((s) => {
@@ -433,7 +463,7 @@ function pageAbout() {
     <h1>${t(UI.product)}</h1>
     <p>${fr ? "Un jeu civique de Mkweli. Les citoyens, les agents publics, les élus et les fonctionnaires internationaux répondent à la même dilemme, chaque semaine, et accumulent des points d’honnêteté." : "A Mkweli civic game. Citizens, civil servants, elected officials and international staff answer the same weekly dilemma and accumulate Honesty Points."}</p>
     <p class="muted">${fr ? "Le givre sur la maison de verre n’est pas un verdict pénal. C’est le silence, la contradiction, ou le refus de s’asseoir." : "Frost on the glass house is not a criminal verdict. It is silence, contradiction, or a refusal to sit."}</p>
-    <p class="muted">${fr ? "Saison 1. Site : honesty.mkweli.tech. Le registre public est le dépôt GitHub." : "Season 1. Site: honesty.mkweli.tech. The public ledger is the GitHub repository."}</p>
+    <p class="muted">${fr ? "Saison 1. Le pupitre public ouvre vendredi 25 septembre 2026, 09 h 00 Maurice." : "Season 1. The public desk opens Friday 25 September 2026, 09:00 Mauritius."}</p>
     <p><a href="https://mkweli.tech" style="color:var(--primary)">mkweli.tech</a></p>
   </article>`;
 }
@@ -516,7 +546,7 @@ function bind() {
   const publish = document.getElementById("publish");
   if (publish) {
     publish.onclick = () => {
-      if (!state.choiceId || !state.seat) return;
+      if (!deskOpen() || !state.choiceId || !state.seat) return;
       const points = scoreAnswer(true, state.reason, state.seat === "service" || state.seat === "mandate" ? state.band : null);
       const answer = {
         dilemmaId: DATA.week.id,
@@ -549,7 +579,7 @@ async function boot() {
     fetch("./ledger/seats.json").then((r) => r.json()),
     fetch("./ledger/circuits.json").then((r) => r.json()),
     fetch("./ledger/houses.json").then((r) => r.json()),
-    fetch("./ledger/season-1/week-3.json").then((r) => r.json()),
+    fetch("./ledger/season-1/week-1.json").then((r) => r.json()),
   ]);
   DATA = { seats: seats.seats, circuits: circuits.circuits, houses: houses.houses, week };
   paint();

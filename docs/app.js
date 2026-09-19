@@ -463,7 +463,7 @@ function pageAbout() {
     <h1>${t(UI.product)}</h1>
     <p>${fr ? "Un jeu civique de Mkweli. Les citoyens, les agents publics, les élus et les fonctionnaires internationaux répondent à la même dilemme, chaque semaine, et accumulent des points d’honnêteté." : "A Mkweli civic game. Citizens, civil servants, elected officials and international staff answer the same weekly dilemma and accumulate Honesty Points."}</p>
     <p class="muted">${fr ? "Le givre sur la maison de verre n’est pas un verdict pénal. C’est le silence, la contradiction, ou le refus de s’asseoir." : "Frost on the glass house is not a criminal verdict. It is silence, contradiction, or a refusal to sit."}</p>
-    <p class="muted">${fr ? "Saison 1. Le pupitre public ouvre vendredi 25 septembre 2026, 09 h 00 Maurice." : "Season 1. The public desk opens Friday 25 September 2026, 09:00 Mauritius."}</p>
+    <p class="muted">${fr ? "Saison 1. Le pupitre public ouvre vendredi 25 septembre 2026, 09 h 00 Maurice. Site : honesty.mkweli.tech." : "Season 1. The public desk opens Friday 25 September 2026, 09:00 Mauritius. Home: honesty.mkweli.tech."}</p>
     <p><a href="https://mkweli.tech" style="color:var(--primary)">mkweli.tech</a></p>
   </article>`;
 }

@@ -25,8 +25,8 @@ function About() {
       </p>
       <p className="text-muted">
         {fr
-          ? "Saison 1. Le pupitre public ouvre vendredi 25 septembre 2026, 09 h 00 Maurice. Site prévu : honesty.mkweli.tech."
-          : "Season 1. The public desk opens Friday 25 September 2026, 09:00 Mauritius. Intended home: honesty.mkweli.tech."}
+          ? "Saison 1. Le pupitre public ouvre vendredi 25 septembre 2026, 09 h 00 Maurice. Site : honesty.mkweli.tech."
+          : "Season 1. The public desk opens Friday 25 September 2026, 09:00 Mauritius. Home: honesty.mkweli.tech."}
       </p>
       <p>
         <a href="https://mkweli.tech" className="text-primary">

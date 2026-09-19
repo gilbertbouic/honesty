@@ -14,5 +14,4 @@ Until then this is a rehearsal field.
 Answers live in the player’s browser until a later Git commit pipeline exists.
 Silence remains first-class: Empty Chair.
 
-Live site: https://gilbertbouic.github.io/honesty/
-Intended public site: https://honesty.mkweli.tech
+Live site: https://honesty.mkweli.tech

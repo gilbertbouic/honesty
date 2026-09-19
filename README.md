@@ -2,14 +2,14 @@
 
 **Season 1** · a [Mkweli](https://mkweli.tech) product
 
-**Play now:** [gilbertbouic.github.io/honesty](https://gilbertbouic.github.io/honesty/) (rehearsal until **Friday 25 September 2026, 09:00 Mauritius**)
+**Play now:** [honesty.mkweli.tech](https://honesty.mkweli.tech) (rehearsal until **Friday 25 September 2026, 09:00 Mauritius**)
 
 Citizens, civil servants, elected officials, and UN-system staff answer the same weekly dilemma **in public** and score Honesty Points. Silence is an Empty Chair. The top three sitting houses receive a public QR that reads *I scored as HONEST with Mkweli*.
 
 | | |
 |--|--|
 | **Repository** | [github.com/gilbertbouic/honesty](https://github.com/gilbertbouic/honesty) |
-| **Live site** | [gilbertbouic.github.io/honesty](https://gilbertbouic.github.io/honesty/) |
+| **Live site** | [honesty.mkweli.tech](https://honesty.mkweli.tech) |
 | **Intended domain** | [honesty.mkweli.tech](https://honesty.mkweli.tech) |
 | **Studio** | [mkweli.tech](https://mkweli.tech) |
 | **License** | Not chosen yet. All rights reserved until a license is added. |

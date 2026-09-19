@@ -7,6 +7,7 @@ import { t } from "@/lib/i18n";
 import { isHonestMark, leagueField } from "@/lib/honest-mark";
 import { deskIsOpen } from "@/lib/clock";
 import { useLeague } from "@/lib/store";
+import { useStory } from "@/lib/story";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/houses/")({ component: HousesPage });
@@ -19,6 +20,7 @@ function HousesPage() {
   const answers = useLeague((s) => s.answers);
   const [filter, setFilter] = useState<Seat | "all">("all");
   const [open, setOpen] = useState(true);
+  const playStory = useStory("street", 1600);
 
   useEffect(() => {
     const tick = () => setOpen(deskIsOpen());
@@ -47,11 +49,11 @@ function HousesPage() {
   }, [field, filter]);
 
   return (
-    <div>
-      <p className="text-xs uppercase tracking-[0.2em] text-muted">{t(UI.houses, lang)}</p>
-      <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t(UI.points, lang)}</h1>
-      <p className="mt-3 max-w-xl text-sm text-muted">{t(UI.honestHint, lang)}</p>
-      {!open ? <p className="mt-2 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p> : null}
+    <div className="square" data-story={playStory ? "live" : "seen"}>
+      <p className="ink ink-1 text-xs uppercase tracking-[0.2em] text-muted">{t(UI.actStreet, lang)}</p>
+      <h1 className="ink ink-2 mt-2 font-display text-3xl sm:text-4xl">{t(UI.points, lang)}</h1>
+      <p className="ink ink-3 mt-3 max-w-xl text-sm text-muted">{t(UI.honestHint, lang)}</p>
+      {!open ? <p className="ink ink-3 mt-2 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p> : null}
       <div className="mt-6 flex flex-wrap gap-2">
         {(["all", "gallery", "service", "chamber", "mandate"] as const).map((s) => (
           <button
@@ -68,16 +70,26 @@ function HousesPage() {
         ))}
       </div>
       <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {list.map((h) => {
+        {list.map((h, i) => {
           const honest = isHonestMark(h, field);
           return (
-            <li key={h.id}>
+            <li
+              key={h.id}
+              className="seat-rise"
+              style={{ animationDelay: `calc(var(--beat) * ${400 + i * 70}ms)` }}
+            >
               <Link
                 to="/houses/$id"
                 params={{ id: h.id }}
                 className="flex items-center gap-4 rounded-xl border border-border bg-surface p-4"
               >
-                <GlassHouse points={h.points} emptyChair={h.emptyChair} compact />
+                <GlassHouse
+                  points={h.points}
+                  emptyChair={h.emptyChair}
+                  compact
+                  thaw
+                  thawDelay={`calc(var(--beat) * ${520 + i * 70}ms)`}
+                />
                 <div className="min-w-0">
                   <p className="truncate font-display text-lg">{h.handle}</p>
                   <p className="text-xs uppercase tracking-[0.14em] text-muted">

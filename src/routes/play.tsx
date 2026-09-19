@@ -10,6 +10,7 @@ import { deskIsOpen } from "@/lib/clock";
 import { t } from "@/lib/i18n";
 import { scoreAnswer } from "@/lib/score";
 import { useLeague } from "@/lib/store";
+import { useStory } from "@/lib/story";
 import { cn, wordCount } from "@/lib/utils";
 import { variantFor } from "@/lib/variant";
 
@@ -31,6 +32,7 @@ function Play() {
   const recordAnswer = useLeague((s) => s.recordAnswer);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const playStory = useStory("desk", 1400);
 
   useEffect(() => {
     const tick = () => setOpen(deskIsOpen());
@@ -73,11 +75,11 @@ function Play() {
   }
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_240px]">
+    <div className="square grid gap-10 lg:grid-cols-[minmax(0,1fr)_240px]" data-story={playStory ? "live" : "seen"}>
       <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted">{t(UI.play, lang)}</p>
-        <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t(LIVE_DILEMMA.headline, lang)}</h1>
-        {!open ? <p className="mt-4 max-w-xl text-sm text-muted">{t(UI.deskLocked, lang)}</p> : null}
+        <p className="ink ink-1 text-xs uppercase tracking-[0.2em] text-muted">{t(UI.actDesk, lang)}</p>
+        <h1 className="ink ink-2 mt-2 font-display text-3xl sm:text-4xl">{t(LIVE_DILEMMA.headline, lang)}</h1>
+        {!open ? <p className="ink ink-3 mt-4 max-w-xl text-sm text-muted">{t(UI.deskLocked, lang)}</p> : null}
 
         <div className="mt-8">
           <p className="text-xs uppercase tracking-[0.18em] text-muted">{t(UI.chooseSeat, lang)}</p>
@@ -136,20 +138,21 @@ function Play() {
         ) : null}
 
         {seat ? (
-          <section className="mt-10 space-y-6">
+          <section key={`${seat}-${circuitId ?? ""}`} className="desk-sheet mt-10 space-y-6 rounded-xl border border-border bg-surface/90 p-5">
             <p className="max-w-2xl text-lg leading-relaxed text-foreground/90">
               {t(variant.prompt, lang)}
             </p>
             <div className="space-y-2">
-              {variant.choices.map((c) => (
+              {variant.choices.map((c, i) => (
                 <button
                   key={c.id}
                   type="button"
                   onClick={() => setChoiceId(c.id)}
                   className={cn(
-                    "block w-full rounded-lg border border-border bg-surface px-4 py-4 text-left text-sm leading-relaxed transition-colors duration-[var(--motion-quick)]",
+                    "choice-in block w-full rounded-lg border border-border bg-background px-4 py-4 text-left text-sm leading-relaxed transition-colors duration-[var(--motion-quick)]",
                     choiceId === c.id && "border-glass-edge",
                   )}
+                  style={{ animationDelay: `${120 + i * 90}ms` }}
                 >
                   {t(c.label, lang)}
                 </button>
@@ -183,7 +186,7 @@ function Play() {
 
       <aside className="hidden lg:block">
         <p className="text-xs uppercase tracking-[0.18em] text-muted">{t(UI.yourHouse, lang)}</p>
-        <GlassHouse points={points} className="mt-3" />
+        <GlassHouse points={points} className="mt-3" thaw />
         <p className="mt-2 font-mono text-sm tabular-nums">{points} HP</p>
         <p className="mt-3 text-xs text-muted">{t(UI.frost, lang)}</p>
       </aside>

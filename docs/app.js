@@ -4,6 +4,9 @@ const UI = {
   mkweli: { en: "A Mkweli product", fr: "Un produit Mkweli" },
   daylight: { en: "Daylight is the point.", fr: "Le jour est le principe." },
   silence: { en: "Silence is an Empty Chair.", fr: "Le silence est une chaise vide." },
+  actSquare: { en: "I · The square", fr: "I · La place" },
+  actDesk: { en: "II · The desk", fr: "II · Le pupitre" },
+  actStreet: { en: "III · The street", fr: "III · La rue" },
   stampClosed: { en: "Opens 25 Sep", fr: "Ouvre le 25 sept." },
   stampOpen: { en: "Desk open", fr: "Pupitre ouvert" },
   disclaimer: {
@@ -190,7 +193,23 @@ function go(to) {
   location.hash = to.startsWith("#") ? to : "#" + to;
 }
 
-function glass(points, empty, compact) {
+function storyPlay(chapter) {
+  try {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+    return sessionStorage.getItem("honesty-story-" + chapter) !== "1";
+  } catch {
+    return false;
+  }
+}
+function markStory(chapter, ms) {
+  try {
+    window.setTimeout(() => sessionStorage.setItem("honesty-story-" + chapter, "1"), ms);
+  } catch {
+    /* ignore */
+  }
+}
+
+function glass(points, empty, compact, thawDelay) {
   const frost = frostFromPoints(points, empty);
   const clear = 1 - frost;
   const uid = "g" + Math.random().toString(36).slice(2, 8);
@@ -209,7 +228,7 @@ function glass(points, empty, compact) {
     </linearGradient></defs>
     <polygon points="8,40 40,10 72,40" fill="none" stroke="#1c4a3c" stroke-width="1.4"/>
     <rect x="14" y="40" width="52" height="50" fill="url(#${uid})" stroke="#1c4a3c" stroke-width="1.4"/>
-    <rect x="14" y="40" width="52" height="50" fill="#ffffff" opacity="${frost * 0.72}"/>
+    <rect x="14" y="40" width="52" height="50" fill="#ffffff" class="${thawDelay != null ? "frost-thaw" : ""}" style="--frost-to:${frost * 0.72};animation-delay:${thawDelay || 0}"/>
     ${win(22)}${win(46)}
     <rect x="36" y="70" width="8" height="20" fill="none" stroke="#1c4a3c" stroke-width="1.2"/>
     ${boarded}
@@ -262,11 +281,16 @@ function navHtml() {
 function pageArena() {
   const week = DATA.week;
   const open = deskOpen();
-  return `<p class="kicker ink ink-1">${t(UI.daylight)}</p>
+  const play = storyPlay("square");
+  if (play) markStory("square", 3600);
+  return `${play ? `<div class="veil" aria-hidden="true"></div>` : ""}
+    <div class="square" data-story="${play ? "live" : "seen"}">
+    <p class="kicker ink ink-1">${t(UI.actSquare)}</p>
+    <p class="kicker ink ink-1" style="margin-top:.5rem">${t(UI.daylight)}</p>
     <p class="lede ink ink-2">${t(UI.silence)}</p>
     <section class="hero">
     <div>
-      <p class="kicker ink ink-2">${t(open ? UI.weekLive : UI.weekOpens)}</p>
+      <p class="kicker ink ink-3">${t(open ? UI.weekLive : UI.weekOpens)}</p>
       <h1 class="ink ink-3">${t(week.headline)}</h1>
       <p class="muted ink ink-4">${t(UI.tag)}</p>
       ${open ? "" : `<p class="muted ink ink-4" style="margin-top:1rem">${t(UI.rehearsal)}</p>`}
@@ -282,16 +306,22 @@ function pageArena() {
     ${SEATS.map((seat, i) => {
       const meta = seatMeta(seat);
       const houses = DATA.houses.filter((h) => h.seat === seat).slice(0, 3);
-      return `<div class="card seat-rise" style="animation-delay:${1100 + i * 160}ms">
+      return `<div class="card seat-rise" style="animation-delay:calc(var(--beat) * ${2200 + i * 160}ms)">
         <p class="kicker">${t(meta.who)}</p>
         <h2>${t(meta.title)}</h2>
-        <div class="houses">${houses.map((h) => `<a href="#/houses/${h.id}">${glass(h.points, h.emptyChair, true)}</a>`).join("")}</div>
+        <div class="houses">${houses
+          .map(
+            (h, hi) =>
+              `<a href="#/houses/${h.id}">${glass(h.points, h.emptyChair, true, `calc(var(--beat) * ${2680 + i * 160 + hi * 90}ms)`)}</a>`,
+          )
+          .join("")}</div>
       </div>`;
     }).join("")}
   </section>
   <div class="row ink ink-6">
     <a class="btn" href="#/play">${t(open ? UI.sit : UI.previewDesk)}</a>
     <a class="btn ghost" href="#/houses">${t(UI.houses)}</a>
+  </div>
   </div>`;
 }
 
@@ -302,11 +332,13 @@ function pagePlay() {
   const already = state.answers.find((a) => a.dilemmaId === week.id);
   const words = wordCount(state.reason);
   const open = deskOpen();
-  return `<div class="play-grid">
+  const play = storyPlay("desk");
+  if (play) markStory("desk", 1400);
+  return `<div class="play-grid square" data-story="${play ? "live" : "seen"}">
     <div>
-      <p class="kicker">${t(UI.play)}</p>
-      <h1>${t(week.headline)}</h1>
-      ${open ? "" : `<p class="muted" style="margin-top:1rem;max-width:36rem">${t(UI.deskLocked)}</p>`}
+      <p class="kicker ink ink-1">${t(UI.actDesk)}</p>
+      <h1 class="ink ink-2">${t(week.headline)}</h1>
+      ${open ? "" : `<p class="muted ink ink-3" style="margin-top:1rem;max-width:36rem">${t(UI.deskLocked)}</p>`}
       <p class="kicker" style="margin-top:2rem">${t(UI.chooseSeat)}</p>
       <div class="seats" style="grid-template-columns:repeat(2,1fr);margin-top:.75rem">
         ${SEATS.map((s) => {
@@ -325,12 +357,12 @@ function pagePlay() {
       }
       ${
         state.seat && variant
-          ? `<section style="margin-top:2.5rem">
+          ? `<section class="desk-sheet" style="margin-top:2.5rem;border:1px solid var(--border);background:color-mix(in oklab, var(--surface) 90%, transparent);border-radius:.85rem;padding:1.25rem">
               <p>${t(variant.prompt)}</p>
               <div class="stack" style="margin-top:1rem">${variant.choices
                 .map(
-                  (c) =>
-                    `<button type="button" class="choice ${state.choiceId === c.id ? "on" : ""}" data-choice="${c.id}">${t(c.label)}</button>`,
+                  (c, i) =>
+                    `<button type="button" class="choice choice-in ${state.choiceId === c.id ? "on" : ""}" data-choice="${c.id}" style="animation-delay:${120 + i * 90}ms">${t(c.label)}</button>`,
                 )
                 .join("")}</div>
               <label style="display:block;margin-top:1.25rem">
@@ -379,10 +411,13 @@ function pageHouses() {
   const all = field();
   const list = (state.filter === "all" ? all : all.filter((h) => h.seat === state.filter)).slice().sort((a, b) => b.points - a.points);
   const open = deskOpen();
-  return `<p class="kicker">${t(UI.houses)}</p>
-    <h1>${t(UI.points)}</h1>
-    <p class="muted" style="max-width:36rem">${t(UI.honestHint)}</p>
-    ${open ? "" : `<p class="muted" style="max-width:36rem;margin-top:.75rem">${t(UI.rehearsal)}</p>`}
+  const play = storyPlay("street");
+  if (play) markStory("street", 1600);
+  return `<div class="square" data-story="${play ? "live" : "seen"}">
+    <p class="kicker ink ink-1">${t(UI.actStreet)}</p>
+    <h1 class="ink ink-2">${t(UI.points)}</h1>
+    <p class="muted ink ink-3" style="max-width:36rem">${t(UI.honestHint)}</p>
+    ${open ? "" : `<p class="muted ink ink-3" style="max-width:36rem;margin-top:.75rem">${t(UI.rehearsal)}</p>`}
     <div class="row" style="margin-top:1.5rem">
       ${["all", ...SEATS]
         .map((s) => {
@@ -393,11 +428,11 @@ function pageHouses() {
     </div>
     <ul class="house-list" style="list-style:none;padding:0">
       ${list
-        .map((h) => {
+        .map((h, i) => {
           const honest = isHonest(h, all);
           const meta = seatMeta(h.seat);
-          return `<li><a class="house-link card" href="#/houses/${h.id}">
-            ${glass(h.points, h.emptyChair, true)}
+          return `<li class="seat-rise" style="animation-delay:calc(var(--beat) * ${400 + i * 70}ms)"><a class="house-link card" href="#/houses/${h.id}">
+            ${glass(h.points, h.emptyChair, true, `calc(var(--beat) * ${520 + i * 70}ms)`)}
             <div>
               <p style="font-family:var(--display);font-size:1.1rem;margin:0">${h.handle}</p>
               <p class="kicker">${t(meta.title)}${h.emptyChair ? " · " + t(UI.empty) : ""}${honest ? " · " + t(UI.honestMark) : ""}</p>
@@ -406,7 +441,7 @@ function pageHouses() {
           </a></li>`;
         })
         .join("")}
-    </ul>`;
+    </ul></div>`;
 }
 
 function pageHouse(id) {

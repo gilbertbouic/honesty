@@ -7,13 +7,16 @@ type Props = {
   emptyChair?: boolean;
   compact?: boolean;
   className?: string;
+  thaw?: boolean;
+  thawDelay?: string;
 };
 
-export function GlassHouse({ points, emptyChair, compact, className }: Props) {
+export function GlassHouse({ points, emptyChair, compact, className, thaw, thawDelay }: Props) {
   const uid = useId().replace(/:/g, "");
   const frost = emptyChair ? 0.92 : frostFromPoints(points);
   const clear = 1 - frost;
   const size = compact ? 88 : 140;
+  const frostTo = frost * 0.72;
 
   return (
     <svg
@@ -50,8 +53,12 @@ export function GlassHouse({ points, emptyChair, compact, className }: Props) {
         width="52"
         height="50"
         fill="var(--color-fog)"
-        opacity={frost * 0.72}
-        style={{ transition: "opacity var(--motion-slow) var(--ease-smooth-out)" }}
+        className={thaw ? "frost-thaw" : undefined}
+        style={{
+          opacity: thaw ? undefined : frostTo,
+          ["--frost-to" as string]: frostTo,
+          animationDelay: thawDelay,
+        }}
       />
       <Window x={22} y={48} boarded={emptyChair} frost={frost} />
       <Window x={46} y={48} boarded={emptyChair} frost={frost} />

@@ -1,0 +1,63 @@
+import type { Copy, Seat } from "@/data/types";
+
+export const SEAT_META: Record<
+  Seat,
+  { title: Copy; kicker: Copy }
+> = {
+  gallery: {
+    title: { en: "Gallery", fr: "Galerie" },
+    kicker: { en: "Laypeople", fr: "Citoyens" },
+  },
+  service: {
+    title: { en: "Service", fr: "Service" },
+    kicker: { en: "Civil service circuits", fr: "Circuits de la fonction publique" },
+  },
+  chamber: {
+    title: { en: "Chamber", fr: "Chambre" },
+    kicker: { en: "Elected office", fr: "Mandat électif" },
+  },
+  mandate: {
+    title: { en: "Mandate", fr: "Mandat" },
+    kicker: { en: "UN system and treaty bodies", fr: "Système ONU et organes conventionnels" },
+  },
+};
+
+export const UI = {
+  product: { en: "Honesty League", fr: "Ligue de l’honnêteté" },
+  tag: {
+    en: "Same questions. Four seats. One public score.",
+    fr: "Les mêmes questions. Quatre sièges. Un score public.",
+  },
+  mkweli: { en: "A Mkweli product", fr: "Un produit Mkweli" },
+  disclaimer: {
+    en: "Not an official government or United Nations service. Honesty Points are declared principle, not a finding of misconduct.",
+    fr: "Ce n’est pas un service officiel de l’État ni des Nations Unies. Les points d’honnêteté sont un principe déclaré, non une constatation de faute.",
+  },
+  sit: { en: "Sit at the desk", fr: "S’asseoir au pupitre" },
+  arena: { en: "Arena", fr: "Arène" },
+  play: { en: "Desk", fr: "Pupitre" },
+  reveal: { en: "Reveal", fr: "Révélation" },
+  houses: { en: "Houses", fr: "Maisons" },
+  circuits: { en: "Circuits", fr: "Circuits" },
+  method: { en: "Method", fr: "Méthode" },
+  about: { en: "About", fr: "À propos" },
+  weekLive: { en: "Week 3 is live", fr: "La semaine 3 est ouverte" },
+  closes: { en: "Public Desk closes", fr: "Le pupitre public ferme" },
+  empty: { en: "Empty Chair", fr: "Chaise vide" },
+  points: { en: "Honesty Points", fr: "Points d’honnêteté" },
+  publicDesk: { en: "Publish this rule", fr: "Publier cette règle" },
+  chooseSeat: { en: "Choose a seat", fr: "Choisir un siège" },
+  reason: {
+    en: "State the rule you will reuse. Forty words earns the written-reason mark.",
+    fr: "Nommez la règle que vous réutiliserez. Quarante mots valent la mention écrite.",
+  },
+  words: { en: "words", fr: "mots" },
+  yourHouse: { en: "Your glass house", fr: "Votre maison de verre" },
+  frost: { en: "Frost is silence and contradiction.", fr: "Le givre est le silence et la contradiction." },
+  shadow: { en: "Divergence", fr: "Divergence" },
+  honestMark: { en: "Honest mark", fr: "Marque HONEST" },
+  honestHint: {
+    en: "Issued to the top three sitting houses. A scan is a public receipt, not a certificate of virtue.",
+    fr: "Délivrée aux trois maisons assises en tête. Un scan est un reçu public, pas un certificat de vertu.",
+  },
+};

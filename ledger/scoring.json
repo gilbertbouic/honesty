@@ -1,0 +1,17 @@
+{
+  "season": 1,
+  "notes": "Points measure process, not ideology. Every answer is public.",
+  "honest_line": "I scored as HONEST with Mkweli",
+  "honest_ranks": 3,
+  "empty_chair": 0,
+  "formula": [
+    { "id": "declared_rule", "points": 10 },
+    { "id": "written_reason_40_words", "points": 5 },
+    { "id": "written_reason_12_words", "points": 2 },
+    { "id": "public_desk", "multiplier": 1.5 },
+    { "id": "band_front_line", "multiplier": 1 },
+    { "id": "band_middle", "multiplier": 1.15 },
+    { "id": "band_senior", "multiplier": 1.35 },
+    { "id": "unexplained_contradiction", "points": -12 }
+  ]
+}

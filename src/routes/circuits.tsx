@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { UI } from "@/data/copy";
+import { FAMILY_META, UI } from "@/data/copy";
 import { CIRCUITS } from "@/data/circuits";
 import { HOUSES } from "@/data/houses";
 import { t } from "@/lib/i18n";
@@ -16,11 +16,7 @@ function CircuitsPage() {
   return (
     <div>
       <p className="text-xs uppercase tracking-[0.2em] text-muted">{t(UI.circuits, lang)}</p>
-      <h1 className="mt-2 max-w-2xl font-display text-3xl sm:text-4xl">
-        {lang === "fr"
-          ? "Le risque est dans la fonction, pas dans le titre."
-          : "Risk sits in the function, not the job title."}
-      </h1>
+      <h1 className="mt-2 max-w-2xl font-display text-3xl sm:text-4xl">{t(UI.jobsTitle, lang)}</h1>
       <ul className="mt-8 grid gap-3 sm:grid-cols-2">
         {CIRCUITS.map((c) => {
           const n = HOUSES.filter((h) => h.circuitId === c.id).length;
@@ -36,7 +32,9 @@ function CircuitsPage() {
                 className="block rounded-xl border border-border bg-surface p-4"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-[10px] uppercase tracking-[0.16em] text-muted">{c.family}</p>
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-muted">
+                    {t(FAMILY_META[c.family] ?? { en: c.family, fr: c.family }, lang)}
+                  </p>
                   <span
                     className={cn(
                       "size-2 rounded-full",

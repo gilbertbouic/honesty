@@ -4,7 +4,7 @@
 
 **Play now:** [honesty.mkweli.tech](https://honesty.mkweli.tech) (rehearsal until **Friday 25 September 2026, 09:00 Mauritius**)
 
-Citizens, civil servants, elected officials, and UN-system staff answer the same weekly dilemma **in public** and score Honesty Points. Silence is an Empty Chair. The top three sitting houses receive a public QR that reads *I scored as HONEST with Mkweli*.
+Citizens, government workers, elected people, and UN staff answer the same weekly question **in public**. They get Honesty Points. If you say nothing, your chair stays empty. The three highest scores get a QR code that says *I scored as HONEST with Mkweli*.
 
 | | |
 |--|--|
@@ -14,7 +14,7 @@ Citizens, civil servants, elected officials, and UN-system staff answer the same
 | **Studio** | [mkweli.tech](https://mkweli.tech) |
 | **License** | Not chosen yet. All rights reserved until a license is added. |
 
-Not an official government or United Nations service. Honesty Points are declared principle, not a finding of misconduct.
+This is not the government. This is not the UN. Points show what you said. They are not a court case.
 
 ## Public ledger
 
@@ -31,8 +31,8 @@ The app listens on port 8080. The Pages site can also be opened as static files 
 
 ## Season 1 rules
 
-- Public desk **opens Friday 25 September 2026, 09:00 Mauritius**. Week 1 closes Friday 2 October, 16:00 Mauritius.
-- Service and Mandate pick a circuit (procurement, licences, implementing partners, and the rest).
-- Every published rule is public. There is no private booth.
-- Honesty Points: declared rule, written reason, public-desk multiplier, band modifier.
-- Honest mark: top three sitting houses. Empty Chairs do not receive a QR.
+- Answers **open Friday 25 September 2026, 9:00 in Mauritius**. Week 1 closes Friday 2 October, 16:00.
+- Government and UN players pick the job they do (buying, permits, local partners, and the rest).
+- Every answer is public.
+- Points: a choice, a written why, a public multiply, extra if you are a supervisor or director.
+- Honest mark: the three highest scores who sat down. Empty chairs get no QR.

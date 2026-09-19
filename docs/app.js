@@ -1,59 +1,100 @@
 const UI = {
   product: { en: "Honesty League", fr: "Ligue de l’honnêteté" },
-  tag: { en: "Same questions. Four seats. One public score.", fr: "Les mêmes questions. Quatre sièges. Un score public." },
-  mkweli: { en: "A Mkweli product", fr: "Un produit Mkweli" },
-  daylight: { en: "Daylight is the point.", fr: "Le jour est le principe." },
-  silence: { en: "Silence is an Empty Chair.", fr: "Le silence est une chaise vide." },
-  actSquare: { en: "I · The square", fr: "I · La place" },
-  actDesk: { en: "II · The desk", fr: "II · Le pupitre" },
-  actStreet: { en: "III · The street", fr: "III · La rue" },
+  tag: { en: "Same questions for everyone. One public score.", fr: "Les mêmes questions pour tous. Un score public." },
+  mkweli: { en: "Made by Mkweli", fr: "Fait par Mkweli" },
+  daylight: { en: "We play in the open.", fr: "On joue au grand jour." },
+  silence: { en: "If you say nothing, your chair stays empty.", fr: "Si vous ne dites rien, votre chaise reste vide." },
+  actSquare: { en: "1. Look", fr: "1. Voir" },
+  actDesk: { en: "2. Answer", fr: "2. Répondre" },
+  actStreet: { en: "3. Scores", fr: "3. Scores" },
   stampClosed: { en: "Opens 25 Sep", fr: "Ouvre le 25 sept." },
-  stampOpen: { en: "Desk open", fr: "Pupitre ouvert" },
+  stampOpen: { en: "Open now", fr: "Ouvert" },
   disclaimer: {
-    en: "Not an official government or United Nations service. Honesty Points are declared principle, not a finding of misconduct.",
-    fr: "Ce n’est pas un service officiel de l’État ni des Nations Unies. Les points d’honnêteté sont un principe déclaré, non une constatation de faute.",
+    en: "This is not the government. This is not the UN. Points show what you said. They are not a court case.",
+    fr: "Ce n’est pas le gouvernement. Ce n’est pas l’ONU. Les points montrent ce que vous avez dit. Ce n’est pas un procès.",
   },
-  sit: { en: "Sit at the desk", fr: "S’asseoir au pupitre" },
-  arena: { en: "Arena", fr: "Arène" },
-  play: { en: "Desk", fr: "Pupitre" },
-  reveal: { en: "Reveal", fr: "Révélation" },
-  houses: { en: "Houses", fr: "Maisons" },
-  circuits: { en: "Circuits", fr: "Circuits" },
-  method: { en: "Method", fr: "Méthode" },
+  sit: { en: "Give your answer", fr: "Donnez votre réponse" },
+  arena: { en: "Home", fr: "Accueil" },
+  play: { en: "Answer", fr: "Répondre" },
+  reveal: { en: "Results", fr: "Résultats" },
+  houses: { en: "Scores", fr: "Scores" },
+  circuits: { en: "Jobs", fr: "Postes" },
+  method: { en: "How it works", fr: "Comment ça marche" },
   about: { en: "About", fr: "À propos" },
-  weekLive: { en: "Week 1 is live", fr: "La semaine 1 est ouverte" },
-  weekOpens: {
-    en: "Season 1 opens Friday 25 September",
-    fr: "La saison 1 ouvre vendredi 25 septembre",
-  },
-  closes: { en: "Public Desk closes", fr: "Le pupitre public ferme" },
-  opens: { en: "Public Desk opens", fr: "Le pupitre public ouvre" },
+  weekLive: { en: "Week 1 is open", fr: "La semaine 1 est ouverte" },
+  weekOpens: { en: "We open on Friday 25 September", fr: "On ouvre vendredi 25 septembre" },
+  closes: { en: "Answers close", fr: "Les réponses ferment" },
+  opens: { en: "Answers open", fr: "Les réponses ouvrent" },
   deskLocked: {
-    en: "The public desk opens Friday 25 September, 09:00 Mauritius. Walk the houses. Publishing waits.",
-    fr: "Le pupitre public ouvre vendredi 25 septembre, 09 h 00 Maurice. Parcourez les maisons. La publication attend.",
+    en: "You can look around. You cannot send an answer before Friday 25 September, 9:00 in Mauritius.",
+    fr: "Vous pouvez regarder. Vous ne pouvez pas envoyer de réponse avant vendredi 25 septembre, 9 h 00 à Maurice.",
   },
   rehearsal: {
-    en: "Rehearsal field until the desk opens. These scores are not the public season.",
-    fr: "Champ de répétition jusqu’à l’ouverture. Ces scores ne sont pas la saison publique.",
+    en: "These scores are a practice round. The real game starts on 25 September.",
+    fr: "Ces scores sont un essai. Le vrai jeu commence le 25 septembre.",
   },
-  previewDesk: { en: "Walk the desk", fr: "Parcourir le pupitre" },
-  empty: { en: "Empty Chair", fr: "Chaise vide" },
+  previewDesk: { en: "See the questions", fr: "Voir les questions" },
+  empty: { en: "Empty chair", fr: "Chaise vide" },
   points: { en: "Honesty Points", fr: "Points d’honnêteté" },
-  publicDesk: { en: "Publish this rule", fr: "Publier cette règle" },
-  chooseSeat: { en: "Choose a seat", fr: "Choisir un siège" },
+  publicDesk: { en: "Publish my answer", fr: "Publier ma réponse" },
+  chooseSeat: { en: "Who are you?", fr: "Qui êtes-vous ?" },
   reason: {
-    en: "State the rule you will reuse. Forty words earns the written-reason mark.",
-    fr: "Nommez la règle que vous réutiliserez. Quarante mots valent la mention écrite.",
+    en: "Write the rule you will use next time. Forty words give extra points.",
+    fr: "Écrivez la règle que vous utiliserez la prochaine fois. Quarante mots donnent des points en plus.",
   },
   words: { en: "words", fr: "mots" },
   yourHouse: { en: "Your glass house", fr: "Votre maison de verre" },
-  frost: { en: "Frost is silence and contradiction.", fr: "Le givre est le silence et la contradiction." },
-  shadow: { en: "Divergence", fr: "Divergence" },
+  frost: {
+    en: "White glass means silence. Clear glass means you answered.",
+    fr: "Le verre blanc veut dire le silence. Le verre clair veut dire que vous avez répondu.",
+  },
+  shadow: { en: "Who chose what", fr: "Qui a choisi quoi" },
   honestMark: { en: "Honest mark", fr: "Marque HONEST" },
   honestHint: {
-    en: "Issued to the top three sitting houses. A scan is a public receipt, not a certificate of virtue.",
-    fr: "Délivrée aux trois maisons assises en tête. Un scan est un reçu public, pas un certificat de vertu.",
+    en: "The three highest scores get a QR code. It is a receipt. It is not a prize for being a good person.",
+    fr: "Les trois meilleurs scores reçoivent un code QR. C’est un reçu. Ce n’est pas un prix pour être une bonne personne.",
   },
+  jobsTitle: { en: "Jobs where money can go wrong", fr: "Postes où l’argent peut mal tourner" },
+  methodTitle: { en: "How we give points", fr: "Comment on donne les points" },
+  methodLead: {
+    en: "The same answers always get the same score. A computer does not pick a winner. The rules below do.",
+    fr: "Les mêmes réponses donnent toujours le même score. Un ordinateur ne choisit pas un gagnant. Les règles ci-dessous le font.",
+  },
+  methodSteps: [
+    { en: "You pick a choice. That is 10 points.", fr: "Vous choisissez une réponse. Cela fait 10 points." },
+    { en: "You write why. At least 12 words: +2. At least 40 words: +5.", fr: "Vous écrivez pourquoi. Au moins 12 mots : +2. Au moins 40 mots : +5." },
+    { en: "Every answer is public. We then multiply by 1.5.", fr: "Chaque réponse est publique. On multiplie ensuite par 1,5." },
+    { en: "If you are a supervisor, we multiply by 1.15. If you are a director, by 1.35. A counter job stays at 1.", fr: "Si vous êtes chef, on multiplie par 1,15. Si vous êtes directeur, par 1,35. Un poste au guichet reste à 1." },
+    { en: "If you change your story without saying why: minus 12. If you do not answer: 0 points, and boards go on your house.", fr: "Si vous changez d’histoire sans dire pourquoi : moins 12. Si vous ne répondez pas : 0 point, et des planches sur votre maison." },
+    { en: "The three people with the most points get a QR code. It says “I scored as HONEST with Mkweli”. It is not a medal.", fr: "Les trois personnes avec le plus de points reçoivent un code QR. Il dit « I scored as HONEST with Mkweli ». Ce n’est pas une médaille." },
+  ],
+  aboutLead: {
+    en: "Honesty League is a game from Mkweli. Each week, people like you, government workers, elected people, and UN staff answer the same hard question. You get Honesty Points.",
+    fr: "La Ligue de l’honnêteté est un jeu de Mkweli. Chaque semaine, les gens comme vous, les agents de l’État, les élus et le personnel de l’ONU répondent à la même question difficile. Vous recevez des points d’honnêteté.",
+  },
+  aboutFrost: {
+    en: "A white house is not a crime. It means you stayed silent, you changed your story, or you did not sit down.",
+    fr: "Une maison blanche n’est pas un crime. Cela veut dire que vous avez gardé le silence, changé d’histoire, ou que vous ne vous êtes pas assis.",
+  },
+  aboutOpen: {
+    en: "Season 1. Answers open Friday 25 September 2026, 9:00 in Mauritius. Site: honesty.mkweli.tech.",
+    fr: "Saison 1. Les réponses ouvrent vendredi 25 septembre 2026, 9 h 00 à Maurice. Site : honesty.mkweli.tech.",
+  },
+  revealLead: {
+    en: "Here is who answered, and who did not. Empty chairs stay on the page.",
+    fr: "Voici qui a répondu, et qui n’a pas répondu. Les chaises vides restent sur la page.",
+  },
+};
+
+const BAND_META = {
+  "front-line": { en: "Counter", fr: "Guichet" },
+  middle: { en: "Supervisor", fr: "Chef" },
+  senior: { en: "Director", fr: "Directeur" },
+};
+const FAMILY_META = {
+  shared: { en: "All groups", fr: "Tous les groupes" },
+  service: { en: "Government", fr: "État" },
+  mandate: { en: "UN", fr: "ONU" },
 };
 
 const SEATS = ["gallery", "service", "chamber", "mandate"];
@@ -351,7 +392,7 @@ function pagePlay() {
           ? `<div style="margin-top:1.5rem">
               <p class="kicker">${t(UI.circuits)}</p>
               <div class="row">${circuits.map((c) => `<button type="button" class="chip ${state.circuitId === c.id ? "on" : ""}" data-circuit="${c.id}">${t(c.title)}</button>`).join("")}</div>
-              <div class="row">${BANDS.map((b) => `<button type="button" class="chip ${state.band === b ? "on" : ""}" data-band="${b}">${b}</button>`).join("")}</div>
+              <div class="row">${BANDS.map((b) => `<button type="button" class="chip ${state.band === b ? "on" : ""}" data-band="${b}">${t(BAND_META[b])}</button>`).join("")}</div>
             </div>`
           : ""
       }
@@ -395,14 +436,14 @@ function pageReveal() {
   const ids = Object.keys(groups);
   return `<p class="kicker">${t(UI.reveal)}</p>
     <h1>${t(week.headline)}</h1>
-    <p class="muted">${t(UI.shadow)}</p>
+    <p class="muted">${t(UI.revealLead)}</p>
     <div class="stack" style="margin-top:2rem;max-width:40rem">
       ${
         ids.length
           ? ids
               .map((id) => `<div class="card"><p class="mono">${id}</p><p class="muted">${groups[id].map((h) => h.handle).join(" · ")}</p></div>`)
               .join("")
-          : `<p class="muted">${state.lang === "fr" ? "Les chaises vides parlent aussi." : "Empty chairs speak too."}</p>`
+          : `<p class="muted">${state.lang === "fr" ? "Les chaises vides restent aussi." : "Empty chairs stay here too."}</p>`
       }
     </div>`;
 }
@@ -470,42 +511,36 @@ function pageHouse(id) {
 
 function pageCircuits() {
   return `<p class="kicker">${t(UI.circuits)}</p>
-    <h1>${state.lang === "fr" ? "Fonctions à risque" : "Functions at risk"}</h1>
+    <h1>${t(UI.jobsTitle)}</h1>
     <div class="house-list two" style="list-style:none;padding:0">
       ${DATA.circuits
         .map(
-          (c) => `<article class="card"><p class="kicker">${c.family}</p><h2>${t(c.title)}</h2><p class="muted">${t(c.why)}</p></article>`,
+          (c) =>
+            `<article class="card"><p class="kicker">${t(FAMILY_META[c.family] || { en: c.family, fr: c.family })}</p><h2>${t(c.title)}</h2><p class="muted">${t(c.why)}</p></article>`,
         )
         .join("")}
     </div>`;
 }
 
 function pageMethod() {
-  const fr = state.lang === "fr";
   return `<article class="method">
     <p class="kicker">${t(UI.method)}</p>
-    <h1>${fr ? "Les points mesurent le processus, pas l’idéologie." : "Points measure process, not ideology."}</h1>
-    <p class="muted">${fr ? "Le scoreur est déterministe. Deux personnes qui relancent la même fonction sur les mêmes fichiers obtiennent le même résultat." : "The scorer is deterministic. Two people running the same function on the same files get the same result."}</p>
+    <h1>${t(UI.methodTitle)}</h1>
+    <p class="muted">${t(UI.methodLead)}</p>
     <ol>
-      <li>${fr ? "Règle déclarée plus un choix : 10." : "Declared rule plus a choice: 10."}</li>
-      <li>${fr ? "Raison écrite d’au moins 40 mots : +5. Douze mots : +2." : "Written reason of at least 40 words: +5. Twelve words: +2."}</li>
-      <li>${fr ? "Toute réponse est publique. Multiplicateur du pupitre : × 1,5." : "Every answer is public. Desk multiplier: × 1.5."}</li>
-      <li>${fr ? "Bande : première ligne × 1, milieu × 1,15, senior × 1,35." : "Band: front line × 1, middle × 1.15, senior × 1.35."}</li>
-      <li>${fr ? "Contradiction sans amendement : −12. Chaise vide : 0, et des planches sur la maison." : "Contradiction without amendment: −12. Empty Chair: 0, and boards on the house."}</li>
-      <li>${fr ? "Marque HONEST : les trois maisons assises en tête reçoivent un QR public. Le texte scanné est « I scored as HONEST with Mkweli »." : "Honest mark: the top three sitting houses receive a public QR. The scanned text is “I scored as HONEST with Mkweli”."}</li>
+      ${UI.methodSteps.map((step) => `<li>${t(step)}</li>`).join("")}
     </ol>
     <p class="muted">${t(UI.disclaimer)}</p>
   </article>`;
 }
 
 function pageAbout() {
-  const fr = state.lang === "fr";
   return `<article class="method">
     <p class="kicker">${t(UI.about)}</p>
     <h1>${t(UI.product)}</h1>
-    <p>${fr ? "Un jeu civique de Mkweli. Les citoyens, les agents publics, les élus et les fonctionnaires internationaux répondent à la même dilemme, chaque semaine, et accumulent des points d’honnêteté." : "A Mkweli civic game. Citizens, civil servants, elected officials and international staff answer the same weekly dilemma and accumulate Honesty Points."}</p>
-    <p class="muted">${fr ? "Le givre sur la maison de verre n’est pas un verdict pénal. C’est le silence, la contradiction, ou le refus de s’asseoir." : "Frost on the glass house is not a criminal verdict. It is silence, contradiction, or a refusal to sit."}</p>
-    <p class="muted">${fr ? "Saison 1. Le pupitre public ouvre vendredi 25 septembre 2026, 09 h 00 Maurice. Site : honesty.mkweli.tech." : "Season 1. The public desk opens Friday 25 September 2026, 09:00 Mauritius. Home: honesty.mkweli.tech."}</p>
+    <p>${t(UI.aboutLead)}</p>
+    <p class="muted">${t(UI.aboutFrost)}</p>
+    <p class="muted">${t(UI.aboutOpen)}</p>
     <p><a href="https://mkweli.tech" style="color:var(--primary)">mkweli.tech</a></p>
   </article>`;
 }

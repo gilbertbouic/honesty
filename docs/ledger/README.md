@@ -1,17 +1,17 @@
 # Public ledger — Season 1
 
-The public desk **opens Friday 25 September 2026, 09:00 Mauritius**.
-Until then this is a rehearsal field.
+Answers **open Friday 25 September 2026, 9:00 in Mauritius**.
+Until then this is a practice round.
 
 | File | What it is |
 |---|---|
-| `seats.json` | Gallery, Service, Chamber, Mandate |
-| `circuits.json` | Corruption-prone functions (national + UN-type) |
-| `scoring.json` | Honesty Points formula and Honest-mark cut |
-| `season-1/week-1.json` | First public dilemma (opens 25 Sep, desk closes 2 Oct) |
-| `houses.json` | Seeded glass houses (initials and offices only) |
+| `seats.json` | Public, Government, Elected, UN |
+| `circuits.json` | Jobs where money can go wrong |
+| `scoring.json` | How we give Honesty Points |
+| `season-1/week-1.json` | First public question (opens 25 Sep, closes 2 Oct) |
+| `houses.json` | Practice glass houses (initials and offices only) |
 
-Answers live in the player’s browser until a later Git commit pipeline exists.
-Silence remains first-class: Empty Chair.
+Answers stay in the player’s browser for now.
+If you say nothing, the chair stays empty.
 
 Live site: https://honesty.mkweli.tech

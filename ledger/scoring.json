@@ -1,9 +1,27 @@
 {
   "season": 1,
-  "notes": "Points measure process, not ideology. Every answer is public.",
+  "notes": "The same answers always get the same score. Every answer is public.",
   "honest_line": "I scored as HONEST with Mkweli",
   "honest_ranks": 3,
   "empty_chair": 0,
+  "plain": {
+    "en": [
+      "Pick a choice: 10 points.",
+      "Write why. 12 words: +2. 40 words: +5.",
+      "Public answer: multiply by 1.5.",
+      "Supervisor × 1.15. Director × 1.35. Counter × 1.",
+      "Change your story with no reason: −12. No answer: 0.",
+      "Top three sitting scores get a QR receipt."
+    ],
+    "fr": [
+      "Choisissez une réponse : 10 points.",
+      "Écrivez pourquoi. 12 mots : +2. 40 mots : +5.",
+      "Réponse publique : multiplier par 1,5.",
+      "Chef × 1,15. Directeur × 1,35. Guichet × 1.",
+      "Changer d’histoire sans raison : −12. Pas de réponse : 0.",
+      "Les trois meilleurs scores assis reçoivent un reçu QR."
+    ]
+  },
   "formula": [
     { "id": "declared_rule", "points": 10 },
     { "id": "written_reason_40_words", "points": 5 },

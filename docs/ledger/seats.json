@@ -3,26 +3,23 @@
   "seats": [
     {
       "id": "gallery",
-      "title": { "en": "Gallery", "fr": "Galerie" },
-      "who": { "en": "Laypeople", "fr": "Citoyens" }
+      "title": { "en": "Public", "fr": "Public" },
+      "who": { "en": "People like you", "fr": "Les gens comme vous" }
     },
     {
       "id": "service",
-      "title": { "en": "Service", "fr": "Service" },
-      "who": { "en": "Civil service circuits", "fr": "Circuits de la fonction publique" }
+      "title": { "en": "Government", "fr": "État" },
+      "who": { "en": "People who work for the State", "fr": "Les agents de l’État" }
     },
     {
       "id": "chamber",
-      "title": { "en": "Chamber", "fr": "Chambre" },
-      "who": { "en": "Elected office", "fr": "Mandat électif" }
+      "title": { "en": "Elected", "fr": "Élus" },
+      "who": { "en": "People we vote for", "fr": "Les personnes que nous élisons" }
     },
     {
       "id": "mandate",
-      "title": { "en": "Mandate", "fr": "Mandat" },
-      "who": {
-        "en": "UN system and treaty bodies",
-        "fr": "Système ONU et organes conventionnels"
-      }
+      "title": { "en": "UN", "fr": "ONU" },
+      "who": { "en": "UN and world bodies", "fr": "L’ONU et les organisations mondiales" }
     }
   ]
 }

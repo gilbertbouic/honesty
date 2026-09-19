@@ -9,8 +9,8 @@ export const HOUSES: HouseRecord[] = [
     points: 62,
     lastChoice: "recuse",
     lastReason: {
-      en: "I will not sign a file where the bidder paid for my party. Recusal is the reusable rule.",
-      fr: "Je ne signerai pas un dossier dont le soumissionnaire a payé mon parti. Le déport est la règle réutilisable.",
+      en: "I will not sign a file if the bidder paid for my party. Next time I will step aside.",
+      fr: "Je ne signerai pas un dossier si l’offre a payé mon parti. La prochaine fois, je m’écarterai.",
     },
   },
   {
@@ -23,7 +23,7 @@ export const HOUSES: HouseRecord[] = [
   },
   {
     id: "service-proc",
-    handle: "Procurement middle band",
+    handle: "Buyer, supervisor",
     seat: "service",
     circuitId: "procurement",
     band: "middle",
@@ -31,13 +31,13 @@ export const HOUSES: HouseRecord[] = [
     points: 48,
     lastChoice: "republish",
     lastReason: {
-      en: "Publish the sheet. If safety is the issue, retender with the inspection on the face of the bid.",
-      fr: "Publier la grille. Si la sécurité est l’enjeu, relancer avec l’inspection sur l’offre.",
+      en: "Show the marks. If safety is the problem, ask for new bids with the checks on the paper.",
+      fr: "Montrez les notes. Si la sécurité est le problème, demandez de nouvelles offres avec les contrôles sur le papier.",
     },
   },
   {
     id: "service-mra",
-    handle: "Revenue front line",
+    handle: "Tax, counter",
     seat: "service",
     circuitId: "revenue",
     band: "front-line",
@@ -47,7 +47,7 @@ export const HOUSES: HouseRecord[] = [
   },
   {
     id: "service-stall",
-    handle: "Licences front line",
+    handle: "Permits, counter",
     seat: "service",
     circuitId: "licences",
     band: "front-line",
@@ -57,7 +57,7 @@ export const HOUSES: HouseRecord[] = [
   },
   {
     id: "service-health",
-    handle: "Health senior",
+    handle: "Hospital, director",
     seat: "service",
     circuitId: "health",
     band: "senior",
@@ -75,8 +75,8 @@ export const HOUSES: HouseRecord[] = [
     points: 55,
     lastChoice: "recuse",
     lastReason: {
-      en: "Missed audits close the partner. Year-end pressure is not a rule.",
-      fr: "Des audits manqués ferment le partenaire. La pression de fin d’année n’est pas une règle.",
+      en: "Missed audits close the partner. End-of-year rush is not a rule.",
+      fr: "Des audits manqués ferment le partenaire. La course de fin d’année n’est pas une règle.",
     },
   },
   {

@@ -3,8 +3,8 @@
   "id": "w1-connected-bidder",
   "week": 1,
   "headline": {
-    "en": "The connected name is not the cheapest.",
-    "fr": "Le nom lié n’est pas le moins-disant."
+    "en": "The friend is not the cheapest.",
+    "fr": "L’ami n’est pas le moins cher."
   },
   "opensAt": "2026-09-25T09:00:00+04:00",
   "closesAt": "2026-10-02T16:00:00+04:00",
@@ -12,36 +12,36 @@
     {
       "circuitId": "gallery",
       "prompt": {
-        "en": "A contractor who paid for a party fête last year is the second-cheapest bidder on a public works job near your house. The cheapest bidder has two failed safety inspections. You sit on a neighbourhood committee that will be asked for a view. What rule will you reuse next time?",
-        "fr": "Un entrepreneur qui a payé la fête du parti l’an dernier est le second moins-disant sur un chantier près de chez vous. Le moins-disant a deux contrôles de sécurité manqués. Votre comité de quartier sera consulté. Quelle règle réutiliserez-vous la prochaine fois ?"
+        "en": "A builder paid for a party fête last year. He is second cheapest on a road job near your house. The cheapest builder failed two safety checks. Your neighbourhood group will be asked what it thinks. What rule will you use next time?",
+        "fr": "Un entrepreneur a payé une fête de parti l’an dernier. Il est le deuxième moins cher pour une route près de chez vous. Le moins cher a raté deux contrôles de sécurité. Votre groupe de quartier sera demandé. Quelle règle utiliserez-vous la prochaine fois ?"
       },
       "choices": [
         {
           "id": "award",
           "label": {
-            "en": "Award and keep moving. Speed is a public good.",
-            "fr": "Adjuger et avancer. La rapidité est un bien public."
+            "en": "Give them the job and move on. Speed matters.",
+            "fr": "Donnez-leur le travail et avancez. La vitesse compte."
           }
         },
         {
           "id": "recuse",
           "label": {
-            "en": "Recuse, name the link, and leave the file to someone else.",
-            "fr": "Se déporter, nommer le lien, et laisser le dossier à autrui."
+            "en": "Step aside. Say you know them. Let someone else decide.",
+            "fr": "Écartez-vous. Dites que vous les connaissez. Laissez quelqu’un d’autre décider."
           }
         },
         {
           "id": "republish",
           "label": {
-            "en": "Halt, publish the scoring sheet, and retender.",
-            "fr": "Arrêter, publier la grille, et relancer."
+            "en": "Stop. Show the marks. Ask for new bids.",
+            "fr": "Arrêtez. Montrez les notes. Demandez de nouvelles offres."
           }
         },
         {
           "id": "quiet",
           "label": {
-            "en": "Note the link in a closed minute and award the connected bidder.",
-            "fr": "Noter le lien en procès-verbal clos et adjuger au soumissionnaire lié."
+            "en": "Write the link in a closed note. Still give the job to the friend.",
+            "fr": "Notez le lien dans un papier fermé. Donnez quand même le travail à l’ami."
           }
         }
       ]
@@ -49,36 +49,36 @@
     {
       "circuitId": "procurement",
       "prompt": {
-        "en": "You chair evaluation. The second-cheapest bidder funded last year’s party fête. The cheapest bidder failed two safety inspections. Do you award, recuse, republish, or bury the link?",
-        "fr": "Vous présidez l’évaluation. Le second moins-disant a financé la fête du parti. Le moins-disant a échoué à deux inspections. Adjugez-vous, vous déportez-vous, relancez-vous, ou enterrez-vous le lien ?"
+        "en": "You chair the bid meeting. The second cheapest builder paid for last year’s party fête. The cheapest builder failed two safety checks. What do you do?",
+        "fr": "Vous présidez la réunion des offres. Le deuxième moins cher a payé la fête du parti l’an dernier. Le moins cher a raté deux contrôles de sécurité. Que faites-vous ?"
       },
       "choices": [
         {
           "id": "award",
           "label": {
-            "en": "Award and keep moving. Speed is a public good.",
-            "fr": "Adjuger et avancer. La rapidité est un bien public."
+            "en": "Give them the job and move on. Speed matters.",
+            "fr": "Donnez-leur le travail et avancez. La vitesse compte."
           }
         },
         {
           "id": "recuse",
           "label": {
-            "en": "Recuse, name the link, and leave the file to someone else.",
-            "fr": "Se déporter, nommer le lien, et laisser le dossier à autrui."
+            "en": "Step aside. Say you know them. Let someone else decide.",
+            "fr": "Écartez-vous. Dites que vous les connaissez. Laissez quelqu’un d’autre décider."
           }
         },
         {
           "id": "republish",
           "label": {
-            "en": "Halt, publish the scoring sheet, and retender.",
-            "fr": "Arrêter, publier la grille, et relancer."
+            "en": "Stop. Show the marks. Ask for new bids.",
+            "fr": "Arrêtez. Montrez les notes. Demandez de nouvelles offres."
           }
         },
         {
           "id": "quiet",
           "label": {
-            "en": "Note the link in a closed minute and award the connected bidder.",
-            "fr": "Noter le lien en procès-verbal clos et adjuger au soumissionnaire lié."
+            "en": "Write the link in a closed note. Still give the job to the friend.",
+            "fr": "Notez le lien dans un papier fermé. Donnez quand même le travail à l’ami."
           }
         }
       ]
@@ -86,36 +86,36 @@
     {
       "circuitId": "health",
       "prompt": {
-        "en": "A device supplier offers a “conference” in Lisbon if their kit is added to the formulary. A cheaper kit has a thinner service record. You sit on the hospital products committee.",
-        "fr": "Un fournisseur de dispositifs offre une « conférence » à Lisbonne si son kit entre au formulaire. Un kit moins cher a un service plus mince. Vous siégez au comité des produits."
+        "en": "A seller offers a “conference” in Lisbon if the hospital buys their machine. A cheaper machine has a shorter repair record. You sit on the hospital buying group.",
+        "fr": "Un vendeur offre une « conférence » à Lisbonne si l’hôpital achète sa machine. Une machine moins chère a moins d’historique de réparation. Vous siégez au groupe d’achat de l’hôpital."
       },
       "choices": [
         {
           "id": "award",
           "label": {
-            "en": "Add the connected kit. Continuity of service matters.",
-            "fr": "Ajouter le kit lié. La continuité du service compte."
+            "en": "Buy the friend’s machine. Keep the same supplier.",
+            "fr": "Achetez la machine de l’ami. Gardez le même fournisseur."
           }
         },
         {
           "id": "recuse",
           "label": {
-            "en": "Refuse the conference, recuse, and publish the scoring.",
-            "fr": "Refuser la conférence, se déporter, publier la grille."
+            "en": "Refuse the trip. Step aside. Show the marks.",
+            "fr": "Refusez le voyage. Écartez-vous. Montrez les notes."
           }
         },
         {
           "id": "republish",
           "label": {
-            "en": "Reopen the listing with named conflict rules.",
-            "fr": "Rouvrir la liste avec des règles de conflit nommées."
+            "en": "Start the list again, with a clear conflict rule.",
+            "fr": "Recommencez la liste, avec une règle de conflit claire."
           }
         },
         {
           "id": "quiet",
           "label": {
-            "en": "Decline the trip in writing, then still list the kit.",
-            "fr": "Refuser le voyage par écrit, puis lister le kit quand même."
+            "en": "Refuse the trip in writing. Still list their machine.",
+            "fr": "Refusez le voyage par écrit. Listez quand même leur machine."
           }
         }
       ]
@@ -123,36 +123,36 @@
     {
       "circuitId": "licences",
       "prompt": {
-        "en": "Two stall applications. One file is complete. The other is connected to a councillor. Market day is Friday.",
-        "fr": "Deux dossiers d’étal. L’un est complet. L’autre est lié à un conseiller. Le marché est vendredi."
+        "en": "Two people want a market stall. One file is complete. The other person knows a councillor. Market day is Friday.",
+        "fr": "Deux personnes veulent un étal au marché. Un dossier est complet. L’autre personne connaît un conseiller. Le marché est vendredi."
       },
       "choices": [
         {
           "id": "award",
           "label": {
-            "en": "Give the connected stall. Keep the peace.",
-            "fr": "Donner l’étal lié. Garder la paix."
+            "en": "Give the stall to the friend. Keep the peace.",
+            "fr": "Donnez l’étal à l’ami. Gardez la paix."
           }
         },
         {
           "id": "recuse",
           "label": {
-            "en": "Recuse and send both files to another inspector.",
-            "fr": "Se déporter et envoyer les deux dossiers ailleurs."
+            "en": "Step aside. Send both files to another officer.",
+            "fr": "Écartez-vous. Envoyez les deux dossiers à un autre agent."
           }
         },
         {
           "id": "republish",
           "label": {
-            "en": "Publish the allocation list and the scoring rule.",
-            "fr": "Publier la liste d’attribution et la règle."
+            "en": "Publish the list and the rule for who gets a stall.",
+            "fr": "Publiez la liste et la règle pour qui a un étal."
           }
         },
         {
           "id": "quiet",
           "label": {
-            "en": "Award the complete file, quietly tell the councillor later.",
-            "fr": "Adjuger le dossier complet, prévenir le conseiller plus tard."
+            "en": "Give the stall to the complete file. Tell the councillor later, in private.",
+            "fr": "Donnez l’étal au dossier complet. Dites-le au conseiller plus tard, en privé."
           }
         }
       ]
@@ -160,36 +160,36 @@
     {
       "circuitId": "revenue",
       "prompt": {
-        "en": "A repeat importer is short a certificate. The queue is long. A facilitation fee is implied. Your section target is behind.",
-        "fr": "Un importateur habituel n’a pas le certificat. La file est longue. Un « frais de facilitation » est suggéré. Votre cible de section est en retard."
+        "en": "A regular importer is missing a paper. The queue is long. They hint at a “facilitation fee”. Your team is behind on its target.",
+        "fr": "Un importateur habituel n’a pas un papier. La file est longue. Il parle d’un « frais de facilitation ». Votre équipe est en retard sur sa cible."
       },
       "choices": [
         {
           "id": "award",
           "label": {
-            "en": "Release the consignment. Collect later.",
-            "fr": "Libérer le lot. Recouvrer plus tard."
+            "en": "Let the goods through. Collect the paper later.",
+            "fr": "Laissez passer les biens. Prenez le papier plus tard."
           }
         },
         {
           "id": "recuse",
           "label": {
-            "en": "Refuse, log the approach, hand the file up.",
-            "fr": "Refuser, consigner l’approche, transmettre."
+            "en": "Say no. Write down the offer. Send the file up.",
+            "fr": "Dites non. Notez l’offre. Envoyez le dossier plus haut."
           }
         },
         {
           "id": "republish",
           "label": {
-            "en": "Hold the goods and publish the missing-document rule.",
-            "fr": "Retenir et publier la règle des pièces manquantes."
+            "en": "Hold the goods. Publish the rule for missing papers.",
+            "fr": "Gardez les biens. Publiez la règle pour les papiers manquants."
           }
         },
         {
           "id": "quiet",
           "label": {
-            "en": "Take nothing, but move the file to the front.",
-            "fr": "Ne rien prendre, mais avancer le dossier."
+            "en": "Take no money. Still move their file to the front.",
+            "fr": "Ne prenez pas d’argent. Avancez quand même leur dossier."
           }
         }
       ]
@@ -197,36 +197,36 @@
     {
       "circuitId": "chamber",
       "prompt": {
-        "en": "Cabinet wants the connected bidder awarded before a by-election. You are the minister who signs. The cheapest bidder has two failed inspections.",
-        "fr": "Le cabinet veut adjuger au soumissionnaire lié avant une partielle. Vous signez. Le moins-disant a deux inspections manquées."
+        "en": "Cabinet wants the friend’s bid to win before a by-election. You are the minister who signs. The cheapest builder failed two safety checks.",
+        "fr": "Le cabinet veut que l’offre de l’ami gagne avant une élection partielle. Vous êtes le ministre qui signe. Le bâtisseur le moins cher a raté deux contrôles de sécurité."
       },
       "choices": [
         {
           "id": "award",
           "label": {
-            "en": "Award and keep moving. Speed is a public good.",
-            "fr": "Adjuger et avancer. La rapidité est un bien public."
+            "en": "Give them the job and move on. Speed matters.",
+            "fr": "Donnez-leur le travail et avancez. La vitesse compte."
           }
         },
         {
           "id": "recuse",
           "label": {
-            "en": "Recuse, name the link, and leave the file to someone else.",
-            "fr": "Se déporter, nommer le lien, et laisser le dossier à autrui."
+            "en": "Step aside. Say you know them. Let someone else decide.",
+            "fr": "Écartez-vous. Dites que vous les connaissez. Laissez quelqu’un d’autre décider."
           }
         },
         {
           "id": "republish",
           "label": {
-            "en": "Halt, publish the scoring sheet, and retender.",
-            "fr": "Arrêter, publier la grille, et relancer."
+            "en": "Stop. Show the marks. Ask for new bids.",
+            "fr": "Arrêtez. Montrez les notes. Demandez de nouvelles offres."
           }
         },
         {
           "id": "quiet",
           "label": {
-            "en": "Note the link in a closed minute and award the connected bidder.",
-            "fr": "Noter le lien en procès-verbal clos et adjuger au soumissionnaire lié."
+            "en": "Write the link in a closed note. Still give the job to the friend.",
+            "fr": "Notez le lien dans un papier fermé. Donnez quand même le travail à l’ami."
           }
         }
       ]
@@ -234,36 +234,36 @@
     {
       "circuitId": "partners",
       "prompt": {
-        "en": "The connected implementing partner is a former ministry unit of your deputy. It is the only partner that can spend the remaining allocation before year-end. Two audits were missed.",
-        "fr": "Le partenaire lié est une ancienne unité ministérielle de votre adjoint. Seul, il peut dépenser le reliquat avant la fin d’année. Deux audits ont été manqués."
+        "en": "The local partner is an old unit of your deputy’s ministry. Only they can spend the rest of the money before year end. They missed two audits.",
+        "fr": "Le partenaire local est une ancienne unité du ministère de votre adjoint. Eux seuls peuvent dépenser le reste de l’argent avant la fin d’année. Ils ont manqué deux audits."
       },
       "choices": [
         {
           "id": "award",
           "label": {
-            "en": "Reallocate to the same director. Absorption matters.",
-            "fr": "Réallouer au même directeur. L’absorption compte."
+            "en": "Give the money to the same director. Spending it matters.",
+            "fr": "Donnez l’argent au même directeur. Le dépenser compte."
           }
         },
         {
           "id": "recuse",
           "label": {
-            "en": "Suspend, recuse the deputy, and retender the partner.",
-            "fr": "Suspendre, déporter l’adjoint, relancer le partenaire."
+            "en": "Stop. Ask the deputy to step aside. Look for a new partner.",
+            "fr": "Arrêtez. Demandez à l’adjoint de s’écarter. Cherchez un nouveau partenaire."
           }
         },
         {
           "id": "republish",
           "label": {
-            "en": "Return the money rather than spend it badly.",
-            "fr": "Rendre l’argent plutôt que mal le dépenser."
+            "en": "Send the money back rather than spend it badly.",
+            "fr": "Rendez l’argent plutôt que mal le dépenser."
           }
         },
         {
           "id": "quiet",
           "label": {
-            "en": "Redesign the terms of reference around the same director.",
-            "fr": "Réécrire les termes de référence autour du même directeur."
+            "en": "Rewrite the job so the same director still wins.",
+            "fr": "Réécrivez le travail pour que le même directeur gagne encore."
           }
         }
       ]
@@ -271,36 +271,36 @@
     {
       "circuitId": "climate-funds",
       "prompt": {
-        "en": "A climate readiness grant is approved. The only eligible local consultant wrote the proposal.",
-        "fr": "Un don de préparation climatique est approuvé. Le seul consultant local éligible a rédigé la proposition."
+        "en": "A climate grant is approved. The only local consultant allowed to take it is the person who wrote the plan.",
+        "fr": "Un don climat est approuvé. Le seul consultant local autorisé à le prendre est la personne qui a écrit le plan."
       },
       "choices": [
         {
           "id": "award",
           "label": {
-            "en": "Award and keep moving. Speed is a public good.",
-            "fr": "Adjuger et avancer. La rapidité est un bien public."
+            "en": "Give them the job and move on. Speed matters.",
+            "fr": "Donnez-leur le travail et avancez. La vitesse compte."
           }
         },
         {
           "id": "recuse",
           "label": {
-            "en": "Recuse, name the link, and leave the file to someone else.",
-            "fr": "Se déporter, nommer le lien, et laisser le dossier à autrui."
+            "en": "Step aside. Say you know them. Let someone else decide.",
+            "fr": "Écartez-vous. Dites que vous les connaissez. Laissez quelqu’un d’autre décider."
           }
         },
         {
           "id": "republish",
           "label": {
-            "en": "Halt, publish the scoring sheet, and retender.",
-            "fr": "Arrêter, publier la grille, et relancer."
+            "en": "Stop. Show the marks. Ask for new bids.",
+            "fr": "Arrêtez. Montrez les notes. Demandez de nouvelles offres."
           }
         },
         {
           "id": "quiet",
           "label": {
-            "en": "Note the link in a closed minute and award the connected bidder.",
-            "fr": "Noter le lien en procès-verbal clos et adjuger au soumissionnaire lié."
+            "en": "Write the link in a closed note. Still give the job to the friend.",
+            "fr": "Notez le lien dans un papier fermé. Donnez quand même le travail à l’ami."
           }
         }
       ]

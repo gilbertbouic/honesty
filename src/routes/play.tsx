@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { GlassHouse } from "@/components/glass-house";
 import { Button } from "@/components/ui/button";
-import { SEAT_META, UI } from "@/data/copy";
+import { BAND_META, SEAT_META, UI } from "@/data/copy";
 import { CIRCUITS } from "@/data/circuits";
 import { LIVE_DILEMMA } from "@/data/dilemmas";
 import type { Band, Seat } from "@/data/types";
@@ -130,7 +130,7 @@ function Play() {
                     band === b && "border-glass-edge text-foreground",
                   )}
                 >
-                  {b}
+                  {t(BAND_META[b], lang)}
                 </button>
               ))}
             </div>

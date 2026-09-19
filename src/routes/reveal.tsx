@@ -30,11 +30,7 @@ function Reveal() {
       <div>
         <p className="text-xs uppercase tracking-[0.2em] text-muted">{t(UI.reveal, lang)}</p>
         <h1 className="mt-2 font-display text-3xl sm:text-5xl">{t(LIVE_DILEMMA.headline, lang)}</h1>
-        <p className="mt-3 max-w-xl text-muted">
-          {lang === "fr"
-            ? "Rapport de match. Le silence est une donnée. Les sièges vides restent visibles."
-            : "Match report. Silence is data. Empty chairs stay visible."}
-        </p>
+        <p className="mt-3 max-w-xl text-muted">{t(UI.revealLead, lang)}</p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -63,8 +59,8 @@ function Reveal() {
         <h2 className="font-display text-2xl">{t(UI.shadow, lang)}</h2>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
           {lang === "fr"
-            ? "La galerie médiane a choisi de relancer. Le bureau UNDP a choisi le déport. Le ministre des travaux a laissé la chaise vide."
-            : "Gallery median chose retender. The UNDP country office chose recusal. The Minister of Works left the chair empty."}
+            ? "Les gens comme vous ont souvent demandé un nouvel appel d’offres. Le bureau PNUD s’est retiré du dossier. Le ministre des Travaux n’a pas répondu."
+            : "People like you often asked for a new call for bids. The UNDP office stepped aside. The Minister of Works did not answer."}
         </p>
         {mine ? (
           <p className="mt-4 text-sm">

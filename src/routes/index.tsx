@@ -27,27 +27,28 @@ function Arena() {
   }, []);
 
   return (
-    <div className="space-y-12">
-      <section className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
+    <div className="relative">
+      <p className="ink ink-1 text-xs uppercase tracking-[0.28em] text-muted">{t(UI.daylight, lang)}</p>
+      <p className="ink ink-2 mt-4 max-w-xl font-display text-xl italic text-foreground/80 sm:text-2xl">
+        {t(UI.silence, lang)}
+      </p>
+
+      <section className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_280px] lg:items-end">
         <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-muted">
+          <p className="ink ink-2 text-xs uppercase tracking-[0.22em] text-muted">
             {t(open ? UI.weekLive : UI.weekOpens, lang)}
           </p>
-          <h1 className="mt-3 max-w-3xl font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
+          <h1 className="ink ink-3 mt-3 max-w-3xl font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
             {t(LIVE_DILEMMA.headline, lang)}
           </h1>
-          <p className="mt-4 max-w-xl text-muted">{t(UI.tag, lang)}</p>
-          {!open ? <p className="mt-3 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p> : null}
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Button asChild size="lg">
-              <Link to="/play">{t(open ? UI.sit : UI.previewDesk, lang)}</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link to="/houses">{t(UI.houses, lang)}</Link>
-            </Button>
-          </div>
+          <p className="ink ink-4 mt-5 max-w-xl text-lg text-muted">{t(UI.tag, lang)}</p>
+          {!open ? (
+            <p className="ink ink-4 mt-3 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p>
+          ) : null}
         </div>
-        <div className="rounded-xl border border-border bg-surface p-5">
+
+        <aside className="ink ink-5 notice relative rounded-xl p-5">
+          <span className="stamp absolute -right-2 -top-3">{t(open ? UI.stampOpen : UI.stampClosed, lang)}</span>
           <p className="text-xs uppercase tracking-[0.18em] text-muted">
             {t(open ? UI.closes : UI.opens, lang)}
           </p>
@@ -55,14 +56,18 @@ function Arena() {
           <p className="mt-4 text-xs text-muted">
             {open ? "Friday 16:00 · Mauritius" : "Friday 25 September · 09:00 Mauritius"}
           </p>
-        </div>
+        </aside>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {SEATS.map((seat) => {
+      <section className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {SEATS.map((seat, i) => {
           const houses = HOUSES.filter((h) => h.seat === seat).slice(0, 3);
           return (
-            <div key={seat} className="rounded-xl border border-border bg-surface/60 p-4">
+            <div
+              key={seat}
+              className="seat-rise rounded-xl border border-border bg-surface/80 p-4"
+              style={{ animationDelay: `${1100 + i * 160}ms` }}
+            >
               <p className="text-[10px] uppercase tracking-[0.2em] text-muted">
                 {t(SEAT_META[seat].kicker, lang)}
               </p>
@@ -78,6 +83,15 @@ function Arena() {
           );
         })}
       </section>
+
+      <div className="ink ink-6 mt-10 flex flex-wrap items-center gap-3">
+        <Button asChild size="lg">
+          <Link to="/play">{t(open ? UI.sit : UI.previewDesk, lang)}</Link>
+        </Button>
+        <Button asChild variant="outline" size="lg">
+          <Link to="/houses">{t(UI.houses, lang)}</Link>
+        </Button>
+      </div>
     </div>
   );
 }

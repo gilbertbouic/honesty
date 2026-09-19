@@ -20,7 +20,7 @@ export function HonestQr({ house, lang }: Props) {
       type: "svg",
       margin: 1,
       errorCorrectionLevel: "M",
-      color: { dark: "#0b100f", light: "#e8efe9" },
+      color: { dark: "#18241f", light: "#f7f3ea" },
     }).then((out) => {
       if (!cancelled) setSvg(out);
     });
@@ -30,8 +30,8 @@ export function HonestQr({ house, lang }: Props) {
   }, [payload]);
 
   return (
-    <aside className="mt-8 max-w-sm rounded-xl bg-foreground p-5 text-background">
-      <p className="text-[10px] uppercase tracking-[0.2em] text-background/55">
+    <aside className="notice mt-8 max-w-sm rounded-xl p-5">
+      <p className="text-[10px] uppercase tracking-[0.2em] text-muted">
         {t(UI.honestMark, lang)}
       </p>
       <p className="mt-2 font-display text-xl leading-snug">{HONEST_LINE}</p>
@@ -42,7 +42,7 @@ export function HonestQr({ house, lang }: Props) {
       <p className="mt-3 font-mono text-sm tabular-nums">
         {house.handle} · {house.points} HP
       </p>
-      <p className="mt-2 text-xs leading-relaxed text-background/60">{t(UI.honestHint, lang)}</p>
+      <p className="mt-2 text-xs leading-relaxed text-muted">{t(UI.honestHint, lang)}</p>
     </aside>
   );
 }

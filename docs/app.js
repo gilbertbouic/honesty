@@ -2,6 +2,10 @@ const UI = {
   product: { en: "Honesty League", fr: "Ligue de l’honnêteté" },
   tag: { en: "Same questions. Four seats. One public score.", fr: "Les mêmes questions. Quatre sièges. Un score public." },
   mkweli: { en: "A Mkweli product", fr: "Un produit Mkweli" },
+  daylight: { en: "Daylight is the point.", fr: "Le jour est le principe." },
+  silence: { en: "Silence is an Empty Chair.", fr: "Le silence est une chaise vide." },
+  stampClosed: { en: "Opens 25 Sep", fr: "Ouvre le 25 sept." },
+  stampOpen: { en: "Desk open", fr: "Pupitre ouvert" },
   disclaimer: {
     en: "Not an official government or United Nations service. Honesty Points are declared principle, not a finding of misconduct.",
     fr: "Ce n’est pas un service officiel de l’État ni des Nations Unies. Les points d’honnêteté sont un principe déclaré, non une constatation de faute.",
@@ -196,18 +200,18 @@ function glass(points, empty, compact) {
     : "";
   const win = (x) =>
     empty
-      ? `<g><rect x="${x}" y="48" width="12" height="14" fill="none" stroke="#b8d4c8" stroke-width="1"/><line x1="${x}" y1="48" x2="${x + 12}" y2="62" stroke="#8a9a92"/><line x1="${x + 12}" y1="48" x2="${x}" y2="62" stroke="#8a9a92"/></g>`
-      : `<rect x="${x}" y="48" width="12" height="14" fill="none" stroke="#b8d4c8" stroke-width="1" opacity="${0.45 + clear * 0.5}"/>`;
+      ? `<g><rect x="${x}" y="48" width="12" height="14" fill="none" stroke="#1c4a3c" stroke-width="1"/><line x1="${x}" y1="48" x2="${x + 12}" y2="62" stroke="#5a6b63"/><line x1="${x + 12}" y1="48" x2="${x}" y2="62" stroke="#5a6b63"/></g>`
+      : `<rect x="${x}" y="48" width="12" height="14" fill="none" stroke="#1c4a3c" stroke-width="1" opacity="${0.45 + clear * 0.5}"/>`;
   return `<svg viewBox="0 0 80 108" width="${w}" height="${w * 1.35}" aria-hidden="true">
     <defs><linearGradient id="${uid}" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0%" stop-color="#b8d4c8" stop-opacity="${0.2 + clear * 0.55}"/>
-      <stop offset="100%" stop-color="#b8d4c8" stop-opacity="${0.06 + clear * 0.25}"/>
+      <stop offset="0%" stop-color="#2d6a56" stop-opacity="${0.2 + clear * 0.55}"/>
+      <stop offset="100%" stop-color="#2d6a56" stop-opacity="${0.06 + clear * 0.25}"/>
     </linearGradient></defs>
-    <polygon points="8,40 40,10 72,40" fill="none" stroke="#d7e4dc" stroke-width="1.4"/>
-    <rect x="14" y="40" width="52" height="50" fill="url(#${uid})" stroke="#d7e4dc" stroke-width="1.4"/>
-    <rect x="14" y="40" width="52" height="50" fill="#d7e4dc" opacity="${frost * 0.72}"/>
+    <polygon points="8,40 40,10 72,40" fill="none" stroke="#1c4a3c" stroke-width="1.4"/>
+    <rect x="14" y="40" width="52" height="50" fill="url(#${uid})" stroke="#1c4a3c" stroke-width="1.4"/>
+    <rect x="14" y="40" width="52" height="50" fill="#ffffff" opacity="${frost * 0.72}"/>
     ${win(22)}${win(46)}
-    <rect x="36" y="70" width="8" height="20" fill="none" stroke="#d7e4dc" stroke-width="1.2"/>
+    <rect x="36" y="70" width="8" height="20" fill="none" stroke="#1c4a3c" stroke-width="1.2"/>
     ${boarded}
   </svg>`;
 }
@@ -258,34 +262,37 @@ function navHtml() {
 function pageArena() {
   const week = DATA.week;
   const open = deskOpen();
-  return `<section class="hero">
+  return `<p class="kicker ink ink-1">${t(UI.daylight)}</p>
+    <p class="lede ink ink-2">${t(UI.silence)}</p>
+    <section class="hero">
     <div>
-      <p class="kicker">${t(open ? UI.weekLive : UI.weekOpens)}</p>
-      <h1>${t(week.headline)}</h1>
-      <p class="muted">${t(UI.tag)}</p>
-      ${open ? "" : `<p class="muted" style="margin-top:1rem">${t(UI.rehearsal)}</p>`}
-      <div class="row">
-        <a class="btn" href="#/play">${t(open ? UI.sit : UI.previewDesk)}</a>
-        <a class="btn ghost" href="#/houses">${t(UI.houses)}</a>
-      </div>
+      <p class="kicker ink ink-2">${t(open ? UI.weekLive : UI.weekOpens)}</p>
+      <h1 class="ink ink-3">${t(week.headline)}</h1>
+      <p class="muted ink ink-4">${t(UI.tag)}</p>
+      ${open ? "" : `<p class="muted ink ink-4" style="margin-top:1rem">${t(UI.rehearsal)}</p>`}
     </div>
-    <div class="card">
+    <div class="notice ink ink-5">
+      <span class="stamp">${t(open ? UI.stampOpen : UI.stampClosed)}</span>
       <p class="kicker">${t(open ? UI.closes : UI.opens)}</p>
       ${countdownHtml()}
       <p class="muted" style="margin-top:1rem;font-size:.75rem">${open ? "Friday 16:00 · Mauritius" : "Friday 25 September · 09:00 Mauritius"}</p>
     </div>
   </section>
   <section class="seats">
-    ${SEATS.map((seat) => {
+    ${SEATS.map((seat, i) => {
       const meta = seatMeta(seat);
       const houses = DATA.houses.filter((h) => h.seat === seat).slice(0, 3);
-      return `<div class="card">
+      return `<div class="card seat-rise" style="animation-delay:${1100 + i * 160}ms">
         <p class="kicker">${t(meta.who)}</p>
         <h2>${t(meta.title)}</h2>
         <div class="houses">${houses.map((h) => `<a href="#/houses/${h.id}">${glass(h.points, h.emptyChair, true)}</a>`).join("")}</div>
       </div>`;
     }).join("")}
-  </section>`;
+  </section>
+  <div class="row ink ink-6">
+    <a class="btn" href="#/play">${t(open ? UI.sit : UI.previewDesk)}</a>
+    <a class="btn ghost" href="#/houses">${t(UI.houses)}</a>
+  </div>`;
 }
 
 function pagePlay() {
@@ -497,7 +504,7 @@ function paint() {
     const house = field().find((h) => h.id === parts[1]);
     if (house) {
       const payload = [HONEST_LINE, house.handle, `${house.points} HP · Honesty League`, "mkweli.tech"].join("\n");
-      window.QRCode.toCanvas(qr, payload, { width: 160, margin: 1, color: { dark: "#0b100f", light: "#e8efe9" } });
+      window.QRCode.toCanvas(qr, payload, { width: 160, margin: 1, color: { dark: "#18241f", light: "#f7f3ea" } });
     }
   }
 }

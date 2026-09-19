@@ -28,6 +28,10 @@ export const UI = {
     en: "Same questions. Four seats. One public score.",
     fr: "Les mêmes questions. Quatre sièges. Un score public.",
   },
+  daylight: { en: "Daylight is the point.", fr: "Le jour est le principe." },
+  silence: { en: "Silence is an Empty Chair.", fr: "Le silence est une chaise vide." },
+  stampClosed: { en: "Opens 25 Sep", fr: "Ouvre le 25 sept." },
+  stampOpen: { en: "Desk open", fr: "Pupitre ouvert" },
   mkweli: { en: "A Mkweli product", fr: "Un produit Mkweli" },
   disclaimer: {
     en: "Not an official government or United Nations service. Honesty Points are declared principle, not a finding of misconduct.",

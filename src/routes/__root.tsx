@@ -17,7 +17,7 @@ export const Route = createRootRoute({
         content:
           "A Mkweli civic game. Citizens, civil servants, elected officials and UN staff answer the same dilemmas and score Honesty Points.",
       },
-      { name: "theme-color", content: "#0b100f" },
+      { name: "theme-color", content: "#e7eee8" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },

@@ -73,7 +73,109 @@
 
 .square {
   --beat: 1;
+  --mx: 50%;
+  --my: 22%;
+  --mxn: 0.5;
+  --myn: 0.22;
   position: relative;
+}
+
+.daylight {
+  pointer-events: none;
+  position: absolute;
+  inset: -6rem;
+  z-index: 0;
+  background: radial-gradient(
+    460px circle at var(--mx) var(--my),
+    rgba(255, 255, 255, 0.58),
+    transparent 58%
+  );
+  opacity: 0.85;
+  transition: opacity 400ms var(--ease-out);
+}
+
+.square > *:not(.daylight):not(.veil) {
+  position: relative;
+  z-index: 1;
+}
+
+.live-headline {
+  transform: translate3d(calc((var(--mxn) - 0.5) * 18px), calc((var(--myn) - 0.5) * 8px), 0);
+  transition: transform 500ms var(--ease-smooth-out);
+}
+
+.live-card {
+  position: relative;
+  transform: perspective(740px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(0);
+  transform-style: preserve-3d;
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+  will-change: transform;
+}
+
+.live-card:hover {
+  box-shadow: 10px 20px 44px rgba(24, 36, 31, 0.12);
+  transform: perspective(740px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-8px);
+}
+
+.live-card::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    160px circle at var(--hx, 50%) var(--hy, 20%),
+    rgba(255, 255, 255, 0.55),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 180ms var(--ease-out);
+}
+
+.live-card:hover::after {
+  opacity: 1;
+}
+
+.live-house {
+  display: block;
+  transform-origin: 50% 100%;
+  transition: transform 220ms var(--ease-out);
+}
+
+.live-house:hover {
+  transform: translateY(-12px) scale(1.08);
+}
+
+.glass-gleam {
+  opacity: 0;
+}
+
+.live-house:hover .glass-gleam {
+  animation: gleam 720ms var(--ease-out);
+}
+
+.live-house:hover .frost-pane {
+  opacity: calc(var(--frost-to, 0.5) * 0.38);
+  transition: opacity 280ms var(--ease-out);
+}
+
+.live-notice {
+  transform: perspective(640px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 180ms var(--ease-out);
+}
+
+@keyframes gleam {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  35% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(54px);
+  }
 }
 
 .square[data-story="seen"] {
@@ -246,7 +348,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .veil {
+  .veil,
+  .daylight {
     display: none;
   }
 
@@ -255,11 +358,15 @@
   .stamp,
   .frost-thaw,
   .desk-sheet,
-  .choice-in {
+  .choice-in,
+  .live-card,
+  .live-house,
+  .live-headline,
+  .live-notice {
     animation: none !important;
     opacity: 1;
     filter: none;
-    transform: none;
+    transform: none !important;
   }
 
   .notice {

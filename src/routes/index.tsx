@@ -9,6 +9,7 @@ import { HOUSES } from "@/data/houses";
 import type { Seat } from "@/data/types";
 import { deskIsOpen } from "@/lib/clock";
 import { t } from "@/lib/i18n";
+import { tiltCard, untiltCard, usePointerField } from "@/lib/pointer";
 import { useLeague } from "@/lib/store";
 import { useStory } from "@/lib/story";
 
@@ -20,6 +21,7 @@ function Arena() {
   const lang = useLeague((s) => s.lang);
   const [open, setOpen] = useState(false);
   const play = useStory("square", 3600);
+  const field = usePointerField<HTMLDivElement>();
 
   useEffect(() => {
     const tick = () => setOpen(deskIsOpen());
@@ -29,7 +31,8 @@ function Arena() {
   }, []);
 
   return (
-    <div className="square" data-story={play ? "live" : "seen"}>
+    <div ref={field} className="square" data-story={play ? "live" : "seen"}>
+      <div className="daylight" aria-hidden="true" />
       {play ? <div className="veil" aria-hidden="true" /> : null}
 
       <p className="ink ink-1 text-xs uppercase tracking-[0.28em] text-muted">{t(UI.actSquare, lang)}</p>
@@ -43,7 +46,7 @@ function Arena() {
           <p className="ink ink-3 text-xs uppercase tracking-[0.22em] text-muted">
             {t(open ? UI.weekLive : UI.weekOpens, lang)}
           </p>
-          <h1 className="ink ink-3 mt-3 max-w-3xl font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
+          <h1 className="live-headline ink ink-3 mt-3 max-w-3xl font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
             {t(LIVE_DILEMMA.headline, lang)}
           </h1>
           <p className="ink ink-4 mt-5 max-w-xl text-lg text-muted">{t(UI.tag, lang)}</p>
@@ -53,6 +56,11 @@ function Arena() {
         </div>
 
         <aside className="ink ink-5 notice relative rounded-xl p-5">
+          <div
+            className="live-notice"
+            onPointerMove={tiltCard}
+            onPointerLeave={untiltCard}
+          >
           <span className="stamp absolute -right-2 -top-3">{t(open ? UI.stampOpen : UI.stampClosed, lang)}</span>
           <p className="text-xs uppercase tracking-[0.18em] text-muted">
             {t(open ? UI.closes : UI.opens, lang)}
@@ -61,6 +69,7 @@ function Arena() {
           <p className="mt-4 text-xs text-muted">
             {open ? "Friday 16:00 · Mauritius" : "Friday 25 September · 09:00 Mauritius"}
           </p>
+          </div>
         </aside>
       </section>
 
@@ -70,16 +79,26 @@ function Arena() {
           return (
             <div
               key={seat}
-              className="seat-rise rounded-xl border border-border bg-surface/80 p-4"
+              className="seat-rise"
               style={{ animationDelay: `calc(var(--beat) * ${2200 + i * 160}ms)` }}
             >
+              <div
+                className="live-card rounded-xl border border-border bg-surface/80 p-4"
+                onPointerMove={tiltCard}
+                onPointerLeave={untiltCard}
+              >
               <p className="text-[10px] uppercase tracking-[0.2em] text-muted">
                 {t(SEAT_META[seat].kicker, lang)}
               </p>
               <h2 className="mt-1 font-display text-xl">{t(SEAT_META[seat].title, lang)}</h2>
               <div className="mt-4 flex items-end gap-1">
                 {houses.map((h, hi) => (
-                  <Link key={h.id} to="/houses/$id" params={{ id: h.id }} className="block">
+                  <Link
+                    key={h.id}
+                    to="/houses/$id"
+                    params={{ id: h.id }}
+                    className="live-house block"
+                  >
                     <GlassHouse
                       points={h.points}
                       emptyChair={h.emptyChair}
@@ -89,6 +108,7 @@ function Arena() {
                     />
                   </Link>
                 ))}
+              </div>
               </div>
             </div>
           );

@@ -269,8 +269,8 @@ function glass(points, empty, compact, thawDelay) {
     </linearGradient></defs>
     <polygon points="8,40 40,10 72,40" fill="none" stroke="#1c4a3c" stroke-width="1.4"/>
     <rect x="14" y="40" width="52" height="50" fill="url(#${uid})" stroke="#1c4a3c" stroke-width="1.4"/>
-    <rect x="14" y="40" width="52" height="50" fill="#ffffff" class="${thawDelay != null ? "frost-thaw" : ""}" style="--frost-to:${frost * 0.72};animation-delay:${thawDelay || 0}"/>
-    ${win(22)}${win(46)}
+    <rect x="14" y="40" width="52" height="50" fill="#ffffff" class="frost-pane${thawDelay != null ? " frost-thaw" : ""}" style="--frost-to:${frost * 0.72};animation-delay:${thawDelay || 0}"/>
+    <rect class="glass-gleam" x="10" y="38" width="16" height="56" fill="white" opacity="0"/>
     <rect x="36" y="70" width="8" height="20" fill="none" stroke="#1c4a3c" stroke-width="1.2"/>
     ${boarded}
   </svg>`;
@@ -326,37 +326,41 @@ function pageArena() {
   if (play) markStory("square", 3600);
   return `${play ? `<div class="veil" aria-hidden="true"></div>` : ""}
     <div class="square" data-story="${play ? "live" : "seen"}">
+    <div class="daylight" aria-hidden="true"></div>
     <p class="kicker ink ink-1">${t(UI.actSquare)}</p>
     <p class="kicker ink ink-1" style="margin-top:.5rem">${t(UI.daylight)}</p>
     <p class="lede ink ink-2">${t(UI.silence)}</p>
     <section class="hero">
     <div>
       <p class="kicker ink ink-3">${t(open ? UI.weekLive : UI.weekOpens)}</p>
-      <h1 class="ink ink-3">${t(week.headline)}</h1>
+      <h1 class="live-headline ink ink-3">${t(week.headline)}</h1>
       <p class="muted ink ink-4">${t(UI.tag)}</p>
       ${open ? "" : `<p class="muted ink ink-4" style="margin-top:1rem">${t(UI.rehearsal)}</p>`}
     </div>
     <div class="notice ink ink-5">
+      <div class="live-notice">
       <span class="stamp">${t(open ? UI.stampOpen : UI.stampClosed)}</span>
       <p class="kicker">${t(open ? UI.closes : UI.opens)}</p>
       ${countdownHtml()}
       <p class="muted" style="margin-top:1rem;font-size:.75rem">${open ? "Friday 16:00 · Mauritius" : "Friday 25 September · 09:00 Mauritius"}</p>
+      </div>
     </div>
   </section>
   <section class="seats">
     ${SEATS.map((seat, i) => {
       const meta = seatMeta(seat);
       const houses = DATA.houses.filter((h) => h.seat === seat).slice(0, 3);
-      return `<div class="card seat-rise" style="animation-delay:calc(var(--beat) * ${2200 + i * 160}ms)">
+      return `<div class="seat-rise" style="animation-delay:calc(var(--beat) * ${2200 + i * 160}ms)">
+        <div class="card live-card">
         <p class="kicker">${t(meta.who)}</p>
         <h2>${t(meta.title)}</h2>
         <div class="houses">${houses
           .map(
             (h, hi) =>
-              `<a href="#/houses/${h.id}">${glass(h.points, h.emptyChair, true, `calc(var(--beat) * ${2680 + i * 160 + hi * 90}ms)`)}</a>`,
+              `<a class="live-house" href="#/houses/${h.id}">${glass(h.points, h.emptyChair, true, `calc(var(--beat) * ${2680 + i * 160 + hi * 90}ms)`)}</a>`,
           )
           .join("")}</div>
-      </div>`;
+      </div></div>`;
     }).join("")}
   </section>
   <div class="row ink ink-6">
@@ -568,6 +572,7 @@ function paint() {
   });
   document.getElementById("app").innerHTML = renderPage();
   bind();
+  bindPointer();
   const qr = document.getElementById("qr");
   if (qr && window.QRCode) {
     const { parts } = route();
@@ -577,6 +582,44 @@ function paint() {
       window.QRCode.toCanvas(qr, payload, { width: 160, margin: 1, color: { dark: "#18241f", light: "#f7f3ea" } });
     }
   }
+}
+
+function bindPointer() {
+  const el = document.querySelector(".square");
+  if (!el) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  el.classList.add("pointer-on");
+  el.onpointermove = (e) => {
+    const r = el.getBoundingClientRect();
+    const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+    const y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+    el.style.setProperty("--mx", `${(x * 100).toFixed(2)}%`);
+    el.style.setProperty("--my", `${(y * 100).toFixed(2)}%`);
+    el.style.setProperty("--mxn", x.toFixed(3));
+    el.style.setProperty("--myn", y.toFixed(3));
+  };
+  el.onpointerleave = () => {
+    el.style.setProperty("--mx", "50%");
+    el.style.setProperty("--my", "22%");
+    el.style.setProperty("--mxn", "0.5");
+    el.style.setProperty("--myn", "0.22");
+  };
+  el.querySelectorAll(".live-card, .live-notice").forEach((card) => {
+    card.onpointermove = (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.setProperty("--rx", `${(-y * 9).toFixed(2)}deg`);
+      card.style.setProperty("--ry", `${(x * 11).toFixed(2)}deg`);
+      card.style.setProperty("--hx", `${((x + 0.5) * 100).toFixed(1)}%`);
+      card.style.setProperty("--hy", `${((y + 0.5) * 100).toFixed(1)}%`);
+    };
+    card.onpointerleave = () => {
+      card.style.setProperty("--rx", "0deg");
+      card.style.setProperty("--ry", "0deg");
+    };
+  });
 }
 
 function bind() {

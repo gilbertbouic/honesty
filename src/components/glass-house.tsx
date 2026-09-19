@@ -31,6 +31,11 @@ export function GlassHouse({ points, emptyChair, compact, className, thaw, thawD
           <stop offset="0%" stopColor="var(--color-glass)" stopOpacity={0.2 + clear * 0.55} />
           <stop offset="100%" stopColor="var(--color-glass)" stopOpacity={0.06 + clear * 0.25} />
         </linearGradient>
+        <linearGradient id={`${uid}-gleam`} x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%" stopColor="white" stopOpacity="0" />
+          <stop offset="45%" stopColor="white" stopOpacity="0.7" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </linearGradient>
       </defs>
       <polygon
         points="8,40 40,10 72,40"
@@ -53,7 +58,7 @@ export function GlassHouse({ points, emptyChair, compact, className, thaw, thawD
         width="52"
         height="50"
         fill="var(--color-fog)"
-        className={thaw ? "frost-thaw" : undefined}
+        className={cn("frost-pane", thaw && "frost-thaw")}
         style={{
           opacity: thaw ? undefined : frostTo,
           ["--frost-to" as string]: frostTo,
@@ -62,6 +67,15 @@ export function GlassHouse({ points, emptyChair, compact, className, thaw, thawD
       />
       <Window x={22} y={48} boarded={emptyChair} frost={frost} />
       <Window x={46} y={48} boarded={emptyChair} frost={frost} />
+      <rect
+        className="glass-gleam"
+        x="10"
+        y="38"
+        width="16"
+        height="56"
+        fill={`url(#${uid}-gleam)`}
+        pointerEvents="none"
+      />
       <rect
         x="36"
         y="70"

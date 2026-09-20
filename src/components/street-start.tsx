@@ -10,11 +10,12 @@ type StreetStartProps = {
 export function StreetStart({ onEnter }: StreetStartProps) {
   const lang = useLeague((s) => s.lang);
   const [open, setOpen] = useState(false);
+  const [lamp, setLamp] = useState(false);
 
   return (
     <div className="cinema">
       <div className="cinema-stage">
-        <div className="cinema-frame" data-lamp={open ? "on" : "off"}>
+        <div className="cinema-frame" data-lamp={lamp ? "on" : "off"}>
           <img
             className="cinema-plate"
             src="/brand/street-16x9.jpg"
@@ -30,28 +31,30 @@ export function StreetStart({ onEnter }: StreetStartProps) {
           </button>
 
           <div className="cinema-lamp-glow" aria-hidden="true" />
+          <button
+            type="button"
+            className="cinema-lamp"
+            aria-label={t(UI.streetKicker, lang)}
+            onPointerEnter={() => setLamp(true)}
+            onPointerLeave={() => setLamp(false)}
+          />
 
-          <div
-            className="cinema-alley"
+          <button
+            type="button"
+            className="cinema-dog"
+            aria-label={t(UI.enter, lang)}
             onPointerEnter={() => setOpen(true)}
             onPointerLeave={() => setOpen(false)}
+            onClick={onEnter}
           >
-            <button
-              type="button"
-              className={open ? "cinema-enter is-out" : "cinema-enter"}
-              aria-label={t(UI.enter, lang)}
-              onClick={onEnter}
-            >
+            <span className={open ? "cinema-enter is-out" : "cinema-enter"}>
               <span className="cinema-enter-plate">{t(UI.enter, lang)}</span>
-            </button>
-          </div>
+            </span>
+          </button>
         </div>
       </div>
 
-      <aside className="cinema-card">
-        <p className="cinema-kicker">{t(UI.streetKicker, lang)}</p>
-        <p>{t(UI.streetHint, lang)}</p>
-      </aside>
+      <p className="cinema-caption">{t(UI.streetHint, lang)}</p>
     </div>
   );
 }

@@ -56,8 +56,8 @@ export const UI = {
   enter: { en: "Enter", fr: "Entrer" },
   streetKicker: { en: "Honesty street", fr: "Honesty street" },
   streetHint: {
-    en: "Hover the mouse over the image until you find the enter button.",
-    fr: "Passez la souris sur l’image jusqu’à trouver le bouton Entrer.",
+    en: "Honesty street - Hover the mouse over the image until you find the enter button.",
+    fr: "Honesty street — Passez la souris sur l’image jusqu’à trouver le bouton Entrer.",
   },
   arena: { en: "Home", fr: "Accueil" },
   play: { en: "Answer", fr: "Répondre" },

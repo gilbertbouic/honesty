@@ -17,8 +17,8 @@ const UI = {
   enter: { en: "Enter", fr: "Entrer" },
   streetKicker: { en: "Honesty street", fr: "Honesty street" },
   streetHint: {
-    en: "Hover the mouse over the image until you find the enter button.",
-    fr: "Passez la souris sur l’image jusqu’à trouver le bouton Entrer.",
+    en: "Honesty street - Hover the mouse over the image until you find the enter button.",
+    fr: "Honesty street — Passez la souris sur l’image jusqu’à trouver le bouton Entrer.",
   },
   arena: { en: "Home", fr: "Accueil" },
   play: { en: "Answer", fr: "Répondre" },
@@ -359,17 +359,15 @@ function pageStreet() {
         <button type="button" class="cinema-roof cinema-roof-l">Honesty</button>
         <button type="button" class="cinema-roof cinema-roof-r">League</button>
         <div class="cinema-lamp-glow" aria-hidden="true"></div>
-        <div class="cinema-alley" id="street-alley">
-          <button type="button" class="cinema-enter" id="street-enter" aria-label="${t(UI.enter)}">
+        <button type="button" class="cinema-lamp" id="street-lamp"></button>
+        <button type="button" class="cinema-dog" id="street-dog" aria-label="${t(UI.enter)}">
+          <span class="cinema-enter" id="street-enter">
             <span class="cinema-enter-plate">${t(UI.enter)}</span>
-          </button>
-        </div>
+          </span>
+        </button>
       </div>
     </div>
-    <aside class="cinema-card">
-      <p class="cinema-kicker">${t(UI.streetKicker)}</p>
-      <p>${t(UI.streetHint)}</p>
-    </aside>
+    <p class="cinema-caption">${t(UI.streetHint)}</p>
   </div>`;
 }
 
@@ -718,25 +716,28 @@ function bind() {
   const enter = document.getElementById("street-enter");
   if (enter) {
     const frame = document.getElementById("street-frame");
-    const alley = document.getElementById("street-alley");
-    if (alley) {
-      alley.onpointerenter = () => {
-        enter.classList.add("is-out");
-        if (frame) frame.dataset.lamp = "on";
-      };
-      alley.onpointerleave = () => {
-        enter.classList.remove("is-out");
-        if (frame) frame.dataset.lamp = "off";
+    const dog = document.getElementById("street-dog");
+    const lamp = document.getElementById("street-lamp");
+    if (dog) {
+      dog.onpointerenter = () => enter.classList.add("is-out");
+      dog.onpointerleave = () => enter.classList.remove("is-out");
+      dog.onclick = () => {
+        try {
+          sessionStorage.setItem("honesty-street-v2", "1");
+        } catch {
+          /* ignore */
+        }
+        paint();
       };
     }
-    enter.onclick = () => {
-      try {
-        sessionStorage.setItem("honesty-street-v2", "1");
-      } catch {
-        /* ignore */
-      }
-      paint();
-    };
+    if (lamp && frame) {
+      lamp.onpointerenter = () => {
+        frame.dataset.lamp = "on";
+      };
+      lamp.onpointerleave = () => {
+        frame.dataset.lamp = "off";
+      };
+    }
   }
   document.querySelectorAll("[data-seat]").forEach((btn) => {
     btn.onclick = () => {

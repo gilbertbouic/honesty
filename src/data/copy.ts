@@ -55,22 +55,18 @@ export const UI = {
   sit: { en: "Give your answer", fr: "Donnez votre réponse" },
   enter: { en: "Enter", fr: "Entrer" },
   streetKicker: { en: "The street", fr: "La rue" },
-  streetLead: { en: "Move over a window.", fr: "Passez sur une fenêtre." },
-  streetFrost: {
-    en: "Clear glass turns white. That is frost — silence on the house.",
-    fr: "Le verre clair devient blanc. C’est le givre — le silence sur la maison.",
-  },
   streetDoor: {
     en: "The hut under the lantern is the way in. Hover it. Click Enter.",
     fr: "La cabane sous la lanterne est l’entrée. Passez dessus. Cliquez sur Entrer.",
   },
-  streetStatus: { en: "Six windows. One hut.", fr: "Six fenêtres. Une cabane." },
-  streetHover: { en: "Window is frost.", fr: "La fenêtre est givrée." },
+  streetStatus: {
+    en: "The hut under the light is the way in.",
+    fr: "La cabane sous la lumière est l’entrée.",
+  },
   streetReady: {
     en: "The plate is out. Click Enter to go in.",
     fr: "La plaque est sortie. Cliquez sur Entrer.",
   },
-  streetSky: { en: "The sky moves.", fr: "Le ciel bouge." },
   streetLamp: { en: "The light grows.", fr: "La lumière grandit." },
   arena: { en: "Home", fr: "Accueil" },
   play: { en: "Answer", fr: "Répondre" },

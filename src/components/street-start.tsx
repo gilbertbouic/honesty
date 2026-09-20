@@ -9,14 +9,12 @@ type StreetStartProps = {
 
 export function StreetStart({ onEnter }: StreetStartProps) {
   const lang = useLeague((s) => s.lang);
-  const [status, setStatus] = useState(t(UI.streetStatus, lang));
   const [open, setOpen] = useState(false);
-  const [lamp, setLamp] = useState(false);
 
   return (
     <div className="cinema">
       <div className="cinema-stage">
-        <div className="cinema-frame" data-lamp={lamp ? "on" : "off"}>
+        <div className="cinema-frame" data-lamp={open ? "on" : "off"}>
           <img
             className="cinema-plate"
             src="/brand/street-16x9.jpg"
@@ -32,32 +30,16 @@ export function StreetStart({ onEnter }: StreetStartProps) {
           </button>
 
           <div className="cinema-lamp-glow" aria-hidden="true" />
-          <button
-            type="button"
-            className="cinema-lamp"
-            aria-label={t(UI.streetLamp, lang)}
-            onPointerEnter={() => {
-              setLamp(true);
-              setStatus(t(UI.streetLamp, lang));
-            }}
-            onPointerLeave={() => setLamp(false)}
-          />
 
           <div
-            className="cinema-hut"
-            onPointerEnter={() => {
-              setOpen(true);
-              setLamp(true);
-              setStatus(t(UI.streetReady, lang));
-            }}
-            onPointerLeave={() => {
-              setOpen(false);
-              setLamp(false);
-            }}
+            className="cinema-alley"
+            onPointerEnter={() => setOpen(true)}
+            onPointerLeave={() => setOpen(false)}
           >
             <button
               type="button"
               className={open ? "cinema-enter is-out" : "cinema-enter"}
+              aria-label={t(UI.enter, lang)}
               onClick={onEnter}
             >
               <span className="cinema-enter-plate">{t(UI.enter, lang)}</span>
@@ -66,7 +48,10 @@ export function StreetStart({ onEnter }: StreetStartProps) {
         </div>
       </div>
 
-      <p className="cinema-caption">{status}</p>
+      <aside className="cinema-card">
+        <p className="cinema-kicker">{t(UI.streetKicker, lang)}</p>
+        <p>{t(UI.streetHint, lang)}</p>
+      </aside>
     </div>
   );
 }

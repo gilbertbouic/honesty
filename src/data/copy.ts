@@ -54,20 +54,11 @@ export const UI = {
   },
   sit: { en: "Give your answer", fr: "Donnez votre réponse" },
   enter: { en: "Enter", fr: "Entrer" },
-  streetKicker: { en: "The street", fr: "La rue" },
-  streetDoor: {
-    en: "The hut under the lantern is the way in. Hover it. Click Enter.",
-    fr: "La cabane sous la lanterne est l’entrée. Passez dessus. Cliquez sur Entrer.",
+  streetKicker: { en: "Honesty street", fr: "Honesty street" },
+  streetHint: {
+    en: "Hover the mouse over the image until you find the enter button.",
+    fr: "Passez la souris sur l’image jusqu’à trouver le bouton Entrer.",
   },
-  streetStatus: {
-    en: "The hut under the light is the way in.",
-    fr: "La cabane sous la lumière est l’entrée.",
-  },
-  streetReady: {
-    en: "The plate is out. Click Enter to go in.",
-    fr: "La plaque est sortie. Cliquez sur Entrer.",
-  },
-  streetLamp: { en: "The light grows.", fr: "La lumière grandit." },
   arena: { en: "Home", fr: "Accueil" },
   play: { en: "Answer", fr: "Répondre" },
   reveal: { en: "Results", fr: "Résultats" },

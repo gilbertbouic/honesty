@@ -15,20 +15,11 @@ const UI = {
   },
   sit: { en: "Give your answer", fr: "Donnez votre réponse" },
   enter: { en: "Enter", fr: "Entrer" },
-  streetKicker: { en: "The street", fr: "La rue" },
-  streetDoor: {
-    en: "The hut under the lantern is the way in. Hover it. Click Enter.",
-    fr: "La cabane sous la lanterne est l’entrée. Passez dessus. Cliquez sur Entrer.",
+  streetKicker: { en: "Honesty street", fr: "Honesty street" },
+  streetHint: {
+    en: "Hover the mouse over the image until you find the enter button.",
+    fr: "Passez la souris sur l’image jusqu’à trouver le bouton Entrer.",
   },
-  streetStatus: {
-    en: "The hut under the light is the way in.",
-    fr: "La cabane sous la lumière est l’entrée.",
-  },
-  streetReady: {
-    en: "The plate is out. Click Enter to go in.",
-    fr: "La plaque est sortie. Cliquez sur Entrer.",
-  },
-  streetLamp: { en: "The light grows.", fr: "La lumière grandit." },
   arena: { en: "Home", fr: "Accueil" },
   play: { en: "Answer", fr: "Répondre" },
   reveal: { en: "Results", fr: "Résultats" },
@@ -368,15 +359,17 @@ function pageStreet() {
         <button type="button" class="cinema-roof cinema-roof-l">Honesty</button>
         <button type="button" class="cinema-roof cinema-roof-r">League</button>
         <div class="cinema-lamp-glow" aria-hidden="true"></div>
-        <button type="button" class="cinema-lamp" id="street-lamp" aria-label="${t(UI.streetLamp)}"></button>
-        <div class="cinema-hut" id="street-hut">
-          <button type="button" class="cinema-enter" id="street-enter">
+        <div class="cinema-alley" id="street-alley">
+          <button type="button" class="cinema-enter" id="street-enter" aria-label="${t(UI.enter)}">
             <span class="cinema-enter-plate">${t(UI.enter)}</span>
           </button>
         </div>
       </div>
     </div>
-    <p class="cinema-caption" id="street-status">${t(UI.streetStatus)}</p>
+    <aside class="cinema-card">
+      <p class="cinema-kicker">${t(UI.streetKicker)}</p>
+      <p>${t(UI.streetHint)}</p>
+    </aside>
   </div>`;
 }
 
@@ -725,30 +718,15 @@ function bind() {
   const enter = document.getElementById("street-enter");
   if (enter) {
     const frame = document.getElementById("street-frame");
-    const hut = document.getElementById("street-hut");
-    const lamp = document.getElementById("street-lamp");
-    const status = document.getElementById("street-status");
-    const setStatus = (copy) => {
-      if (status) status.textContent = t(copy);
-    };
-    if (hut) {
-      hut.onpointerenter = () => {
+    const alley = document.getElementById("street-alley");
+    if (alley) {
+      alley.onpointerenter = () => {
         enter.classList.add("is-out");
         if (frame) frame.dataset.lamp = "on";
-        setStatus(UI.streetReady);
       };
-      hut.onpointerleave = () => {
+      alley.onpointerleave = () => {
         enter.classList.remove("is-out");
         if (frame) frame.dataset.lamp = "off";
-      };
-    }
-    if (lamp && frame) {
-      lamp.onpointerenter = () => {
-        frame.dataset.lamp = "on";
-        setStatus(UI.streetLamp);
-      };
-      lamp.onpointerleave = () => {
-        frame.dataset.lamp = "off";
       };
     }
     enter.onclick = () => {

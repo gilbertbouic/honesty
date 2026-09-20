@@ -22,15 +22,17 @@ const UI = {
     fr: "Le verre clair devient blanc. C’est le givre — le silence sur la maison.",
   },
   streetDoor: {
-    en: "The door under the lantern is the way in. The plate pops out. You must click it.",
-    fr: "La porte sous la lanterne est l’entrée. La plaque sort. Vous devez cliquer.",
+    en: "The hut under the lantern is the way in. Hover it. Click Enter.",
+    fr: "La cabane sous la lanterne est l’entrée. Passez dessus. Cliquez sur Entrer.",
   },
-  streetStatus: { en: "Six windows. One door.", fr: "Six fenêtres. Une porte." },
+  streetStatus: { en: "Six windows. One hut.", fr: "Six fenêtres. Une cabane." },
   streetHover: { en: "Window is frost.", fr: "La fenêtre est givrée." },
   streetReady: {
     en: "The plate is out. Click Enter to go in.",
     fr: "La plaque est sortie. Cliquez sur Entrer.",
   },
+  streetSky: { en: "The sky moves.", fr: "Le ciel bouge." },
+  streetLamp: { en: "The light grows.", fr: "La lumière grandit." },
   arena: { en: "Home", fr: "Accueil" },
   play: { en: "Answer", fr: "Répondre" },
   reveal: { en: "Results", fr: "Résultats" },
@@ -356,7 +358,7 @@ function navHtml() {
 
 function streetIn() {
   try {
-    return sessionStorage.getItem("honesty-street-in") === "1";
+    return sessionStorage.getItem("honesty-street-v2") === "1";
   } catch {
     return false;
   }
@@ -364,38 +366,53 @@ function streetIn() {
 
 function pageStreet() {
   const windows = [
-    ["13.6%", "33.4%", "8.4%", "11.2%"],
-    ["26.8%", "33.4%", "8.6%", "11.2%"],
-    ["13.8%", "51.8%", "8.6%", "13.6%"],
-    ["54.6%", "35.8%", "8.4%", "11.0%"],
-    ["68.0%", "35.8%", "8.8%", "11.0%"],
-    ["54.6%", "52.6%", "8.4%", "13.2%"],
+    ["16.2%", "36.2%", "7.2%", "10.4%"],
+    ["29.0%", "36.2%", "7.2%", "10.4%"],
+    ["16.0%", "52.4%", "7.4%", "12.2%"],
+    ["55.2%", "37.6%", "7.4%", "10.6%"],
+    ["69.4%", "37.6%", "7.8%", "10.6%"],
+    ["55.2%", "53.2%", "7.4%", "12.0%"],
   ];
   return `<div class="cinema">
     <div class="cinema-stage">
-      <div class="cinema-frame">
-        <img class="cinema-plate" src="./brand/street-16x9.jpg" alt="${t(UI.streetKicker)}" />
-        <div class="cinema-grade" aria-hidden="true"></div>
+      <div class="cinema-frame" id="street-frame" data-sky="off" data-lamp="off">
+        <img class="cinema-plate" src="./brand/street-16x9.jpg" alt="${t(UI.streetKicker)}" draggable="false" />
+        <svg class="cinema-clouds" viewBox="0 0 1600 420" aria-hidden="true">
+          <g class="cloud-drift cloud-a">
+            <ellipse cx="180" cy="70" rx="140" ry="38" />
+            <ellipse cx="280" cy="82" rx="100" ry="32" />
+            <ellipse cx="90" cy="88" rx="80" ry="26" />
+          </g>
+          <g class="cloud-drift cloud-b">
+            <ellipse cx="720" cy="48" rx="160" ry="36" />
+            <ellipse cx="840" cy="62" rx="110" ry="28" />
+            <ellipse cx="640" cy="66" rx="90" ry="24" />
+          </g>
+          <g class="cloud-drift cloud-c">
+            <ellipse cx="1280" cy="80" rx="150" ry="40" />
+            <ellipse cx="1400" cy="92" rx="95" ry="30" />
+            <ellipse cx="1180" cy="96" rx="88" ry="26" />
+          </g>
+        </svg>
+        <button type="button" class="cinema-sky" id="street-sky" aria-label="${t(UI.streetSky)}"></button>
+        <button type="button" class="cinema-roof cinema-roof-l">Honesty</button>
+        <button type="button" class="cinema-roof cinema-roof-r">League</button>
         ${windows
           .map(
             ([l, t0, w, h]) =>
               `<button type="button" class="cinema-pane" style="left:${l};top:${t0};width:${w};height:${h}" data-frost></button>`,
           )
           .join("")}
-        <div class="cinema-pane cinema-enter-pane" style="left:27.6%;top:49.4%;width:9.2%;height:22.4%">
+        <div class="cinema-lamp-glow" aria-hidden="true"></div>
+        <button type="button" class="cinema-lamp" id="street-lamp" aria-label="${t(UI.streetLamp)}"></button>
+        <div class="cinema-hut" id="street-hut">
           <button type="button" class="cinema-enter" id="street-enter">
             <span class="cinema-enter-plate">${t(UI.enter)}</span>
           </button>
         </div>
       </div>
     </div>
-    <aside class="cinema-card">
-      <p class="cinema-kicker">${t(UI.streetKicker)}</p>
-      <h1>${t(UI.streetLead)}</h1>
-      <p>${t(UI.streetFrost)}</p>
-      <p>${t(UI.streetDoor)}</p>
-      <p class="cinema-status" id="street-status">${t(UI.streetStatus)}</p>
-    </aside>
+    <p class="cinema-caption" id="street-status">${t(UI.streetStatus)}</p>
   </div>`;
 }
 
@@ -743,23 +760,58 @@ function bindAir() {
 function bind() {
   const enter = document.getElementById("street-enter");
   if (enter) {
-    const pane = enter.closest(".cinema-enter-pane");
+    const frame = document.getElementById("street-frame");
+    const hut = document.getElementById("street-hut");
+    const sky = document.getElementById("street-sky");
+    const lamp = document.getElementById("street-lamp");
     const status = document.getElementById("street-status");
-    if (pane) {
-      pane.onpointerenter = () => {
+    const setStatus = (copy) => {
+      if (status) status.textContent = t(copy);
+    };
+    if (hut) {
+      hut.onpointerenter = () => {
         enter.classList.add("is-out");
-        if (status) status.textContent = t(UI.streetReady);
+        if (frame) frame.dataset.lamp = "on";
+        setStatus(UI.streetReady);
       };
-      pane.onpointerleave = () => enter.classList.remove("is-out");
+      hut.onpointerleave = () => {
+        enter.classList.remove("is-out");
+        if (frame) frame.dataset.lamp = "off";
+      };
+    }
+    if (sky && frame) {
+      sky.onpointerenter = () => {
+        frame.dataset.sky = "on";
+        setStatus(UI.streetSky);
+      };
+      sky.onpointermove = (e) => {
+        const r = sky.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width - 0.5) * 80;
+        const y = ((e.clientY - r.top) / r.height - 0.5) * 28;
+        frame.style.setProperty("--cloud-x", x.toFixed(1) + "px");
+        frame.style.setProperty("--cloud-y", y.toFixed(1) + "px");
+      };
+      sky.onpointerleave = () => {
+        frame.dataset.sky = "off";
+        frame.style.setProperty("--cloud-x", "0px");
+        frame.style.setProperty("--cloud-y", "0px");
+      };
+    }
+    if (lamp && frame) {
+      lamp.onpointerenter = () => {
+        frame.dataset.lamp = "on";
+        setStatus(UI.streetLamp);
+      };
+      lamp.onpointerleave = () => {
+        frame.dataset.lamp = "off";
+      };
     }
     document.querySelectorAll("[data-frost]").forEach((btn) => {
-      btn.onpointerenter = () => {
-        if (status) status.textContent = t(UI.streetHover);
-      };
+      btn.onpointerenter = () => setStatus(UI.streetHover);
     });
     enter.onclick = () => {
       try {
-        sessionStorage.setItem("honesty-street-in", "1");
+        sessionStorage.setItem("honesty-street-v2", "1");
       } catch {
         /* ignore */
       }

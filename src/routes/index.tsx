@@ -35,7 +35,7 @@ function Arena() {
 
   useEffect(() => {
     try {
-      if (sessionStorage.getItem("honesty-street-in") === "1") setShowStreet(false);
+      if (sessionStorage.getItem("honesty-street-v2") === "1") setShowStreet(false);
     } catch {
       /* ignore */
     }
@@ -53,7 +53,7 @@ function Arena() {
       <StreetStart
         onEnter={() => {
           try {
-            sessionStorage.setItem("honesty-street-in", "1");
+            sessionStorage.setItem("honesty-street-v2", "1");
           } catch {
             /* ignore */
           }

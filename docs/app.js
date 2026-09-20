@@ -84,6 +84,16 @@ const UI = {
     en: "Here is who answered, and who did not. Empty chairs stay on the page.",
     fr: "Voici qui a répondu, et qui n’a pas répondu. Les chaises vides restent sur la page.",
   },
+  lockSeat: { en: "Lock this seat", fr: "Verrouiller ce siège" },
+  sitSeat: { en: "Sit here", fr: "S’asseoir ici" },
+  sitHere: { en: "Sit here if this is you", fr: "Asseyez-vous si c’est vous" },
+  predict: { en: "Lock this in", fr: "Je verrouille" },
+  lockedIn: { en: "Locked in", fr: "Verrouillé" },
+  weekClock: { en: "Week clock", fr: "Horloge de la semaine" },
+  untilOpen: { en: "Until the desk opens", fr: "Avant l’ouverture" },
+  untilClose: { en: "Until answers close", fr: "Avant la fermeture" },
+  airLive: { en: "ON AIR", fr: "EN DIRECT" },
+  airWait: { en: "REHEARSAL", fr: "RÉPÉTITION" },
 };
 
 const BAND_META = {
@@ -112,6 +122,8 @@ const state = {
   answers: [],
   points: 0,
   choiceId: "",
+  lockedChoice: "",
+  lockedSeat: "",
   reason: "",
   filter: "all",
 };
@@ -293,10 +305,16 @@ function countdownHtml() {
   const h = Math.floor((left % 86400000) / 3600000);
   const m = Math.floor((left % 3600000) / 60000);
   const pad = (n) => String(n).padStart(2, "0");
+  const p = window.HonestyMotion ? Math.round(window.HonestyMotion.weekProgress() * 100) : 0;
+  const cap = deskOpen() ? t(UI.untilClose) : t(UI.untilOpen);
   return `<div class="clock" id="clock">
     <div><b>${pad(d)}</b><span>days</span></div>
     <div><b>${pad(h)}</b><span>hrs</span></div>
     <div><b>${pad(m)}</b><span>min</span></div>
+  </div>
+  <div class="score-meter" role="progressbar" aria-label="${t(UI.weekClock)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}">
+    <div class="score-meter-track"><div class="score-meter-fill"></div></div>
+    <p class="score-meter-cap"><span>${t(UI.weekClock)} · ${cap}</span><b class="mono score-meter-now">${p}%</b></p>
   </div>`;
 }
 
@@ -333,7 +351,7 @@ function pageArena() {
     <section class="hero">
     <div>
       <p class="kicker ink ink-3">${t(open ? UI.weekLive : UI.weekOpens)}</p>
-      <h1 class="live-headline ink ink-3">${t(week.headline)}</h1>
+      <h1 class="live-headline kinetic ink ink-3">${t(week.headline)}</h1>
       <p class="muted ink ink-4">${t(UI.tag)}</p>
       ${open ? "" : `<p class="muted ink ink-4" style="margin-top:1rem">${t(UI.rehearsal)}</p>`}
     </div>
@@ -351,16 +369,30 @@ function pageArena() {
       const meta = seatMeta(seat);
       const houses = DATA.houses.filter((h) => h.seat === seat).slice(0, 3);
       return `<div class="seat-rise" style="animation-delay:calc(var(--beat) * ${2200 + i * 160}ms)">
-        <div class="card live-card">
-        <p class="kicker">${t(meta.who)}</p>
-        <h2>${t(meta.title)}</h2>
-        <div class="houses">${houses
-          .map(
-            (h, hi) =>
-              `<a class="live-house" href="#/houses/${h.id}">${glass(h.points, h.emptyChair, true, `calc(var(--beat) * ${2680 + i * 160 + hi * 90}ms)`)}</a>`,
-          )
-          .join("")}</div>
-      </div></div>`;
+        <button type="button" class="seat-card${state.lockedSeat === seat ? " is-locked" : ""}" data-flip-seat="${seat}" aria-label="${t(meta.title)}">
+          <span class="seat-card-inner">
+            <span class="seat-face seat-front card">
+              <p class="kicker">${t(meta.who)}</p>
+              <h2>${t(meta.title)}</h2>
+              <div class="houses">${houses
+                .map(
+                  (h, hi) =>
+                    `<span class="live-house">${glass(h.points, h.emptyChair, true, `calc(var(--beat) * ${2680 + i * 160 + hi * 90}ms)`)}</span>`,
+                )
+                .join("")}</div>
+            </span>
+            <span class="seat-face seat-back card">
+              <p class="kicker">${t(UI.sitHere)}</p>
+              <h2>${t(meta.title)}</h2>
+              <p class="muted" style="margin-top:.5rem">${t(meta.who)}</p>
+              <span class="row" style="margin-top:1rem">
+                <span class="btn" data-sit-seat="${seat}">${t(UI.sitSeat)}</span>
+                <span class="btn ghost" data-lock-seat="${seat}" data-locked-label="${t(UI.lockedIn)}">${state.lockedSeat === seat ? t(UI.lockedIn) : t(UI.lockSeat)}</span>
+              </span>
+            </span>
+          </span>
+        </button>
+      </div>`;
     }).join("")}
   </section>
   <div class="row ink ink-6">
@@ -382,7 +414,7 @@ function pagePlay() {
   return `<div class="play-grid square" data-story="${play ? "live" : "seen"}">
     <div>
       <p class="kicker ink ink-1">${t(UI.actDesk)}</p>
-      <h1 class="ink ink-2">${t(week.headline)}</h1>
+      <h1 class="kinetic ink ink-2">${t(week.headline)}</h1>
       ${open ? "" : `<p class="muted ink ink-3" style="margin-top:1rem;max-width:36rem">${t(UI.deskLocked)}</p>`}
       <p class="kicker" style="margin-top:2rem">${t(UI.chooseSeat)}</p>
       <div class="seats" style="grid-template-columns:repeat(2,1fr);margin-top:.75rem">
@@ -415,7 +447,12 @@ function pagePlay() {
                 <textarea id="reason">${state.reason}</textarea>
                 <span class="muted" style="font-size:.75rem">${words} ${t(UI.words)}</span>
               </label>
-              <div class="row"><button type="button" class="btn" id="publish" ${open && state.choiceId ? "" : "disabled"}>${t(open ? UI.publicDesk : UI.weekOpens)}</button></div>
+              <div class="row">
+                <button type="button" class="btn predict" id="predict" ${state.choiceId ? "" : "disabled"} data-locked-label="${t(UI.lockedIn)}">
+                  <span class="predict-label">${state.lockedChoice === state.choiceId ? t(UI.lockedIn) : t(UI.predict)}</span>
+                </button>
+                <button type="button" class="btn ghost" id="publish" ${open && state.choiceId ? "" : "disabled"}>${t(open ? UI.publicDesk : UI.weekOpens)}</button>
+              </div>
               ${already ? `<p class="muted" style="margin-top:1rem">${t(UI.points)} this week: ${already.points}</p>` : ""}
             </section>`
           : ""
@@ -573,6 +610,8 @@ function paint() {
   document.getElementById("app").innerHTML = renderPage();
   bind();
   bindPointer();
+  bindAir();
+  if (window.HonestyMotion) window.HonestyMotion.boot(document.getElementById("app"));
   const qr = document.getElementById("qr");
   if (qr && window.QRCode) {
     const { parts } = route();
@@ -589,37 +628,53 @@ function bindPointer() {
   if (!el) return;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-  el.classList.add("pointer-on");
+  const light = el.querySelector(".daylight");
+  let x = 0.5;
+  let y = 0.22;
+  let raf = 0;
+  const flush = () => {
+    raf = 0;
+    if (light) {
+      light.style.setProperty("--mx", `${(x * 100).toFixed(1)}%`);
+      light.style.setProperty("--my", `${(y * 100).toFixed(1)}%`);
+    }
+  };
   el.onpointermove = (e) => {
     const r = el.getBoundingClientRect();
-    const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
-    const y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
-    el.style.setProperty("--mx", `${(x * 100).toFixed(2)}%`);
-    el.style.setProperty("--my", `${(y * 100).toFixed(2)}%`);
-    el.style.setProperty("--mxn", x.toFixed(3));
-    el.style.setProperty("--myn", y.toFixed(3));
+    x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+    y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+    if (!raf) raf = requestAnimationFrame(flush);
   };
   el.onpointerleave = () => {
-    el.style.setProperty("--mx", "50%");
-    el.style.setProperty("--my", "22%");
-    el.style.setProperty("--mxn", "0.5");
-    el.style.setProperty("--myn", "0.22");
+    x = 0.5;
+    y = 0.22;
+    if (!raf) raf = requestAnimationFrame(flush);
   };
-  el.querySelectorAll(".live-card, .live-notice").forEach((card) => {
+  el.querySelectorAll(".live-notice").forEach((card) => {
     card.onpointermove = (e) => {
       const r = card.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5;
-      const y = (e.clientY - r.top) / r.height - 0.5;
-      card.style.setProperty("--rx", `${(-y * 9).toFixed(2)}deg`);
-      card.style.setProperty("--ry", `${(x * 11).toFixed(2)}deg`);
-      card.style.setProperty("--hx", `${((x + 0.5) * 100).toFixed(1)}%`);
-      card.style.setProperty("--hy", `${((y + 0.5) * 100).toFixed(1)}%`);
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      card.style.setProperty("--rx", `${(-py * 9).toFixed(2)}deg`);
+      card.style.setProperty("--ry", `${(px * 11).toFixed(2)}deg`);
+      card.style.setProperty("--hx", `${((px + 0.5) * 100).toFixed(1)}%`);
+      card.style.setProperty("--hy", `${((py + 0.5) * 100).toFixed(1)}%`);
     };
     card.onpointerleave = () => {
       card.style.setProperty("--rx", "0deg");
       card.style.setProperty("--ry", "0deg");
     };
   });
+  window.setTimeout(() => document.querySelector(".veil")?.remove(), 1500);
+}
+
+function bindAir() {
+  const bar = document.getElementById("air-bar");
+  if (!bar) return;
+  const week = DATA.week;
+  const flag = deskOpen() ? t(UI.airLive) : t(UI.airWait);
+  const line = `${flag} · ${t(UI.product)} · ${t(week?.headline || { en: "", fr: "" })} · ${t(UI.daylight)} · ${flag} · `;
+  bar.innerHTML = `<div class="air-track"><span>${line}</span><span>${line}</span></div>`;
 }
 
 function bind() {
@@ -684,6 +739,25 @@ function bind() {
     };
   }
 }
+
+window.HonestyGo = go;
+window.HonestyClock = { opensAt, closesAt };
+window.HonestyPickSeat = function (seat) {
+  state.seat = seat;
+  state.circuitId = seat === "gallery" || seat === "chamber" ? seat : null;
+  saveLocal();
+  go("/play");
+};
+window.HonestyLockSeat = function (seat) {
+  state.seat = seat;
+  state.lockedSeat = seat;
+  state.circuitId = seat === "gallery" || seat === "chamber" ? seat : null;
+  saveLocal();
+};
+window.HonestyLock = function () {
+  state.lockedChoice = state.choiceId;
+  saveLocal();
+};
 
 document.getElementById("lang-btn").onclick = () => {
   state.lang = state.lang === "en" ? "fr" : "en";

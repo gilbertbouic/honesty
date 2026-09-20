@@ -9,6 +9,16 @@
       content="A Mkweli civic game. Citizens, civil servants, elected officials and UN staff answer the same dilemmas in public and score Honesty Points."
     />
     <meta name="theme-color" content="#e7eee8" />
+    <link rel="canonical" href="https://honesty.mkweli.tech/" />
+    <meta property="og:title" content="Honesty League" />
+    <meta property="og:description" content="Same questions for everyone. One public score." />
+    <meta property="og:type" content="x:game" />
+    <meta property="og:url" content="https://honesty.mkweli.tech/" />
+    <meta property="og:image" content="https://honesty.mkweli.tech/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://honesty.mkweli.tech/og.jpg" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,12 +41,15 @@
       </div>
       <nav class="nav mobile" data-nav></nav>
     </header>
+    <div class="air-bar" id="air-bar" aria-hidden="true"></div>
     <main id="app" class="wrap"></main>
     <footer class="foot">
       <a href="https://mkweli.tech" data-i18n="mkweli">A Mkweli product</a>
       <p data-i18n="disclaimer"></p>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+    <script src="./motion.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>

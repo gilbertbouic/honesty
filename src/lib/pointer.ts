@@ -1,5 +1,11 @@
 import { useEffect, useRef, type PointerEvent } from "react";
 
+const FINE = "(hover: hover) and (pointer: fine)";
+
+function finePointer() {
+  return window.matchMedia(FINE).matches;
+}
+
 export function usePointerField<T extends HTMLElement>() {
   const ref = useRef<T>(null);
 
@@ -7,25 +13,38 @@ export function usePointerField<T extends HTMLElement>() {
     const el = ref.current;
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    if (!finePointer()) return;
 
     el.classList.add("pointer-on");
+    const light = el.querySelector<HTMLElement>(".daylight");
+    const headline = el.querySelector<HTMLElement>(".live-headline");
 
-    const move = (e: PointerEvent) => {
+    let x = 0.5;
+    let y = 0.22;
+    let raf = 0;
+
+    const flush = () => {
+      raf = 0;
+      if (light) {
+        light.style.setProperty("--mx", `${(x * 100).toFixed(1)}%`);
+        light.style.setProperty("--my", `${(y * 100).toFixed(1)}%`);
+      }
+      if (headline) {
+        headline.style.transform = `translate3d(${((x - 0.5) * 18).toFixed(1)}px, ${((y - 0.5) * 8).toFixed(1)}px, 0)`;
+      }
+    };
+
+    const move = (e: globalThis.PointerEvent) => {
       const r = el.getBoundingClientRect();
-      const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
-      const y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
-      el.style.setProperty("--mx", `${(x * 100).toFixed(2)}%`);
-      el.style.setProperty("--my", `${(y * 100).toFixed(2)}%`);
-      el.style.setProperty("--mxn", x.toFixed(3));
-      el.style.setProperty("--myn", y.toFixed(3));
+      x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+      if (!raf) raf = window.requestAnimationFrame(flush);
     };
 
     const leave = () => {
-      el.style.setProperty("--mx", "50%");
-      el.style.setProperty("--my", "22%");
-      el.style.setProperty("--mxn", "0.5");
-      el.style.setProperty("--myn", "0.22");
+      x = 0.5;
+      y = 0.22;
+      if (!raf) raf = window.requestAnimationFrame(flush);
     };
 
     el.addEventListener("pointermove", move);
@@ -33,6 +52,7 @@ export function usePointerField<T extends HTMLElement>() {
     return () => {
       el.removeEventListener("pointermove", move);
       el.removeEventListener("pointerleave", leave);
+      if (raf) window.cancelAnimationFrame(raf);
     };
   }, []);
 
@@ -40,7 +60,7 @@ export function usePointerField<T extends HTMLElement>() {
 }
 
 export function tiltCard(e: PointerEvent<HTMLElement>) {
-  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  if (!finePointer()) return;
   const el = e.currentTarget;
   const r = el.getBoundingClientRect();
   const x = (e.clientX - r.left) / r.width - 0.5;

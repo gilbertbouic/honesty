@@ -14,6 +14,23 @@ const UI = {
     fr: "Ce n’est pas le gouvernement. Ce n’est pas l’ONU. Les points montrent ce que vous avez dit. Ce n’est pas un procès.",
   },
   sit: { en: "Give your answer", fr: "Donnez votre réponse" },
+  enter: { en: "Enter", fr: "Entrer" },
+  streetKicker: { en: "The street", fr: "La rue" },
+  streetLead: { en: "Move over a window.", fr: "Passez sur une fenêtre." },
+  streetFrost: {
+    en: "Clear glass turns white. That is frost — silence on the house.",
+    fr: "Le verre clair devient blanc. C’est le givre — le silence sur la maison.",
+  },
+  streetDoor: {
+    en: "The door under the lantern is the way in. The plate pops out. You must click it.",
+    fr: "La porte sous la lanterne est l’entrée. La plaque sort. Vous devez cliquer.",
+  },
+  streetStatus: { en: "Six windows. One door.", fr: "Six fenêtres. Une porte." },
+  streetHover: { en: "Window is frost.", fr: "La fenêtre est givrée." },
+  streetReady: {
+    en: "The plate is out. Click Enter to go in.",
+    fr: "La plaque est sortie. Cliquez sur Entrer.",
+  },
   arena: { en: "Home", fr: "Accueil" },
   play: { en: "Answer", fr: "Répondre" },
   reveal: { en: "Results", fr: "Résultats" },
@@ -337,6 +354,51 @@ function navHtml() {
     .join("");
 }
 
+function streetIn() {
+  try {
+    return sessionStorage.getItem("honesty-street-in") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function pageStreet() {
+  const windows = [
+    ["13.6%", "33.4%", "8.4%", "11.2%"],
+    ["26.8%", "33.4%", "8.6%", "11.2%"],
+    ["13.8%", "51.8%", "8.6%", "13.6%"],
+    ["54.6%", "35.8%", "8.4%", "11.0%"],
+    ["68.0%", "35.8%", "8.8%", "11.0%"],
+    ["54.6%", "52.6%", "8.4%", "13.2%"],
+  ];
+  return `<div class="cinema">
+    <div class="cinema-stage">
+      <div class="cinema-frame">
+        <img class="cinema-plate" src="./brand/street-16x9.jpg" alt="${t(UI.streetKicker)}" />
+        <div class="cinema-grade" aria-hidden="true"></div>
+        ${windows
+          .map(
+            ([l, t0, w, h]) =>
+              `<button type="button" class="cinema-pane" style="left:${l};top:${t0};width:${w};height:${h}" data-frost></button>`,
+          )
+          .join("")}
+        <div class="cinema-pane cinema-enter-pane" style="left:27.6%;top:49.4%;width:9.2%;height:22.4%">
+          <button type="button" class="cinema-enter" id="street-enter">
+            <span class="cinema-enter-plate">${t(UI.enter)}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <aside class="cinema-card">
+      <p class="cinema-kicker">${t(UI.streetKicker)}</p>
+      <h1>${t(UI.streetLead)}</h1>
+      <p>${t(UI.streetFrost)}</p>
+      <p>${t(UI.streetDoor)}</p>
+      <p class="cinema-status" id="street-status">${t(UI.streetStatus)}</p>
+    </aside>
+  </div>`;
+}
+
 function pageArena() {
   const week = DATA.week;
   const open = deskOpen();
@@ -588,6 +650,7 @@ function pageAbout() {
 
 function renderPage() {
   const { parts } = route();
+  if (!parts[0] && !streetIn()) return pageStreet();
   if (parts[0] === "play") return pagePlay();
   if (parts[0] === "reveal") return pageReveal();
   if (parts[0] === "houses" && parts[1]) return pageHouse(parts[1]);
@@ -678,6 +741,31 @@ function bindAir() {
 }
 
 function bind() {
+  const enter = document.getElementById("street-enter");
+  if (enter) {
+    const pane = enter.closest(".cinema-enter-pane");
+    const status = document.getElementById("street-status");
+    if (pane) {
+      pane.onpointerenter = () => {
+        enter.classList.add("is-out");
+        if (status) status.textContent = t(UI.streetReady);
+      };
+      pane.onpointerleave = () => enter.classList.remove("is-out");
+    }
+    document.querySelectorAll("[data-frost]").forEach((btn) => {
+      btn.onpointerenter = () => {
+        if (status) status.textContent = t(UI.streetHover);
+      };
+    });
+    enter.onclick = () => {
+      try {
+        sessionStorage.setItem("honesty-street-in", "1");
+      } catch {
+        /* ignore */
+      }
+      paint();
+    };
+  }
   document.querySelectorAll("[data-seat]").forEach((btn) => {
     btn.onclick = () => {
       state.seat = btn.dataset.seat;

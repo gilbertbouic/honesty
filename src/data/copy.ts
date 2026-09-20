@@ -53,6 +53,23 @@ export const UI = {
     fr: "Ce n’est pas le gouvernement. Ce n’est pas l’ONU. Les points montrent ce que vous avez dit. Ce n’est pas un procès.",
   },
   sit: { en: "Give your answer", fr: "Donnez votre réponse" },
+  enter: { en: "Enter", fr: "Entrer" },
+  streetKicker: { en: "The street", fr: "La rue" },
+  streetLead: { en: "Move over a window.", fr: "Passez sur une fenêtre." },
+  streetFrost: {
+    en: "Clear glass turns white. That is frost — silence on the house.",
+    fr: "Le verre clair devient blanc. C’est le givre — le silence sur la maison.",
+  },
+  streetDoor: {
+    en: "The door under the lantern is the way in. The plate pops out. You must click it.",
+    fr: "La porte sous la lanterne est l’entrée. La plaque sort. Vous devez cliquer.",
+  },
+  streetStatus: { en: "Six windows. One door.", fr: "Six fenêtres. Une porte." },
+  streetHover: { en: "Window is frost.", fr: "La fenêtre est givrée." },
+  streetReady: {
+    en: "The plate is out. Click Enter to go in.",
+    fr: "La plaque est sortie. Cliquez sur Entrer.",
+  },
   arena: { en: "Home", fr: "Accueil" },
   play: { en: "Answer", fr: "Répondre" },
   reveal: { en: "Results", fr: "Résultats" },

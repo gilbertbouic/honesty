@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Countdown } from "@/components/countdown";
 import { GlassHouse } from "@/components/glass-house";
+import { StreetStart } from "@/components/street-start";
 import { Button } from "@/components/ui/button";
 import { SEAT_META, UI } from "@/data/copy";
 import { LIVE_DILEMMA } from "@/data/dilemmas";
@@ -20,8 +21,10 @@ const SEATS: Seat[] = ["gallery", "service", "chamber", "mandate"];
 function Arena() {
   const lang = useLeague((s) => s.lang);
   const [open, setOpen] = useState(false);
+  const [showStreet, setShowStreet] = useState(true);
   const play = useStory("square", 3600);
   const field = usePointerField<HTMLDivElement>();
+  const [veilOn, setVeilOn] = useState(false);
 
   useEffect(() => {
     const tick = () => setOpen(deskIsOpen());
@@ -30,10 +33,40 @@ function Arena() {
     return () => window.clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("honesty-street-in") === "1") setShowStreet(false);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!play) return;
+    setVeilOn(true);
+    const id = window.setTimeout(() => setVeilOn(false), 1500);
+    return () => window.clearTimeout(id);
+  }, [play]);
+
+  if (showStreet) {
+    return (
+      <StreetStart
+        onEnter={() => {
+          try {
+            sessionStorage.setItem("honesty-street-in", "1");
+          } catch {
+            /* ignore */
+          }
+          setShowStreet(false);
+        }}
+      />
+    );
+  }
+
   return (
     <div ref={field} className="square" data-story={play ? "live" : "seen"}>
       <div className="daylight" aria-hidden="true" />
-      {play ? <div className="veil" aria-hidden="true" /> : null}
+      {veilOn ? <div className="veil" aria-hidden="true" /> : null}
 
       <p className="ink ink-1 text-xs uppercase tracking-[0.28em] text-muted">{t(UI.actSquare, lang)}</p>
       <p className="ink ink-1 mt-2 text-xs uppercase tracking-[0.22em] text-muted">{t(UI.daylight, lang)}</p>

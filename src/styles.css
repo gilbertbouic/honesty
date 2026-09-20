@@ -382,3 +382,231 @@
   }
 }
 
+.cinema {
+  --brass: #c4a46a;
+  --brass-ink: #6e5428;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: #070807;
+  color: #f7f3ea;
+}
+
+.cinema-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  margin: 0;
+  padding: 0.55rem 1rem;
+  text-align: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--color-stamp);
+  color: var(--color-primary-foreground);
+}
+
+.cinema-stage {
+  display: grid;
+  place-items: center;
+  height: 100%;
+}
+
+.cinema-frame {
+  position: relative;
+  width: min(100vw, calc(100dvh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.cinema-plate {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  animation: cinema-ken 28s var(--ease-smooth-out) infinite alternate;
+}
+
+@keyframes cinema-ken {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1.08) translate3d(-1%, 0.4%, 0);
+  }
+}
+
+.cinema-grade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(80% 60% at 50% 40%, transparent 40%, rgba(0, 0, 0, 0.32) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent 28%, rgba(20, 10, 0, 0.22));
+}
+
+.cinema-pane {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cinema-pane::after {
+  content: "";
+  position: absolute;
+  inset: 5%;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(236, 232, 220, 0.92) 45%,
+    rgba(210, 206, 194, 0.96)
+  );
+  opacity: 0;
+  transform: scale(0.98);
+  transition:
+    opacity var(--motion-fast) var(--ease-smooth-out),
+    transform var(--motion-fast) var(--ease-smooth-out);
+}
+
+.cinema-pane:hover::after,
+.cinema-pane:focus-visible::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.cinema-enter-pane {
+  display: block;
+}
+
+.cinema-enter {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  z-index: 2;
+  width: min(78%, 9.5rem);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  transform: translate(-50%, 130%) scale(0.86);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 520ms var(--ease-smooth-out),
+    opacity var(--motion-quick) ease;
+}
+
+.cinema-enter.is-out {
+  transform: translate(-50%, 18%) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cinema-enter-plate {
+  display: block;
+  padding: 0.7rem 0.4rem 0.55rem;
+  border-radius: 2px 3px;
+  background: linear-gradient(180deg, #e6d3a2, var(--brass) 42%, #9a7a3c);
+  color: var(--brass-ink);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.cinema-card {
+  position: absolute;
+  z-index: 4;
+  left: 1.1rem;
+  top: 1.1rem;
+  max-width: 22rem;
+  padding: 1rem 1.15rem 1.05rem;
+  background: color-mix(in oklab, var(--color-foreground) 78%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-surface) 18%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.cinema-kicker {
+  margin: 0 0 0.4rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-surface) 70%, transparent);
+}
+
+.cinema-card h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+  color: var(--color-surface);
+}
+
+.cinema-card p {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: color-mix(in oklab, var(--color-surface) 88%, transparent);
+}
+
+.cinema-status {
+  margin-top: 0.7rem !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brass) !important;
+}
+
+.cinema-skip {
+  margin-top: 0.7rem;
+  padding: 0.45rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-surface);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+  .cinema-card {
+    left: 0.6rem;
+    right: 0.6rem;
+    top: 0.6rem;
+    bottom: auto;
+    max-width: none;
+  }
+  .cinema-card p:nth-of-type(n + 3) {
+    display: none;
+  }
+}
+
+@media (hover: none) {
+  .cinema-enter {
+    transform: translate(-50%, 18%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinema-plate {
+    animation: none;
+  }
+  .cinema-pane::after,
+  .cinema-enter {
+    transition: none;
+  }
+  .cinema-enter {
+    transform: translate(-50%, 18%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+

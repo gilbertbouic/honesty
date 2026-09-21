@@ -64,7 +64,7 @@ function Reveal() {
         </p>
         {mine ? (
           <p className="mt-4 text-sm">
-            {lang === "fr" ? "Votre règle cette semaine :" : "Your rule this week:"}{" "}
+            {lang === "fr" ? "Votre règle ce mois :" : "Your rule this month:"}{" "}
             <span className="text-foreground">{mine.choiceId}</span> · {mine.points} HP
           </p>
         ) : (

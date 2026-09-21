@@ -2,9 +2,9 @@
 
 **Season 1** · a [Mkweli](https://mkweli.tech) product
 
-**Play now:** [honesty.mkweli.tech](https://honesty.mkweli.tech) (rehearsal until **Friday 25 September 2026, 09:00 Mauritius**)
+**Play now:** [honesty.mkweli.tech](https://honesty.mkweli.tech) — testers can play now. **Month 1** scoring starts **1 October 2026, 09:00 Mauritius**, and runs to **31 October**. Then a new question each month.
 
-Citizens, government workers, elected people, and UN staff answer the same weekly question **in public**. They get Honesty Points. If you say nothing, your chair stays empty. The three highest scores get a QR code that says *I scored as HONEST with Mkweli*.
+Citizens, government workers, elected people, and UN staff answer the same monthly question **in public**. They get Honesty Points. If you say nothing, your chair stays empty. The three highest scores get a QR code that says *I scored as HONEST with Mkweli*.
 
 | | |
 |--|--|
@@ -31,7 +31,7 @@ The app listens on port 8080. The Pages site can also be opened as static files 
 
 ## Season 1 rules
 
-- Answers **open Friday 25 September 2026, 9:00 in Mauritius**. Week 1 closes Friday 2 October, 16:00.
+- Testers can play now. **Month 1** scoring opens **1 October 2026, 9:00 in Mauritius**, and closes **31 October, 16:00**. A new question each month.
 - Government and UN players pick the job they do (buying, permits, local partners, and the rest).
 - Every answer is public.
 - Points: a choice, a written why, a public multiply, extra if you are a supervisor or director.

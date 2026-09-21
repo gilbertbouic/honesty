@@ -39,8 +39,8 @@ export const DILEMMAS: Dilemma[] = [
       en: "Who renovates Honesty Street: the cheapest builder, or the friend?",
       fr: "Qui rénove Honesty Street : le bâtisseur le moins cher, ou l’ami ?",
     },
-    opensAt: "2026-09-25T09:00:00+04:00",
-    closesAt: "2026-10-02T16:00:00+04:00",
+    opensAt: "2026-10-01T09:00:00+04:00",
+    closesAt: "2026-10-31T16:00:00+04:00",
     variants: [
       {
         circuitId: "gallery",

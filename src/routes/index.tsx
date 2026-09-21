@@ -8,7 +8,7 @@ import { SEAT_META, UI } from "@/data/copy";
 import { LIVE_DILEMMA } from "@/data/dilemmas";
 import { HOUSES } from "@/data/houses";
 import type { Seat } from "@/data/types";
-import { deskIsOpen } from "@/lib/clock";
+import { competitionIsLive, deskIsOpen } from "@/lib/clock";
 import { t } from "@/lib/i18n";
 import { tiltCard, untiltCard, usePointerField } from "@/lib/pointer";
 import { useLeague } from "@/lib/store";
@@ -21,13 +21,17 @@ const SEATS: Seat[] = ["gallery", "service", "chamber", "mandate"];
 function Arena() {
   const lang = useLeague((s) => s.lang);
   const [open, setOpen] = useState(false);
+  const [live, setLive] = useState(false);
   const [showStreet, setShowStreet] = useState(true);
   const play = useStory("square", 3600);
   const field = usePointerField<HTMLDivElement>();
   const [veilOn, setVeilOn] = useState(false);
 
   useEffect(() => {
-    const tick = () => setOpen(deskIsOpen());
+    const tick = () => {
+      setOpen(deskIsOpen());
+      setLive(competitionIsLive());
+    };
     tick();
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
@@ -77,12 +81,12 @@ function Arena() {
       <section className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_280px] lg:items-end">
         <div>
           <p className="ink ink-3 text-xs uppercase tracking-[0.22em] text-muted">
-            {t(open ? UI.weekLive : UI.weekOpens, lang)}
+            {t(live ? UI.weekLive : UI.weekOpens, lang)}
           </p>
           <h1 className="week-headline live-headline ink ink-3 mt-3 max-w-3xl font-display tracking-tight">
             {t(LIVE_DILEMMA.headline, lang)}
           </h1>
-          {!open ? (
+          {open && !live ? (
             <p className="ink ink-4 mt-5 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p>
           ) : null}
         </div>
@@ -93,13 +97,15 @@ function Arena() {
             onPointerMove={tiltCard}
             onPointerLeave={untiltCard}
           >
-          <span className="stamp absolute right-2 top-2 sm:-right-2 sm:-top-3">{t(open ? UI.stampOpen : UI.stampClosed, lang)}</span>
+          <span className="stamp absolute right-2 top-2 sm:-right-2 sm:-top-3">
+            {t(live ? UI.stampOpen : open ? UI.stampPractice : UI.stampClosed, lang)}
+          </span>
           <p className="text-xs uppercase tracking-[0.18em] text-muted">
-            {t(open ? UI.closes : UI.opens, lang)}
+            {t(live ? UI.closes : UI.opens, lang)}
           </p>
           <Countdown className="mt-4" />
           <p className="mt-4 text-xs text-muted">
-            {open ? "Friday 16:00 · Mauritius" : "Friday 25 September · 09:00 Mauritius"}
+            {t(live ? UI.closeWhen : UI.openWhen, lang)}
           </p>
           </div>
         </aside>

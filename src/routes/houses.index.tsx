@@ -5,7 +5,7 @@ import { SEAT_META, UI } from "@/data/copy";
 import type { HouseRecord, Seat } from "@/data/types";
 import { t } from "@/lib/i18n";
 import { isHonestMark, leagueField } from "@/lib/honest-mark";
-import { deskIsOpen } from "@/lib/clock";
+import { competitionIsLive, deskIsOpen } from "@/lib/clock";
 import { useLeague } from "@/lib/store";
 import { useStory } from "@/lib/story";
 import { cn } from "@/lib/utils";
@@ -20,10 +20,14 @@ function HousesPage() {
   const answers = useLeague((s) => s.answers);
   const [filter, setFilter] = useState<Seat | "all">("all");
   const [open, setOpen] = useState(true);
+  const [live, setLive] = useState(false);
   const playStory = useStory("street", 1600);
 
   useEffect(() => {
-    const tick = () => setOpen(deskIsOpen());
+    const tick = () => {
+      setOpen(deskIsOpen());
+      setLive(competitionIsLive());
+    };
     tick();
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
@@ -53,7 +57,7 @@ function HousesPage() {
       <p className="ink ink-1 text-xs uppercase tracking-[0.2em] text-muted">{t(UI.actStreet, lang)}</p>
       <h1 className="ink ink-2 mt-2 font-display text-3xl sm:text-4xl">{t(UI.points, lang)}</h1>
       <p className="ink ink-3 mt-3 max-w-xl text-sm text-muted">{t(UI.honestHint, lang)}</p>
-      {!open ? <p className="ink ink-3 mt-2 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p> : null}
+      {open && !live ? <p className="ink ink-3 mt-2 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p> : null}
       <div className="mt-6 flex flex-wrap gap-2">
         {(["all", "gallery", "service", "chamber", "mandate"] as const).map((s) => (
           <button

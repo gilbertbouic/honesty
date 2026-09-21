@@ -38,8 +38,8 @@ export const UI = {
     fr: "Les mêmes questions pour tous. Un score public.",
   },
   objective: {
-    en: "Each week the public, government, elected people, and people in world offices answer the same question in the open. You get Honesty Points. If you say nothing, your chair stays empty.",
-    fr: "Chaque semaine, le public, l’État, les élus et les gens dans les bureaux mondiaux répondent à la même question, au grand jour. Vous recevez des points d’honnêteté. Si vous ne dites rien, votre chaise reste vide.",
+    en: "Each month the public, government, elected people, and people in world offices answer the same question in the open. You get Honesty Points. If you say nothing, your chair stays empty.",
+    fr: "Chaque mois, le public, l’État, les élus et les gens dans les bureaux mondiaux répondent à la même question, au grand jour. Vous recevez des points d’honnêteté. Si vous ne dites rien, votre chaise reste vide.",
   },
   actSquare: { en: "1. Look", fr: "1. Voir" },
   actDesk: { en: "2. Answer", fr: "2. Répondre" },
@@ -49,8 +49,9 @@ export const UI = {
     en: "If you say nothing, your chair stays empty.",
     fr: "Si vous ne dites rien, votre chaise reste vide.",
   },
-  stampClosed: { en: "Opens 25 Sep", fr: "Ouvre le 25 sept." },
+  stampClosed: { en: "Closed", fr: "Fermé" },
   stampOpen: { en: "Open now", fr: "Ouvert" },
+  stampPractice: { en: "Practice", fr: "Essai" },
   mkweli: { en: "Made by Mkweli", fr: "Fait par Mkweli" },
   disclaimer: {
     en: "This is not the government. This is not the UN. Points show what you said. They are not a court case.",
@@ -70,20 +71,28 @@ export const UI = {
   circuits: { en: "Jobs", fr: "Postes" },
   method: { en: "How it works", fr: "Comment ça marche" },
   about: { en: "About", fr: "À propos" },
-  weekLive: { en: "Week 1 is open", fr: "La semaine 1 est ouverte" },
+  weekLive: { en: "Month 1 is open", fr: "Le mois 1 est ouvert" },
   weekOpens: {
-    en: "We open on Friday 25 September",
-    fr: "On ouvre vendredi 25 septembre",
+    en: "Testers can play now. Month 1 starts 1 October.",
+    fr: "Les testeurs peuvent jouer maintenant. Le mois 1 commence le 1er octobre.",
   },
   closes: { en: "Answers close", fr: "Les réponses ferment" },
-  opens: { en: "Answers open", fr: "Les réponses ouvrent" },
+  opens: { en: "Month 1 opens", fr: "Le mois 1 ouvre" },
+  closeWhen: {
+    en: "31 October · 16:00 Mauritius",
+    fr: "31 octobre · 16 h 00 à Maurice",
+  },
+  openWhen: {
+    en: "1 October · 09:00 Mauritius",
+    fr: "1er octobre · 9 h 00 à Maurice",
+  },
   deskLocked: {
-    en: "You can look around. You cannot send an answer before Friday 25 September, 9:00 in Mauritius.",
-    fr: "Vous pouvez regarder. Vous ne pouvez pas envoyer de réponse avant vendredi 25 septembre, 9 h 00 à Maurice.",
+    en: "Month 1 is closed. The next month opens 1 November, 9:00 in Mauritius.",
+    fr: "Le mois 1 est fermé. Le prochain mois ouvre le 1er novembre, 9 h 00 à Maurice.",
   },
   rehearsal: {
-    en: "These scores are a practice round. The real game starts on 25 September.",
-    fr: "Ces scores sont un essai. Le vrai jeu commence le 25 septembre.",
+    en: "These scores are practice. League scoring for Month 1 starts 1 October.",
+    fr: "Ces scores sont un essai. Le score de la ligue pour le mois 1 commence le 1er octobre.",
   },
   previewDesk: { en: "See the questions", fr: "Voir les questions" },
   empty: { en: "Empty chair", fr: "Chaise vide" },
@@ -117,8 +126,8 @@ export const UI = {
   methodLeagueTitle: { en: "The league", fr: "La ligue" },
   methodLeague: [
     {
-      en: "One multiple-choice question each week, plus a written why.",
-      fr: "Une question à choix chaque semaine, plus un pourquoi écrit.",
+      en: "One multiple-choice question each month, plus a written why.",
+      fr: "Une question à choix chaque mois, plus un pourquoi écrit.",
     },
     {
       en: "The same question for the public, government, elected people, and people in world offices.",
@@ -188,16 +197,16 @@ export const UI = {
     },
   ] as Copy[],
   aboutLead: {
-    en: "Honesty League is a game from Mkweli, made in Mauritius. Neighbours, people who work for the State, people we vote for, and people in world offices answer the same weekly question. It is not the government. It is not the UN.",
-    fr: "La Ligue de l’honnêteté est un jeu de Mkweli, fait à Maurice. Les voisins, les agents de l’État, les personnes que nous élisons, et les gens dans les bureaux mondiaux répondent à la même question chaque semaine. Ce n’est pas le gouvernement. Ce n’est pas l’ONU.",
+    en: "Honesty League is a game from Mkweli, made in Mauritius. Neighbours, people who work for the State, people we vote for, and people in world offices answer the same monthly question. It is not the government. It is not the UN.",
+    fr: "La Ligue de l’honnêteté est un jeu de Mkweli, fait à Maurice. Les voisins, les agents de l’État, les personnes que nous élisons, et les gens dans les bureaux mondiaux répondent à la même question chaque mois. Ce n’est pas le gouvernement. Ce n’est pas l’ONU.",
   },
   aboutFrost: {
     en: "A white house is not a crime. It means you stayed silent, you changed your story, or you did not sit down.",
     fr: "Une maison blanche n’est pas un crime. Cela veut dire que vous avez gardé le silence, changé d’histoire, ou que vous ne vous êtes pas assis.",
   },
   aboutOpen: {
-    en: "Season 1. Answers open Friday 25 September 2026, 9:00 in Mauritius. Site: honesty.mkweli.tech.",
-    fr: "Saison 1. Les réponses ouvrent vendredi 25 septembre 2026, 9 h 00 à Maurice. Site : honesty.mkweli.tech.",
+    en: "Season 1. Testers can play now. Month 1 scoring starts 1 October 2026, 9:00 in Mauritius, and runs to 31 October. Then a new question each month. Site: honesty.mkweli.tech.",
+    fr: "Saison 1. Les testeurs peuvent jouer maintenant. Le score du mois 1 commence le 1er octobre 2026, 9 h 00 à Maurice, jusqu’au 31 octobre. Ensuite une nouvelle question chaque mois. Site : honesty.mkweli.tech.",
   },
   revealLead: {
     en: "Here is who answered, and who did not. Empty chairs stay on the page.",

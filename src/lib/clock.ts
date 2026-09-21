@@ -8,8 +8,13 @@ export function closesAtMs() {
   return new Date(LIVE_DILEMMA.closesAt).getTime();
 }
 
+export function competitionIsLive(now = Date.now()) {
+  return now >= opensAtMs() && now < closesAtMs();
+}
+
+/** Testers can answer now; the month 1 window ends at close. */
 export function deskIsOpen(now = Date.now()) {
-  return now >= opensAtMs();
+  return now < closesAtMs();
 }
 
 export function countdownTarget(now = Date.now()) {

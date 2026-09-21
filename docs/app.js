@@ -2,8 +2,8 @@ const UI = {
   product: { en: "Honesty League", fr: "Ligue de l’honnêteté" },
   tag: { en: "Same questions for everyone. One public score.", fr: "Les mêmes questions pour tous. Un score public." },
   objective: {
-    en: "Each week the public, government, elected people, and people in world offices answer the same question in the open. You get Honesty Points. If you say nothing, your chair stays empty.",
-    fr: "Chaque semaine, le public, l’État, les élus et les gens dans les bureaux mondiaux répondent à la même question, au grand jour. Vous recevez des points d’honnêteté. Si vous ne dites rien, votre chaise reste vide.",
+    en: "Each month the public, government, elected people, and people in world offices answer the same question in the open. You get Honesty Points. If you say nothing, your chair stays empty.",
+    fr: "Chaque mois, le public, l’État, les élus et les gens dans les bureaux mondiaux répondent à la même question, au grand jour. Vous recevez des points d’honnêteté. Si vous ne dites rien, votre chaise reste vide.",
   },
   mkweli: { en: "Made by Mkweli", fr: "Fait par Mkweli" },
   daylight: { en: "We play in the open.", fr: "On joue au grand jour." },
@@ -11,8 +11,9 @@ const UI = {
   actSquare: { en: "1. Look", fr: "1. Voir" },
   actDesk: { en: "2. Answer", fr: "2. Répondre" },
   actStreet: { en: "3. Scores", fr: "3. Scores" },
-  stampClosed: { en: "Opens 25 Sep", fr: "Ouvre le 25 sept." },
+  stampClosed: { en: "Closed", fr: "Fermé" },
   stampOpen: { en: "Open now", fr: "Ouvert" },
+  stampPractice: { en: "Practice", fr: "Essai" },
   disclaimer: {
     en: "This is not the government. This is not the UN. Points show what you said. They are not a court case.",
     fr: "Ce n’est pas le gouvernement. Ce n’est pas l’ONU. Les points montrent ce que vous avez dit. Ce n’est pas un procès.",
@@ -31,17 +32,22 @@ const UI = {
   circuits: { en: "Jobs", fr: "Postes" },
   method: { en: "How it works", fr: "Comment ça marche" },
   about: { en: "About", fr: "À propos" },
-  weekLive: { en: "Week 1 is open", fr: "La semaine 1 est ouverte" },
-  weekOpens: { en: "We open on Friday 25 September", fr: "On ouvre vendredi 25 septembre" },
+  weekLive: { en: "Month 1 is open", fr: "Le mois 1 est ouvert" },
+  weekOpens: {
+    en: "Testers can play now. Month 1 starts 1 October.",
+    fr: "Les testeurs peuvent jouer maintenant. Le mois 1 commence le 1er octobre.",
+  },
   closes: { en: "Answers close", fr: "Les réponses ferment" },
-  opens: { en: "Answers open", fr: "Les réponses ouvrent" },
+  opens: { en: "Month 1 opens", fr: "Le mois 1 ouvre" },
+  closeWhen: { en: "31 October · 16:00 Mauritius", fr: "31 octobre · 16 h 00 à Maurice" },
+  openWhen: { en: "1 October · 09:00 Mauritius", fr: "1er octobre · 9 h 00 à Maurice" },
   deskLocked: {
-    en: "You can look around. You cannot send an answer before Friday 25 September, 9:00 in Mauritius.",
-    fr: "Vous pouvez regarder. Vous ne pouvez pas envoyer de réponse avant vendredi 25 septembre, 9 h 00 à Maurice.",
+    en: "Month 1 is closed. The next month opens 1 November, 9:00 in Mauritius.",
+    fr: "Le mois 1 est fermé. Le prochain mois ouvre le 1er novembre, 9 h 00 à Maurice.",
   },
   rehearsal: {
-    en: "These scores are a practice round. The real game starts on 25 September.",
-    fr: "Ces scores sont un essai. Le vrai jeu commence le 25 septembre.",
+    en: "These scores are practice. League scoring for Month 1 starts 1 October.",
+    fr: "Ces scores sont un essai. Le score de la ligue pour le mois 1 commence le 1er octobre.",
   },
   previewDesk: { en: "See the questions", fr: "Voir les questions" },
   empty: { en: "Empty chair", fr: "Chaise vide" },
@@ -68,7 +74,7 @@ const UI = {
   methodTitle: { en: "How we give points", fr: "Comment on donne les points" },
   methodLeagueTitle: { en: "The league", fr: "La ligue" },
   methodLeague: [
-    { en: "One multiple-choice question each week, plus a written why.", fr: "Une question à choix chaque semaine, plus un pourquoi écrit." },
+    { en: "One multiple-choice question each month, plus a written why.", fr: "Une question à choix chaque mois, plus un pourquoi écrit." },
     { en: "The same question for the public, government, elected people, and people in world offices.", fr: "La même question pour le public, l’État, les élus, et les gens dans les bureaux mondiaux." },
     { en: "You sit down with your name. Your phone stays private. Then you answer.", fr: "Vous vous asseyez avec votre nom. Votre téléphone reste privé. Ensuite vous répondez." },
   ],
@@ -113,16 +119,16 @@ const UI = {
     { en: "The three people with the most points get a QR code. It says “I scored as HONEST with Mkweli”. It is not a medal.", fr: "Les trois personnes avec le plus de points reçoivent un code QR. Il dit « I scored as HONEST with Mkweli ». Ce n’est pas une médaille." },
   ],
   aboutLead: {
-    en: "Honesty League is a game from Mkweli, made in Mauritius. Neighbours, people who work for the State, people we vote for, and people in world offices answer the same weekly question. It is not the government. It is not the UN.",
-    fr: "La Ligue de l’honnêteté est un jeu de Mkweli, fait à Maurice. Les voisins, les agents de l’État, les personnes que nous élisons, et les gens dans les bureaux mondiaux répondent à la même question chaque semaine. Ce n’est pas le gouvernement. Ce n’est pas l’ONU.",
+    en: "Honesty League is a game from Mkweli, made in Mauritius. Neighbours, people who work for the State, people we vote for, and people in world offices answer the same monthly question. It is not the government. It is not the UN.",
+    fr: "La Ligue de l’honnêteté est un jeu de Mkweli, fait à Maurice. Les voisins, les agents de l’État, les personnes que nous élisons, et les gens dans les bureaux mondiaux répondent à la même question chaque mois. Ce n’est pas le gouvernement. Ce n’est pas l’ONU.",
   },
   aboutFrost: {
     en: "A white house is not a crime. It means you stayed silent, you changed your story, or you did not sit down.",
     fr: "Une maison blanche n’est pas un crime. Cela veut dire que vous avez gardé le silence, changé d’histoire, ou que vous ne vous êtes pas assis.",
   },
   aboutOpen: {
-    en: "Season 1. Answers open Friday 25 September 2026, 9:00 in Mauritius. Site: honesty.mkweli.tech.",
-    fr: "Saison 1. Les réponses ouvrent vendredi 25 septembre 2026, 9 h 00 à Maurice. Site : honesty.mkweli.tech.",
+    en: "Season 1. Testers can play now. Month 1 scoring starts 1 October 2026, 9:00 in Mauritius, and runs to 31 October. Then a new question each month. Site: honesty.mkweli.tech.",
+    fr: "Saison 1. Les testeurs peuvent jouer maintenant. Le score du mois 1 commence le 1er octobre 2026, 9 h 00 à Maurice, jusqu’au 31 octobre. Ensuite une nouvelle question chaque mois. Site : honesty.mkweli.tech.",
   },
   revealLead: {
     en: "Here is who answered, and who did not. Empty chairs stay on the page.",
@@ -133,7 +139,7 @@ const UI = {
   sitHere: { en: "Sit here if this is you", fr: "Asseyez-vous si c’est vous" },
   predict: { en: "Lock this in", fr: "Je verrouille" },
   lockedIn: { en: "Locked in", fr: "Verrouillé" },
-  weekClock: { en: "Week clock", fr: "Horloge de la semaine" },
+  weekClock: { en: "Month clock", fr: "Horloge du mois" },
   untilOpen: { en: "Until the desk opens", fr: "Avant l’ouverture" },
   untilClose: { en: "Until answers close", fr: "Avant la fermeture" },
   airLive: { en: "ON AIR", fr: "EN DIRECT" },
@@ -356,12 +362,16 @@ function opensAt() {
 function closesAt() {
   return DATA.week?.closesAt ? new Date(DATA.week.closesAt).getTime() : Date.now();
 }
+function competitionLive() {
+  const n = Date.now();
+  return n >= opensAt() && n < closesAt();
+}
 function deskOpen() {
-  return Date.now() >= opensAt();
+  return Date.now() < closesAt();
 }
 
 function countdownHtml() {
-  const target = deskOpen() ? closesAt() : opensAt();
+  const target = Date.now() < opensAt() ? opensAt() : closesAt();
   const left = Math.max(0, target - Date.now());
   const d = Math.floor(left / 86400000);
   const h = Math.floor((left % 86400000) / 3600000);
@@ -430,6 +440,7 @@ function pageStreet() {
 function pageArena() {
   const week = DATA.week;
   const open = deskOpen();
+  const live = competitionLive();
   const play = storyPlay("square");
   if (play) markStory("square", 3600);
   return `${play ? `<div class="veil" aria-hidden="true"></div>` : ""}
@@ -440,16 +451,16 @@ function pageArena() {
     <p class="lede ink ink-2">${t(UI.objective)}</p>
     <section class="hero">
     <div>
-      <p class="kicker ink ink-3">${t(open ? UI.weekLive : UI.weekOpens)}</p>
+      <p class="kicker ink ink-3">${t(live ? UI.weekLive : UI.weekOpens)}</p>
       <h1 class="live-headline kinetic ink ink-3">${t(week.headline)}</h1>
-      ${open ? "" : `<p class="muted ink ink-4" style="margin-top:1rem">${t(UI.rehearsal)}</p>`}
+      ${open && !live ? `<p class="muted ink ink-4" style="margin-top:1rem">${t(UI.rehearsal)}</p>` : ""}
     </div>
     <div class="notice ink ink-5">
       <div class="live-notice">
-      <span class="stamp">${t(open ? UI.stampOpen : UI.stampClosed)}</span>
-      <p class="kicker">${t(open ? UI.closes : UI.opens)}</p>
+      <span class="stamp">${t(live ? UI.stampOpen : open ? UI.stampPractice : UI.stampClosed)}</span>
+      <p class="kicker">${t(live ? UI.closes : UI.opens)}</p>
       ${countdownHtml()}
-      <p class="muted" style="margin-top:1rem;font-size:.75rem">${open ? "Friday 16:00 · Mauritius" : "Friday 25 September · 09:00 Mauritius"}</p>
+      <p class="muted" style="margin-top:1rem;font-size:.75rem">${t(live ? UI.closeWhen : UI.openWhen)}</p>
       </div>
     </div>
   </section>
@@ -499,13 +510,14 @@ function pagePlay() {
   const already = state.answers.find((a) => a.dilemmaId === week.id);
   const words = wordCount(state.reason);
   const open = deskOpen();
+  const live = competitionLive();
   const play = storyPlay("desk");
   if (play) markStory("desk", 1400);
   return `<div class="play-grid square" data-story="${play ? "live" : "seen"}">
     <div>
       <p class="kicker ink ink-1">${t(UI.actDesk)}</p>
       <h1 class="week-headline kinetic ink ink-2">${t(week.headline)}</h1>
-      ${open ? "" : `<p class="muted ink ink-3" style="margin-top:1rem;max-width:36rem">${t(UI.deskLocked)}</p>`}
+      ${!open ? `<p class="muted ink ink-3" style="margin-top:1rem;max-width:36rem">${t(UI.deskLocked)}</p>` : !live ? `<p class="muted ink ink-3" style="margin-top:1rem;max-width:36rem">${t(UI.rehearsal)}</p>` : ""}
       ${
         state.handle
           ? ""
@@ -565,7 +577,7 @@ function pagePlay() {
                 <button type="button" class="btn ghost" id="publish" ${open && state.choiceId && state.handle ? "" : "disabled"}>${t(open ? UI.publicDesk : UI.weekOpens)}</button>
               </div>
               ${state.handle ? "" : `<p class="muted" style="margin-top:.75rem">${t(UI.sitDownNeed)}</p>`}
-              ${already ? `<p class="muted" style="margin-top:1rem">${t(UI.points)} this week: ${already.points}</p>` : ""}
+              ${already ? `<p class="muted" style="margin-top:1rem">${t(UI.points)}: ${already.points}</p>` : ""}
             </section>`
           : ""
       }
@@ -605,13 +617,14 @@ function pageHouses() {
   const all = field();
   const list = (state.filter === "all" ? all : all.filter((h) => h.seat === state.filter)).slice().sort((a, b) => b.points - a.points);
   const open = deskOpen();
+  const live = competitionLive();
   const play = storyPlay("street");
   if (play) markStory("street", 1600);
   return `<div class="square" data-story="${play ? "live" : "seen"}">
     <p class="kicker ink ink-1">${t(UI.actStreet)}</p>
     <h1 class="ink ink-2">${t(UI.points)}</h1>
     <p class="muted ink ink-3" style="max-width:36rem">${t(UI.honestHint)}</p>
-    ${open ? "" : `<p class="muted ink ink-3" style="max-width:36rem;margin-top:.75rem">${t(UI.rehearsal)}</p>`}
+    ${open && !live ? `<p class="muted ink ink-3" style="max-width:36rem;margin-top:.75rem">${t(UI.rehearsal)}</p>` : ""}
     <div class="row" style="margin-top:1.5rem">
       ${["all", ...SEATS]
         .map((s) => {
@@ -799,7 +812,7 @@ function bindAir() {
   const bar = document.getElementById("air-bar");
   if (!bar) return;
   const week = DATA.week;
-  const flag = deskOpen() ? t(UI.airLive) : t(UI.airWait);
+  const flag = competitionLive() ? t(UI.airLive) : t(UI.airWait);
   const line = `${flag} · ${t(UI.product)} · ${t(week?.headline || { en: "", fr: "" })} · ${t(UI.daylight)} · ${flag} · `;
   bar.innerHTML = `<div class="air-track"><span>${line}</span><span>${line}</span></div>`;
 }

@@ -7,7 +7,7 @@ import { BAND_META, SEAT_META, UI } from "@/data/copy";
 import { CIRCUITS } from "@/data/circuits";
 import { LIVE_DILEMMA } from "@/data/dilemmas";
 import type { Band, Seat } from "@/data/types";
-import { deskIsOpen } from "@/lib/clock";
+import { competitionIsLive, deskIsOpen } from "@/lib/clock";
 import { t } from "@/lib/i18n";
 import { scoreAnswer } from "@/lib/score";
 import { useLeague } from "@/lib/store";
@@ -34,10 +34,14 @@ function Play() {
   const recordAnswer = useLeague((s) => s.recordAnswer);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [live, setLive] = useState(false);
   const playStory = useStory("desk", 1400);
 
   useEffect(() => {
-    const tick = () => setOpen(deskIsOpen());
+    const tick = () => {
+      setOpen(deskIsOpen());
+      setLive(competitionIsLive());
+    };
     tick();
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
@@ -81,7 +85,11 @@ function Play() {
       <div>
         <p className="ink ink-1 text-xs uppercase tracking-[0.2em] text-muted">{t(UI.actDesk, lang)}</p>
         <h1 className="week-headline ink ink-2 mt-2 font-display tracking-tight">{t(LIVE_DILEMMA.headline, lang)}</h1>
-        {!open ? <p className="ink ink-3 mt-4 max-w-xl text-sm text-muted">{t(UI.deskLocked, lang)}</p> : null}
+        {!open ? (
+          <p className="ink ink-3 mt-4 max-w-xl text-sm text-muted">{t(UI.deskLocked, lang)}</p>
+        ) : !live ? (
+          <p className="ink ink-3 mt-4 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p>
+        ) : null}
 
         <SitDown />
 
@@ -184,7 +192,7 @@ function Play() {
             </div>
             {already ? (
               <p className="text-sm text-muted">
-                {t(UI.points, lang)} this week: {already.points}
+                {t(UI.points, lang)}: {already.points}
               </p>
             ) : null}
           </section>

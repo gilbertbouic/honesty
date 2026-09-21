@@ -583,7 +583,6 @@ function pageArena() {
   <div class="row ink ink-6">
     <a class="btn" href="#/play">${t(open ? UI.sit : UI.previewDesk)}</a>
     <a class="btn ghost" href="#/houses">${t(UI.houses)}</a>
-    <a class="muted" href="#/methodology">${t(UI.method)}</a>
   </div>
   </div>`;
 }

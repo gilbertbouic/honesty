@@ -138,12 +138,6 @@ function Arena() {
         <Button asChild variant="outline" size="lg">
           <Link to="/houses">{t(UI.houses, lang)}</Link>
         </Button>
-        <Link
-          to="/methodology"
-          className="text-sm text-muted underline-offset-4 hover:text-foreground hover:underline"
-        >
-          {t(UI.method, lang)}
-        </Link>
       </div>
     </div>
   );

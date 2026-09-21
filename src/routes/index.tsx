@@ -70,7 +70,7 @@ function Arena() {
 
       <p className="ink ink-1 text-xs uppercase tracking-[0.28em] text-muted">{t(UI.actSquare, lang)}</p>
       <p className="ink ink-1 mt-2 text-xs uppercase tracking-[0.22em] text-muted">{t(UI.daylight, lang)}</p>
-      <p className="ink ink-2 mt-5 max-w-2xl font-display text-2xl leading-snug text-foreground/90 sm:text-3xl">
+      <p className="objective ink ink-2 mt-5 text-foreground/90">
         {t(UI.objective, lang)}
       </p>
 
@@ -79,7 +79,7 @@ function Arena() {
           <p className="ink ink-3 text-xs uppercase tracking-[0.22em] text-muted">
             {t(open ? UI.weekLive : UI.weekOpens, lang)}
           </p>
-          <h1 className="live-headline ink ink-3 mt-3 max-w-3xl font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
+          <h1 className="week-headline live-headline ink ink-3 mt-3 max-w-3xl font-display tracking-tight">
             {t(LIVE_DILEMMA.headline, lang)}
           </h1>
           {!open ? (
@@ -93,7 +93,7 @@ function Arena() {
             onPointerMove={tiltCard}
             onPointerLeave={untiltCard}
           >
-          <span className="stamp absolute -right-2 -top-3">{t(open ? UI.stampOpen : UI.stampClosed, lang)}</span>
+          <span className="stamp absolute right-2 top-2 sm:-right-2 sm:-top-3">{t(open ? UI.stampOpen : UI.stampClosed, lang)}</span>
           <p className="text-xs uppercase tracking-[0.18em] text-muted">
             {t(open ? UI.closes : UI.opens, lang)}
           </p>
@@ -123,7 +123,7 @@ function Arena() {
                 {t(SEAT_META[seat].kicker, lang)}
               </p>
               <h2 className="mt-1 font-display text-xl">{t(SEAT_META[seat].title, lang)}</h2>
-              <div className="mt-4 flex items-end gap-1">
+              <div className="mt-4 flex min-w-0 items-end gap-1">
                 {houses.map((h, hi) => (
                   <Link
                     key={h.id}

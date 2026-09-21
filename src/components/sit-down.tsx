@@ -54,7 +54,7 @@ export function SitDown() {
           onChange={(e) => setName(e.target.value)}
           autoComplete="name"
           maxLength={40}
-          className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-3 text-sm text-foreground outline-none ring-ring focus:ring-2"
+          className="mt-2 min-h-11 w-full rounded-lg border border-border bg-background px-3 py-3 text-base text-foreground outline-none ring-ring focus:ring-2"
         />
       </label>
       <label className="block">
@@ -67,7 +67,7 @@ export function SitDown() {
           onChange={(e) => setPhone(e.target.value)}
           autoComplete="tel"
           placeholder="+230 5xxx xxxx"
-          className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-3 text-sm text-foreground outline-none ring-ring focus:ring-2"
+          className="mt-2 min-h-11 w-full rounded-lg border border-border bg-background px-3 py-3 text-base text-foreground outline-none ring-ring focus:ring-2"
         />
         <span className="mt-1 block text-xs text-muted">{t(UI.sitDownHint, lang)}</span>
       </label>

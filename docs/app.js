@@ -504,7 +504,7 @@ function pagePlay() {
   return `<div class="play-grid square" data-story="${play ? "live" : "seen"}">
     <div>
       <p class="kicker ink ink-1">${t(UI.actDesk)}</p>
-      <h1 class="kinetic ink ink-2">${t(week.headline)}</h1>
+      <h1 class="week-headline kinetic ink ink-2">${t(week.headline)}</h1>
       ${open ? "" : `<p class="muted ink ink-3" style="margin-top:1rem;max-width:36rem">${t(UI.deskLocked)}</p>`}
       ${
         state.handle

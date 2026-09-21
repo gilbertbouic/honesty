@@ -41,7 +41,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               {t(UI.product, lang)}
             </span>
           </Link>
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-1 lg:flex">
             {NAV.map((item) => (
               <Link
                 key={item.to}
@@ -64,7 +64,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             {lang === "en" ? "FR" : "EN"}
           </button>
         </div>
-        <div className="flex gap-1 overflow-x-auto px-3 pb-2 md:hidden">
+        <div className="flex gap-1 overflow-x-auto px-3 pb-2 lg:hidden">
           {NAV.map((item) => (
             <Link
               key={item.to}

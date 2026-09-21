@@ -80,7 +80,7 @@ function Play() {
     <div className="square grid gap-10 lg:grid-cols-[minmax(0,1fr)_240px]" data-story={playStory ? "live" : "seen"}>
       <div>
         <p className="ink ink-1 text-xs uppercase tracking-[0.2em] text-muted">{t(UI.actDesk, lang)}</p>
-        <h1 className="ink ink-2 mt-2 font-display text-3xl sm:text-4xl">{t(LIVE_DILEMMA.headline, lang)}</h1>
+        <h1 className="week-headline ink ink-2 mt-2 font-display tracking-tight">{t(LIVE_DILEMMA.headline, lang)}</h1>
         {!open ? <p className="ink ink-3 mt-4 max-w-xl text-sm text-muted">{t(UI.deskLocked, lang)}</p> : null}
 
         <SitDown />

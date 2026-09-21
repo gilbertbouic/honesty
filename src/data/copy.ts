@@ -100,10 +100,22 @@ export const UI = {
   publicDesk: { en: "Publish my answer", fr: "Publier ma réponse" },
   chooseSeat: { en: "Who are you?", fr: "Qui êtes-vous ?" },
   reason: {
-    en: "Write the rule you will use next time. Forty words give extra points.",
-    fr: "Écrivez la règle que vous utiliserez la prochaine fois. Quarante mots donnent des points en plus.",
+    en: "Why this choice?",
+    fr: "Pourquoi ce choix ?",
+  },
+  reasonHint: {
+    en: "Write it as a rule you can use again. Twelve words: extra points. Forty words: more.",
+    fr: "Écrivez-le comme une règle que vous pourrez réutiliser. Douze mots : points en plus. Quarante mots : davantage.",
   },
   words: { en: "words", fr: "mots" },
+  wordMarks: {
+    en: "12 extra · 40 more",
+    fr: "12 en plus · 40 davantage",
+  },
+  yourHouseStreet: {
+    en: "Your house is on the street.",
+    fr: "Votre maison est dans la rue.",
+  },
   yourHouse: { en: "Your glass house", fr: "Votre maison de verre" },
   frost: {
     en: "White glass means silence. Clear glass means you answered.",

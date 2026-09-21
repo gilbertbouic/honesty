@@ -85,14 +85,30 @@ export function GlassHouse({ points, emptyChair, compact, className, thaw, thawD
         stroke="var(--color-glass-edge)"
         strokeWidth="1.2"
       />
-      {emptyChair ? (
-        <g stroke="var(--color-muted)" strokeWidth="1.2" fill="none">
-          <rect x="34" y="78" width="12" height="8" />
-          <line x1="36" y1="78" x2="36" y2="92" />
-          <line x1="44" y1="78" x2="44" y2="92" />
-        </g>
-      ) : null}
+      <Chair occupied={!emptyChair} />
     </svg>
+  );
+}
+
+function Chair({ occupied }: { occupied: boolean }) {
+  return (
+    <g
+      stroke={occupied ? "var(--color-glass-edge)" : "var(--color-muted)"}
+      strokeWidth="1.2"
+      fill="none"
+      strokeLinecap="round"
+    >
+      <rect x="33" y="80" width="14" height="7" />
+      <line x1="35" y1="87" x2="35" y2="95" />
+      <line x1="45" y1="87" x2="45" y2="95" />
+      <line x1="33" y1="80" x2="33" y2="72" />
+      {occupied ? (
+        <>
+          <circle cx="40" cy="70" r="2.5" fill="var(--color-glass-edge)" stroke="none" />
+          <path d="M35 80 Q40 74 45 80" />
+        </>
+      ) : null}
+    </g>
   );
 }
 

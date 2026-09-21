@@ -9,6 +9,7 @@ import { LIVE_DILEMMA } from "@/data/dilemmas";
 import type { Band, Seat } from "@/data/types";
 import { competitionIsLive, deskIsOpen } from "@/lib/clock";
 import { t } from "@/lib/i18n";
+import { parseHouseName } from "@/lib/phone";
 import { scoreAnswer } from "@/lib/score";
 import { useLeague } from "@/lib/store";
 import { useStory } from "@/lib/story";
@@ -62,7 +63,7 @@ function Play() {
         : [];
 
   function submit() {
-    if (!open || !choiceId || !seat || !handle) return;
+    if (!open || !choiceId || !seat || !parseHouseName(handle)) return;
     const scored = scoreAnswer({
       hasChoice: true,
       reason,
@@ -77,7 +78,7 @@ function Play() {
       points: scored.points,
       at: new Date().toISOString(),
     });
-    void navigate({ to: "/houses/$id", params: { id: "self" } });
+    void navigate({ to: "/houses" });
   }
 
   return (
@@ -172,21 +173,22 @@ function Play() {
             </div>
             <label className="block">
               <span className="text-xs uppercase tracking-[0.16em] text-muted">{t(UI.reason, lang)}</span>
+              <span className="mt-1 block text-sm text-muted">{t(UI.reasonHint, lang)}</span>
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 rows={5}
-                className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-3 text-sm leading-relaxed text-foreground outline-none ring-ring focus:ring-2"
+                className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-3 text-base leading-relaxed text-foreground outline-none ring-ring focus:ring-2"
               />
               <span className="mt-1 block text-xs tabular-nums text-muted">
-                {words} {t(UI.words, lang)}
+                {words} {t(UI.words, lang)} · {t(UI.wordMarks, lang)}
               </span>
             </label>
             <div>
-              <Button size="lg" disabled={!open || !choiceId || !handle} onClick={submit}>
+              <Button size="lg" disabled={!open || !choiceId || !parseHouseName(handle)} onClick={submit}>
                 {t(open ? UI.publicDesk : UI.weekOpens, lang)}
               </Button>
-              {!handle ? (
+              {!parseHouseName(handle) ? (
                 <p className="mt-2 text-sm text-muted">{t(UI.sitDownNeed, lang)}</p>
               ) : null}
             </div>

@@ -26,7 +26,8 @@ export function SitDown() {
   const [phone, setPhone] = useState("");
   const [error, setError] = useState(false);
 
-  if (!hydrated || handle) return null;
+  const nameOk = Boolean(handle && parseHouseName(handle));
+  if (!hydrated || nameOk) return null;
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -50,9 +51,12 @@ export function SitDown() {
         <span className="text-xs uppercase tracking-[0.16em] text-muted">{t(UI.sitDownName, lang)}</span>
         <input
           id="sit-name"
+          type="text"
+          name="nickname"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          autoComplete="name"
+          autoComplete="nickname"
+          inputMode="text"
           maxLength={40}
           className="mt-2 min-h-11 w-full rounded-lg border border-border bg-background px-3 py-3 text-base text-foreground outline-none ring-ring focus:ring-2"
         />

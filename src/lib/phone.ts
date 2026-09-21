@@ -9,5 +9,8 @@ export function parseMuPhone(raw: string): string | null {
 export function parseHouseName(raw: string): string | null {
   const name = raw.trim().replace(/\s+/g, " ");
   if (name.length < 2 || name.length > 40) return null;
+  if (parseMuPhone(name)) return null;
+  const digits = name.replace(/\D/g, "");
+  if (digits.length >= 6) return null;
   return name;
 }

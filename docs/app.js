@@ -55,10 +55,22 @@ const UI = {
   publicDesk: { en: "Publish my answer", fr: "Publier ma réponse" },
   chooseSeat: { en: "Who are you?", fr: "Qui êtes-vous ?" },
   reason: {
-    en: "Write the rule you will use next time. Forty words give extra points.",
-    fr: "Écrivez la règle que vous utiliserez la prochaine fois. Quarante mots donnent des points en plus.",
+    en: "Why this choice?",
+    fr: "Pourquoi ce choix ?",
+  },
+  reasonHint: {
+    en: "Write it as a rule you can use again. Twelve words: extra points. Forty words: more.",
+    fr: "Écrivez-le comme une règle que vous pourrez réutiliser. Douze mots : points en plus. Quarante mots : davantage.",
   },
   words: { en: "words", fr: "mots" },
+  wordMarks: {
+    en: "12 extra · 40 more",
+    fr: "12 en plus · 40 davantage",
+  },
+  yourHouseStreet: {
+    en: "Your house is on the street.",
+    fr: "Votre maison est dans la rue.",
+  },
   yourHouse: { en: "Your glass house", fr: "Votre maison de verre" },
   frost: {
     en: "White glass means silence. Clear glass means you answered.",
@@ -203,6 +215,9 @@ function parseHouseName(raw) {
     .trim()
     .replace(/\s+/g, " ");
   if (name.length < 2 || name.length > 40) return null;
+  if (parseMuPhone(name)) return null;
+  const digits = name.replace(/\D/g, "");
+  if (digits.length >= 6) return null;
   return name;
 }
 
@@ -335,9 +350,9 @@ function glass(points, empty, compact, thawDelay) {
   const clear = 1 - frost;
   const uid = "g" + Math.random().toString(36).slice(2, 8);
   const w = compact ? 88 : 140;
-  const boarded = empty
-    ? `<g stroke="#8a9a92" stroke-width="1.2" fill="none"><rect x="34" y="78" width="12" height="8"/><line x1="36" y1="78" x2="36" y2="92"/><line x1="44" y1="78" x2="44" y2="92"/></g>`
-    : "";
+  const chair = empty
+    ? `<g stroke="#8a9a92" stroke-width="1.2" fill="none" stroke-linecap="round"><rect x="33" y="80" width="14" height="7"/><line x1="35" y1="87" x2="35" y2="95"/><line x1="45" y1="87" x2="45" y2="95"/><line x1="33" y1="80" x2="33" y2="72"/></g>`
+    : `<g stroke="#1c4a3c" stroke-width="1.2" fill="none" stroke-linecap="round"><rect x="33" y="80" width="14" height="7"/><line x1="35" y1="87" x2="35" y2="95"/><line x1="45" y1="87" x2="45" y2="95"/><line x1="33" y1="80" x2="33" y2="72"/><circle cx="40" cy="70" r="2.5" fill="#1c4a3c" stroke="none"/><path d="M35 80 Q40 74 45 80"/></g>`;
   const win = (x) =>
     empty
       ? `<g><rect x="${x}" y="48" width="12" height="14" fill="none" stroke="#1c4a3c" stroke-width="1"/><line x1="${x}" y1="48" x2="${x + 12}" y2="62" stroke="#5a6b63"/><line x1="${x + 12}" y1="48" x2="${x}" y2="62" stroke="#5a6b63"/></g>`
@@ -352,7 +367,7 @@ function glass(points, empty, compact, thawDelay) {
     <rect x="14" y="40" width="52" height="50" fill="#ffffff" class="frost-pane${thawDelay != null ? " frost-thaw" : ""}" style="--frost-to:${frost * 0.72};animation-delay:${thawDelay || 0}"/>
     <rect class="glass-gleam" x="10" y="38" width="16" height="56" fill="white" opacity="0"/>
     <rect x="36" y="70" width="8" height="20" fill="none" stroke="#1c4a3c" stroke-width="1.2"/>
-    ${boarded}
+    ${chair}
   </svg>`;
 }
 
@@ -519,14 +534,14 @@ function pagePlay() {
       <h1 class="week-headline kinetic ink ink-2">${t(week.headline)}</h1>
       ${!open ? `<p class="muted ink ink-3" style="margin-top:1rem;max-width:36rem">${t(UI.deskLocked)}</p>` : !live ? `<p class="muted ink ink-3" style="margin-top:1rem;max-width:36rem">${t(UI.rehearsal)}</p>` : ""}
       ${
-        state.handle
+        parseHouseName(state.handle)
           ? ""
           : `<form id="sit-down" class="card" style="margin-top:2rem;max-width:36rem">
               <p class="kicker">${t(UI.sitDown)}</p>
               <p style="margin-top:.5rem">${t(UI.sitDownLead)}</p>
               <label style="display:block;margin-top:1rem">
                 <span class="kicker">${t(UI.sitDownName)}</span>
-                <input id="sit-name" maxlength="40" autocomplete="name" />
+                <input id="sit-name" type="text" name="nickname" maxlength="40" autocomplete="nickname" inputmode="text" />
               </label>
               <label style="display:block;margin-top:1rem">
                 <span class="kicker">${t(UI.sitDownPhone)}</span>
@@ -567,16 +582,17 @@ function pagePlay() {
                 .join("")}</div>
               <label style="display:block;margin-top:1.25rem">
                 <span class="kicker">${t(UI.reason)}</span>
+                <span class="muted" style="display:block;margin-top:.35rem">${t(UI.reasonHint)}</span>
                 <textarea id="reason">${state.reason}</textarea>
-                <span class="muted" style="font-size:.75rem">${words} ${t(UI.words)}</span>
+                <span class="muted" id="word-count" style="font-size:.75rem">${words} ${t(UI.words)} · ${t(UI.wordMarks)}</span>
               </label>
               <div class="row">
                 <button type="button" class="btn predict" id="predict" ${state.choiceId ? "" : "disabled"} data-locked-label="${t(UI.lockedIn)}">
                   <span class="predict-label">${state.lockedChoice === state.choiceId ? t(UI.lockedIn) : t(UI.predict)}</span>
                 </button>
-                <button type="button" class="btn ghost" id="publish" ${open && state.choiceId && state.handle ? "" : "disabled"}>${t(open ? UI.publicDesk : UI.weekOpens)}</button>
+                <button type="button" class="btn ghost" id="publish" ${open && state.choiceId && parseHouseName(state.handle) ? "" : "disabled"}>${t(open ? UI.publicDesk : UI.weekOpens)}</button>
               </div>
-              ${state.handle ? "" : `<p class="muted" style="margin-top:.75rem">${t(UI.sitDownNeed)}</p>`}
+              ${parseHouseName(state.handle) ? "" : `<p class="muted" style="margin-top:.75rem">${t(UI.sitDownNeed)}</p>`}
               ${already ? `<p class="muted" style="margin-top:1rem">${t(UI.points)}: ${already.points}</p>` : ""}
             </section>`
           : ""
@@ -615,7 +631,9 @@ function pageReveal() {
 
 function pageHouses() {
   const all = field();
-  const list = (state.filter === "all" ? all : all.filter((h) => h.seat === state.filter)).slice().sort((a, b) => b.points - a.points);
+  const sorted = (state.filter === "all" ? all : all.filter((h) => h.seat === state.filter)).slice().sort((a, b) => b.points - a.points);
+  const me = sorted.find((h) => h.id === "self");
+  const list = me ? [me, ...sorted.filter((h) => h.id !== "self")] : sorted;
   const open = deskOpen();
   const live = competitionLive();
   const play = storyPlay("street");
@@ -625,6 +643,7 @@ function pageHouses() {
     <h1 class="ink ink-2">${t(UI.points)}</h1>
     <p class="muted ink ink-3" style="max-width:36rem">${t(UI.honestHint)}</p>
     ${open && !live ? `<p class="muted ink ink-3" style="max-width:36rem;margin-top:.75rem">${t(UI.rehearsal)}</p>` : ""}
+    ${all.some((h) => h.id === "self") ? `<p class="ink ink-3" style="max-width:36rem;margin-top:.75rem">${t(UI.yourHouseStreet)}</p>` : ""}
     <div class="row" style="margin-top:1.5rem">
       ${["all", ...SEATS]
         .map((s) => {
@@ -882,6 +901,8 @@ function bind() {
   if (reason) {
     reason.oninput = () => {
       state.reason = reason.value;
+      const count = document.getElementById("word-count");
+      if (count) count.textContent = `${wordCount(state.reason)} ${t(UI.words)} · ${t(UI.wordMarks)}`;
     };
   }
   const sitForm = document.getElementById("sit-down");
@@ -904,7 +925,7 @@ function bind() {
   const publish = document.getElementById("publish");
   if (publish) {
     publish.onclick = () => {
-      if (!deskOpen() || !state.choiceId || !state.seat || !state.handle) return;
+      if (!deskOpen() || !state.choiceId || !state.seat || !parseHouseName(state.handle)) return;
       const points = scoreAnswer(true, state.reason, state.seat === "service" || state.seat === "mandate" ? state.band : null);
       const answer = {
         dilemmaId: DATA.week.id,
@@ -918,7 +939,7 @@ function bind() {
       state.answers = [...state.answers.filter((a) => a.dilemmaId !== answer.dilemmaId), answer];
       state.points = Math.round((state.points + points) * 10) / 10;
       saveLocal();
-      go("/houses/self");
+      go("/houses");
     };
   }
 }

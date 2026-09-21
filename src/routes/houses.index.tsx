@@ -49,7 +49,9 @@ function HousesPage() {
 
   const list = useMemo(() => {
     const filtered = filter === "all" ? field : field.filter((h) => h.seat === filter);
-    return [...filtered].sort((a, b) => b.points - a.points);
+    const sorted = [...filtered].sort((a, b) => b.points - a.points);
+    const me = sorted.find((h) => h.id === "self");
+    return me ? [me, ...sorted.filter((h) => h.id !== "self")] : sorted;
   }, [field, filter]);
 
   return (
@@ -58,6 +60,9 @@ function HousesPage() {
       <h1 className="ink ink-2 mt-2 font-display text-3xl sm:text-4xl">{t(UI.points, lang)}</h1>
       <p className="ink ink-3 mt-3 max-w-xl text-sm text-muted">{t(UI.honestHint, lang)}</p>
       {open && !live ? <p className="ink ink-3 mt-2 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p> : null}
+      {field.some((h) => h.id === "self") ? (
+        <p className="ink ink-3 mt-2 max-w-xl text-sm text-foreground/90">{t(UI.yourHouseStreet, lang)}</p>
+      ) : null}
       <div className="mt-6 flex flex-wrap gap-2">
         {(["all", "gallery", "service", "chamber", "mandate"] as const).map((s) => (
           <button

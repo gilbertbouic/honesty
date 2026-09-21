@@ -79,7 +79,6 @@
   --mxn: 0.5;
   --myn: 0.22;
   position: relative;
-  overflow-x: clip;
 }
 
 .daylight {
@@ -162,8 +161,43 @@
 }
 
 .live-house svg {
-  width: 100%;
+  width: 88px;
+  max-width: 100%;
   height: auto;
+}
+
+.seat-mark {
+  flex: none;
+  overflow: visible;
+  stroke: var(--color-glass-edge);
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.seat-mark path,
+.seat-mark circle,
+.seat-mark rect,
+.seat-mark line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: mark-draw 880ms var(--ease-smooth-out) forwards;
+  animation-delay: inherit;
+}
+
+.square[data-story="seen"] .seat-mark path,
+.square[data-story="seen"] .seat-mark circle,
+.square[data-story="seen"] .seat-mark rect,
+.square[data-story="seen"] .seat-mark line {
+  stroke-dashoffset: 0;
+  animation: none;
+}
+
+@keyframes mark-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 .live-house:hover {
@@ -383,6 +417,10 @@
   .frost-thaw,
   .desk-sheet,
   .choice-in,
+  .seat-mark path,
+  .seat-mark circle,
+  .seat-mark rect,
+  .seat-mark line,
   .live-card,
   .live-house,
   .live-headline,
@@ -391,6 +429,7 @@
     opacity: 1;
     filter: none;
     transform: none !important;
+    stroke-dashoffset: 0;
   }
 
   .notice {

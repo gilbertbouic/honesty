@@ -399,6 +399,42 @@ function markStory(chapter, ms) {
   }
 }
 
+function seatMark(seat, delay) {
+  const delayStyle = delay ? ` style="animation-delay:${delay}"` : "";
+  if (seat === "gallery") {
+    return `<svg class="seat-mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"${delayStyle}>
+      <circle pathLength="1" cx="8" cy="10" r="2.2"/>
+      <path pathLength="1" d="M5 22 Q8 14 11 22"/>
+      <circle pathLength="1" cx="16" cy="9" r="2.5"/>
+      <path pathLength="1" d="M12 22 Q16 13 20 22"/>
+      <circle pathLength="1" cx="24" cy="10" r="2.2"/>
+      <path pathLength="1" d="M21 22 Q24 14 27 22"/>
+    </svg>`;
+  }
+  if (seat === "service") {
+    return `<svg class="seat-mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"${delayStyle}>
+      <path pathLength="1" d="M5 11 h22 v12 h-22 z"/>
+      <path pathLength="1" d="M5 16 h22"/>
+      <path pathLength="1" d="M16 11 v12"/>
+    </svg>`;
+  }
+  if (seat === "chamber") {
+    return `<svg class="seat-mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"${delayStyle}>
+      <path pathLength="1" d="M11 6 h10 v8 h-10 z"/>
+      <path pathLength="1" d="M8 14 h16 v6 h-16 z"/>
+      <path pathLength="1" d="M11 20 v6"/>
+      <path pathLength="1" d="M21 20 v6"/>
+    </svg>`;
+  }
+  return `<svg class="seat-mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"${delayStyle}>
+    <circle pathLength="1" cx="16" cy="16" r="8"/>
+    <path pathLength="1" d="M16 6 v3"/>
+    <path pathLength="1" d="M16 23 v3"/>
+    <path pathLength="1" d="M6 16 h3"/>
+    <path pathLength="1" d="M23 16 h3"/>
+  </svg>`;
+}
+
 function glass(points, empty, compact, thawDelay) {
   const frost = frostFromPoints(points, empty);
   const clear = 1 - frost;
@@ -536,31 +572,11 @@ function pageArena() {
   <section class="seats">
     ${SEATS.map((seat, i) => {
       const meta = seatMeta(seat);
-      const houses = DATA.houses.filter((h) => h.seat === seat).slice(0, 3);
       return `<div class="seat-rise" style="animation-delay:calc(var(--beat) * ${2200 + i * 160}ms)">
-        <button type="button" class="seat-card${state.lockedSeat === seat ? " is-locked" : ""}" data-flip-seat="${seat}" aria-label="${t(meta.title)}">
-          <span class="seat-card-inner">
-            <span class="seat-face seat-front card">
-              <p class="kicker">${t(meta.who)}</p>
-              <h2>${t(meta.title)}</h2>
-              <div class="houses">${houses
-                .map(
-                  (h, hi) =>
-                    `<span class="live-house">${glass(h.points, h.emptyChair, true, `calc(var(--beat) * ${2680 + i * 160 + hi * 90}ms)`)}</span>`,
-                )
-                .join("")}</div>
-            </span>
-            <span class="seat-face seat-back card">
-              <p class="kicker">${t(UI.sitHere)}</p>
-              <h2>${t(meta.title)}</h2>
-              <p class="muted" style="margin-top:.5rem">${t(meta.who)}</p>
-              <span class="row" style="margin-top:1rem">
-                <span class="btn" data-sit-seat="${seat}">${t(UI.sitSeat)}</span>
-                <span class="btn ghost" data-lock-seat="${seat}" data-locked-label="${t(UI.lockedIn)}">${state.lockedSeat === seat ? t(UI.lockedIn) : t(UI.lockSeat)}</span>
-              </span>
-            </span>
-          </span>
-        </button>
+        <div class="live-card card seat-group">
+          ${seatMark(seat, `calc(var(--beat) * ${2360 + i * 160}ms)`)}
+          <h2>${t(meta.title)}</h2>
+        </div>
       </div>`;
     }).join("")}
   </section>

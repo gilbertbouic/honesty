@@ -126,7 +126,15 @@ button:disabled { opacity: 0.4; cursor: default; }
 .clock { font-family: var(--mono); font-variant-numeric: tabular-nums; display: flex; gap: 0.75rem; }
 .clock b { display: block; font-size: 1.35rem; font-weight: 500; }
 .clock span { display: block; margin-top: 0.25rem; font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
-.seats { display: grid; gap: 0.75rem; margin-top: 2.5rem; }
+.seats { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; margin-top: 2.5rem; }
+.seat-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 5.5rem;
+  min-width: 0;
+}
+.seat-group h2 { margin: 0; font-size: 1.25rem; line-height: 1.2; min-width: 0; }
 .houses { display: flex; align-items: flex-end; gap: 0.25rem; margin-top: 1rem; min-width: 0; }
 .houses .live-house,
 .houses > span {
@@ -135,8 +143,33 @@ button:disabled { opacity: 0.4; cursor: default; }
   max-width: 88px;
 }
 .houses svg {
-  width: 100%;
+  width: 88px;
+  max-width: 100%;
   height: auto;
+}
+.seat-mark {
+  flex: none;
+  overflow: visible;
+  stroke: var(--glass-edge);
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.seat-mark path,
+.seat-mark circle {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: mark-draw 880ms cubic-bezier(.22,1,.36,1) forwards;
+  animation-delay: inherit;
+}
+.square[data-story="seen"] .seat-mark path,
+.square[data-story="seen"] .seat-mark circle {
+  stroke-dashoffset: 0;
+  animation: none;
+}
+@keyframes mark-draw {
+  to { stroke-dashoffset: 0; }
 }
 .chip {
   min-height: 2.75rem;
@@ -214,7 +247,7 @@ textarea,
   line-height: 1.35;
   text-wrap: pretty;
 }
-.square { --beat: 1; --mx: 50%; --my: 22%; --mxn: 0.5; --myn: 0.22; position: relative; overflow-x: clip; }
+.square { --beat: 1; --mx: 50%; --my: 22%; --mxn: 0.5; --myn: 0.22; position: relative; }
 .square[data-story="seen"] { --beat: 0; }
 .daylight {
   pointer-events: none;
@@ -498,11 +531,12 @@ textarea,
 
 @media (prefers-reduced-motion: reduce) {
   .veil, .daylight { display: none; }
-  .ink, .seat-rise, .stamp, .frost-thaw, .desk-sheet, .choice-in, .live-card, .live-house, .live-headline, .live-notice, .seat-card-inner, .air-track, .kt-ch, .kt-word {
+  .ink, .seat-rise, .stamp, .frost-thaw, .desk-sheet, .choice-in, .live-card, .live-house, .live-headline, .live-notice, .seat-card-inner, .air-track, .kt-ch, .kt-word, .seat-mark path, .seat-mark circle {
     animation: none !important;
     opacity: 1;
     filter: none;
     transform: none !important;
+    stroke-dashoffset: 0;
   }
   .notice { transform: rotate(-1.15deg); }
   .stamp { transform: rotate(-8deg); }

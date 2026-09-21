@@ -1,12 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Countdown } from "@/components/countdown";
-import { GlassHouse } from "@/components/glass-house";
+import { SeatMark } from "@/components/seat-mark";
 import { StreetStart } from "@/components/street-start";
 import { Button } from "@/components/ui/button";
 import { SEAT_META, UI } from "@/data/copy";
 import { LIVE_DILEMMA } from "@/data/dilemmas";
-import { HOUSES } from "@/data/houses";
 import type { Seat } from "@/data/types";
 import { competitionIsLive, deskIsOpen } from "@/lib/clock";
 import { t } from "@/lib/i18n";
@@ -111,42 +110,21 @@ function Arena() {
         </aside>
       </section>
 
-      <section className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="mt-14 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {SEATS.map((seat, i) => {
-          const houses = HOUSES.filter((h) => h.seat === seat).slice(0, 3);
           return (
             <div
               key={seat}
-              className="seat-rise"
+              className="seat-rise min-w-0"
               style={{ animationDelay: `calc(var(--beat) * ${2200 + i * 160}ms)` }}
             >
               <div
-                className="live-card rounded-xl border border-border bg-surface/80 p-4"
+                className="live-card flex min-h-[5.5rem] min-w-0 items-center gap-3 rounded-xl border border-border bg-surface p-4"
                 onPointerMove={tiltCard}
                 onPointerLeave={untiltCard}
               >
-              <p className="text-[10px] uppercase tracking-[0.2em] text-muted">
-                {t(SEAT_META[seat].kicker, lang)}
-              </p>
-              <h2 className="mt-1 font-display text-xl">{t(SEAT_META[seat].title, lang)}</h2>
-              <div className="mt-4 flex min-w-0 items-end gap-1">
-                {houses.map((h, hi) => (
-                  <Link
-                    key={h.id}
-                    to="/houses/$id"
-                    params={{ id: h.id }}
-                    className="live-house block"
-                  >
-                    <GlassHouse
-                      points={h.points}
-                      emptyChair={h.emptyChair}
-                      compact
-                      thaw
-                      thawDelay={`calc(var(--beat) * ${2680 + i * 160 + hi * 90}ms)`}
-                    />
-                  </Link>
-                ))}
-              </div>
+                <SeatMark seat={seat} delay={`calc(var(--beat) * ${2360 + i * 160}ms)`} />
+                <h2 className="min-w-0 font-display text-xl leading-tight">{t(SEAT_META[seat].title, lang)}</h2>
               </div>
             </div>
           );

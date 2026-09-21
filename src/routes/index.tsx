@@ -70,8 +70,8 @@ function Arena() {
 
       <p className="ink ink-1 text-xs uppercase tracking-[0.28em] text-muted">{t(UI.actSquare, lang)}</p>
       <p className="ink ink-1 mt-2 text-xs uppercase tracking-[0.22em] text-muted">{t(UI.daylight, lang)}</p>
-      <p className="ink ink-2 mt-5 max-w-xl font-display text-2xl italic leading-snug text-foreground/80 sm:text-3xl">
-        {t(UI.silence, lang)}
+      <p className="ink ink-2 mt-5 max-w-2xl font-display text-2xl leading-snug text-foreground/90 sm:text-3xl">
+        {t(UI.objective, lang)}
       </p>
 
       <section className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_280px] lg:items-end">
@@ -82,9 +82,8 @@ function Arena() {
           <h1 className="live-headline ink ink-3 mt-3 max-w-3xl font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
             {t(LIVE_DILEMMA.headline, lang)}
           </h1>
-          <p className="ink ink-4 mt-5 max-w-xl text-lg text-muted">{t(UI.tag, lang)}</p>
           {!open ? (
-            <p className="ink ink-4 mt-3 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p>
+            <p className="ink ink-4 mt-5 max-w-xl text-sm text-muted">{t(UI.rehearsal, lang)}</p>
           ) : null}
         </div>
 
@@ -155,6 +154,12 @@ function Arena() {
         <Button asChild variant="outline" size="lg">
           <Link to="/houses">{t(UI.houses, lang)}</Link>
         </Button>
+        <Link
+          to="/methodology"
+          className="text-sm text-muted underline-offset-4 hover:text-foreground hover:underline"
+        >
+          {t(UI.method, lang)}
+        </Link>
       </div>
     </div>
   );

@@ -1,6 +1,10 @@
 const UI = {
   product: { en: "Honesty League", fr: "Ligue de l’honnêteté" },
   tag: { en: "Same questions for everyone. One public score.", fr: "Les mêmes questions pour tous. Un score public." },
+  objective: {
+    en: "Each week the public, government, elected people, and people in world offices answer the same question in the open. You get Honesty Points. If you say nothing, your chair stays empty.",
+    fr: "Chaque semaine, le public, l’État, les élus et les gens dans les bureaux mondiaux répondent à la même question, au grand jour. Vous recevez des points d’honnêteté. Si vous ne dites rien, votre chaise reste vide.",
+  },
   mkweli: { en: "Made by Mkweli", fr: "Fait par Mkweli" },
   daylight: { en: "We play in the open.", fr: "On joue au grand jour." },
   silence: { en: "If you say nothing, your chair stays empty.", fr: "Si vous ne dites rien, votre chaise reste vide." },
@@ -62,6 +66,40 @@ const UI = {
   },
   jobsTitle: { en: "Jobs where money can go wrong", fr: "Postes où l’argent peut mal tourner" },
   methodTitle: { en: "How we give points", fr: "Comment on donne les points" },
+  methodLeagueTitle: { en: "The league", fr: "La ligue" },
+  methodLeague: [
+    { en: "One multiple-choice question each week, plus a written why.", fr: "Une question à choix chaque semaine, plus un pourquoi écrit." },
+    { en: "The same question for the public, government, elected people, and people in world offices.", fr: "La même question pour le public, l’État, les élus, et les gens dans les bureaux mondiaux." },
+    { en: "You sit down with your name. Your phone stays private. Then you answer.", fr: "Vous vous asseyez avec votre nom. Votre téléphone reste privé. Ensuite vous répondez." },
+  ],
+  methodHouseClear: {
+    en: "Your score builds a glass house on the street. Clear glass means you answered.",
+    fr: "Votre score construit une maison de verre dans la rue. Le verre clair veut dire que vous avez répondu.",
+  },
+  methodHouseBoards: {
+    en: "If you do not answer, boards go on the house and the chair stays empty.",
+    fr: "Si vous ne répondez pas, des planches vont sur la maison et la chaise reste vide.",
+  },
+  methodStreet: { en: "See the street", fr: "Voir la rue" },
+  sitDown: { en: "Sit down", fr: "S’asseoir" },
+  sitDownLead: {
+    en: "Your name is on the house. Your phone stays private.",
+    fr: "Votre nom est sur la maison. Votre téléphone reste privé.",
+  },
+  sitDownName: { en: "Name on the house", fr: "Nom sur la maison" },
+  sitDownPhone: { en: "Phone", fr: "Téléphone" },
+  sitDownHint: {
+    en: "Mauritius number. We do not show it.",
+    fr: "Numéro de Maurice. On ne l’affiche pas.",
+  },
+  sitDownNeed: {
+    en: "Sit down with your name before you publish a score.",
+    fr: "Asseyez-vous avec votre nom avant de publier un score.",
+  },
+  sitDownError: {
+    en: "Write your name and a Mauritius phone number.",
+    fr: "Écrivez votre nom et un numéro de Maurice.",
+  },
   methodLead: {
     en: "The same answers always get the same score. A computer does not pick a winner. The rules below do.",
     fr: "Les mêmes réponses donnent toujours le même score. Un ordinateur ne choisit pas un gagnant. Les règles ci-dessous le font.",
@@ -75,8 +113,8 @@ const UI = {
     { en: "The three people with the most points get a QR code. It says “I scored as HONEST with Mkweli”. It is not a medal.", fr: "Les trois personnes avec le plus de points reçoivent un code QR. Il dit « I scored as HONEST with Mkweli ». Ce n’est pas une médaille." },
   ],
   aboutLead: {
-    en: "Honesty League is a game from Mkweli. Each week, people like you, government workers, elected people, and UN staff answer the same hard question. You get Honesty Points.",
-    fr: "La Ligue de l’honnêteté est un jeu de Mkweli. Chaque semaine, les gens comme vous, les agents de l’État, les élus et le personnel de l’ONU répondent à la même question difficile. Vous recevez des points d’honnêteté.",
+    en: "Honesty League is a game from Mkweli, made in Mauritius. Neighbours, people who work for the State, people we vote for, and people in world offices answer the same weekly question. It is not the government. It is not the UN.",
+    fr: "La Ligue de l’honnêteté est un jeu de Mkweli, fait à Maurice. Les voisins, les agents de l’État, les personnes que nous élisons, et les gens dans les bureaux mondiaux répondent à la même question chaque semaine. Ce n’est pas le gouvernement. Ce n’est pas l’ONU.",
   },
   aboutFrost: {
     en: "A white house is not a crime. It means you stayed silent, you changed your story, or you did not sit down.",
@@ -125,6 +163,7 @@ const state = {
   circuitId: null,
   band: null,
   handle: "",
+  phonePrivate: "",
   answers: [],
   points: 0,
   choiceId: "",
@@ -144,6 +183,21 @@ function t(copy) {
 
 function wordCount(text) {
   return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function parseMuPhone(raw) {
+  const digits = String(raw || "").replace(/\D/g, "");
+  if (digits.startsWith("230") && digits.length === 11) return `+${digits}`;
+  if (digits.length === 8) return `+230${digits}`;
+  return null;
+}
+
+function parseHouseName(raw) {
+  const name = String(raw || "")
+    .trim()
+    .replace(/\s+/g, " ");
+  if (name.length < 2 || name.length > 40) return null;
+  return name;
 }
 
 function scoreAnswer(hasChoice, reason, band) {
@@ -172,6 +226,7 @@ function loadLocal() {
       circuitId: raw.circuitId || null,
       band: raw.band || null,
       handle: raw.handle || "",
+      phonePrivate: raw.phonePrivate || "",
       answers: raw.answers || [],
       points: raw.points || 0,
     });
@@ -189,6 +244,7 @@ function saveLocal() {
       circuitId: state.circuitId,
       band: state.band,
       handle: state.handle,
+      phonePrivate: state.phonePrivate,
       answers: state.answers,
       points: state.points,
     }),
@@ -328,11 +384,11 @@ function navHtml() {
   const r = route().path;
   const items = [
     ["/", UI.arena],
+    ["/methodology", UI.method],
     ["/play", UI.play],
     ["/reveal", UI.reveal],
     ["/houses", UI.houses],
     ["/circuits", UI.circuits],
-    ["/methodology", UI.method],
     ["/about", UI.about],
   ];
   return items
@@ -381,12 +437,11 @@ function pageArena() {
     <div class="daylight" aria-hidden="true"></div>
     <p class="kicker ink ink-1">${t(UI.actSquare)}</p>
     <p class="kicker ink ink-1" style="margin-top:.5rem">${t(UI.daylight)}</p>
-    <p class="lede ink ink-2">${t(UI.silence)}</p>
+    <p class="lede ink ink-2">${t(UI.objective)}</p>
     <section class="hero">
     <div>
       <p class="kicker ink ink-3">${t(open ? UI.weekLive : UI.weekOpens)}</p>
       <h1 class="live-headline kinetic ink ink-3">${t(week.headline)}</h1>
-      <p class="muted ink ink-4">${t(UI.tag)}</p>
       ${open ? "" : `<p class="muted ink ink-4" style="margin-top:1rem">${t(UI.rehearsal)}</p>`}
     </div>
     <div class="notice ink ink-5">
@@ -432,6 +487,7 @@ function pageArena() {
   <div class="row ink ink-6">
     <a class="btn" href="#/play">${t(open ? UI.sit : UI.previewDesk)}</a>
     <a class="btn ghost" href="#/houses">${t(UI.houses)}</a>
+    <a class="muted" href="#/methodology">${t(UI.method)}</a>
   </div>
   </div>`;
 }
@@ -450,6 +506,27 @@ function pagePlay() {
       <p class="kicker ink ink-1">${t(UI.actDesk)}</p>
       <h1 class="kinetic ink ink-2">${t(week.headline)}</h1>
       ${open ? "" : `<p class="muted ink ink-3" style="margin-top:1rem;max-width:36rem">${t(UI.deskLocked)}</p>`}
+      ${
+        state.handle
+          ? ""
+          : `<form id="sit-down" class="card" style="margin-top:2rem;max-width:36rem">
+              <p class="kicker">${t(UI.sitDown)}</p>
+              <p style="margin-top:.5rem">${t(UI.sitDownLead)}</p>
+              <label style="display:block;margin-top:1rem">
+                <span class="kicker">${t(UI.sitDownName)}</span>
+                <input id="sit-name" maxlength="40" autocomplete="name" />
+              </label>
+              <label style="display:block;margin-top:1rem">
+                <span class="kicker">${t(UI.sitDownPhone)}</span>
+                <input id="sit-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+230 5xxx xxxx" />
+                <span class="muted" style="font-size:.75rem">${t(UI.sitDownHint)}</span>
+              </label>
+              <p class="muted" id="sit-error" hidden style="margin-top:.75rem">${t(UI.sitDownError)}</p>
+              <div class="row" style="margin-top:1rem">
+                <button type="submit" class="btn">${t(UI.sitDown)}</button>
+              </div>
+            </form>`
+      }
       <p class="kicker" style="margin-top:2rem">${t(UI.chooseSeat)}</p>
       <div class="seats" style="grid-template-columns:repeat(2,1fr);margin-top:.75rem">
         ${SEATS.map((s) => {
@@ -485,8 +562,9 @@ function pagePlay() {
                 <button type="button" class="btn predict" id="predict" ${state.choiceId ? "" : "disabled"} data-locked-label="${t(UI.lockedIn)}">
                   <span class="predict-label">${state.lockedChoice === state.choiceId ? t(UI.lockedIn) : t(UI.predict)}</span>
                 </button>
-                <button type="button" class="btn ghost" id="publish" ${open && state.choiceId ? "" : "disabled"}>${t(open ? UI.publicDesk : UI.weekOpens)}</button>
+                <button type="button" class="btn ghost" id="publish" ${open && state.choiceId && state.handle ? "" : "disabled"}>${t(open ? UI.publicDesk : UI.weekOpens)}</button>
               </div>
+              ${state.handle ? "" : `<p class="muted" style="margin-top:.75rem">${t(UI.sitDownNeed)}</p>`}
               ${already ? `<p class="muted" style="margin-top:1rem">${t(UI.points)} this week: ${already.points}</p>` : ""}
             </section>`
           : ""
@@ -600,7 +678,22 @@ function pageCircuits() {
 function pageMethod() {
   return `<article class="method">
     <p class="kicker">${t(UI.method)}</p>
-    <h1>${t(UI.methodTitle)}</h1>
+    <h1>${t(UI.method)}</h1>
+    <h2>${t(UI.methodLeagueTitle)}</h2>
+    ${UI.methodLeague.map((step) => `<p>${t(step)}</p>`).join("")}
+    <div class="house-list two" style="list-style:none;padding:0;margin:1.5rem 0">
+      <div>
+        ${glass(48, false, true)}
+        <p class="muted">${t(UI.methodHouseClear)}</p>
+      </div>
+      <div>
+        ${glass(0, true, true)}
+        <p class="muted">${t(UI.methodHouseBoards)}</p>
+      </div>
+    </div>
+    <p class="muted">${t(UI.aboutFrost)}</p>
+    <p><a href="#/houses" style="color:var(--primary)">${t(UI.methodStreet)}</a></p>
+    <h2>${t(UI.methodTitle)}</h2>
     <p class="muted">${t(UI.methodLead)}</p>
     <ol>
       ${UI.methodSteps.map((step) => `<li>${t(step)}</li>`).join("")}
@@ -614,7 +707,6 @@ function pageAbout() {
     <p class="kicker">${t(UI.about)}</p>
     <h1>${t(UI.product)}</h1>
     <p>${t(UI.aboutLead)}</p>
-    <p class="muted">${t(UI.aboutFrost)}</p>
     <p class="muted">${t(UI.aboutOpen)}</p>
     <p><a href="https://mkweli.tech" style="color:var(--primary)">mkweli.tech</a></p>
   </article>`;
@@ -779,10 +871,27 @@ function bind() {
       state.reason = reason.value;
     };
   }
+  const sitForm = document.getElementById("sit-down");
+  if (sitForm) {
+    sitForm.onsubmit = (e) => {
+      e.preventDefault();
+      const houseName = parseHouseName(document.getElementById("sit-name")?.value);
+      const phonePrivate = parseMuPhone(document.getElementById("sit-phone")?.value);
+      const err = document.getElementById("sit-error");
+      if (!houseName || !phonePrivate) {
+        if (err) err.hidden = false;
+        return;
+      }
+      state.handle = houseName;
+      state.phonePrivate = phonePrivate;
+      saveLocal();
+      paint();
+    };
+  }
   const publish = document.getElementById("publish");
   if (publish) {
     publish.onclick = () => {
-      if (!deskOpen() || !state.choiceId || !state.seat) return;
+      if (!deskOpen() || !state.choiceId || !state.seat || !state.handle) return;
       const points = scoreAnswer(true, state.reason, state.seat === "service" || state.seat === "mandate" ? state.band : null);
       const answer = {
         dilemmaId: DATA.week.id,

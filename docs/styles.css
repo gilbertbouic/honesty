@@ -152,7 +152,8 @@ button:disabled { opacity: 0.4; cursor: default; }
 }
 .choice.on { border-color: var(--glass-edge); }
 .stack { display: grid; gap: 0.5rem; }
-textarea {
+textarea,
+#sit-down input {
   width: 100%;
   min-height: 7rem;
   margin-top: 0.5rem;
@@ -162,6 +163,9 @@ textarea {
   border-radius: 0.65rem;
   padding: 0.75rem;
   font: inherit;
+}
+#sit-down input {
+  min-height: 2.75rem;
 }
 .house-list { display: grid; gap: 1rem; margin-top: 2rem; }
 .house-link { display: flex; align-items: center; gap: 1rem; }
@@ -323,6 +327,7 @@ textarea {
   to { opacity: 1; transform: none; }
 }
 .method { max-width: 40rem; }
+.method h2 { font-family: var(--display); font-size: 1.5rem; margin-top: 2.5rem; }
 .method ol { padding-left: 1.25rem; }
 .method li + li { margin-top: 0.75rem; }
 .play-grid { display: grid; gap: 2.5rem; }

@@ -8,6 +8,8 @@ type State = {
   circuitId: string | null;
   band: Band | null;
   handle: string;
+  /** E.164 Mauritius number. Never render. */
+  phonePrivate: string;
   answers: SavedAnswer[];
   points: number;
   setLang: (lang: Lang) => void;
@@ -15,6 +17,7 @@ type State = {
   setCircuit: (id: string | null) => void;
   setBand: (band: Band | null) => void;
   setHandle: (handle: string) => void;
+  sitDown: (input: { handle: string; phonePrivate: string }) => void;
   recordAnswer: (answer: SavedAnswer) => void;
   resetPlay: () => void;
 };
@@ -27,6 +30,7 @@ export const useLeague = create<State>()(
       circuitId: null,
       band: null,
       handle: "",
+      phonePrivate: "",
       answers: [],
       points: 0,
       setLang: (lang) => set({ lang }),
@@ -38,6 +42,7 @@ export const useLeague = create<State>()(
       setCircuit: (circuitId) => set({ circuitId }),
       setBand: (band) => set({ band }),
       setHandle: (handle) => set({ handle }),
+      sitDown: ({ handle, phonePrivate }) => set({ handle, phonePrivate }),
       recordAnswer: (answer) =>
         set((s) => ({
           answers: [...s.answers.filter((a) => a.dilemmaId !== answer.dilemmaId), answer],

@@ -37,6 +37,10 @@ export const UI = {
     en: "Same questions for everyone. One public score.",
     fr: "Les mêmes questions pour tous. Un score public.",
   },
+  objective: {
+    en: "Each week the public, government, elected people, and people in world offices answer the same question in the open. You get Honesty Points. If you say nothing, your chair stays empty.",
+    fr: "Chaque semaine, le public, l’État, les élus et les gens dans les bureaux mondiaux répondent à la même question, au grand jour. Vous recevez des points d’honnêteté. Si vous ne dites rien, votre chaise reste vide.",
+  },
   actSquare: { en: "1. Look", fr: "1. Voir" },
   actDesk: { en: "2. Answer", fr: "2. Répondre" },
   actStreet: { en: "3. Scores", fr: "3. Scores" },
@@ -110,6 +114,49 @@ export const UI = {
     en: "How we give points",
     fr: "Comment on donne les points",
   },
+  methodLeagueTitle: { en: "The league", fr: "La ligue" },
+  methodLeague: [
+    {
+      en: "One multiple-choice question each week, plus a written why.",
+      fr: "Une question à choix chaque semaine, plus un pourquoi écrit.",
+    },
+    {
+      en: "The same question for the public, government, elected people, and people in world offices.",
+      fr: "La même question pour le public, l’État, les élus, et les gens dans les bureaux mondiaux.",
+    },
+    {
+      en: "You sit down with your name. Your phone stays private. Then you answer.",
+      fr: "Vous vous asseyez avec votre nom. Votre téléphone reste privé. Ensuite vous répondez.",
+    },
+  ] as Copy[],
+  methodHouseClear: {
+    en: "Your score builds a glass house on the street. Clear glass means you answered.",
+    fr: "Votre score construit une maison de verre dans la rue. Le verre clair veut dire que vous avez répondu.",
+  },
+  methodHouseBoards: {
+    en: "If you do not answer, boards go on the house and the chair stays empty.",
+    fr: "Si vous ne répondez pas, des planches vont sur la maison et la chaise reste vide.",
+  },
+  methodStreet: { en: "See the street", fr: "Voir la rue" },
+  sitDown: { en: "Sit down", fr: "S’asseoir" },
+  sitDownLead: {
+    en: "Your name is on the house. Your phone stays private.",
+    fr: "Votre nom est sur la maison. Votre téléphone reste privé.",
+  },
+  sitDownName: { en: "Name on the house", fr: "Nom sur la maison" },
+  sitDownPhone: { en: "Phone", fr: "Téléphone" },
+  sitDownHint: {
+    en: "Mauritius number. We do not show it.",
+    fr: "Numéro de Maurice. On ne l’affiche pas.",
+  },
+  sitDownNeed: {
+    en: "Sit down with your name before you publish a score.",
+    fr: "Asseyez-vous avec votre nom avant de publier un score.",
+  },
+  sitDownError: {
+    en: "Write your name and a Mauritius phone number.",
+    fr: "Écrivez votre nom et un numéro de Maurice.",
+  },
   methodLead: {
     en: "The same answers always get the same score. A computer does not pick a winner. The rules below do.",
     fr: "Les mêmes réponses donnent toujours le même score. Un ordinateur ne choisit pas un gagnant. Les règles ci-dessous le font.",
@@ -141,8 +188,8 @@ export const UI = {
     },
   ] as Copy[],
   aboutLead: {
-    en: "Honesty League is a game from Mkweli. Each week, people like you, government workers, elected people, and UN staff answer the same hard question. You get Honesty Points.",
-    fr: "La Ligue de l’honnêteté est un jeu de Mkweli. Chaque semaine, les gens comme vous, les agents de l’État, les élus et le personnel de l’ONU répondent à la même question difficile. Vous recevez des points d’honnêteté.",
+    en: "Honesty League is a game from Mkweli, made in Mauritius. Neighbours, people who work for the State, people we vote for, and people in world offices answer the same weekly question. It is not the government. It is not the UN.",
+    fr: "La Ligue de l’honnêteté est un jeu de Mkweli, fait à Maurice. Les voisins, les agents de l’État, les personnes que nous élisons, et les gens dans les bureaux mondiaux répondent à la même question chaque semaine. Ce n’est pas le gouvernement. Ce n’est pas l’ONU.",
   },
   aboutFrost: {
     en: "A white house is not a crime. It means you stayed silent, you changed your story, or you did not sit down.",

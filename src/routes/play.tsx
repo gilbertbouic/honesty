@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { GlassHouse } from "@/components/glass-house";
+import { SitDown } from "@/components/sit-down";
 import { Button } from "@/components/ui/button";
 import { BAND_META, SEAT_META, UI } from "@/data/copy";
 import { CIRCUITS } from "@/data/circuits";
@@ -25,6 +26,7 @@ function Play() {
   const circuitId = useLeague((s) => s.circuitId);
   const band = useLeague((s) => s.band);
   const points = useLeague((s) => s.points);
+  const handle = useLeague((s) => s.handle);
   const answers = useLeague((s) => s.answers);
   const setSeat = useLeague((s) => s.setSeat);
   const setCircuit = useLeague((s) => s.setCircuit);
@@ -56,7 +58,7 @@ function Play() {
         : [];
 
   function submit() {
-    if (!open || !choiceId || !seat) return;
+    if (!open || !choiceId || !seat || !handle) return;
     const scored = scoreAnswer({
       hasChoice: true,
       reason,
@@ -80,6 +82,8 @@ function Play() {
         <p className="ink ink-1 text-xs uppercase tracking-[0.2em] text-muted">{t(UI.actDesk, lang)}</p>
         <h1 className="ink ink-2 mt-2 font-display text-3xl sm:text-4xl">{t(LIVE_DILEMMA.headline, lang)}</h1>
         {!open ? <p className="ink ink-3 mt-4 max-w-xl text-sm text-muted">{t(UI.deskLocked, lang)}</p> : null}
+
+        <SitDown />
 
         <div className="mt-8">
           <p className="text-xs uppercase tracking-[0.18em] text-muted">{t(UI.chooseSeat, lang)}</p>
@@ -171,9 +175,12 @@ function Play() {
               </span>
             </label>
             <div>
-              <Button size="lg" disabled={!open || !choiceId} onClick={submit}>
+              <Button size="lg" disabled={!open || !choiceId || !handle} onClick={submit}>
                 {t(open ? UI.publicDesk : UI.weekOpens, lang)}
               </Button>
+              {!handle ? (
+                <p className="mt-2 text-sm text-muted">{t(UI.sitDownNeed, lang)}</p>
+              ) : null}
             </div>
             {already ? (
               <p className="text-sm text-muted">

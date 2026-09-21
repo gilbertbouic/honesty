@@ -13,7 +13,6 @@ function About() {
       <p className="text-xs uppercase tracking-[0.2em] text-muted">{t(UI.about, lang)}</p>
       <h1 className="font-display text-3xl sm:text-4xl">{t(UI.product, lang)}</h1>
       <p>{t(UI.aboutLead, lang)}</p>
-      <p className="text-muted">{t(UI.aboutFrost, lang)}</p>
       <p className="text-muted">{t(UI.aboutOpen, lang)}</p>
       <p>
         <a href="https://mkweli.tech" className="text-primary">

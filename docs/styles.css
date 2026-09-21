@@ -171,7 +171,8 @@ button:disabled { opacity: 0.4; cursor: default; }
 .choice.on { border-color: var(--glass-edge); }
 .stack { display: grid; gap: 0.5rem; }
 textarea,
-#sit-down input {
+#sit-down input,
+#admin-login input {
   width: 100%;
   min-height: 7rem;
   margin-top: 0.5rem;
@@ -182,7 +183,8 @@ textarea,
   padding: 0.75rem;
   font: inherit;
 }
-#sit-down input {
+#sit-down input,
+#admin-login input {
   min-height: 2.75rem;
   font-size: 1rem;
 }

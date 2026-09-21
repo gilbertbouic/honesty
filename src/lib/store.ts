@@ -20,6 +20,8 @@ type State = {
   sitDown: (input: { handle: string; phonePrivate: string }) => void;
   recordAnswer: (answer: SavedAnswer) => void;
   resetPlay: () => void;
+  clearResults: () => void;
+  clearDevice: () => void;
 };
 
 export const useLeague = create<State>()(
@@ -53,6 +55,21 @@ export const useLeague = create<State>()(
           seat: null,
           circuitId: null,
           band: null,
+          answers: [],
+          points: 0,
+        }),
+      clearResults: () =>
+        set({
+          answers: [],
+          points: 0,
+        }),
+      clearDevice: () =>
+        set({
+          seat: null,
+          circuitId: null,
+          band: null,
+          handle: "",
+          phonePrivate: "",
           answers: [],
           points: 0,
         }),

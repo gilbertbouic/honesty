@@ -156,6 +156,21 @@ const UI = {
   untilClose: { en: "Until answers close", fr: "Avant la fermeture" },
   airLive: { en: "ON AIR", fr: "EN DIRECT" },
   airWait: { en: "REHEARSAL", fr: "RÉPÉTITION" },
+  admin: { en: "Desk", fr: "Bureau" },
+  adminLead: {
+    en: "Clear scores on this phone or computer. Other testers keep their own.",
+    fr: "Effacez les scores sur ce téléphone ou cet ordinateur. Les autres testeurs gardent les leurs.",
+  },
+  adminUser: { en: "Login", fr: "Identifiant" },
+  adminPass: { en: "Password", fr: "Mot de passe" },
+  adminSignIn: { en: "Sign in", fr: "Entrer" },
+  adminSignOut: { en: "Sign out", fr: "Sortir" },
+  adminBad: { en: "Wrong login or password.", fr: "Identifiant ou mot de passe faux." },
+  adminClearScores: { en: "Clear scores", fr: "Effacer les scores" },
+  adminClearAll: { en: "Clear scores and sit-down", fr: "Effacer scores et inscription" },
+  adminCleared: { en: "Cleared on this device.", fr: "Effacé sur cet appareil." },
+  adminHouse: { en: "Name on this device", fr: "Nom sur cet appareil" },
+  adminNone: { en: "No name yet", fr: "Pas encore de nom" },
 };
 
 const BAND_META = {
@@ -174,6 +189,45 @@ const BANDS = ["front-line", "middle", "senior"];
 const HONEST_RANKS = 3;
 const HONEST_LINE = "I scored as HONEST with Mkweli";
 const KEY = "honesty-league";
+const ADMIN_SESSION = "honesty-admin-v1";
+const ADMIN_HASH = "22c156c9fbf40329168640b533954105c1b20c1504ef577f7092728d9fbd4db2";
+
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+async function checkAdminLogin(user, password) {
+  const hex = await sha256Hex(`${String(user || "").trim()}:${password}`);
+  return hex === ADMIN_HASH;
+}
+function adminIsIn() {
+  try {
+    return sessionStorage.getItem(ADMIN_SESSION) === "1";
+  } catch {
+    return false;
+  }
+}
+function setAdminIn(on) {
+  try {
+    if (on) sessionStorage.setItem(ADMIN_SESSION, "1");
+    else sessionStorage.removeItem(ADMIN_SESSION);
+  } catch {
+    /* ignore */
+  }
+}
+function clearStoryKeys() {
+  try {
+    sessionStorage.removeItem("honesty-street-v2");
+    const drop = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (key && key.startsWith("honesty-story-")) drop.push(key);
+    }
+    drop.forEach((key) => sessionStorage.removeItem(key));
+  } catch {
+    /* ignore */
+  }
+}
 
 const state = {
   lang: "en",
@@ -744,6 +798,42 @@ function pageAbout() {
   </article>`;
 }
 
+function pageAdmin() {
+  if (!adminIsIn()) {
+    return `<article class="method" style="max-width:28rem">
+      <p class="kicker">${t(UI.admin)}</p>
+      <h1>${t(UI.admin)}</h1>
+      <form id="admin-login" class="card" style="margin-top:1.5rem">
+        <label style="display:block">
+          <span class="kicker">${t(UI.adminUser)}</span>
+          <input id="admin-user" type="text" name="username" autocomplete="username" />
+        </label>
+        <label style="display:block;margin-top:1rem">
+          <span class="kicker">${t(UI.adminPass)}</span>
+          <input id="admin-pass" type="password" name="password" autocomplete="current-password" />
+        </label>
+        <p class="muted" id="admin-error" hidden style="margin-top:.75rem">${t(UI.adminBad)}</p>
+        <div class="row" style="margin-top:1rem">
+          <button type="submit" class="btn">${t(UI.adminSignIn)}</button>
+        </div>
+      </form>
+    </article>`;
+  }
+  return `<article class="method" style="max-width:28rem">
+    <p class="kicker">${t(UI.admin)}</p>
+    <h1>${t(UI.admin)}</h1>
+    <p class="muted">${t(UI.adminLead)}</p>
+    <p>${t(UI.adminHouse)}: <b>${state.handle || t(UI.adminNone)}</b></p>
+    <p class="mono">${state.answers.length} · ${state.points} HP</p>
+    <p class="muted" id="admin-note" hidden>${t(UI.adminCleared)}</p>
+    <div class="row">
+      <button type="button" class="btn" id="admin-clear">${t(UI.adminClearScores)}</button>
+      <button type="button" class="btn ghost" id="admin-wipe">${t(UI.adminClearAll)}</button>
+    </div>
+    <p style="margin-top:1.5rem"><button type="button" class="muted" id="admin-out">${t(UI.adminSignOut)}</button></p>
+  </article>`;
+}
+
 function renderPage() {
   const { parts } = route();
   if (!parts[0] && !streetIn()) return pageStreet();
@@ -754,6 +844,7 @@ function renderPage() {
   if (parts[0] === "circuits") return pageCircuits();
   if (parts[0] === "methodology") return pageMethod();
   if (parts[0] === "about") return pageAbout();
+  if (parts[0] === "admin") return pageAdmin();
   return pageArena();
 }
 
@@ -940,6 +1031,57 @@ function bind() {
       state.points = Math.round((state.points + points) * 10) / 10;
       saveLocal();
       go("/houses");
+    };
+  }
+  const adminLogin = document.getElementById("admin-login");
+  if (adminLogin) {
+    adminLogin.onsubmit = async (e) => {
+      e.preventDefault();
+      const ok = await checkAdminLogin(document.getElementById("admin-user")?.value, document.getElementById("admin-pass")?.value);
+      const err = document.getElementById("admin-error");
+      if (!ok) {
+        if (err) err.hidden = false;
+        return;
+      }
+      setAdminIn(true);
+      paint();
+    };
+  }
+  const adminClear = document.getElementById("admin-clear");
+  if (adminClear) {
+    adminClear.onclick = () => {
+      state.answers = [];
+      state.points = 0;
+      state.choiceId = "";
+      state.reason = "";
+      saveLocal();
+      const note = document.getElementById("admin-note");
+      if (note) note.hidden = false;
+      paint();
+    };
+  }
+  const adminWipe = document.getElementById("admin-wipe");
+  if (adminWipe) {
+    adminWipe.onclick = () => {
+      state.seat = null;
+      state.circuitId = null;
+      state.band = null;
+      state.handle = "";
+      state.phonePrivate = "";
+      state.answers = [];
+      state.points = 0;
+      state.choiceId = "";
+      state.reason = "";
+      clearStoryKeys();
+      saveLocal();
+      paint();
+    };
+  }
+  const adminOut = document.getElementById("admin-out");
+  if (adminOut) {
+    adminOut.onclick = () => {
+      setAdminIn(false);
+      paint();
     };
   }
 }

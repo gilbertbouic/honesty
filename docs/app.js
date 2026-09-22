@@ -1,1145 +1,667 @@
-const UI = {
-  product: { en: "Honesty League", fr: "Ligue de l’honnêteté" },
-  tag: { en: "Same questions for everyone. One public score.", fr: "Les mêmes questions pour tous. Un score public." },
-  objective: {
-    en: "Each month the public, government, elected people, and people in world offices answer the same question in the open. You get Honesty Points. If you say nothing, your chair stays empty.",
-    fr: "Chaque mois, le public, l’État, les élus et les gens dans les bureaux mondiaux répondent à la même question, au grand jour. Vous recevez des points d’honnêteté. Si vous ne dites rien, votre chaise reste vide.",
-  },
-  mkweli: { en: "Made by Mkweli", fr: "Fait par Mkweli" },
-  daylight: { en: "We play in the open.", fr: "On joue au grand jour." },
-  silence: { en: "If you say nothing, your chair stays empty.", fr: "Si vous ne dites rien, votre chaise reste vide." },
-  actSquare: { en: "1. Look", fr: "1. Voir" },
-  actDesk: { en: "2. Answer", fr: "2. Répondre" },
-  actStreet: { en: "3. Scores", fr: "3. Scores" },
-  stampClosed: { en: "Closed", fr: "Fermé" },
-  stampOpen: { en: "Open now", fr: "Ouvert" },
-  stampPractice: { en: "Practice", fr: "Essai" },
-  disclaimer: {
-    en: "This is not the government. This is not the UN. Points show what you said. They are not a court case.",
-    fr: "Ce n’est pas le gouvernement. Ce n’est pas l’ONU. Les points montrent ce que vous avez dit. Ce n’est pas un procès.",
-  },
-  sit: { en: "Give your answer", fr: "Donnez votre réponse" },
-  enter: { en: "Enter", fr: "Entrer" },
-  streetKicker: { en: "Honesty street", fr: "Honesty street" },
-  streetHint: {
-    en: "Find the Enter button",
-    fr: "Trouvez le bouton Entrer",
-  },
-  arena: { en: "Home", fr: "Accueil" },
-  play: { en: "Answer", fr: "Répondre" },
-  reveal: { en: "Results", fr: "Résultats" },
-  houses: { en: "Scores", fr: "Scores" },
-  circuits: { en: "Jobs", fr: "Postes" },
-  method: { en: "How it works", fr: "Comment ça marche" },
-  about: { en: "About", fr: "À propos" },
-  weekLive: { en: "Month 1 is open", fr: "Le mois 1 est ouvert" },
-  weekOpens: {
-    en: "Testers can play now. Month 1 starts 1 October.",
-    fr: "Les testeurs peuvent jouer maintenant. Le mois 1 commence le 1er octobre.",
-  },
-  closes: { en: "Answers close", fr: "Les réponses ferment" },
-  opens: { en: "Month 1 opens", fr: "Le mois 1 ouvre" },
-  closeWhen: { en: "31 October · 16:00 Mauritius", fr: "31 octobre · 16 h 00 à Maurice" },
-  openWhen: { en: "1 October · 09:00 Mauritius", fr: "1er octobre · 9 h 00 à Maurice" },
-  deskLocked: {
-    en: "Month 1 is closed. The next month opens 1 November, 9:00 in Mauritius.",
-    fr: "Le mois 1 est fermé. Le prochain mois ouvre le 1er novembre, 9 h 00 à Maurice.",
-  },
-  rehearsal: {
-    en: "These scores are practice. League scoring for Month 1 starts 1 October.",
-    fr: "Ces scores sont un essai. Le score de la ligue pour le mois 1 commence le 1er octobre.",
-  },
-  previewDesk: { en: "See the questions", fr: "Voir les questions" },
-  empty: { en: "Empty chair", fr: "Chaise vide" },
-  points: { en: "Honesty Points", fr: "Points d’honnêteté" },
-  publicDesk: { en: "Publish my answer", fr: "Publier ma réponse" },
-  chooseSeat: { en: "Who are you?", fr: "Qui êtes-vous ?" },
-  reason: {
-    en: "Why this choice?",
-    fr: "Pourquoi ce choix ?",
-  },
-  reasonHint: {
-    en: "Write it as a rule you can use again. Twelve words: extra points. Forty words: more.",
-    fr: "Écrivez-le comme une règle que vous pourrez réutiliser. Douze mots : points en plus. Quarante mots : davantage.",
-  },
-  words: { en: "words", fr: "mots" },
-  wordMarks: {
-    en: "12 extra · 40 more",
-    fr: "12 en plus · 40 davantage",
-  },
-  yourHouseStreet: {
-    en: "Your house is on the street.",
-    fr: "Votre maison est dans la rue.",
-  },
-  yourHouse: { en: "Your glass house", fr: "Votre maison de verre" },
-  frost: {
-    en: "White glass means silence. Clear glass means you answered.",
-    fr: "Le verre blanc veut dire le silence. Le verre clair veut dire que vous avez répondu.",
-  },
-  shadow: { en: "Who chose what", fr: "Qui a choisi quoi" },
-  honestMark: { en: "Honest mark", fr: "Marque HONEST" },
-  honestHint: {
-    en: "The three highest scores get a QR code. It is a receipt. It is not a prize for being a good person.",
-    fr: "Les trois meilleurs scores reçoivent un code QR. C’est un reçu. Ce n’est pas un prix pour être une bonne personne.",
-  },
-  jobsTitle: { en: "Jobs where money can go wrong", fr: "Postes où l’argent peut mal tourner" },
-  methodTitle: { en: "How we give points", fr: "Comment on donne les points" },
-  methodLeagueTitle: { en: "The league", fr: "La ligue" },
-  methodLeague: [
-    { en: "One multiple-choice question each month, plus a written why.", fr: "Une question à choix chaque mois, plus un pourquoi écrit." },
-    { en: "The same question for the public, government, elected people, and people in world offices.", fr: "La même question pour le public, l’État, les élus, et les gens dans les bureaux mondiaux." },
-    { en: "You sit down with your name. Your phone stays private. Then you answer.", fr: "Vous vous asseyez avec votre nom. Votre téléphone reste privé. Ensuite vous répondez." },
-  ],
-  methodHouseClear: {
-    en: "Your score builds a glass house on the street. Clear glass means you answered.",
-    fr: "Votre score construit une maison de verre dans la rue. Le verre clair veut dire que vous avez répondu.",
-  },
-  methodHouseBoards: {
-    en: "If you do not answer, boards go on the house and the chair stays empty.",
-    fr: "Si vous ne répondez pas, des planches vont sur la maison et la chaise reste vide.",
-  },
-  methodStreet: { en: "See the street", fr: "Voir la rue" },
-  sitDown: { en: "Sit down", fr: "S’asseoir" },
-  sitDownLead: {
-    en: "Your name is on the house. Your phone stays private.",
-    fr: "Votre nom est sur la maison. Votre téléphone reste privé.",
-  },
-  sitDownName: { en: "Name on the house", fr: "Nom sur la maison" },
-  sitDownPhone: { en: "Phone", fr: "Téléphone" },
-  sitDownHint: {
-    en: "Mauritius number. We do not show it.",
-    fr: "Numéro de Maurice. On ne l’affiche pas.",
-  },
-  sitDownNeed: {
-    en: "Sit down with your name before you publish a score.",
-    fr: "Asseyez-vous avec votre nom avant de publier un score.",
-  },
-  sitDownError: {
-    en: "Write your name and a Mauritius phone number.",
-    fr: "Écrivez votre nom et un numéro de Maurice.",
-  },
-  methodLead: {
-    en: "The same answers always get the same score. A computer does not pick a winner. The rules below do.",
-    fr: "Les mêmes réponses donnent toujours le même score. Un ordinateur ne choisit pas un gagnant. Les règles ci-dessous le font.",
-  },
-  methodSteps: [
-    { en: "You pick a choice. That is 10 points.", fr: "Vous choisissez une réponse. Cela fait 10 points." },
-    { en: "You write why. At least 12 words: +2. At least 40 words: +5.", fr: "Vous écrivez pourquoi. Au moins 12 mots : +2. Au moins 40 mots : +5." },
-    { en: "Every answer is public. We then multiply by 1.5.", fr: "Chaque réponse est publique. On multiplie ensuite par 1,5." },
-    { en: "If you are a supervisor, we multiply by 1.15. If you are a director, by 1.35. A counter job stays at 1.", fr: "Si vous êtes chef, on multiplie par 1,15. Si vous êtes directeur, par 1,35. Un poste au guichet reste à 1." },
-    { en: "If you change your story without saying why: minus 12. If you do not answer: 0 points, and boards go on your house.", fr: "Si vous changez d’histoire sans dire pourquoi : moins 12. Si vous ne répondez pas : 0 point, et des planches sur votre maison." },
-    { en: "The three people with the most points get a QR code. It says “I scored as HONEST with Mkweli”. It is not a medal.", fr: "Les trois personnes avec le plus de points reçoivent un code QR. Il dit « I scored as HONEST with Mkweli ». Ce n’est pas une médaille." },
-  ],
-  aboutLead: {
-    en: "Honesty League is a game from Mkweli, made in Mauritius. Neighbours, people who work for the State, people we vote for, and people in world offices answer the same monthly question. It is not the government. It is not the UN.",
-    fr: "La Ligue de l’honnêteté est un jeu de Mkweli, fait à Maurice. Les voisins, les agents de l’État, les personnes que nous élisons, et les gens dans les bureaux mondiaux répondent à la même question chaque mois. Ce n’est pas le gouvernement. Ce n’est pas l’ONU.",
-  },
-  aboutFrost: {
-    en: "A white house is not a crime. It means you stayed silent, you changed your story, or you did not sit down.",
-    fr: "Une maison blanche n’est pas un crime. Cela veut dire que vous avez gardé le silence, changé d’histoire, ou que vous ne vous êtes pas assis.",
-  },
-  aboutOpen: {
-    en: "Season 1. Testers can play now. Month 1 scoring starts 1 October 2026, 9:00 in Mauritius, and runs to 31 October. Then a new question each month. Site: honesty.mkweli.tech.",
-    fr: "Saison 1. Les testeurs peuvent jouer maintenant. Le score du mois 1 commence le 1er octobre 2026, 9 h 00 à Maurice, jusqu’au 31 octobre. Ensuite une nouvelle question chaque mois. Site : honesty.mkweli.tech.",
-  },
-  revealLead: {
-    en: "Here is who answered, and who did not. Empty chairs stay on the page.",
-    fr: "Voici qui a répondu, et qui n’a pas répondu. Les chaises vides restent sur la page.",
-  },
-  lockSeat: { en: "Lock this seat", fr: "Verrouiller ce siège" },
-  sitSeat: { en: "Sit here", fr: "S’asseoir ici" },
-  sitHere: { en: "Sit here if this is you", fr: "Asseyez-vous si c’est vous" },
-  predict: { en: "Lock this in", fr: "Je verrouille" },
-  lockedIn: { en: "Locked in", fr: "Verrouillé" },
-  weekClock: { en: "Month clock", fr: "Horloge du mois" },
-  untilOpen: { en: "Until the desk opens", fr: "Avant l’ouverture" },
-  untilClose: { en: "Until answers close", fr: "Avant la fermeture" },
-  airLive: { en: "ON AIR", fr: "EN DIRECT" },
-  airWait: { en: "REHEARSAL", fr: "RÉPÉTITION" },
-  admin: { en: "Desk", fr: "Bureau" },
-  adminLead: {
-    en: "Clear scores on this phone or computer. Other testers keep their own.",
-    fr: "Effacez les scores sur ce téléphone ou cet ordinateur. Les autres testeurs gardent les leurs.",
-  },
-  adminUser: { en: "Login", fr: "Identifiant" },
-  adminPass: { en: "Password", fr: "Mot de passe" },
-  adminSignIn: { en: "Sign in", fr: "Entrer" },
-  adminSignOut: { en: "Sign out", fr: "Sortir" },
-  adminBad: { en: "Wrong login or password.", fr: "Identifiant ou mot de passe faux." },
-  adminClearScores: { en: "Clear scores", fr: "Effacer les scores" },
-  adminClearAll: { en: "Clear scores and sit-down", fr: "Effacer scores et inscription" },
-  adminCleared: { en: "Cleared on this device.", fr: "Effacé sur cet appareil." },
-  adminHouse: { en: "Name on this device", fr: "Nom sur cet appareil" },
-  adminNone: { en: "No name yet", fr: "Pas encore de nom" },
-};
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-const BAND_META = {
-  "front-line": { en: "Counter", fr: "Guichet" },
-  middle: { en: "Supervisor", fr: "Chef" },
-  senior: { en: "Director", fr: "Directeur" },
-};
-const FAMILY_META = {
-  shared: { en: "All groups", fr: "Tous les groupes" },
-  service: { en: "Government", fr: "État" },
-  mandate: { en: "UN", fr: "ONU" },
-};
+const PALETTE = { void: 0x08080c, cyan: 0x00e5ff, green: 0x3dff9a, amber: 0xe07030 };
+const DECAY = new THREE.Color(PALETTE.amber);
+const CYAN = new THREE.Color(PALETTE.cyan);
+const GREEN = new THREE.Color(PALETTE.green);
+const NDC = new THREE.Vector2();
+const HIT = new THREE.Color();
+const SAVE_KEY = "village-grid-save";
+const MONTH_MS = (6 * 24 + 14) * 60 * 60 * 1000 + 22 * 60 * 1000;
+const SECTOR_LABEL = { public: "Public", civil: "Civil Service", government: "Government" };
 
-const SEATS = ["gallery", "service", "chamber", "mandate"];
-const BANDS = ["front-line", "middle", "senior"];
-const HONEST_RANKS = 3;
-const HONEST_LINE = "I scored as HONEST with Mkweli";
-const KEY = "honesty-league";
-const ADMIN_SESSION = "honesty-admin-v1";
-const ADMIN_HASH = "22c156c9fbf40329168640b533954105c1b20c1504ef577f7092728d9fbd4db2";
+const CONTRACTORS = [
+  { id: "kuzin", name: "Kuzin", sector: "civil", score: 420, holding: "District Clinic" },
+  { id: "cheri", name: "Cheri", sector: "public", score: 310, holding: "Market Shed" },
+  { id: "malin", name: "Malin", sector: "government", score: 280, holding: "Civic Hall" },
+  { id: "kokin", name: "Kokin", sector: "public", score: 190, holding: "Bus Shelter" },
+];
 
-async function sha256Hex(text) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+const HOUSES = [
+  { id: "cwa-pump", name: "CWA Pump House", hint: "Water Grid Renewal · SPEC-01", variant: "pump", x: 0.2, z: 3.4, cost: 80, renovated: false, owner: null, ownerSector: null },
+  { id: "block-a", name: "Terre Rouge Block A", hint: "Cité housing · leaking roofs", variant: "block", x: -4.2, z: 1.6, cost: 60, renovated: false, owner: null, ownerSector: null },
+  { id: "block-b", name: "Terre Rouge Block B", hint: "Cité housing · failed wiring", variant: "block", x: 4.3, z: 1.4, cost: 60, renovated: false, owner: null, ownerSector: null },
+  { id: "market", name: "Market Shed", hint: "Held by Cheri · Public", variant: "market", x: -3.6, z: -2.1, cost: 50, renovated: true, owner: "Cheri", ownerSector: "public" },
+  { id: "clinic", name: "District Clinic", hint: "Held by Kuzin · Civil Service", variant: "clinic", x: 3.9, z: -2.3, cost: 90, renovated: true, owner: "Kuzin", ownerSector: "civil" },
+  { id: "school", name: "Primary School", hint: "Pamplemousses zone 3", variant: "school", x: -1.4, z: -4.8, cost: 70, renovated: false, owner: null, ownerSector: null },
+  { id: "hall", name: "Civic Hall", hint: "Held by Malin · Government", variant: "hall", x: 1.9, z: -4.9, cost: 85, renovated: true, owner: "Malin", ownerSector: "government" },
+  { id: "bus", name: "Bus Shelter", hint: "Held by Kokin · Public", variant: "bus", x: 5.4, z: 3.2, cost: 40, renovated: true, owner: "Kokin", ownerSector: "public" },
+  { id: "power", name: "CEB Substation", hint: "Street lighting feed", variant: "power", x: -5.6, z: 3.3, cost: 90, renovated: false, owner: null, ownerSector: null },
+  { id: "drain", name: "Drainage Node", hint: "Land Drainage Authority", variant: "drain", x: 0.1, z: 6.0, cost: 50, renovated: false, owner: null, ownerSector: null },
+  { id: "light", name: "Street Lighting Mast", hint: "CEB · classified road", variant: "light", x: 6.4, z: -0.4, cost: 40, renovated: false, owner: null, ownerSector: null },
+  { id: "community", name: "Community Centre", hint: "Village committee hall", variant: "community", x: -6.2, z: -0.6, cost: 70, renovated: false, owner: null, ownerSector: null },
+];
+
+const TENDERS = [
+  {
+    id: "spec-01", week: 1, spec: "SPEC-01", title: "Water Grid Renewal",
+    question: "A subcontractor offers an off-books rebate to expedite materials. Under the transparency framework, how must this be logged?",
+    options: [
+      { id: "A", text: "Accept it as a CWA facilitation discount and offset it against the Terre Rouge connection fee, keeping the rebate off the tender file." },
+      { id: "B", text: "The rebate must not be accepted; it must be fully disclosed and rejected as a compliance violation." },
+      { id: "C", text: "Park the sum in a Pamplemousses District Council village-works account and spend it later on informal community improvements." },
+      { id: "D", text: "File it as a customary contractor commission under the Public Procurement Act, visible only inside the Ministry of Finance." },
+    ],
+    correct: "B", rewardMaterial: 100, rewardIntegrity: 50,
+  },
+  {
+    id: "spec-02", week: 2, spec: "SPEC-02", title: "CEB Street Lighting",
+    question: "A supplier offers unregistered LED fittings at 40% below the approved schedule of rates, cash-in-hand, if the inspection sheet is signed tonight. What is the lawful action?",
+    options: [
+      { id: "A", text: "Sign the sheet and record the saving later as a CEB energy-efficiency rebate after the poles are up." },
+      { id: "B", text: "Refuse the fittings, disclose the offer in full, and keep the approved schedule of rates." },
+      { id: "C", text: "Accept the fittings on cité side streets only and keep approved stock on the classified road." },
+      { id: "D", text: "Hold the cash in the village committee safe until the National Audit Office asks for it." },
+    ],
+    correct: "B", rewardMaterial: 100, rewardIntegrity: 50,
+  },
+  {
+    id: "spec-03", week: 3, spec: "SPEC-03", title: "Monsoon Culverts",
+    question: "The contractor proposes using uncertified culvert pipes leftover from a private villa in Grand Baie to beat the monsoon deadline. How must this be handled?",
+    options: [
+      { id: "A", text: "Approve a variation order and relabel the pipes as National Development Unit emergency stock." },
+      { id: "B", text: "Reject the uncertified pipes, disclose the proposal, and keep the specified certified culverts." },
+      { id: "C", text: "Use the leftover pipes under the CWA reserve and replace them after cyclone season." },
+      { id: "D", text: "Split the lot: certified pipes on the classified road, leftovers inside the cités." },
+    ],
+    correct: "B", rewardMaterial: 100, rewardIntegrity: 50,
+  },
+];
+
+const LINE_VERT = `uniform float uTime; uniform float uRenovate; uniform float uSeed;
+void main(){ vec3 p=position; float g=1.0-uRenovate; float n=sin(dot(p.xz,vec2(12.1,7.3))+uTime*19.0+uSeed); float spike=step(0.92,n);
+p.x+=g*spike*0.14*sin(uTime*47.0); p.y+=g*spike*0.05*sin(uTime*31.0); gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);}`;
+const LINE_FRAG = `uniform float uTime; uniform float uRenovate; uniform vec3 uDecayColor; uniform vec3 uCleanColor;
+void main(){ float flicker=1.0-(1.0-uRenovate)*step(0.88,fract(sin(uTime*11.3)*43758.5453))*0.72;
+vec3 col=mix(uDecayColor,uCleanColor,uRenovate); gl_FragColor=vec4(col, mix(0.55,1.0,uRenovate)*flicker);}`;
+const GRID_VERT = `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`;
+const GRID_FRAG = `uniform float uIntegrity; varying vec2 vUv;
+void main(){ vec2 p=vUv*2.0-1.0; float dist=length(p); float gx=abs(fract(p.x*14.0)-0.5); float gz=abs(fract(p.y*14.0)-0.5);
+float line=1.0-smoothstep(0.0,0.045,min(gx,gz)); vec3 col=mix(vec3(0.88,0.42,0.16),vec3(0.0,0.9,1.0),uIntegrity);
+gl_FragColor=vec4(col, line*(1.0-smoothstep(0.42,0.98,dist))*0.42);}`;
+const WATER_FRAG = `uniform float uTime; varying vec2 vUv;
+void main(){ float w=sin(vUv.x*28.0+uTime*1.8)*0.5+0.5; vec3 col=mix(vec3(0.02,0.18,0.22),vec3(0.0,0.85,1.0),w*0.4); gl_FragColor=vec4(col,0.32);}`;
+
+function hashId(id) { let h = 7; for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0; return Math.abs(h); }
+function pad(n) { return String(Math.max(0, n)).padStart(2, "0"); }
+function formatRemain(ms) {
+  const t = Math.max(0, Math.floor(ms / 1000));
+  return `${pad(Math.floor(t / 86400))}d ${pad(Math.floor((t % 86400) / 3600))}h ${pad(Math.floor((t % 3600) / 60))}m`;
 }
-async function checkAdminLogin(user, password) {
-  const hex = await sha256Hex(`${String(user || "").trim()}:${password}`);
-  return hex === ADMIN_HASH;
+
+function createLineMat(seed) {
+  return new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: {
+      uTime: { value: 0 }, uRenovate: { value: 0 }, uSeed: { value: seed },
+      uDecayColor: { value: DECAY.clone() }, uCleanColor: { value: CYAN.clone() },
+    },
+    vertexShader: LINE_VERT, fragmentShader: LINE_FRAG,
+  });
 }
-function adminIsIn() {
-  try {
-    return sessionStorage.getItem(ADMIN_SESSION) === "1";
-  } catch {
-    return false;
+
+function addBox(group, geos, lineMat, fillMat, x, y, z, w, h, d) {
+  const geo = new THREE.BoxGeometry(w, h, d);
+  const edges = new THREE.EdgesGeometry(geo);
+  geos.push(geo, edges);
+  const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z);
+  const lines = new THREE.LineSegments(edges, lineMat); lines.position.set(x, y, z);
+  group.add(fill, lines);
+}
+function addCyl(group, geos, lineMat, fillMat, x, y, z, r, h, seg = 6) {
+  const geo = new THREE.CylinderGeometry(r, r, h, seg);
+  const edges = new THREE.EdgesGeometry(geo);
+  geos.push(geo, edges);
+  const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z);
+  const lines = new THREE.LineSegments(edges, lineMat); lines.position.set(x, y, z);
+  group.add(fill, lines);
+}
+function addCone(group, geos, lineMat, fillMat, x, y, z, r, h, rotY = 0) {
+  const geo = new THREE.ConeGeometry(r, h, 4);
+  const edges = new THREE.EdgesGeometry(geo);
+  geos.push(geo, edges);
+  const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z); fill.rotation.y = rotY;
+  const lines = new THREE.LineSegments(edges, lineMat); lines.position.set(x, y, z); lines.rotation.y = rotY;
+  group.add(fill, lines);
+}
+
+function buildVariant(variant, group, geos, lineMat, fillMat) {
+  switch (variant) {
+    case "block":
+      addBox(group, geos, lineMat, fillMat, 0, 0.7, 0, 1.7, 1.4, 1.25);
+      addCone(group, geos, lineMat, fillMat, 0, 1.7, 0, 1.25, 0.65, Math.PI / 4);
+      addCyl(group, geos, lineMat, fillMat, 0.45, 2.15, 0.2, 0.12, 0.45, 5);
+      return { w: 2.1, h: 2.4, d: 1.7 };
+    case "pump":
+      addBox(group, geos, lineMat, fillMat, 0, 0.22, 0, 1.6, 0.44, 1.6);
+      addCyl(group, geos, lineMat, fillMat, -0.25, 1.15, 0, 0.52, 1.5, 8);
+      addBox(group, geos, lineMat, fillMat, 0.55, 0.7, 0, 0.7, 0.9, 0.7);
+      addBox(group, geos, lineMat, fillMat, 0.2, 0.55, 0.7, 0.12, 0.12, 1.1);
+      return { w: 2.0, h: 2.0, d: 2.0 };
+    case "clinic":
+      addBox(group, geos, lineMat, fillMat, 0, 0.65, 0, 2.3, 1.3, 1.45);
+      addBox(group, geos, lineMat, fillMat, 0, 1.38, 0, 2.4, 0.18, 1.55);
+      addBox(group, geos, lineMat, fillMat, 0, 1.85, 0, 0.18, 0.7, 0.18);
+      addBox(group, geos, lineMat, fillMat, 0, 1.85, 0, 0.7, 0.18, 0.18);
+      return { w: 2.6, h: 2.3, d: 1.8 };
+    case "hall":
+      addBox(group, geos, lineMat, fillMat, 0, 1.05, 0, 1.9, 2.1, 1.5);
+      addCyl(group, geos, lineMat, fillMat, -0.7, 0.7, 0.85, 0.1, 1.4, 5);
+      addCyl(group, geos, lineMat, fillMat, 0.7, 0.7, 0.85, 0.1, 1.4, 5);
+      addBox(group, geos, lineMat, fillMat, 0, 2.25, 0, 2.1, 0.22, 1.7);
+      return { w: 2.4, h: 2.5, d: 1.9 };
+    case "school":
+      addBox(group, geos, lineMat, fillMat, 0, 0.6, 0, 2.5, 1.2, 1.15);
+      addBox(group, geos, lineMat, fillMat, 0, 1.3, 0, 2.6, 0.2, 1.25);
+      addCyl(group, geos, lineMat, fillMat, 1.15, 1.7, 0.3, 0.05, 1.1, 4);
+      return { w: 2.8, h: 2.5, d: 1.5 };
+    case "market":
+      addCyl(group, geos, lineMat, fillMat, -0.9, 0.55, -0.55, 0.08, 1.1, 4);
+      addCyl(group, geos, lineMat, fillMat, 0.9, 0.55, -0.55, 0.08, 1.1, 4);
+      addCyl(group, geos, lineMat, fillMat, -0.9, 0.55, 0.55, 0.08, 1.1, 4);
+      addCyl(group, geos, lineMat, fillMat, 0.9, 0.55, 0.55, 0.08, 1.1, 4);
+      addBox(group, geos, lineMat, fillMat, 0, 1.2, 0, 2.2, 0.12, 1.5);
+      addBox(group, geos, lineMat, fillMat, 0, 0.35, 0, 1.4, 0.35, 0.7);
+      return { w: 2.4, h: 1.5, d: 1.8 };
+    case "bus":
+      addBox(group, geos, lineMat, fillMat, 0, 0.55, -0.35, 1.6, 1.1, 0.12);
+      addBox(group, geos, lineMat, fillMat, 0, 1.15, 0, 1.7, 0.1, 1.1);
+      addCyl(group, geos, lineMat, fillMat, -0.7, 0.55, 0.4, 0.07, 1.1, 4);
+      addCyl(group, geos, lineMat, fillMat, 0.7, 0.55, 0.4, 0.07, 1.1, 4);
+      return { w: 1.9, h: 1.4, d: 1.3 };
+    case "power":
+      addBox(group, geos, lineMat, fillMat, 0, 0.55, 0, 1.3, 1.1, 1.1);
+      addCyl(group, geos, lineMat, fillMat, -0.85, 0.55, 0.2, 0.28, 1.1, 6);
+      addCyl(group, geos, lineMat, fillMat, 0.85, 0.55, 0.2, 0.28, 1.1, 6);
+      return { w: 2.2, h: 1.8, d: 1.4 };
+    case "drain":
+      addBox(group, geos, lineMat, fillMat, 0, 0.28, 0, 1.8, 0.55, 1.3);
+      addCyl(group, geos, lineMat, fillMat, -0.9, 0.22, 0, 0.16, 1.2, 6);
+      addCyl(group, geos, lineMat, fillMat, 0.9, 0.22, 0, 0.16, 1.2, 6);
+      return { w: 2.2, h: 0.9, d: 1.5 };
+    case "light":
+      addCyl(group, geos, lineMat, fillMat, 0, 1.4, 0, 0.08, 2.8, 5);
+      addBox(group, geos, lineMat, fillMat, 0, 2.85, 0, 0.45, 0.2, 0.45);
+      addCone(group, geos, lineMat, fillMat, 0, 2.65, 0, 0.35, 0.25);
+      return { w: 1.0, h: 3.1, d: 1.0 };
+    default:
+      addBox(group, geos, lineMat, fillMat, -0.35, 0.7, 0, 1.8, 1.4, 1.2);
+      addBox(group, geos, lineMat, fillMat, 0.85, 0.5, 0.55, 1.1, 1.0, 1.1);
+      addBox(group, geos, lineMat, fillMat, 0.1, 1.5, 0.2, 2.2, 0.16, 1.7);
+      return { w: 2.6, h: 1.8, d: 2.0 };
   }
 }
-function setAdminIn(on) {
-  try {
-    if (on) sessionStorage.setItem(ADMIN_SESSION, "1");
-    else sessionStorage.removeItem(ADMIN_SESSION);
-  } catch {
-    /* ignore */
-  }
+
+function makeHouse(house) {
+  const group = new THREE.Group();
+  group.position.set(house.x, 0, house.z);
+  const seed = hashId(house.id) % 1000;
+  const lineMat = createLineMat(seed);
+  const fillMat = new THREE.MeshBasicMaterial({ color: DECAY, transparent: true, opacity: 0.07, depthWrite: false });
+  const geos = [];
+  const size = buildVariant(house.variant, group, geos, lineMat, fillMat);
+
+  const sweepGeo = new THREE.BoxGeometry(size.w * 1.05, 0.07, size.d * 1.05);
+  geos.push(sweepGeo);
+  const sweep = new THREE.Mesh(sweepGeo, new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+  sweep.visible = false;
+  group.add(sweep);
+
+  const nodeGeo = new THREE.OctahedronGeometry(0.16, 0);
+  geos.push(nodeGeo);
+  const node = new THREE.Mesh(nodeGeo, new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
+  node.position.y = size.h + 0.35;
+  group.add(node);
+
+  const ringGeo = new THREE.RingGeometry(size.w * 0.55, size.w * 0.55 + 0.06, 32);
+  geos.push(ringGeo);
+  const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 0.03;
+  group.add(ring);
+
+  const hitGeo = new THREE.BoxGeometry(size.w, size.h, size.d);
+  geos.push(hitGeo);
+  const hit = new THREE.Mesh(hitGeo, new THREE.MeshBasicMaterial({ visible: false }));
+  hit.position.y = size.h / 2;
+  hit.userData.houseId = house.id;
+  group.add(hit);
+
+  return { id: house.id, group, hit, lineMat, fillMat, sweep, node, ring, renovate: house.renovated ? 1 : 0, sweepT: house.renovated ? 1 : 0, height: size.h, seed, geos };
 }
-function clearStoryKeys() {
-  try {
-    sessionStorage.removeItem("honesty-street-v2");
-    const drop = [];
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const key = sessionStorage.key(i);
-      if (key && key.startsWith("honesty-story-")) drop.push(key);
+
+class VillageEngine {
+  constructor(canvas, houses, hooks) {
+    this.canvas = canvas;
+    this.hooks = hooks;
+    this.hoverId = null;
+    this.hoveredId = null;
+    this.selectedId = null;
+    this.integrity = 0.32;
+    this.reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this.pointer = { x: 0, y: 0, inside: false };
+    this.houseState = houses;
+    this.visuals = new Map();
+    this.hits = [];
+    this.last = 0;
+    this.disposed = false;
+
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
+    this.renderer.setClearColor(PALETTE.void, 1);
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+
+    this.scene = new THREE.Scene();
+    this.scene.fog = new THREE.Fog(PALETTE.void, 24, 52);
+    this.scene.background = new THREE.Color(PALETTE.void);
+    this.camera = new THREE.PerspectiveCamera(46, 1, 0.1, 80);
+    this.camera.position.set(11.2, 7.4, 11.2);
+
+    this.controls = new OrbitControls(this.camera, canvas);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.06;
+    this.controls.enablePan = false;
+    this.controls.autoRotate = !this.reduced;
+    this.controls.autoRotateSpeed = 0.35;
+    this.controls.minDistance = 7;
+    this.controls.maxDistance = 20;
+    this.controls.minPolarAngle = 0.55;
+    this.controls.maxPolarAngle = 1.2;
+    this.controls.target.set(0, 0.6, 0);
+
+    this.scene.add(new THREE.AmbientLight(0x8a96a4, 0.5));
+    this.scene.add(new THREE.HemisphereLight(0x1a3348, 0x1a0c08, 0.55));
+    const key = new THREE.DirectionalLight(0x8ad4ff, 0.55);
+    key.position.set(8, 14, 4);
+    this.scene.add(key);
+    const fill = new THREE.DirectionalLight(0xe07030, 0.18);
+    fill.position.set(-10, 6, -6);
+    this.scene.add(fill);
+
+    this.gridMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uIntegrity: { value: 0.32 } }, vertexShader: GRID_VERT, fragmentShader: GRID_FRAG });
+    const ground = new THREE.Mesh(new THREE.CircleGeometry(16, 64), this.gridMat);
+    ground.rotation.x = -Math.PI / 2;
+    this.scene.add(ground);
+
+    this.waterMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uTime: { value: 0 } }, vertexShader: GRID_VERT, fragmentShader: WATER_FRAG });
+    const canal = new THREE.Mesh(new THREE.PlaneGeometry(22, 1.15), this.waterMat);
+    canal.rotation.x = -Math.PI / 2;
+    canal.position.set(0, 0.02, 4.7);
+    this.scene.add(canal);
+
+    const plaza = new THREE.Mesh(new THREE.RingGeometry(1.55, 1.68, 48), new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false }));
+    plaza.rotation.x = -Math.PI / 2;
+    plaza.position.y = 0.04;
+    this.plazaRing = plaza;
+    this.scene.add(plaza);
+
+    const rainCount = 420;
+    this.rainPositions = new Float32Array(rainCount * 3);
+    for (let i = 0; i < rainCount; i++) {
+      this.rainPositions[i * 3] = (Math.random() - 0.5) * 36;
+      this.rainPositions[i * 3 + 1] = Math.random() * 16;
+      this.rainPositions[i * 3 + 2] = (Math.random() - 0.5) * 36;
     }
-    drop.forEach((key) => sessionStorage.removeItem(key));
-  } catch {
-    /* ignore */
+    const rainGeo = new THREE.BufferGeometry();
+    rainGeo.setAttribute("position", new THREE.BufferAttribute(this.rainPositions, 3));
+    this.rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0x7ec8d4, size: 0.035, transparent: true, opacity: 0.45, depthWrite: false }));
+    this.rain.visible = !this.reduced;
+    this.scene.add(this.rain);
+
+    const skyMat = new THREE.MeshBasicMaterial({ color: 0x101018, transparent: true, opacity: 0.9 });
+    const skyLine = new THREE.LineBasicMaterial({ color: PALETTE.amber, transparent: true, opacity: 0.18 });
+    for (let i = 0; i < 18; i++) {
+      const a = (i / 18) * Math.PI * 2 + 0.2;
+      const r = 17 + (i % 3) * 1.4;
+      const h = 1.6 + ((i * 17) % 7) * 0.55;
+      const w = 1.1 + (i % 4) * 0.35;
+      const geo = new THREE.BoxGeometry(w, h, w);
+      const mesh = new THREE.Mesh(geo, skyMat);
+      mesh.position.set(Math.cos(a) * r, h / 2, Math.sin(a) * r);
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), skyLine);
+      edges.position.copy(mesh.position);
+      this.scene.add(mesh, edges);
+    }
+
+    for (const house of houses) {
+      const visual = makeHouse(house);
+      this.visuals.set(house.id, visual);
+      this.scene.add(visual.group);
+      this.hits.push(visual.hit);
+    }
+
+    this.observer = new ResizeObserver(() => this.resize());
+    this.observer.observe(canvas.parentElement ?? canvas);
+    this.resize();
+    canvas.addEventListener("pointermove", this.onMove);
+    canvas.addEventListener("pointerdown", this.onDown);
+    canvas.addEventListener("pointerleave", this.onLeave);
+    this.renderer.setAnimationLoop(this.tick);
   }
-}
 
-const state = {
-  lang: "en",
-  seat: null,
-  circuitId: null,
-  band: null,
-  handle: "",
-  phonePrivate: "",
-  answers: [],
-  points: 0,
-  choiceId: "",
-  lockedChoice: "",
-  lockedSeat: "",
-  reason: "",
-  filter: "all",
-};
-
-let DATA = { seats: [], circuits: [], houses: [], week: null };
-
-function t(copy) {
-  if (!copy) return "";
-  if (typeof copy === "string") return copy;
-  return copy[state.lang] || copy.en || "";
-}
-
-function wordCount(text) {
-  return text.trim().split(/\s+/).filter(Boolean).length;
-}
-
-function parseMuPhone(raw) {
-  const digits = String(raw || "").replace(/\D/g, "");
-  if (digits.startsWith("230") && digits.length === 11) return `+${digits}`;
-  if (digits.length === 8) return `+230${digits}`;
-  return null;
-}
-
-function parseHouseName(raw) {
-  const name = String(raw || "")
-    .trim()
-    .replace(/\s+/g, " ");
-  if (name.length < 2 || name.length > 40) return null;
-  if (parseMuPhone(name)) return null;
-  const digits = name.replace(/\D/g, "");
-  if (digits.length >= 6) return null;
-  return name;
-}
-
-function scoreAnswer(hasChoice, reason, band) {
-  if (!hasChoice) return 0;
-  let base = 10;
-  const words = wordCount(reason);
-  if (words >= 40) base += 5;
-  else if (words >= 12) base += 2;
-  const bandMod = band === "senior" ? 1.35 : band === "middle" ? 1.15 : 1;
-  return Math.max(0, Math.round(base * 1.5 * bandMod * 10) / 10);
-}
-
-function frostFromPoints(points, empty) {
-  if (empty) return 0.92;
-  const clamped = Math.min(100, Math.max(0, points));
-  return 1 - clamped / 100;
-}
-
-function loadLocal() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(KEY) || "null");
-    if (!raw) return;
-    Object.assign(state, {
-      lang: raw.lang || "en",
-      seat: raw.seat || null,
-      circuitId: raw.circuitId || null,
-      band: raw.band || null,
-      handle: raw.handle || "",
-      phonePrivate: raw.phonePrivate || "",
-      answers: raw.answers || [],
-      points: raw.points || 0,
-    });
-  } catch {
-    /* ignore */
+  sync(next) {
+    this.houseState = next.houses;
+    this.hoveredId = next.hoveredId;
+    this.selectedId = next.selectedId;
+    this.integrity = Math.min(1, next.integrity / 180);
+    this.reduced = next.reducedMotion;
+    this.controls.autoRotate = !next.reducedMotion;
+    this.rain.visible = !next.reducedMotion;
   }
+
+  resize = () => {
+    const w = Math.max(1, this.canvas.clientWidth);
+    const h = Math.max(1, this.canvas.clientHeight);
+    this.camera.aspect = w / h;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    this.renderer.setSize(w, h, false);
+  };
+
+  onMove = (e) => {
+    const r = this.canvas.getBoundingClientRect();
+    this.pointer.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+    this.pointer.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+    this.pointer.inside = true;
+  };
+  onDown = (e) => { if (e.button === 0) { const id = this.pick(); if (id) this.hooks.onSelect(id); } };
+  onLeave = () => {
+    this.pointer.inside = false;
+    if (this.hoverId) { this.hoverId = null; this.hooks.onHover(null); }
+    this.canvas.style.cursor = "default";
+  };
+  pick() {
+    NDC.set(this.pointer.x, this.pointer.y);
+    this.raycaster ??= new THREE.Raycaster();
+    this.raycaster.setFromCamera(NDC, this.camera);
+    const hits = this.raycaster.intersectObjects(this.hits, false);
+    const id = hits[0]?.object.userData.houseId;
+    return typeof id === "string" ? id : null;
+  }
+
+  tick = (time) => {
+    const dt = Math.min((time - this.last) / 1000, 0.1) || 0.016;
+    this.last = time;
+    const t = time * 0.001;
+    if (this.pointer.inside) {
+      const id = this.pick();
+      if (id !== this.hoverId) { this.hoverId = id; this.hooks.onHover(id); }
+      this.canvas.style.cursor = id ? "pointer" : "grab";
+    }
+    this.controls.update();
+    this.gridMat.uniforms.uIntegrity.value = this.integrity;
+    this.waterMat.uniforms.uTime.value = t;
+    this.plazaRing.rotation.z = t * 0.12;
+    this.plazaRing.material.opacity = 0.18 + this.integrity * 0.25;
+    if (!this.reduced) {
+      for (let i = 0; i < this.rainPositions.length; i += 3) {
+        this.rainPositions[i + 1] -= 7.5 * dt;
+        if (this.rainPositions[i + 1] < 0) this.rainPositions[i + 1] = 16;
+      }
+      this.rain.geometry.getAttribute("position").needsUpdate = true;
+    }
+    for (const house of this.houseState) {
+      const v = this.visuals.get(house.id);
+      if (!v) continue;
+      const hovered = this.hoveredId === house.id || this.hoverId === house.id;
+      const selected = this.selectedId === house.id;
+      const target = house.renovated || hovered ? 1 : 0;
+      v.renovate += (target - v.renovate) * (1 - Math.exp(-7 * dt));
+      v.lineMat.uniforms.uTime.value = t;
+      v.lineMat.uniforms.uRenovate.value = v.renovate;
+      v.lineMat.uniforms.uCleanColor.value.copy(house.renovated ? GREEN : CYAN);
+      HIT.copy(house.renovated ? GREEN : hovered ? CYAN : DECAY);
+      v.fillMat.color.copy(HIT);
+      v.fillMat.opacity = 0.05 + v.renovate * 0.22;
+      if (hovered || house.renovated) v.sweepT = Math.min(1, v.sweepT + dt * 1.35);
+      else v.sweepT = Math.max(0, v.sweepT - dt * 2.2);
+      const p = v.sweepT;
+      v.sweep.material.color.copy(house.renovated ? GREEN : CYAN);
+      v.sweep.visible = p > 0.02 && p < 0.98;
+      v.sweep.position.y = 0.1 + p * v.height;
+      v.sweep.material.opacity = 0.7 * (1 - Math.abs(p - 0.5) * 1.5);
+      v.node.visible = !house.renovated;
+      v.node.position.y = v.height + 0.35 + Math.sin(t * 2.4 + v.seed) * 0.08;
+      v.node.rotation.y = t * 1.4;
+      v.node.material.opacity = hovered ? 1 : 0.55;
+      v.ring.material.color.copy(house.renovated ? GREEN : CYAN);
+      v.ring.material.opacity = selected ? 0.85 : hovered ? 0.4 : house.renovated ? 0.18 : 0;
+      v.ring.rotation.z = t * 0.6;
+      if (!house.renovated && !this.reduced && v.renovate < 0.75) {
+        const glitch = Math.sin(t * 23 + v.seed) > 0.94;
+        v.group.position.x = house.x + (glitch ? Math.sin(t * 90) * 0.045 : 0);
+      } else v.group.position.x = house.x;
+    }
+    this.renderer.render(this.scene, this.camera);
+  };
 }
 
-function saveLocal() {
-  localStorage.setItem(
-    KEY,
-    JSON.stringify({
-      lang: state.lang,
-      seat: state.seat,
-      circuitId: state.circuitId,
-      band: state.band,
-      handle: state.handle,
-      phonePrivate: state.phonePrivate,
-      answers: state.answers,
-      points: state.points,
-    }),
-  );
-}
-
-function selfHouse() {
-  if (!state.answers.length && !state.points) return null;
-  const last = state.answers.at(-1);
+function defaultState() {
   return {
-    id: "self",
-    handle: state.handle || (state.lang === "fr" ? "Vous" : "You"),
-    seat: state.seat || "gallery",
-    circuitId: state.circuitId || undefined,
-    points: state.points,
-    lastChoice: last?.choiceId,
-    lastReason: last ? { en: last.reason, fr: last.reason } : undefined,
+    phase: "boot", sector: null, callsign: "OP-NODE", material: 0, integrity: 32, score: 0,
+    weekIndex: 0, results: [], houses: HOUSES.map((h) => ({ ...h })),
+    hoveredId: null, selectedId: null, mobileTab: "tender", resetAt: Date.now() + MONTH_MS, toast: null,
   };
 }
 
-function field() {
-  const me = selfHouse();
-  return me ? [me, ...DATA.houses.filter((h) => h.id !== me.id)] : DATA.houses.slice();
-}
-
-function honestCutoff(houses) {
-  const ranked = houses.filter((h) => !h.emptyChair && h.points > 0).sort((a, b) => b.points - a.points);
-  if (!ranked.length) return Infinity;
-  return ranked[Math.min(HONEST_RANKS, ranked.length) - 1].points;
-}
-
-function isHonest(house, houses) {
-  if (house.emptyChair || house.points <= 0) return false;
-  return house.points >= honestCutoff(houses);
-}
-
-function variantFor() {
-  const variants = DATA.week?.variants || [];
-  if (state.seat === "chamber") return variants.find((v) => v.circuitId === "chamber") || variants[0];
-  if (state.circuitId) return variants.find((v) => v.circuitId === state.circuitId) || variants[0];
-  return variants[0];
-}
-
-function circuitsForSeat() {
-  if (state.seat === "mandate") return DATA.circuits.filter((c) => c.family === "mandate" || c.family === "shared");
-  if (state.seat === "service") return DATA.circuits.filter((c) => c.family === "service" || c.family === "shared");
-  return [];
-}
-
-function seatMeta(id) {
-  return DATA.seats.find((s) => s.id === id) || { title: { en: id }, who: { en: "" } };
-}
-
-function route() {
-  const hash = (location.hash || "#/").replace(/^#/, "") || "/";
-  const parts = hash.split("/").filter(Boolean);
-  return { path: "/" + parts.join("/"), parts };
-}
-
-function go(to) {
-  location.hash = to.startsWith("#") ? to : "#" + to;
-}
-
-function storyPlay(chapter) {
+function loadState() {
   try {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
-    return sessionStorage.getItem("honesty-story-" + chapter) !== "1";
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return defaultState();
+    const data = JSON.parse(raw);
+    if (data.version !== 1) return defaultState();
+    return { ...defaultState(), ...data, hoveredId: null, selectedId: null, toast: null };
   } catch {
-    return false;
+    return defaultState();
   }
 }
-function markStory(chapter, ms) {
+
+function persist(state) {
   try {
-    window.setTimeout(() => sessionStorage.setItem("honesty-story-" + chapter, "1"), ms);
-  } catch {
-    /* ignore */
-  }
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      version: 1, phase: state.phase, sector: state.sector, callsign: state.callsign,
+      material: state.material, integrity: state.integrity, score: state.score,
+      weekIndex: state.weekIndex, results: state.results, houses: state.houses, resetAt: state.resetAt,
+    }));
+  } catch { /* ignore */ }
 }
 
-function seatMark(seat, delay) {
-  const delayStyle = delay ? ` style="animation-delay:${delay}"` : "";
-  if (seat === "gallery") {
-    return `<svg class="seat-mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"${delayStyle}>
-      <circle pathLength="1" cx="8" cy="10" r="2.2"/>
-      <path pathLength="1" d="M5 22 Q8 14 11 22"/>
-      <circle pathLength="1" cx="16" cy="9" r="2.5"/>
-      <path pathLength="1" d="M12 22 Q16 13 20 22"/>
-      <circle pathLength="1" cx="24" cy="10" r="2.2"/>
-      <path pathLength="1" d="M21 22 Q24 14 27 22"/>
-    </svg>`;
-  }
-  if (seat === "service") {
-    return `<svg class="seat-mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"${delayStyle}>
-      <path pathLength="1" d="M5 11 h22 v12 h-22 z"/>
-      <path pathLength="1" d="M5 16 h22"/>
-      <path pathLength="1" d="M16 11 v12"/>
-    </svg>`;
-  }
-  if (seat === "chamber") {
-    return `<svg class="seat-mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"${delayStyle}>
-      <path pathLength="1" d="M11 6 h10 v8 h-10 z"/>
-      <path pathLength="1" d="M8 14 h16 v6 h-16 z"/>
-      <path pathLength="1" d="M11 20 v6"/>
-      <path pathLength="1" d="M21 20 v6"/>
-    </svg>`;
-  }
-  return `<svg class="seat-mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"${delayStyle}>
-    <circle pathLength="1" cx="16" cy="16" r="8"/>
-    <path pathLength="1" d="M16 6 v3"/>
-    <path pathLength="1" d="M16 23 v3"/>
-    <path pathLength="1" d="M6 16 h3"/>
-    <path pathLength="1" d="M23 16 h3"/>
-  </svg>`;
-}
-
-function glass(points, empty, compact, thawDelay) {
-  const frost = frostFromPoints(points, empty);
-  const clear = 1 - frost;
-  const uid = "g" + Math.random().toString(36).slice(2, 8);
-  const w = compact ? 88 : 140;
-  const chair = empty
-    ? `<g stroke="#8a9a92" stroke-width="1.2" fill="none" stroke-linecap="round"><rect x="33" y="80" width="14" height="7"/><line x1="35" y1="87" x2="35" y2="95"/><line x1="45" y1="87" x2="45" y2="95"/><line x1="33" y1="80" x2="33" y2="72"/></g>`
-    : `<g stroke="#1c4a3c" stroke-width="1.2" fill="none" stroke-linecap="round"><rect x="33" y="80" width="14" height="7"/><line x1="35" y1="87" x2="35" y2="95"/><line x1="45" y1="87" x2="45" y2="95"/><line x1="33" y1="80" x2="33" y2="72"/><circle cx="40" cy="70" r="2.5" fill="#1c4a3c" stroke="none"/><path d="M35 80 Q40 74 45 80"/></g>`;
-  const win = (x) =>
-    empty
-      ? `<g><rect x="${x}" y="48" width="12" height="14" fill="none" stroke="#1c4a3c" stroke-width="1"/><line x1="${x}" y1="48" x2="${x + 12}" y2="62" stroke="#5a6b63"/><line x1="${x + 12}" y1="48" x2="${x}" y2="62" stroke="#5a6b63"/></g>`
-      : `<rect x="${x}" y="48" width="12" height="14" fill="none" stroke="#1c4a3c" stroke-width="1" opacity="${0.45 + clear * 0.5}"/>`;
-  return `<svg viewBox="0 0 80 108" width="${w}" height="${w * 1.35}" aria-hidden="true">
-    <defs><linearGradient id="${uid}" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0%" stop-color="#2d6a56" stop-opacity="${0.2 + clear * 0.55}"/>
-      <stop offset="100%" stop-color="#2d6a56" stop-opacity="${0.06 + clear * 0.25}"/>
-    </linearGradient></defs>
-    <polygon points="8,40 40,10 72,40" fill="none" stroke="#1c4a3c" stroke-width="1.4"/>
-    <rect x="14" y="40" width="52" height="50" fill="url(#${uid})" stroke="#1c4a3c" stroke-width="1.4"/>
-    <rect x="14" y="40" width="52" height="50" fill="#ffffff" class="frost-pane${thawDelay != null ? " frost-thaw" : ""}" style="--frost-to:${frost * 0.72};animation-delay:${thawDelay || 0}"/>
-    <rect class="glass-gleam" x="10" y="38" width="16" height="56" fill="white" opacity="0"/>
-    <rect x="36" y="70" width="8" height="20" fill="none" stroke="#1c4a3c" stroke-width="1.2"/>
-    ${chair}
-  </svg>`;
-}
-
-function opensAt() {
-  return DATA.week?.opensAt ? new Date(DATA.week.opensAt).getTime() : Date.now();
-}
-function closesAt() {
-  return DATA.week?.closesAt ? new Date(DATA.week.closesAt).getTime() : Date.now();
-}
-function competitionLive() {
-  const n = Date.now();
-  return n >= opensAt() && n < closesAt();
-}
-function deskOpen() {
-  return Date.now() < closesAt();
-}
-
-function countdownHtml() {
-  const target = Date.now() < opensAt() ? opensAt() : closesAt();
-  const left = Math.max(0, target - Date.now());
-  const d = Math.floor(left / 86400000);
-  const h = Math.floor((left % 86400000) / 3600000);
-  const m = Math.floor((left % 3600000) / 60000);
-  const pad = (n) => String(n).padStart(2, "0");
-  const p = window.HonestyMotion ? Math.round(window.HonestyMotion.weekProgress() * 100) : 0;
-  const cap = deskOpen() ? t(UI.untilClose) : t(UI.untilOpen);
-  return `<div class="clock" id="clock">
-    <div><b>${pad(d)}</b><span>days</span></div>
-    <div><b>${pad(h)}</b><span>hrs</span></div>
-    <div><b>${pad(m)}</b><span>min</span></div>
-  </div>
-  <div class="score-meter" role="progressbar" aria-label="${t(UI.weekClock)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}">
-    <div class="score-meter-track"><div class="score-meter-fill"></div></div>
-    <p class="score-meter-cap"><span>${t(UI.weekClock)} · ${cap}</span><b class="mono score-meter-now">${p}%</b></p>
-  </div>`;
-}
-
-function navHtml() {
-  const r = route().path;
-  const items = [
-    ["/", UI.arena],
-    ["/methodology", UI.method],
-    ["/play", UI.play],
-    ["/reveal", UI.reveal],
-    ["/houses", UI.houses],
-    ["/circuits", UI.circuits],
-    ["/about", UI.about],
-  ];
-  return items
-    .map(([href, copy]) => {
-      const active = href === "/" ? r === "/" : r.startsWith(href);
-      return `<a href="#${href}" class="${active ? "active" : ""}">${t(copy)}</a>`;
-    })
-    .join("");
-}
-
-function streetIn() {
-  try {
-    return sessionStorage.getItem("honesty-street-v2") === "1";
-  } catch {
-    return false;
-  }
-}
-
-function pageStreet() {
-  return `<div class="cinema">
-    <div class="cinema-stage">
-      <div class="cinema-frame" id="street-frame" data-lamp="off">
-        <img class="cinema-plate" src="./brand/street-16x9.jpg" alt="${t(UI.streetKicker)}" draggable="false" />
-        <button type="button" class="cinema-roof cinema-roof-l">Honesty</button>
-        <button type="button" class="cinema-roof cinema-roof-r">League</button>
-        <div class="cinema-lamp-glow" aria-hidden="true"></div>
-        <button type="button" class="cinema-lamp" id="street-lamp"></button>
-        <button type="button" class="cinema-dog" id="street-dog" aria-label="${t(UI.enter)}">
-          <span class="cinema-enter" id="street-enter">
-            <span class="cinema-enter-plate">${t(UI.enter)}</span>
-          </span>
-        </button>
-      </div>
-    </div>
-    <p class="cinema-caption">${t(UI.streetHint)}</p>
-  </div>`;
-}
-
-function pageArena() {
-  const week = DATA.week;
-  const open = deskOpen();
-  const live = competitionLive();
-  const play = storyPlay("square");
-  if (play) markStory("square", 3600);
-  return `${play ? `<div class="veil" aria-hidden="true"></div>` : ""}
-    <div class="square" data-story="${play ? "live" : "seen"}">
-    <div class="daylight" aria-hidden="true"></div>
-    <p class="kicker ink ink-1">${t(UI.actSquare)}</p>
-    <p class="kicker ink ink-1" style="margin-top:.5rem">${t(UI.daylight)}</p>
-    <p class="lede ink ink-2">${t(UI.objective)}</p>
-    <section class="hero">
-    <div>
-      <p class="kicker ink ink-3">${t(live ? UI.weekLive : UI.weekOpens)}</p>
-      <h1 class="live-headline kinetic ink ink-3">${t(week.headline)}</h1>
-      ${open && !live ? `<p class="muted ink ink-4" style="margin-top:1rem">${t(UI.rehearsal)}</p>` : ""}
-    </div>
-    <div class="notice ink ink-5">
-      <div class="live-notice">
-      <span class="stamp">${t(live ? UI.stampOpen : open ? UI.stampPractice : UI.stampClosed)}</span>
-      <p class="kicker">${t(live ? UI.closes : UI.opens)}</p>
-      ${countdownHtml()}
-      <p class="muted" style="margin-top:1rem;font-size:.75rem">${t(live ? UI.closeWhen : UI.openWhen)}</p>
-      </div>
-    </div>
-  </section>
-  <section class="seats">
-    ${SEATS.map((seat, i) => {
-      const meta = seatMeta(seat);
-      return `<div class="seat-rise" style="animation-delay:calc(var(--beat) * ${2200 + i * 160}ms)">
-        <div class="live-card card seat-group">
-          ${seatMark(seat, `calc(var(--beat) * ${2360 + i * 160}ms)`)}
-          <h2>${t(meta.title)}</h2>
-        </div>
-      </div>`;
-    }).join("")}
-  </section>
-  <div class="row ink ink-6">
-    <a class="btn" href="#/play">${t(open ? UI.sit : UI.previewDesk)}</a>
-    <a class="btn ghost" href="#/houses">${t(UI.houses)}</a>
-  </div>
-  </div>`;
-}
-
-function pagePlay() {
-  const week = DATA.week;
-  const circuits = circuitsForSeat();
-  const variant = variantFor();
-  const already = state.answers.find((a) => a.dilemmaId === week.id);
-  const words = wordCount(state.reason);
-  const open = deskOpen();
-  const live = competitionLive();
-  const play = storyPlay("desk");
-  if (play) markStory("desk", 1400);
-  return `<div class="play-grid square" data-story="${play ? "live" : "seen"}">
-    <div>
-      <p class="kicker ink ink-1">${t(UI.actDesk)}</p>
-      <h1 class="week-headline kinetic ink ink-2">${t(week.headline)}</h1>
-      ${!open ? `<p class="muted ink ink-3" style="margin-top:1rem;max-width:36rem">${t(UI.deskLocked)}</p>` : !live ? `<p class="muted ink ink-3" style="margin-top:1rem;max-width:36rem">${t(UI.rehearsal)}</p>` : ""}
-      ${
-        parseHouseName(state.handle)
-          ? ""
-          : `<form id="sit-down" class="card" style="margin-top:2rem;max-width:36rem">
-              <p class="kicker">${t(UI.sitDown)}</p>
-              <p style="margin-top:.5rem">${t(UI.sitDownLead)}</p>
-              <label style="display:block;margin-top:1rem">
-                <span class="kicker">${t(UI.sitDownName)}</span>
-                <input id="sit-name" type="text" name="nickname" maxlength="40" autocomplete="nickname" inputmode="text" />
-              </label>
-              <label style="display:block;margin-top:1rem">
-                <span class="kicker">${t(UI.sitDownPhone)}</span>
-                <input id="sit-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+230 5xxx xxxx" />
-                <span class="muted" style="font-size:.75rem">${t(UI.sitDownHint)}</span>
-              </label>
-              <p class="muted" id="sit-error" hidden style="margin-top:.75rem">${t(UI.sitDownError)}</p>
-              <div class="row" style="margin-top:1rem">
-                <button type="submit" class="btn">${t(UI.sitDown)}</button>
-              </div>
-            </form>`
-      }
-      <p class="kicker" style="margin-top:2rem">${t(UI.chooseSeat)}</p>
-      <div class="seats" style="grid-template-columns:repeat(2,1fr);margin-top:.75rem">
-        ${SEATS.map((s) => {
-          const meta = seatMeta(s);
-          return `<button type="button" class="seat-btn ${state.seat === s ? "on" : ""}" data-seat="${s}"><b>${t(meta.title)}</b><span>${t(meta.who)}</span></button>`;
-        }).join("")}
-      </div>
-      ${
-        circuits.length
-          ? `<div style="margin-top:1.5rem">
-              <p class="kicker">${t(UI.circuits)}</p>
-              <div class="row">${circuits.map((c) => `<button type="button" class="chip ${state.circuitId === c.id ? "on" : ""}" data-circuit="${c.id}">${t(c.title)}</button>`).join("")}</div>
-              <div class="row">${BANDS.map((b) => `<button type="button" class="chip ${state.band === b ? "on" : ""}" data-band="${b}">${t(BAND_META[b])}</button>`).join("")}</div>
-            </div>`
-          : ""
-      }
-      ${
-        state.seat && variant
-          ? `<section class="desk-sheet" style="margin-top:2.5rem;border:1px solid var(--border);background:color-mix(in oklab, var(--surface) 90%, transparent);border-radius:.85rem;padding:1.25rem">
-              <p>${t(variant.prompt)}</p>
-              <div class="stack" style="margin-top:1rem">${variant.choices
-                .map(
-                  (c, i) =>
-                    `<button type="button" class="choice choice-in ${state.choiceId === c.id ? "on" : ""}" data-choice="${c.id}" style="animation-delay:${120 + i * 90}ms">${t(c.label)}</button>`,
-                )
-                .join("")}</div>
-              <label style="display:block;margin-top:1.25rem">
-                <span class="kicker">${t(UI.reason)}</span>
-                <span class="muted" style="display:block;margin-top:.35rem">${t(UI.reasonHint)}</span>
-                <textarea id="reason">${state.reason}</textarea>
-                <span class="muted" id="word-count" style="font-size:.75rem">${words} ${t(UI.words)} · ${t(UI.wordMarks)}</span>
-              </label>
-              <div class="row">
-                <button type="button" class="btn predict" id="predict" ${state.choiceId ? "" : "disabled"} data-locked-label="${t(UI.lockedIn)}">
-                  <span class="predict-label">${state.lockedChoice === state.choiceId ? t(UI.lockedIn) : t(UI.predict)}</span>
-                </button>
-                <button type="button" class="btn ghost" id="publish" ${open && state.choiceId && parseHouseName(state.handle) ? "" : "disabled"}>${t(open ? UI.publicDesk : UI.weekOpens)}</button>
-              </div>
-              ${parseHouseName(state.handle) ? "" : `<p class="muted" style="margin-top:.75rem">${t(UI.sitDownNeed)}</p>`}
-              ${already ? `<p class="muted" style="margin-top:1rem">${t(UI.points)}: ${already.points}</p>` : ""}
-            </section>`
-          : ""
-      }
-    </div>
-    <aside class="aside">
-      <p class="kicker">${t(UI.yourHouse)}</p>
-      ${glass(state.points, false, false)}
-      <p class="mono">${state.points} HP</p>
-      <p class="muted" style="font-size:.75rem;margin-top:.75rem">${t(UI.frost)}</p>
-    </aside>
-  </div>`;
-}
-
-function pageReveal() {
-  const week = DATA.week;
-  const sitting = field().filter((h) => !h.emptyChair && h.lastChoice);
-  const groups = {};
-  for (const h of sitting) {
-    (groups[h.lastChoice] ||= []).push(h);
-  }
-  const ids = Object.keys(groups);
-  return `<p class="kicker">${t(UI.reveal)}</p>
-    <h1>${t(week.headline)}</h1>
-    <p class="muted">${t(UI.revealLead)}</p>
-    <div class="stack" style="margin-top:2rem;max-width:40rem">
-      ${
-        ids.length
-          ? ids
-              .map((id) => `<div class="card"><p class="mono">${id}</p><p class="muted">${groups[id].map((h) => h.handle).join(" · ")}</p></div>`)
-              .join("")
-          : `<p class="muted">${state.lang === "fr" ? "Les chaises vides restent aussi." : "Empty chairs stay here too."}</p>`
-      }
-    </div>`;
-}
-
-function pageHouses() {
-  const all = field();
-  const sorted = (state.filter === "all" ? all : all.filter((h) => h.seat === state.filter)).slice().sort((a, b) => b.points - a.points);
-  const me = sorted.find((h) => h.id === "self");
-  const list = me ? [me, ...sorted.filter((h) => h.id !== "self")] : sorted;
-  const open = deskOpen();
-  const live = competitionLive();
-  const play = storyPlay("street");
-  if (play) markStory("street", 1600);
-  return `<div class="square" data-story="${play ? "live" : "seen"}">
-    <p class="kicker ink ink-1">${t(UI.actStreet)}</p>
-    <h1 class="ink ink-2">${t(UI.points)}</h1>
-    <p class="muted ink ink-3" style="max-width:36rem">${t(UI.honestHint)}</p>
-    ${open && !live ? `<p class="muted ink ink-3" style="max-width:36rem;margin-top:.75rem">${t(UI.rehearsal)}</p>` : ""}
-    ${all.some((h) => h.id === "self") ? `<p class="ink ink-3" style="max-width:36rem;margin-top:.75rem">${t(UI.yourHouseStreet)}</p>` : ""}
-    <div class="row" style="margin-top:1.5rem">
-      ${["all", ...SEATS]
-        .map((s) => {
-          const label = s === "all" ? (state.lang === "fr" ? "Tous" : "All") : t(seatMeta(s).title);
-          return `<button type="button" class="chip ${state.filter === s ? "on" : ""}" data-filter="${s}">${label}</button>`;
-        })
-        .join("")}
-    </div>
-    <ul class="house-list" style="list-style:none;padding:0">
-      ${list
-        .map((h, i) => {
-          const honest = isHonest(h, all);
-          const meta = seatMeta(h.seat);
-          return `<li class="seat-rise" style="animation-delay:calc(var(--beat) * ${400 + i * 70}ms)"><a class="house-link card" href="#/houses/${h.id}">
-            ${glass(h.points, h.emptyChair, true, `calc(var(--beat) * ${520 + i * 70}ms)`)}
-            <div>
-              <p style="font-family:var(--display);font-size:1.1rem;margin:0">${h.handle}</p>
-              <p class="kicker">${t(meta.title)}${h.emptyChair ? " · " + t(UI.empty) : ""}${honest ? " · " + t(UI.honestMark) : ""}</p>
-              <p class="mono" style="margin:.25rem 0 0">${h.points} HP</p>
-            </div>
-          </a></li>`;
-        })
-        .join("")}
-    </ul></div>`;
-}
-
-function pageHouse(id) {
-  const all = field();
-  const house = all.find((h) => h.id === id);
-  if (!house) return `<h1>Unknown house</h1><a class="muted" href="#/houses">${t(UI.houses)}</a>`;
-  const circuit = DATA.circuits.find((c) => c.id === house.circuitId);
-  const honest = isHonest(house, all);
-  const reason = house.lastReason ? `<blockquote style="margin:1.5rem 0 0;padding-left:1rem;border-left:1px solid #d7e4dc;max-width:36rem">${t(house.lastReason)}</blockquote>` : house.emptyChair ? `<p class="muted">${t(UI.empty)}</p>` : "";
-  return `<div style="display:grid;gap:2rem">
-    <div style="display:flex;flex-wrap:wrap;gap:2rem;align-items:flex-start">
-      ${glass(house.points, house.emptyChair, false)}
-      <div>
-        <p class="kicker">${t(seatMeta(house.seat).title)}${house.emptyChair ? " · " + t(UI.empty) : ""}${honest ? " · " + t(UI.honestMark) : ""}</p>
-        <h1>${house.handle}</h1>
-        ${house.body ? `<p class="muted">${house.body}</p>` : ""}
-        ${circuit ? `<p class="muted">${t(circuit.title)}</p>` : ""}
-        <p class="mono" style="font-size:1.75rem;margin-top:1.25rem">${house.points} HP</p>
-        ${reason}
-        ${honest ? `<div class="paper" id="qr-card"><p class="kicker">${t(UI.honestMark)}</p><p style="font-family:var(--display);font-size:1.25rem;margin:.5rem 0 0">${HONEST_LINE}</p><canvas id="qr" width="160" height="160"></canvas><p class="mono">${house.handle} · ${house.points} HP</p><p class="hint">${t(UI.honestHint)}</p></div>` : ""}
-        <p style="margin-top:2rem"><a class="muted" href="#/houses">${t(UI.houses)}</a></p>
-      </div>
-    </div>
-  </div>`;
-}
-
-function pageCircuits() {
-  return `<p class="kicker">${t(UI.circuits)}</p>
-    <h1>${t(UI.jobsTitle)}</h1>
-    <div class="house-list two" style="list-style:none;padding:0">
-      ${DATA.circuits
-        .map(
-          (c) =>
-            `<article class="card"><p class="kicker">${t(FAMILY_META[c.family] || { en: c.family, fr: c.family })}</p><h2>${t(c.title)}</h2><p class="muted">${t(c.why)}</p></article>`,
-        )
-        .join("")}
-    </div>`;
-}
-
-function pageMethod() {
-  return `<article class="method">
-    <p class="kicker">${t(UI.method)}</p>
-    <h1>${t(UI.method)}</h1>
-    <h2>${t(UI.methodLeagueTitle)}</h2>
-    ${UI.methodLeague.map((step) => `<p>${t(step)}</p>`).join("")}
-    <div class="house-list two" style="list-style:none;padding:0;margin:1.5rem 0">
-      <div>
-        ${glass(48, false, true)}
-        <p class="muted">${t(UI.methodHouseClear)}</p>
-      </div>
-      <div>
-        ${glass(0, true, true)}
-        <p class="muted">${t(UI.methodHouseBoards)}</p>
-      </div>
-    </div>
-    <p class="muted">${t(UI.aboutFrost)}</p>
-    <p><a href="#/houses" style="color:var(--primary)">${t(UI.methodStreet)}</a></p>
-    <h2>${t(UI.methodTitle)}</h2>
-    <p class="muted">${t(UI.methodLead)}</p>
-    <ol>
-      ${UI.methodSteps.map((step) => `<li>${t(step)}</li>`).join("")}
-    </ol>
-    <p class="muted">${t(UI.disclaimer)}</p>
-  </article>`;
-}
-
-function pageAbout() {
-  return `<article class="method">
-    <p class="kicker">${t(UI.about)}</p>
-    <h1>${t(UI.product)}</h1>
-    <p>${t(UI.aboutLead)}</p>
-    <p class="muted">${t(UI.aboutOpen)}</p>
-    <p><a href="https://mkweli.tech" style="color:var(--primary)">mkweli.tech</a></p>
-  </article>`;
-}
-
-function pageAdmin() {
-  if (!adminIsIn()) {
-    return `<article class="method" style="max-width:28rem">
-      <p class="kicker">${t(UI.admin)}</p>
-      <h1>${t(UI.admin)}</h1>
-      <form id="admin-login" class="card" style="margin-top:1.5rem">
-        <label style="display:block">
-          <span class="kicker">${t(UI.adminUser)}</span>
-          <input id="admin-user" type="text" name="username" autocomplete="username" />
-        </label>
-        <label style="display:block;margin-top:1rem">
-          <span class="kicker">${t(UI.adminPass)}</span>
-          <input id="admin-pass" type="password" name="password" autocomplete="current-password" />
-        </label>
-        <p class="muted" id="admin-error" hidden style="margin-top:.75rem">${t(UI.adminBad)}</p>
-        <div class="row" style="margin-top:1rem">
-          <button type="submit" class="btn">${t(UI.adminSignIn)}</button>
-        </div>
-      </form>
-    </article>`;
-  }
-  return `<article class="method" style="max-width:28rem">
-    <p class="kicker">${t(UI.admin)}</p>
-    <h1>${t(UI.admin)}</h1>
-    <p class="muted">${t(UI.adminLead)}</p>
-    <p>${t(UI.adminHouse)}: <b>${state.handle || t(UI.adminNone)}</b></p>
-    <p class="mono">${state.answers.length} · ${state.points} HP</p>
-    <p class="muted" id="admin-note" hidden>${t(UI.adminCleared)}</p>
-    <div class="row">
-      <button type="button" class="btn" id="admin-clear">${t(UI.adminClearScores)}</button>
-      <button type="button" class="btn ghost" id="admin-wipe">${t(UI.adminClearAll)}</button>
-    </div>
-    <p style="margin-top:1.5rem"><button type="button" class="muted" id="admin-out">${t(UI.adminSignOut)}</button></p>
-  </article>`;
-}
-
-function renderPage() {
-  const { parts } = route();
-  if (!parts[0] && !streetIn()) return pageStreet();
-  if (parts[0] === "play") return pagePlay();
-  if (parts[0] === "reveal") return pageReveal();
-  if (parts[0] === "houses" && parts[1]) return pageHouse(parts[1]);
-  if (parts[0] === "houses") return pageHouses();
-  if (parts[0] === "circuits") return pageCircuits();
-  if (parts[0] === "methodology") return pageMethod();
-  if (parts[0] === "about") return pageAbout();
-  if (parts[0] === "admin") return pageAdmin();
-  return pageArena();
-}
-
-function paint() {
-  document.documentElement.lang = state.lang;
-  document.querySelectorAll("[data-nav]").forEach((n) => {
-    n.innerHTML = navHtml();
-  });
-  document.getElementById("lang-btn").textContent = state.lang === "en" ? "FR" : "EN";
-  document.querySelectorAll("[data-i18n]").forEach((el) => {
-    el.textContent = t(UI[el.dataset.i18n]);
-  });
-  document.getElementById("app").innerHTML = renderPage();
-  bind();
-  bindPointer();
-  bindAir();
-  if (window.HonestyMotion) window.HonestyMotion.boot(document.getElementById("app"));
-  const qr = document.getElementById("qr");
-  if (qr && window.QRCode) {
-    const { parts } = route();
-    const house = field().find((h) => h.id === parts[1]);
-    if (house) {
-      const payload = [HONEST_LINE, house.handle, `${house.points} HP · Honesty League`, "mkweli.tech"].join("\n");
-      window.QRCode.toCanvas(qr, payload, { width: 160, margin: 1, color: { dark: "#18241f", light: "#f7f3ea" } });
-    }
-  }
-}
-
-function bindPointer() {
-  const el = document.querySelector(".square");
-  if (!el) return;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-  const light = el.querySelector(".daylight");
-  let x = 0.5;
-  let y = 0.22;
-  let raf = 0;
-  const flush = () => {
-    raf = 0;
-    if (light) {
-      light.style.setProperty("--mx", `${(x * 100).toFixed(1)}%`);
-      light.style.setProperty("--my", `${(y * 100).toFixed(1)}%`);
-    }
-  };
-  el.onpointermove = (e) => {
-    const r = el.getBoundingClientRect();
-    x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
-    y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
-    if (!raf) raf = requestAnimationFrame(flush);
-  };
-  el.onpointerleave = () => {
-    x = 0.5;
-    y = 0.22;
-    if (!raf) raf = requestAnimationFrame(flush);
-  };
-  el.querySelectorAll(".live-notice").forEach((card) => {
-    card.onpointermove = (e) => {
-      const r = card.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width - 0.5;
-      const py = (e.clientY - r.top) / r.height - 0.5;
-      card.style.setProperty("--rx", `${(-py * 9).toFixed(2)}deg`);
-      card.style.setProperty("--ry", `${(px * 11).toFixed(2)}deg`);
-      card.style.setProperty("--hx", `${((px + 0.5) * 100).toFixed(1)}%`);
-      card.style.setProperty("--hy", `${((py + 0.5) * 100).toFixed(1)}%`);
-    };
-    card.onpointerleave = () => {
-      card.style.setProperty("--rx", "0deg");
-      card.style.setProperty("--ry", "0deg");
-    };
-  });
-  window.setTimeout(() => document.querySelector(".veil")?.remove(), 1500);
-}
-
-function bindAir() {
-  const bar = document.getElementById("air-bar");
-  if (!bar) return;
-  const week = DATA.week;
-  const flag = competitionLive() ? t(UI.airLive) : t(UI.airWait);
-  const line = `${flag} · ${t(UI.product)} · ${t(week?.headline || { en: "", fr: "" })} · ${t(UI.daylight)} · ${flag} · `;
-  bar.innerHTML = `<div class="air-track"><span>${line}</span><span>${line}</span></div>`;
-}
-
-function bind() {
-  const enter = document.getElementById("street-enter");
-  if (enter) {
-    const frame = document.getElementById("street-frame");
-    const dog = document.getElementById("street-dog");
-    const lamp = document.getElementById("street-lamp");
-    if (dog) {
-      dog.onpointerenter = () => enter.classList.add("is-out");
-      dog.onpointerleave = () => enter.classList.remove("is-out");
-      dog.onclick = () => {
-        try {
-          sessionStorage.setItem("honesty-street-v2", "1");
-        } catch {
-          /* ignore */
-        }
-        paint();
-      };
-    }
-    if (lamp && frame) {
-      lamp.onpointerenter = () => {
-        frame.dataset.lamp = "on";
-      };
-      lamp.onpointerleave = () => {
-        frame.dataset.lamp = "off";
-      };
-    }
-  }
-  document.querySelectorAll("[data-seat]").forEach((btn) => {
-    btn.onclick = () => {
-      state.seat = btn.dataset.seat;
-      state.circuitId = state.seat === "gallery" || state.seat === "chamber" ? state.seat : null;
-      saveLocal();
-      paint();
-    };
-  });
-  document.querySelectorAll("[data-circuit]").forEach((btn) => {
-    btn.onclick = () => {
-      state.circuitId = btn.dataset.circuit;
-      saveLocal();
-      paint();
-    };
-  });
-  document.querySelectorAll("[data-band]").forEach((btn) => {
-    btn.onclick = () => {
-      state.band = btn.dataset.band;
-      saveLocal();
-      paint();
-    };
-  });
-  document.querySelectorAll("[data-choice]").forEach((btn) => {
-    btn.onclick = () => {
-      state.choiceId = btn.dataset.choice;
-      paint();
-    };
-  });
-  document.querySelectorAll("[data-filter]").forEach((btn) => {
-    btn.onclick = () => {
-      state.filter = btn.dataset.filter;
-      paint();
-    };
-  });
-  const reason = document.getElementById("reason");
-  if (reason) {
-    reason.oninput = () => {
-      state.reason = reason.value;
-      const count = document.getElementById("word-count");
-      if (count) count.textContent = `${wordCount(state.reason)} ${t(UI.words)} · ${t(UI.wordMarks)}`;
-    };
-  }
-  const sitForm = document.getElementById("sit-down");
-  if (sitForm) {
-    sitForm.onsubmit = (e) => {
-      e.preventDefault();
-      const houseName = parseHouseName(document.getElementById("sit-name")?.value);
-      const phonePrivate = parseMuPhone(document.getElementById("sit-phone")?.value);
-      const err = document.getElementById("sit-error");
-      if (!houseName || !phonePrivate) {
-        if (err) err.hidden = false;
-        return;
-      }
-      state.handle = houseName;
-      state.phonePrivate = phonePrivate;
-      saveLocal();
-      paint();
-    };
-  }
-  const publish = document.getElementById("publish");
-  if (publish) {
-    publish.onclick = () => {
-      if (!deskOpen() || !state.choiceId || !state.seat || !parseHouseName(state.handle)) return;
-      const points = scoreAnswer(true, state.reason, state.seat === "service" || state.seat === "mandate" ? state.band : null);
-      const answer = {
-        dilemmaId: DATA.week.id,
-        week: DATA.week.week,
-        circuitId: state.circuitId || state.seat,
-        choiceId: state.choiceId,
-        reason: state.reason,
-        points,
-        at: new Date().toISOString(),
-      };
-      state.answers = [...state.answers.filter((a) => a.dilemmaId !== answer.dilemmaId), answer];
-      state.points = Math.round((state.points + points) * 10) / 10;
-      saveLocal();
-      go("/houses");
-    };
-  }
-  const adminLogin = document.getElementById("admin-login");
-  if (adminLogin) {
-    adminLogin.onsubmit = async (e) => {
-      e.preventDefault();
-      const ok = await checkAdminLogin(document.getElementById("admin-user")?.value, document.getElementById("admin-pass")?.value);
-      const err = document.getElementById("admin-error");
-      if (!ok) {
-        if (err) err.hidden = false;
-        return;
-      }
-      setAdminIn(true);
-      paint();
-    };
-  }
-  const adminClear = document.getElementById("admin-clear");
-  if (adminClear) {
-    adminClear.onclick = () => {
-      state.answers = [];
-      state.points = 0;
-      state.choiceId = "";
-      state.reason = "";
-      saveLocal();
-      const note = document.getElementById("admin-note");
-      if (note) note.hidden = false;
-      paint();
-    };
-  }
-  const adminWipe = document.getElementById("admin-wipe");
-  if (adminWipe) {
-    adminWipe.onclick = () => {
-      state.seat = null;
-      state.circuitId = null;
-      state.band = null;
-      state.handle = "";
-      state.phonePrivate = "";
-      state.answers = [];
-      state.points = 0;
-      state.choiceId = "";
-      state.reason = "";
-      clearStoryKeys();
-      saveLocal();
-      paint();
-    };
-  }
-  const adminOut = document.getElementById("admin-out");
-  if (adminOut) {
-    adminOut.onclick = () => {
-      setAdminIn(false);
-      paint();
-    };
-  }
-}
-
-window.HonestyGo = go;
-window.HonestyClock = { opensAt, closesAt };
-window.HonestyPickSeat = function (seat) {
-  state.seat = seat;
-  state.circuitId = seat === "gallery" || seat === "chamber" ? seat : null;
-  saveLocal();
-  go("/play");
-};
-window.HonestyLockSeat = function (seat) {
-  state.seat = seat;
-  state.lockedSeat = seat;
-  state.circuitId = seat === "gallery" || seat === "chamber" ? seat : null;
-  saveLocal();
-};
-window.HonestyLock = function () {
-  state.lockedChoice = state.choiceId;
-  saveLocal();
-};
-
-document.getElementById("lang-btn").onclick = () => {
-  state.lang = state.lang === "en" ? "fr" : "en";
-  saveLocal();
-  paint();
-};
-
-window.addEventListener("hashchange", paint);
-
-async function boot() {
-  loadLocal();
-  const [seats, circuits, houses, week] = await Promise.all([
-    fetch("./ledger/seats.json").then((r) => r.json()),
-    fetch("./ledger/circuits.json").then((r) => r.json()),
-    fetch("./ledger/houses.json").then((r) => r.json()),
-    fetch("./ledger/season-1/week-1.json").then((r) => r.json()),
-  ]);
-  DATA = { seats: seats.seats, circuits: circuits.circuits, houses: houses.houses, week };
-  paint();
-}
-
-boot().catch((err) => {
-  document.getElementById("app").innerHTML = `<p class="muted">Could not load the public ledger.</p><pre>${err}</pre>`;
+const state = loadState();
+const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const canvas = document.getElementById("village");
+const engine = new VillageEngine(canvas, state.houses, {
+  onHover: (id) => { state.hoveredId = id; renderDock(); engine.sync(syncPayload()); },
+  onSelect: (id) => { state.selectedId = id; renderDock(); engine.sync(syncPayload()); },
 });
+function syncPayload() {
+  return { houses: state.houses, hoveredId: state.hoveredId, selectedId: state.selectedId, integrity: state.integrity, reducedMotion: reduced };
+}
+engine.sync(syncPayload());
+
+const boot = document.getElementById("boot");
+const play = document.getElementById("play");
+const enterBtn = document.getElementById("enter-btn");
+let pickedSector = state.sector;
+
+document.querySelectorAll(".class-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    pickedSector = btn.dataset.sector;
+    document.querySelectorAll(".class-btn").forEach((b) => b.classList.toggle("on", b === btn));
+    enterBtn.disabled = false;
+  });
+});
+enterBtn.addEventListener("click", () => {
+  if (!pickedSector) return;
+  state.phase = "play";
+  state.sector = pickedSector;
+  const tag = pickedSector === "public" ? "PUB" : pickedSector === "civil" ? "CIV" : "GOV";
+  state.callsign = `OP-${tag}-07`;
+  persist(state);
+  showPlay();
+});
+
+function showPlay() {
+  boot.hidden = true;
+  play.hidden = false;
+  renderAll();
+}
+
+function currentTender() { return TENDERS[Math.min(state.weekIndex, TENDERS.length - 1)]; }
+function resultFor(id) { return state.results.find((r) => r.tenderId === id) ?? null; }
+
+function renderTender() {
+  const t = currentTender();
+  const result = resultFor(t.id);
+  const locked = Boolean(result);
+  const hasNext = state.weekIndex < TENDERS.length - 1 && locked;
+  document.getElementById("tender-panel").innerHTML = `
+    <div class="side-head" style="display:flex;gap:.75rem;align-items:flex-start">
+      <div style="flex:1;min-width:0">
+        <p class="kicker cyan">Infrastructure tender · ${t.spec}</p>
+        <h2>${t.title}</h2>
+      </div>
+      <span class="week">WEEK ${t.week}</span>
+    </div>
+    <div class="side-body">
+      <p class="q">${t.question}</p>
+      <ul class="opts">
+        ${t.options.map((opt) => {
+          const picked = result?.picked === opt.id;
+          const good = opt.id === t.correct;
+          const cls = picked && result.correct ? "good" : picked && !result.correct ? "bad" : locked && good ? "good" : "";
+          return `<li><button type="button" class="opt ${cls}" data-opt="${opt.id}" ${locked ? "disabled" : ""}>
+            <span class="letter">${opt.id}</span><span class="txt">${opt.text}</span>
+          </button></li>`;
+        }).join("")}
+      </ul>
+    </div>
+    <div class="side-foot">
+      <p class="kicker mute">Reward badge</p>
+      <p class="green" style="margin:.35rem 0 0;font-size:.8rem">+100 Material Points / +50 Village Integrity</p>
+      ${result ? `<p style="margin:.5rem 0 0;font-size:.8rem;color:${result.correct ? "var(--green)" : "var(--crimson)"}">${result.correct ? "Logged. Rebate rejected and disclosed. Spend material on decaying nodes." : "Flagged. Off-books rebate paths fail the transparency framework."}</p>` : ""}
+      ${hasNext ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">Open week ${state.weekIndex + 2} tender</button>` : ""}
+    </div>`;
+  document.querySelectorAll("[data-opt]").forEach((btn) => {
+    btn.addEventListener("click", () => answer(btn.dataset.opt));
+  });
+  document.getElementById("next-week")?.addEventListener("click", () => {
+    state.weekIndex = Math.min(TENDERS.length - 1, state.weekIndex + 1);
+    persist(state);
+    renderTender();
+  });
+}
+
+function renderBoard() {
+  const holding = state.houses.find((h) => h.owner === state.callsign)?.name ?? "No holding yet";
+  const rows = [
+    ...CONTRACTORS,
+    ...(state.sector ? [{ id: "player", name: state.callsign, sector: state.sector, score: state.score, holding }] : []),
+  ].sort((a, b) => b.score - a.score);
+  document.getElementById("board-panel").innerHTML = `
+    <div class="side-head">
+      <p class="kicker cyan">Bid standings</p>
+      <h2>Leading contractors</h2>
+      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">Public · Civil Service · Government. Highest score holds the renovation bid.</p>
+    </div>
+    <div class="side-body">
+      ${rows.map((row, i) => `
+        <div class="board-row ${row.id === "player" ? "me" : ""}">
+          <span class="rank">${i + 1}</span>
+          <div class="who"><strong>${row.name}</strong><span>${SECTOR_LABEL[row.sector]} · ${row.holding}</span></div>
+          <span class="mono cyan">${row.score}</span>
+        </div>`).join("")}
+    </div>`;
+}
+
+function renderDock() {
+  const id = state.selectedId ?? state.hoveredId;
+  const house = state.houses.find((h) => h.id === id);
+  const dock = document.getElementById("house-dock");
+  if (!house) { dock.hidden = true; dock.innerHTML = ""; return; }
+  const can = !house.renovated && state.material >= house.cost;
+  dock.hidden = false;
+  dock.innerHTML = `<div class="panel dock-inner">
+    <div style="flex:1;min-width:0">
+      <strong>${house.name}</strong>
+      <p>${house.renovated ? `Stable · ${house.owner ?? "held"} · ${house.ownerSector ? SECTOR_LABEL[house.ownerSector] : ""}` : house.hint}</p>
+    </div>
+    ${house.renovated ? "" : `<button type="button" class="reno" id="reno-btn" ${can ? "" : "disabled"}>Renovate · ${house.cost}</button>`}
+  </div>`;
+  document.getElementById("reno-btn")?.addEventListener("click", () => renovate(house.id));
+}
+
+function renderHeader() {
+  document.getElementById("stat-material").textContent = String(state.material);
+  document.getElementById("stat-integrity").textContent = String(state.integrity);
+}
+
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.hidden = false;
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => { el.hidden = true; }, 2800);
+}
+
+function renderAll() {
+  renderHeader();
+  renderTender();
+  renderBoard();
+  renderDock();
+  engine.sync(syncPayload());
+}
+
+function answer(picked) {
+  const t = currentTender();
+  if (resultFor(t.id)) return;
+  const correct = picked === t.correct;
+  state.results.push({ tenderId: t.id, picked, correct });
+  if (correct) {
+    state.material += t.rewardMaterial;
+    state.integrity += t.rewardIntegrity;
+    state.score += t.rewardMaterial + t.rewardIntegrity;
+    showToast(`+${t.rewardMaterial} Material · +${t.rewardIntegrity} Integrity`);
+  } else {
+    state.integrity = Math.max(0, state.integrity - 20);
+    showToast("Integrity flag · rebate path rejected");
+  }
+  persist(state);
+  renderAll();
+}
+
+function renovate(houseId) {
+  const house = state.houses.find((h) => h.id === houseId);
+  if (!house || house.renovated) return;
+  if (state.material < house.cost) { showToast(`Need ${house.cost} material points`); return; }
+  house.renovated = true;
+  house.owner = state.callsign;
+  house.ownerSector = state.sector;
+  state.material -= house.cost;
+  state.integrity += 10;
+  state.score += 30;
+  state.selectedId = houseId;
+  showToast(`${house.name} renovated`);
+  persist(state);
+  renderAll();
+}
+
+document.getElementById("mobile-tabs").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-tab]");
+  if (!btn) return;
+  const tab = btn.dataset.tab;
+  document.querySelectorAll("#mobile-tabs button").forEach((b) => b.classList.toggle("on", b === btn));
+  play.classList.toggle("show-tender", tab === "tender");
+  play.classList.toggle("show-board", tab === "board");
+});
+play.classList.add("show-tender");
+
+function tickClock() {
+  document.getElementById("reset-clock").textContent = formatRemain(state.resetAt - Date.now());
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+if (state.phase === "play") showPlay();
+window.addEventListener("pagehide", () => persist(state));
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") persist(state); });

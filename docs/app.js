@@ -962,7 +962,6 @@ function renderHeader() {
     : `${state.results.length}/${TENDERS.length}`;
   qcount.className = whistle ? "qcount amber" : "qcount green";
   document.getElementById("tab-case").textContent = whistle ? "Case" : "Tender";
-  document.getElementById("tab-board").textContent = whistle ? "File" : "Bids";
   document.getElementById("tab-round").textContent = whistle ? "Tenders" : "Whistle";
   document.querySelectorAll("#mobile-tabs button[data-tab]").forEach((b) => {
     b.classList.toggle("whistle", whistle && b.classList.contains("on"));

@@ -366,7 +366,8 @@ button { font: inherit; color: inherit; }
     display: none;
   }
   .hud.show-tender .side.left { display: flex; }
-  .hud.show-board .side.right { display: flex; }
+  .hud.show-board .side.right { display: none; }
+  .dock { display: none; }
   .hide-sm { display: none; }
   .tabs { display: flex; grid-row: 4; }
   .foot { display: none; }

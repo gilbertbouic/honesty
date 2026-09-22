@@ -16,7 +16,6 @@ const NDC = new THREE.Vector2();
 const HIT = new THREE.Color();
 const SAVE_KEY = "village-grid-save";
 const SAVE_VERSION = 5;
-const MONTH_MS = (6 * 24 + 14) * 60 * 60 * 1000 + 22 * 60 * 1000;
 const SECTOR_LABEL = { public: "Public", civil: "Civil Service", government: "Government" };
 const PLAYER_BID_CORRECT = 100;
 const PLAYER_BID_WRONG = 30;
@@ -218,11 +217,6 @@ const WATER_FRAG = `uniform float uTime; varying vec2 vUv;
 void main(){ float w=sin(vUv.x*28.0+uTime*1.8)*0.5+0.5; vec3 col=mix(vec3(0.02,0.18,0.22),vec3(0.0,0.85,1.0),w*0.4); gl_FragColor=vec4(col,0.32);}`;
 
 function hashId(id) { let h = 7; for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0; return Math.abs(h); }
-function pad(n) { return String(Math.max(0, n)).padStart(2, "0"); }
-function formatRemain(ms) {
-  const t = Math.max(0, Math.floor(ms / 1000));
-  return `${pad(Math.floor(t / 86400))}d ${pad(Math.floor((t % 86400) / 3600))}h ${pad(Math.floor((t % 3600) / 60))}m`;
-}
 
 function createLineMat(seed) {
   return new THREE.ShaderMaterial({
@@ -834,7 +828,7 @@ function defaultState() {
     houses: HOUSES.map((h) => ({ ...h })),
     contractors: CONTRACTORS.map((c) => ({ ...c })),
     activeHouseId: TENDERS[0].houseId, hoveredId: null, selectedId: null,
-    mobileTab: "tender", resetAt: Date.now() + MONTH_MS, toast: null, toastKind: null,
+    mobileTab: "tender", toast: null, toastKind: null,
     whistleResults: [], activeCaseId: WHISTLE_CASES[0].id, whistleScore: 0,
     whistleOutcome: "open", showOutcome: false,
   };
@@ -857,7 +851,7 @@ function persist(state) {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       version: SAVE_VERSION, phase: state.phase, contractorId: state.contractorId,
       competition: state.competition, integrity: state.integrity, results: state.results, houses: state.houses,
-      contractors: state.contractors, activeHouseId: state.activeHouseId, resetAt: state.resetAt,
+      contractors: state.contractors, activeHouseId: state.activeHouseId,
       whistleResults: state.whistleResults, activeCaseId: state.activeCaseId,
       whistleScore: state.whistleScore, whistleOutcome: state.whistleOutcome,
     }));
@@ -916,7 +910,6 @@ enterBtn.addEventListener("click", () => {
 function resetRound() {
   try { localStorage.removeItem(SAVE_KEY); } catch { /* ignore */ }
   Object.assign(state, defaultState());
-  state.resetAt = Date.now() + MONTH_MS;
   pickedId = null;
   document.querySelectorAll(".class-btn").forEach((b) => b.classList.remove("on"));
   enterBtn.disabled = true;
@@ -1336,12 +1329,6 @@ document.getElementById("tab-round").addEventListener("click", () => {
   renderAll();
 });
 play.classList.add("show-tender");
-
-function tickClock() {
-  document.getElementById("reset-clock").textContent = formatRemain(state.resetAt - Date.now());
-}
-tickClock();
-setInterval(tickClock, 1000);
 
 if (!roundOneCleared(state.results, state.contractorId) && state.competition === "whistle") state.competition = "tender";
 if (state.phase === "play") showPlay();

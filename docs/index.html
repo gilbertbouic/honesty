@@ -6,12 +6,12 @@
     <title>Honesty League · Village Grid</title>
     <meta
       name="description"
-      content="A Mkweli civic game. Four contractors bid eight renovations in Terre Rouge. Only a correct top-score bid awards the house."
+      content="A Mkweli civic game. Bid village renovations, then file five whistle-blower cases on unexplained wealth. Top score jails the trafficker; mid score burns your lodging; low score runs you out of the village."
     />
     <meta name="theme-color" content="#08080c" />
     <link rel="canonical" href="https://honesty.mkweli.tech/" />
     <meta property="og:title" content="Honesty League · Village Grid" />
-    <meta property="og:description" content="Pick a contractor. Only a correct top-score bid awards the house." />
+    <meta property="og:description" content="Two competitions: renovations, then a whistle-blower brief on dive master Ravi." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://honesty.mkweli.tech/" />
     <meta property="og:image" content="https://honesty.mkweli.tech/og.jpg" />
@@ -26,7 +26,7 @@
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Share+Tech+Mono&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=vg3" />
+    <link rel="stylesheet" href="./styles.css?v=vg4" />
     <script type="importmap">
       {
         "imports": {
@@ -45,8 +45,9 @@
         <p class="kicker">Terre Rouge · Pamplemousses node · A Mkweli product</p>
         <h1>Village Grid</h1>
         <p class="lede">
-          Four contractors are bidding the same eight renovations. Answer each spec. Only a correct
-          top-score bid awards the house. Wrong answers are rejected.
+          Two competitions. First: bid the village renovations. Second: file five whistle-blower
+          cases on dive master Ravi — luxury car, villa, boat, clothes, entourage. Top score jails
+          him and seizes the assets. Mid score, he burns your lodging. Low score, you are chased out.
         </p>
         <p class="kicker mute">Choose your contractor</p>
         <div class="class-list two" id="class-list">
@@ -76,7 +77,11 @@
         <div class="header-row">
           <div>
             <p class="kicker cyan">Project phase</p>
-            <p class="title">Village Infrastructure Overhaul</p>
+            <p class="title" id="phase-title">Village Infrastructure Overhaul</p>
+          </div>
+          <div class="comp-switch" id="comp-switch">
+            <button type="button" data-comp="tender" class="on">Tenders</button>
+            <button type="button" data-comp="whistle">Whistle</button>
           </div>
           <div class="stat">
             <p class="kicker mute">Monthly contract reset</p>
@@ -87,7 +92,7 @@
             <p class="mono cyan" id="stat-name">—</p>
           </div>
           <div class="stat">
-            <p class="kicker mute">Contracts won</p>
+            <p class="kicker mute" id="stat-label">Contracts won</p>
             <p class="mono green" id="stat-won">0/8</p>
           </div>
           <button type="button" class="reset-btn" id="reset-btn">Reset</button>
@@ -100,17 +105,27 @@
       <div class="dock" id="house-dock" hidden></div>
       <div class="toast" id="toast" hidden></div>
       <nav class="tabs" id="mobile-tabs">
-        <button type="button" data-tab="tender" class="on">Tender</button>
-        <button type="button" data-tab="board">Bids</button>
+        <button type="button" data-tab="tender" class="on" id="tab-case">Tender</button>
+        <button type="button" data-tab="board" id="tab-board">Bids</button>
         <button type="button" data-tab="grid">Grid</button>
       </nav>
     </div>
 
+    <div id="outcome" class="overlay" hidden>
+      <div class="panel boot-card" id="outcome-card">
+        <p class="kicker" id="outcome-kicker"></p>
+        <h2 id="outcome-title"></h2>
+        <p class="lede" id="outcome-body"></p>
+        <p class="mono mute" id="outcome-score"></p>
+        <button type="button" class="cta" id="outcome-dismiss">Watch the grid</button>
+      </div>
+    </div>
+
     <footer class="foot">
       <a href="https://mkweli.tech">A Mkweli product</a>
-      <span>Four contractors. Only a correct top score awards the house. Not a court.</span>
+      <span>Two competitions. Not a court.</span>
     </footer>
 
-    <script type="module" src="./app.js?v=vg3"></script>
+    <script type="module" src="./app.js?v=vg4"></script>
   </body>
 </html>

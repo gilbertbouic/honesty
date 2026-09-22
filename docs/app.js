@@ -1,19 +1,27 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-const PALETTE = { void: 0x08080c, cyan: 0x00e5ff, green: 0x3dff9a, amber: 0xe07030 };
+const PALETTE = { void: 0x08080c, cyan: 0x00e5ff, green: 0x3dff9a, amber: 0xe07030, crimson: 0xff3b4e };
 const DECAY = new THREE.Color(PALETTE.amber);
 const CYAN = new THREE.Color(PALETTE.cyan);
 const GREEN = new THREE.Color(PALETTE.green);
+const CRIMSON = new THREE.Color(PALETTE.crimson);
+const GOLD = new THREE.Color(0xc4a35a);
+const CHAR = new THREE.Color(0x1a1210);
+const COMPOUND = { x: 8.4, z: 6.2 };
+const LODGING = { x: -2.6, z: 0.9 };
 const NDC = new THREE.Vector2();
 const HIT = new THREE.Color();
 const SAVE_KEY = "village-grid-save";
-const SAVE_VERSION = 3;
+const SAVE_VERSION = 5;
 const MONTH_MS = (6 * 24 + 14) * 60 * 60 * 1000 + 22 * 60 * 1000;
 const SECTOR_LABEL = { public: "Public", civil: "Civil Service", government: "Government" };
 const PLAYER_BID_CORRECT = 100;
 const PLAYER_BID_WRONG = 30;
-const SHORT = { "cwa-pump": "CWA", "block-a": "Blk A", "block-b": "Blk B", school: "School", power: "CEB", drain: "Drain", light: "Light", community: "Hall" };
+const WHISTLE_CORRECT = 100;
+const WHISTLE_WRONG = 20;
+const SHORT = { "cwa-pump": "CWA", "block-a": "Blk A", "block-b": "Blk B", school: "School", power: "CEB", drain: "Drain", light: "Light", community: "Hall", market: "Mkt", clinic: "Clinic", hall: "Civic", bus: "Bus" };
+const WSHORT = { car: "Car", villa: "Villa", boat: "Boat", clothes: "Clothes", entourage: "Entourage" };
 
 const CONTRACTORS = [
   { id: "kuzin", name: "Kuzin", sector: "civil", score: 0, holding: "District Clinic" },
@@ -111,6 +119,67 @@ const TENDERS = [
     ],
     correct: "A", npcBids: { kuzin: 75, cheri: 88, malin: 80, kokin: 60 } },
 ];
+
+
+const WHISTLE_CASES = [
+  { id: "car", spec: "CASE-01", title: "Luxury car",
+    question: "Ravi works as a dive master on Rs 15,000 a month. This week he parks a brand-new SUV worth several million rupees outside the cité. A cousin says stay silent — “it is family business.” What is the lawful action?",
+    options: [
+      { id: "A", text: "Stay silent. A dive master can have a rich uncle in Italy and the village should not poke into a man’s garage." },
+      { id: "B", text: "File a suspicious-wealth report with the police / ADSU. A Rs 15,000 wage cannot explain a multi-million car. Do not take hush money." },
+      { id: "C", text: "Accept Rs 20,000 to “watch the car at night” and keep the registration off any village file." },
+      { id: "D", text: "Post the number plate on a rumour page and leave it there. No official report, no file." },
+    ],
+    correct: "B", npcReports: { kuzin: 78, cheri: 61, malin: 84, kokin: 55 } },
+  { id: "villa", spec: "CASE-02", title: "Luxury villa",
+    question: "Ravi starts a three-storey villa with imported stone and a pool, still on the same dive-master wage. The mason whispers that the permit is “being arranged.” Do you stay silent?",
+    options: [
+      { id: "A", text: "Ask for a job on the site and take cash in an envelope at the end of each floor." },
+      { id: "B", text: "Stay silent. It is his plot. A man may build as he likes if the neighbours like the look of it." },
+      { id: "C", text: "Report the unexplained build. Demand the building-permit file. A Rs 15,000 wage does not fund a villa." },
+      { id: "D", text: "Tell the district councillor privately over a drink and treat a nod as the permit." },
+    ],
+    correct: "C", npcReports: { kuzin: 66, cheri: 80, malin: 72, kokin: 58 } },
+  { id: "boat", spec: "CASE-03", title: "Luxury boat",
+    question: "A cabin cruiser appears on a trailer behind the villa. No registry number, cash for fuel, night runs toward the reef. Ravi offers you a free fishing trip if you stay silent. What must you do?",
+    options: [
+      { id: "A", text: "Take the trip, photograph the sunset, and keep the boat off every file." },
+      { id: "B", text: "Report the unregistered vessel and the cash fuel pattern. Unexplained marine assets on a dive-master wage are a trafficking flag." },
+      { id: "C", text: "Move the trailer behind the market shed so the police patrol does not see it." },
+      { id: "D", text: "Stay silent. Boats are a coastal hobby. A dive master is expected to own one." },
+    ],
+    correct: "B", npcReports: { kuzin: 82, cheri: 54, malin: 69, kokin: 76 } },
+  { id: "clothes", spec: "CASE-04", title: "Designer clothes",
+    question: "Ravi is suddenly in designer shirts, a gold watch, and shopping bags that cost more than three months of his wage. He laughs and says “clients tip in euros.” A neighbour asks you to stay silent. What is the lawful action?",
+    options: [
+      { id: "A", text: "Stay silent. Clothes are private. A man may dress as he likes after a good season." },
+      { id: "B", text: "Borrow the watch for a wedding and return it without a note on the file." },
+      { id: "C", text: "Log the unexplained lifestyle against the declared wage and file it with the same suspicious-wealth report." },
+      { id: "D", text: "Ask him to buy a round at the shop and treat that as proof the money is clean." },
+    ],
+    correct: "C", npcReports: { kuzin: 59, cheri: 73, malin: 81, kokin: 64 } },
+  { id: "entourage", spec: "CASE-05", title: "The entourage",
+    question: "A rotating group of foreign women now stay at the villa. None have family in Terre Rouge, none show a work permit, and they are never on the daytime bus. Ravi says stay silent or lose the roof over your head. What must you do?",
+    options: [
+      { id: "A", text: "Stay silent. Guests are private. A dive master may host whoever he likes." },
+      { id: "B", text: "Take cash to “look the other way at the gate” and keep the names off every file." },
+      { id: "C", text: "Walk into the villa alone at night and order the group to leave, with no police file." },
+      { id: "D", text: "Report suspected harbouring and trafficking to the police. Do not stay silent. Do not confront the villa yourself." },
+    ],
+    correct: "D", npcReports: { kuzin: 70, cheri: 62, malin: 77, kokin: 85 } },
+];
+function whistleCaseById(id) { return WHISTLE_CASES.find((c) => c.id === id) ?? WHISTLE_CASES[0]; }
+function firstOpenWhistleId(results) {
+  const done = new Set(results.map((r) => r.caseId));
+  return WHISTLE_CASES.find((c) => !done.has(c.id))?.id ?? WHISTLE_CASES[0].id;
+}
+function whistleOutcomeOf(score, answered) {
+  if (answered < WHISTLE_CASES.length) return "open";
+  if (score >= 400) return "jail";
+  if (score >= 200) return "burn";
+  return "exile";
+}
+function whistleTotal(id, results) { return results.reduce((sum, r) => sum + (r.reports[id] ?? 0), 0); }
 
 function contractorById(id) { return CONTRACTORS.find((c) => c.id === id) ?? CONTRACTORS[0]; }
 function tenderForHouse(houseId) { return TENDERS.find((t) => t.houseId === houseId) ?? null; }
@@ -388,6 +457,11 @@ class VillageEngine {
       this.hits.push(visual.hit);
     }
 
+
+    this.competition = "tender";
+    this.whistleOutcome = "open";
+    this.buildWhistle();
+
     this.observer = new ResizeObserver(() => this.resize());
     this.observer.observe(canvas.parentElement ?? canvas);
     this.resize();
@@ -403,8 +477,178 @@ class VillageEngine {
     this.selectedId = next.selectedId;
     this.integrity = Math.min(1, next.integrity / 180);
     this.reduced = next.reducedMotion;
-    this.controls.autoRotate = !next.reducedMotion;
+    const switched = next.competition !== this.competition;
+    this.competition = next.competition || "tender";
+    this.whistleOutcome = next.whistleOutcome || "open";
+    this.controls.autoRotate = !next.reducedMotion && this.whistleOutcome !== "exile";
     this.rain.visible = !next.reducedMotion;
+    if (switched || this.whistleOutcome !== "open") this.frameCompetition();
+  }
+
+  frameCompetition() {
+    const fog = this.scene.fog;
+    if (this.competition !== "whistle") {
+      this.camera.position.set(11.2, 7.4, 11.2);
+      this.controls.target.set(0, 0.6, 0);
+      fog.color.set(PALETTE.void);
+      this.scene.background = new THREE.Color(PALETTE.void);
+      return;
+    }
+    if (this.whistleOutcome === "exile") {
+      this.camera.position.set(20, 14, 18);
+      this.controls.target.set(LODGING.x, 0.2, LODGING.z);
+      fog.color.set(PALETTE.crimson);
+      this.scene.background = new THREE.Color(0x1a080c);
+      return;
+    }
+    if (this.whistleOutcome === "burn") {
+      this.camera.position.set(8.5, 6.2, 9.4);
+      this.controls.target.set(LODGING.x, 0.4, LODGING.z);
+      fog.color.set(0x2a140c);
+      this.scene.background = new THREE.Color(0x140c08);
+      return;
+    }
+    this.camera.position.set(16.4, 8.6, 12.2);
+    this.controls.target.set(COMPOUND.x, 0.5, COMPOUND.z);
+    if (this.whistleOutcome === "jail") {
+      fog.color.set(0x102818);
+      this.scene.background = new THREE.Color(0x0c1c14);
+    } else {
+      fog.color.set(PALETTE.void);
+      this.scene.background = new THREE.Color(PALETTE.void);
+    }
+  }
+
+  paintParts(parts, color, fillOp = 0.22, lineOp = 0.85) {
+    for (const m of parts.fills) { m.color.copy(color); m.opacity = fillOp; }
+    for (const m of parts.lines) { m.color.copy(color); m.opacity = lineOp; }
+  }
+
+  addWBox(group, geos, parts, x, y, z, w, h, d) {
+    const geo = new THREE.BoxGeometry(w, h, d);
+    const edges = new THREE.EdgesGeometry(geo);
+    geos.push(geo, edges);
+    const fillMat = new THREE.MeshBasicMaterial({ color: GOLD, transparent: true, opacity: 0.16, depthWrite: false });
+    const lineMat = new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.8 });
+    parts.fills.push(fillMat); parts.lines.push(lineMat);
+    const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z);
+    const line = new THREE.LineSegments(edges, lineMat); line.position.set(x, y, z);
+    group.add(fill, line);
+  }
+
+  addWCyl(group, geos, parts, x, y, z, r, h, seg = 8) {
+    const geo = new THREE.CylinderGeometry(r, r, h, seg);
+    const edges = new THREE.EdgesGeometry(geo);
+    geos.push(geo, edges);
+    const fillMat = new THREE.MeshBasicMaterial({ color: GOLD, transparent: true, opacity: 0.16, depthWrite: false });
+    const lineMat = new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.8 });
+    parts.fills.push(fillMat); parts.lines.push(lineMat);
+    const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z);
+    const line = new THREE.LineSegments(edges, lineMat); line.position.set(x, y, z);
+    group.add(fill, line);
+  }
+
+  buildWhistle() {
+    this.wGroup = new THREE.Group();
+    this.wGeos = [];
+    this.villa = { fills: [], lines: [] };
+    this.car = { fills: [], lines: [] };
+    this.boat = { fills: [], lines: [] };
+    this.lodging = { fills: [], lines: [] };
+    this.figures = [];
+    this.figureHome = [];
+    this.addWBox(this.wGroup, this.wGeos, this.villa, COMPOUND.x, 0.85, COMPOUND.z, 3.2, 1.7, 2.2);
+    this.addWBox(this.wGroup, this.wGeos, this.villa, COMPOUND.x, 1.85, COMPOUND.z, 3.4, 0.18, 2.4);
+    this.addWBox(this.wGroup, this.wGeos, this.villa, COMPOUND.x + 1.1, 0.55, COMPOUND.z + 1.4, 1.2, 1.1, 1.1);
+    const cx = COMPOUND.x - 2.6, cz = COMPOUND.z + 0.2;
+    this.addWBox(this.wGroup, this.wGeos, this.car, cx, 0.32, cz, 1.8, 0.38, 0.9);
+    this.addWBox(this.wGroup, this.wGeos, this.car, cx + 0.1, 0.62, cz, 1.1, 0.32, 0.85);
+    this.addWBox(this.wGroup, this.wGeos, this.boat, 6.2, 0.18, 4.7, 2.6, 0.28, 0.7);
+    this.addWBox(this.wGroup, this.wGeos, this.boat, 6.0, 0.48, 4.7, 1.2, 0.35, 0.5);
+    this.addWBox(this.wGroup, this.wGeos, this.lodging, LODGING.x, 0.55, LODGING.z, 1.5, 1.1, 1.2);
+    this.addWBox(this.wGroup, this.wGeos, this.lodging, LODGING.x, 1.2, LODGING.z, 1.7, 0.16, 1.35);
+    const spots = [[COMPOUND.x + 2.2, COMPOUND.z + 0.4], [COMPOUND.x + 2.6, COMPOUND.z - 0.3], [COMPOUND.x + 1.8, COMPOUND.z - 0.8], [COMPOUND.x + 2.9, COMPOUND.z + 0.9]];
+    for (const [x, z] of spots) {
+      const g = new THREE.Group();
+      const bodyGeo = new THREE.CapsuleGeometry(0.12, 0.42, 3, 6);
+      const headGeo = new THREE.SphereGeometry(0.11, 8, 8);
+      this.wGeos.push(bodyGeo, headGeo);
+      const mat = new THREE.MeshBasicMaterial({ color: GOLD, transparent: true, opacity: 0.7, depthWrite: false });
+      const headMat = mat.clone();
+      const body = new THREE.Mesh(bodyGeo, mat); body.position.y = 0.45;
+      const head = new THREE.Mesh(headGeo, headMat); head.position.y = 0.82;
+      g.add(body, head);
+      g.position.set(x, 0, z);
+      g.userData.mats = [mat, headMat];
+      this.figures.push(g);
+      this.figureHome.push(new THREE.Vector3(x, 0, z));
+      this.wGroup.add(g);
+    }
+    const ringGeo = new THREE.RingGeometry(2.4, 2.55, 40);
+    this.wGeos.push(ringGeo);
+    this.seize = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: GREEN, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false }));
+    this.seize.rotation.x = -Math.PI / 2;
+    this.seize.position.set(COMPOUND.x, 0.04, COMPOUND.z);
+    this.seize.visible = false;
+    this.wGroup.add(this.seize);
+    const count = 140;
+    this.firePos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      this.firePos[i * 3] = LODGING.x + (Math.random() - 0.5) * 1.6;
+      this.firePos[i * 3 + 1] = Math.random() * 2.2;
+      this.firePos[i * 3 + 2] = LODGING.z + (Math.random() - 0.5) * 1.2;
+    }
+    const fireGeo = new THREE.BufferGeometry();
+    fireGeo.setAttribute("position", new THREE.BufferAttribute(this.firePos, 3));
+    this.wGeos.push(fireGeo);
+    this.fire = new THREE.Points(fireGeo, new THREE.PointsMaterial({ color: 0xff5a2a, size: 0.09, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+    this.wGroup.add(this.fire);
+    this.scene.add(this.wGroup);
+  }
+
+  tickWhistle(dt, t) {
+    const whistle = this.competition === "whistle";
+    const outcome = this.whistleOutcome;
+    const idle = outcome === "jail" ? GREEN : outcome === "burn" ? new THREE.Color(PALETTE.amber) : outcome === "exile" ? CRIMSON : GOLD;
+    this.paintParts(this.villa, outcome === "jail" ? GREEN : outcome === "exile" ? CRIMSON : idle, whistle ? 0.24 : 0.08);
+    this.paintParts(this.car, outcome === "jail" ? GREEN : GOLD, whistle ? 0.28 : 0.08);
+    this.paintParts(this.boat, outcome === "jail" ? GREEN : CYAN, whistle ? 0.26 : 0.08);
+    if (outcome === "burn") this.paintParts(this.lodging, CHAR, 0.45, 0.4);
+    else if (outcome === "exile") this.paintParts(this.lodging, CRIMSON, 0.3);
+    else this.paintParts(this.lodging, whistle ? CYAN : GOLD, whistle ? 0.2 : 0.07);
+    this.seize.visible = outcome === "jail";
+    this.seize.rotation.y = t * 0.25;
+    const burning = outcome === "burn";
+    this.fire.material.opacity = burning ? 0.85 : 0;
+    this.fire.visible = burning && !this.reduced;
+    if (burning && !this.reduced) {
+      for (let i = 0; i < this.firePos.length; i += 3) {
+        this.firePos[i + 1] += (1.8 + (i % 5) * 0.15) * dt;
+        if (this.firePos[i + 1] > 2.6) {
+          this.firePos[i] = LODGING.x + (Math.random() - 0.5) * 1.6;
+          this.firePos[i + 1] = 0.1;
+          this.firePos[i + 2] = LODGING.z + (Math.random() - 0.5) * 1.2;
+        }
+      }
+      this.fire.geometry.getAttribute("position").needsUpdate = true;
+    }
+    for (let i = 0; i < this.figures.length; i++) {
+      const fig = this.figures[i];
+      const home = this.figureHome[i];
+      fig.visible = whistle;
+      const mats = fig.userData.mats;
+      if (outcome === "jail") { for (const m of mats) { m.color.copy(GREEN); m.opacity = 0.15; } }
+      else if (outcome === "exile") {
+        for (const m of mats) { m.color.copy(CRIMSON); m.opacity = 0.85; }
+        const u = Math.min(1, (t % 20) / 8);
+        fig.position.x = home.x + (LODGING.x - home.x) * u;
+        fig.position.z = home.z + (LODGING.z - home.z) * u;
+      } else {
+        for (const m of mats) { m.color.copy(GOLD); m.opacity = 0.7; }
+        fig.position.x = home.x + Math.sin(t * 0.8 + i) * 0.15;
+        fig.position.z = home.z;
+      }
+    }
   }
 
   resize = () => {
@@ -490,17 +734,20 @@ class VillageEngine {
         v.group.position.x = house.x + (glitch ? Math.sin(t * 90) * 0.045 : 0);
       } else v.group.position.x = house.x;
     }
+    this.tickWhistle(dt, t);
     this.renderer.render(this.scene, this.camera);
   };
 }
 
 function defaultState() {
   return {
-    phase: "boot", contractorId: null, integrity: 32, results: [],
+    phase: "boot", contractorId: null, competition: "tender", integrity: 32, results: [],
     houses: HOUSES.map((h) => ({ ...h })),
     contractors: CONTRACTORS.map((c) => ({ ...c })),
     activeHouseId: TENDERS[0].houseId, hoveredId: null, selectedId: null,
-    mobileTab: "tender", resetAt: Date.now() + MONTH_MS, toast: null,
+    mobileTab: "tender", resetAt: Date.now() + MONTH_MS, toast: null, toastKind: null,
+    whistleResults: [], activeCaseId: WHISTLE_CASES[0].id, whistleScore: 0,
+    whistleOutcome: "open", showOutcome: false,
   };
 }
 
@@ -520,8 +767,10 @@ function persist(state) {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       version: SAVE_VERSION, phase: state.phase, contractorId: state.contractorId,
-      integrity: state.integrity, results: state.results, houses: state.houses,
+      competition: state.competition, integrity: state.integrity, results: state.results, houses: state.houses,
       contractors: state.contractors, activeHouseId: state.activeHouseId, resetAt: state.resetAt,
+      whistleResults: state.whistleResults, activeCaseId: state.activeCaseId,
+      whistleScore: state.whistleScore, whistleOutcome: state.whistleOutcome,
     }));
   } catch { /* ignore */ }
 }
@@ -533,20 +782,24 @@ const engine = new VillageEngine(canvas, state.houses, {
   onHover: (id) => { state.hoveredId = id; renderDock(); engine.sync(syncPayload()); },
   onSelect: (id) => {
     state.selectedId = id;
-    if (id && tenderForHouse(id)) {
+    if (id && tenderForHouse(id) && state.competition === "tender") {
       state.activeHouseId = id;
       state.mobileTab = "tender";
       play.classList.add("show-tender");
       play.classList.remove("show-board");
       document.querySelectorAll("#mobile-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === "tender"));
-      renderTender();
+      renderCase();
     }
     renderDock();
     engine.sync(syncPayload());
   },
 });
 function syncPayload() {
-  return { houses: state.houses, hoveredId: state.hoveredId, selectedId: state.selectedId, integrity: state.integrity, reducedMotion: reduced };
+  return {
+    houses: state.houses, hoveredId: state.hoveredId, selectedId: state.selectedId,
+    integrity: state.integrity, reducedMotion: reduced,
+    competition: state.competition, whistleOutcome: state.whistleOutcome,
+  };
 }
 engine.sync(syncPayload());
 
@@ -593,11 +846,27 @@ function resultFor(houseId) { return state.results.find((r) => r.houseId === hou
 
 function renderHeader() {
   const you = contractorById(state.contractorId);
+  const whistle = state.competition === "whistle";
   document.getElementById("stat-name").textContent = you?.name ?? "—";
+  document.getElementById("phase-title").textContent = whistle
+    ? "Whistle-blower · unexplained wealth"
+    : "Village Infrastructure Overhaul";
+  document.getElementById("stat-label").textContent = whistle ? "Whistle score" : "Contracts won";
   const won = state.results.filter((r) => r.winnerId === state.contractorId).length;
-  document.getElementById("stat-won").textContent = `${won}/${TENDERS.length}`;
+  const wscore = whistleTotal(state.contractorId, state.whistleResults);
+  const stat = document.getElementById("stat-won");
+  stat.textContent = whistle ? `${wscore}/500` : `${won}/${TENDERS.length}`;
+  stat.className = whistle ? "mono amber" : "mono green";
+  document.querySelectorAll("#comp-switch button").forEach((b) => {
+    b.classList.toggle("on", b.dataset.comp === state.competition);
+  });
+  document.getElementById("tab-case").textContent = whistle ? "Case" : "Tender";
+  document.getElementById("tab-board").textContent = whistle ? "File" : "Bids";
+  document.querySelectorAll("#mobile-tabs button").forEach((b) => {
+    b.classList.toggle("whistle", whistle && b.classList.contains("on"));
+  });
   document.getElementById("contractor-chips").innerHTML = `
-    <span class="kicker mute">Active contractors · 4 bidding</span>
+    <span class="kicker mute">${whistle ? `Cases · ${state.whistleResults.length}/${WHISTLE_CASES.length} filed` : "Active contractors · 4 bidding"}</span>
     ${CONTRACTORS.map((c) => `<span class="chip${c.id === state.contractorId ? " you" : ""}">${c.name}${c.id === state.contractorId ? " · you" : ""}</span>`).join("")}
   `;
 }
@@ -652,7 +921,7 @@ function renderTender() {
       ${result ? `
         <p class="kicker mute">${result.winnerId ? "Bid awarded · correct top score" : "Bid rejected · need a correct top score"}</p>
         ${bidRows}
-        ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">Next renovation</button>` : `<p style="margin:.5rem 0 0;font-size:.8rem;color:var(--cyan)">Round complete. Check bid standings.</p>`}
+        ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">Next renovation</button>` : `<button type="button" class="cta" id="open-whistle" style="margin-top:.75rem;background:var(--amber)">Open whistle-blower brief</button>`}
       ` : `
         <p class="kicker mute">Award rule</p>
         <p class="green" style="margin:.35rem 0 0;font-size:.8rem">Only a correct top-score bid awards the renovation. Wrong answers are rejected.</p>
@@ -677,6 +946,141 @@ function renderTender() {
     persist(state);
     renderAll();
   });
+  document.getElementById("open-whistle")?.addEventListener("click", () => {
+    state.competition = "whistle";
+    state.mobileTab = "tender";
+    persist(state);
+    renderAll();
+  });
+}
+
+
+function whistleResultFor(caseId) { return state.whistleResults.find((r) => r.caseId === caseId) ?? null; }
+
+function renderCase() {
+  if (state.competition !== "whistle") return renderTender();
+  const item = whistleCaseById(state.activeCaseId);
+  const result = whistleResultFor(item.id);
+  const locked = Boolean(result);
+  const remaining = WHISTLE_CASES.some((c) => !whistleResultFor(c.id));
+  const awarded = Boolean(result?.correct);
+  const panel = document.getElementById("tender-panel");
+  panel.classList.toggle("award", awarded);
+  panel.classList.toggle("reject", locked && !awarded);
+  const rows = result
+    ? Object.entries(result.reports).sort((a, b) => b[1] - a[1]).map(([id, score], i) => {
+        const name = contractorById(id).name;
+        const me = id === state.contractorId;
+        return `<div class="bid-row${i === 0 && me && awarded ? " win" : ""}${me && !awarded ? " rejected" : ""}"><span class="rank">${i + 1}</span><span class="who">${name}${me ? " · you" : ""}</span><span class="mono">${score}</span></div>`;
+      }).join("")
+    : "";
+  panel.innerHTML = `
+    <div class="side-head" style="display:flex;gap:.75rem;align-items:flex-start">
+      <div style="flex:1;min-width:0">
+        <p class="kicker amber">Whistle-blower · ${item.spec}</p>
+        <h2>${item.title}</h2>
+        <p class="mute" style="margin:.25rem 0 0;font-size:11px">Ravi · Dive master · Rs 15,000 / month</p>
+      </div>
+      <span class="week">${state.whistleResults.length}/${WHISTLE_CASES.length}</span>
+    </div>
+    <div class="spec-nav">
+      ${WHISTLE_CASES.map((c) => {
+        const done = Boolean(whistleResultFor(c.id));
+        const on = c.id === item.id;
+        const hit = whistleResultFor(c.id);
+        const won = done && hit?.correct;
+        const lost = done && !hit?.correct;
+        return `<button type="button" data-case="${c.id}" class="${on && !done ? "whistle-on" : on ? (won ? "won" : "rejected") : won ? "won" : lost ? "rejected" : ""}">${WSHORT[c.id]}</button>`;
+      }).join("")}
+    </div>
+    <div class="side-body">
+      <p class="q">${item.question}</p>
+      <ul class="opts">
+        ${item.options.map((opt) => {
+          const picked = result?.picked === opt.id;
+          const good = opt.id === item.correct;
+          const cls = picked && result.correct ? "good" : picked && !result.correct ? "bad" : locked && good ? "good" : "";
+          return `<li><button type="button" class="opt ${cls}" data-wopt="${opt.id}" ${locked ? "disabled" : ""}>
+            <span class="letter">${opt.id}</span><span class="txt">${opt.text}</span>
+          </button></li>`;
+        }).join("")}
+      </ul>
+    </div>
+    <div class="side-foot">
+      ${result ? `
+        <p class="kicker ${awarded ? "cyan" : "mute"}">${awarded ? "Report holds · +100" : "Weak file · +20"}</p>
+        ${rows}
+        ${remaining ? `<button type="button" class="cta" id="next-case" style="margin-top:.75rem;background:var(--amber)">Next case</button>`
+          : `<p class="kicker ${state.whistleOutcome === "jail" ? "cyan" : ""}" style="margin:.5rem 0 0">${
+              state.whistleOutcome === "jail" ? "Brief complete · trafficker jailed"
+              : state.whistleOutcome === "burn" ? "Brief complete · lodging burned"
+              : "Brief complete · you are exiled"
+            }</p>`}
+      ` : `
+        <p class="kicker mute">Scoring</p>
+        <p style="margin:.35rem 0 0;font-size:.8rem">4–5 correct: Ravi jailed, assets seized. 2–3: he burns your lodging. 0–1: you are chased out of the village.</p>
+      `}
+    </div>`;
+  document.querySelectorAll("[data-case]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.activeCaseId = btn.dataset.case;
+      persist(state);
+      renderAll();
+    });
+  });
+  document.querySelectorAll("[data-wopt]").forEach((btn) => {
+    btn.addEventListener("click", () => answerWhistle(btn.dataset.wopt));
+  });
+  document.getElementById("next-case")?.addEventListener("click", () => {
+    if (state.whistleOutcome !== "open") return;
+    state.activeCaseId = firstOpenWhistleId(state.whistleResults);
+    persist(state);
+    renderAll();
+  });
+}
+
+function answerWhistle(picked) {
+  if (!state.contractorId) return;
+  const item = whistleCaseById(state.activeCaseId);
+  if (whistleResultFor(item.id)) return;
+  const correct = picked === item.correct;
+  const playerScore = correct ? WHISTLE_CORRECT : WHISTLE_WRONG;
+  const reports = { ...item.npcReports, [state.contractorId]: playerScore };
+  state.whistleResults.push({ caseId: item.id, picked, correct, playerScore, reports });
+  state.whistleScore += playerScore;
+  state.whistleOutcome = whistleOutcomeOf(state.whistleScore, state.whistleResults.length);
+  const finished = state.whistleOutcome !== "open";
+  if (finished) {
+    state.showOutcome = true;
+    showToast(
+      state.whistleOutcome === "jail" ? "Top score. Ravi is jailed. Villa, car and boat seized."
+      : state.whistleOutcome === "burn" ? "Mid score. Ravi torches your lodging."
+      : "Low score. Ravi's crew run you out of the village.",
+      state.whistleOutcome
+    );
+  } else {
+    showToast(correct ? "Report filed. Keep going." : "Weak file. That answer will not hold.", correct ? "award" : "reject");
+  }
+  persist(state);
+  renderAll();
+  renderOutcome();
+}
+
+function renderOutcome() {
+  const el = document.getElementById("outcome");
+  const card = document.getElementById("outcome-card");
+  if (!state.showOutcome || state.whistleOutcome === "open") { el.hidden = true; return; }
+  const copy = {
+    jail: { kicker: "Top score", title: "Ravi jailed", body: "The file held. Police remand the dive master. Villa, car and boat are seized.", cls: "award" },
+    burn: { kicker: "Mid score", title: "Your lodging is burning", body: "The file was too thin. Ravi’s crew torch the lodging you sleep in. The villa still stands.", cls: "burn" },
+    exile: { kicker: "Low score", title: "Chased out of the village", body: "You stayed too quiet. Ravi’s crew run you off the Terre Rouge grid.", cls: "reject" },
+  }[state.whistleOutcome];
+  document.getElementById("outcome-kicker").textContent = copy.kicker;
+  document.getElementById("outcome-title").textContent = copy.title;
+  document.getElementById("outcome-body").textContent = copy.body;
+  document.getElementById("outcome-score").textContent = `Whistle score · ${state.whistleScore}/500`;
+  card.className = "panel boot-card " + copy.cls;
+  el.hidden = false;
 }
 
 function renderBoard() {
@@ -686,19 +1090,22 @@ function renderBoard() {
       wins: state.results.filter((r) => r.winnerId === row.id).length,
       holding: holdingsLabel(row.name, state.houses),
     }))
-    .sort((a, b) => b.score - a.score || b.wins - a.wins);
+    .map((row) => ({ ...row, report: whistleTotal(row.id, state.whistleResults) }))
+    .sort((a, b) => state.competition === "whistle" ? b.report - a.report || b.score - a.score : b.score - a.score || b.wins - a.wins);
   document.getElementById("board-panel").innerHTML = `
     <div class="side-head">
-      <p class="kicker cyan">Bid standings</p>
-      <h2>Leading contractors</h2>
-      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">Only a correct top-score bid awards the renovation. ${state.results.filter((r) => r.winnerId).length}/${TENDERS.length} awarded.</p>
+      <p class="kicker cyan">${state.competition === "whistle" ? "Report standings" : "Bid standings"}</p>
+      <h2>${state.competition === "whistle" ? "Who filed the stronger brief" : "Leading contractors"}</h2>
+      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">${state.competition === "whistle"
+        ? `${state.whistleResults.length}/${WHISTLE_CASES.length} cases · ${state.whistleOutcome === "open" ? "file still open" : state.whistleOutcome}`
+        : `Only a correct top-score bid awards the renovation. ${state.results.filter((r) => r.winnerId).length}/${TENDERS.length} awarded.`}</p>
     </div>
     <div class="side-body">
       ${rows.map((row, i) => `
         <div class="board-row ${row.id === state.contractorId ? "me" : ""}">
           <span class="rank">${i + 1}</span>
           <div class="who"><strong>${row.name}${row.id === state.contractorId ? " · you" : ""}</strong><span>${SECTOR_LABEL[row.sector]} · ${row.holding}</span></div>
-          <span class="mono cyan">${row.score}</span>
+          <span class="mono ${state.competition === "whistle" ? "amber" : "cyan"}">${state.competition === "whistle" ? row.report : row.score}</span>
         </div>`).join("")}
     </div>`;
 }
@@ -733,19 +1140,21 @@ function renderDock() {
   });
 }
 
-function showToast(msg) {
+function showToast(msg, kind) {
   const el = document.getElementById("toast");
   el.textContent = msg;
+  el.className = "toast" + (kind ? " " + kind : "");
   el.hidden = false;
   clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => { el.hidden = true; }, 2800);
+  showToast._t = setTimeout(() => { el.hidden = true; }, 3200);
 }
 
 function renderAll() {
   renderHeader();
-  renderTender();
+  renderCase();
   renderBoard();
   renderDock();
+  renderOutcome();
   engine.sync(syncPayload());
 }
 
@@ -776,11 +1185,25 @@ function answer(picked) {
   state.selectedId = tender.houseId;
   showToast(awarded
     ? `${winner.name} takes ${house?.name ?? "the contract"} · bid ${playerScore}`
-    : "Bid rejected. Only a correct top score awards the renovation.");
+    : "Bid rejected. Only a correct top score awards the renovation.", awarded ? "award" : "reject");
   persist(state);
   renderAll();
 }
 
+document.getElementById("comp-switch").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-comp]");
+  if (!btn) return;
+  state.competition = btn.dataset.comp;
+  state.mobileTab = "tender";
+  play.classList.add("show-tender");
+  play.classList.remove("show-board");
+  persist(state);
+  renderAll();
+});
+document.getElementById("outcome-dismiss").addEventListener("click", () => {
+  state.showOutcome = false;
+  document.getElementById("outcome").hidden = true;
+});
 document.getElementById("mobile-tabs").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-tab]");
   if (!btn) return;

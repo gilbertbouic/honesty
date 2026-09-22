@@ -405,3 +405,72 @@ button { font: inherit; color: inherit; }
 .bid-row.me:not(.win) { color: var(--cyan); }
 .bid-row .rank { width: 1rem; color: var(--mute); }
 .bid-row .who { flex: 1; font-family: var(--display); letter-spacing: 0.1em; text-transform: uppercase; }
+
+.comp-switch {
+  display: flex;
+  border: 1px solid var(--line);
+  background: var(--raised);
+  border-radius: 0.75rem;
+  padding: 0.15rem;
+}
+.comp-switch button {
+  min-height: 2.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--mute);
+  border-radius: 0.55rem;
+  padding: 0 0.7rem;
+  font-family: var(--display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.comp-switch button.on.tender,
+.comp-switch button[data-comp="tender"].on {
+  background: color-mix(in oklab, var(--cyan) 15%, transparent);
+  color: var(--cyan);
+}
+.comp-switch button[data-comp="whistle"].on {
+  background: color-mix(in oklab, var(--amber) 15%, transparent);
+  color: var(--amber);
+}
+.amber { color: var(--amber); }
+.crimson { color: var(--crimson); }
+.kicker.amber { color: var(--amber); }
+.opt:hover:not(:disabled).whistle { border-color: var(--amber); color: var(--amber); }
+.panel.award {
+  border-color: color-mix(in oklab, var(--green) 72%, transparent);
+}
+.panel.reject {
+  border-color: color-mix(in oklab, var(--crimson) 82%, transparent);
+}
+.panel.burn {
+  border-color: color-mix(in oklab, var(--amber) 82%, transparent);
+}
+.toast.jail, .toast.award { border-color: var(--green); color: var(--green); background: color-mix(in oklab, var(--green) 12%, var(--surface)); }
+.toast.reject, .toast.exile { border-color: var(--crimson); color: var(--crimson); background: color-mix(in oklab, var(--crimson) 12%, var(--surface)); }
+.toast.burn { border-color: var(--amber); color: var(--amber); background: color-mix(in oklab, var(--amber) 12%, var(--surface)); }
+.spec-nav button.on.whistle,
+.spec-nav button.whistle-on {
+  border-color: var(--amber);
+  color: var(--amber);
+  background: color-mix(in oklab, var(--amber) 12%, var(--raised));
+}
+#outcome .boot-card h2 {
+  margin: 0.4rem 0 0;
+  font-family: var(--display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+#outcome { z-index: 40; pointer-events: auto; }
+.tabs button.on.whistle { color: var(--amber); }
+
+@media (max-width: 860px) {
+  .header-row { gap: 0.55rem 0.8rem; }
+  .comp-switch { margin-left: auto; }
+  .side.left, .side.right { max-height: min(62dvh, calc(100dvh - 8.5rem)); }
+  .class-list.two { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px) {
+  .class-list.two { grid-template-columns: 1fr 1fr; }
+}

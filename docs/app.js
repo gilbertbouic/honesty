@@ -187,6 +187,12 @@ function firstOpenHouseId(results) {
   const done = new Set(results.map((r) => r.houseId));
   return TENDERS.find((t) => !done.has(t.houseId))?.houseId ?? TENDERS[0].houseId;
 }
+function roundOneCleared(results, contractorId) {
+  if (!contractorId) return false;
+  if (results.length < TENDERS.length) return false;
+  const byHouse = new Map(results.map((r) => [r.houseId, r]));
+  return TENDERS.every((t) => byHouse.get(t.houseId)?.winnerId === contractorId);
+}
 function winnerOf(bids) { return Object.entries(bids).sort((a, b) => b[1] - a[1])[0][0]; }
 function holdingsLabel(name, houses) {
   const owned = houses.filter((h) => h.owner === name);
@@ -857,8 +863,13 @@ function renderHeader() {
   const stat = document.getElementById("stat-won");
   stat.textContent = whistle ? `${wscore}/500` : `${won}/${TENDERS.length}`;
   stat.className = whistle ? "mono amber" : "mono green";
+  const swept = roundOneCleared(state.results, state.contractorId);
   document.querySelectorAll("#comp-switch button").forEach((b) => {
     b.classList.toggle("on", b.dataset.comp === state.competition);
+    if (b.dataset.comp === "whistle") {
+      b.classList.toggle("locked", !swept);
+      b.title = swept ? "Whistle-blower brief" : "Win every renovation with a correct top-score bid to unlock round 2";
+    }
   });
   document.getElementById("tab-case").textContent = whistle ? "Case" : "Tender";
   document.getElementById("tab-board").textContent = whistle ? "File" : "Bids";
@@ -921,10 +932,10 @@ function renderTender() {
       ${result ? `
         <p class="kicker mute">${result.winnerId ? "Bid awarded · correct top score" : "Bid rejected · need a correct top score"}</p>
         ${bidRows}
-        ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">Next renovation</button>` : `<button type="button" class="cta" id="open-whistle" style="margin-top:.75rem;background:var(--amber)">Open whistle-blower brief</button>`}
+        ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">Next renovation</button>` : (roundOneCleared(state.results, state.contractorId) ? `<button type="button" class="cta" id="open-whistle" style="margin-top:.75rem;background:var(--amber)">Open whistle-blower brief</button>` : `<p style="margin:.5rem 0 0;font-size:.8rem;color:var(--crimson)">No clean sweep. Reset and win every contract to unlock round 2.</p>`)}
       ` : `
         <p class="kicker mute">Award rule</p>
-        <p class="green" style="margin:.35rem 0 0;font-size:.8rem">Only a correct top-score bid awards the renovation. Wrong answers are rejected.</p>
+        <p class="green" style="margin:.35rem 0 0;font-size:.8rem">Only a correct top-score bid awards the renovation. Win every contract to unlock round 2.</p>
       `}
     </div>`;
   document.querySelectorAll("[data-house]").forEach((btn) => {
@@ -947,6 +958,10 @@ function renderTender() {
     renderAll();
   });
   document.getElementById("open-whistle")?.addEventListener("click", () => {
+    if (!roundOneCleared(state.results, state.contractorId)) {
+      showToast("Round 2 is locked. Win every renovation with a correct top-score bid first.", "info");
+      return;
+    }
     state.competition = "whistle";
     state.mobileTab = "tender";
     persist(state);
@@ -1041,6 +1056,7 @@ function renderCase() {
 
 function answerWhistle(picked) {
   if (!state.contractorId) return;
+  if (!roundOneCleared(state.results, state.contractorId)) return;
   const item = whistleCaseById(state.activeCaseId);
   if (whistleResultFor(item.id)) return;
   const correct = picked === item.correct;
@@ -1193,6 +1209,10 @@ function answer(picked) {
 document.getElementById("comp-switch").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-comp]");
   if (!btn) return;
+  if (btn.dataset.comp === "whistle" && !roundOneCleared(state.results, state.contractorId)) {
+    showToast("Round 2 is locked. Win every renovation with a correct top-score bid first.", "info");
+    return;
+  }
   state.competition = btn.dataset.comp;
   state.mobileTab = "tender";
   play.classList.add("show-tender");
@@ -1220,6 +1240,7 @@ function tickClock() {
 tickClock();
 setInterval(tickClock, 1000);
 
+if (!roundOneCleared(state.results, state.contractorId) && state.competition === "whistle") state.competition = "tender";
 if (state.phase === "play") showPlay();
 window.addEventListener("pagehide", () => persist(state));
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") persist(state); });

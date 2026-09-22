@@ -474,3 +474,8 @@ button { font: inherit; color: inherit; }
 @media (max-width: 520px) {
   .class-list.two { grid-template-columns: 1fr 1fr; }
 }
+
+.comp-switch button.locked {
+  color: var(--mute);
+  opacity: 0.7;
+}

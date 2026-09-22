@@ -4,7 +4,7 @@ A [Mkweli](https://mkweli.tech) product.
 
 **Play now:** [honesty.mkweli.tech](https://honesty.mkweli.tech)
 
-Public, civil service, and government contractors answer weekly infrastructure tenders, expose off-books rebates, and renovate a decaying digital village in Terre Rouge.
+Pick one of four contractors — Kuzin, Cheri, Malin, or Kokin. Answer a spec for each open renovation. Highest bid on that house wins the contract.
 
 This is not a court. Points show what you logged.
 
@@ -17,12 +17,12 @@ This is not a court. Points show what you logged.
 
 ## How it plays
 
-1. Pick a contractor class: Public, Civil Service, or Government.
-2. Answer the week's spec. Only the disclosed, lawful option scores.
-3. Spend material points to renovate decaying nodes on the grid.
-4. Climb the bid standings against Kuzin, Kokin, Cheri, and Malin.
+1. Choose Kuzin, Cheri, Malin, or Kokin.
+2. Open each decaying house's spec. Only the disclosed, lawful option scores 100. A wrong answer scores 30.
+3. The highest of the four bids takes that renovation.
+4. Reset clears the round.
 
-Week 1 tender is **SPEC-01 Water Grid Renewal**. Correct answer is B: the rebate must not be accepted; it must be fully disclosed and rejected.
+Eight contracts are on the table: CWA pump, Block A, Block B, primary school, CEB substation, drainage node, street lighting, and the community centre.
 
 ## Public ledger
 

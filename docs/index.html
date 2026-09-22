@@ -6,12 +6,12 @@
     <title>Honesty League · Village Grid</title>
     <meta
       name="description"
-      content="A Mkweli civic game. Public, civil service, and government contractors answer weekly tenders, expose corruption, and renovate a decaying digital village in Terre Rouge."
+      content="A Mkweli civic game. Four contractors bid eight renovations in Terre Rouge. Highest score on each spec wins the house."
     />
     <meta name="theme-color" content="#08080c" />
     <link rel="canonical" href="https://honesty.mkweli.tech/" />
     <meta property="og:title" content="Honesty League · Village Grid" />
-    <meta property="og:description" content="Answer the spec. Spend material. Rebuild the grid." />
+    <meta property="og:description" content="Pick a contractor. Answer the spec. Highest bid takes the house." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://honesty.mkweli.tech/" />
     <meta property="og:image" content="https://honesty.mkweli.tech/og.jpg" />
@@ -26,7 +26,7 @@
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Share+Tech+Mono&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=vg1" />
+    <link rel="stylesheet" href="./styles.css?v=vg2" />
     <script type="importmap">
       {
         "imports": {
@@ -45,23 +45,26 @@
         <p class="kicker">Terre Rouge · Pamplemousses node · A Mkweli product</p>
         <h1>Village Grid</h1>
         <p class="lede">
-          The digital village is decaying. Weekly infrastructure tenders decide who renovates the
-          water grid, lighting, and drainage. Answer the spec. Spend material points. Rebuild the
-          houses.
+          Four contractors are bidding the same eight renovations. Answer each spec. Highest bid
+          takes the house. Wrong answers lose the contract.
         </p>
-        <p class="kicker mute">Select contractor class</p>
-        <div class="class-list" id="class-list">
-          <button type="button" class="class-btn" data-sector="public">
-            <span class="class-name">Public</span>
-            <span class="class-copy">Residents and civic groups bidding on cité works.</span>
+        <p class="kicker mute">Choose your contractor</p>
+        <div class="class-list two" id="class-list">
+          <button type="button" class="class-btn" data-id="kuzin">
+            <span class="class-name">Kuzin</span>
+            <span class="class-copy">Civil Service · District Clinic</span>
           </button>
-          <button type="button" class="class-btn" data-sector="civil">
-            <span class="class-name">Civil Service</span>
-            <span class="class-copy">CWA, CEB, and district officers on the same ledger.</span>
+          <button type="button" class="class-btn" data-id="cheri">
+            <span class="class-name">Cheri</span>
+            <span class="class-copy">Public · Market Shed</span>
           </button>
-          <button type="button" class="class-btn" data-sector="government">
-            <span class="class-name">Government</span>
-            <span class="class-copy">Ministry and council officials under the same spec.</span>
+          <button type="button" class="class-btn" data-id="malin">
+            <span class="class-name">Malin</span>
+            <span class="class-copy">Government · Civic Hall</span>
+          </button>
+          <button type="button" class="class-btn" data-id="kokin">
+            <span class="class-name">Kokin</span>
+            <span class="class-copy">Public · Bus Shelter</span>
           </button>
         </div>
         <button type="button" class="cta" id="enter-btn" disabled>Enter the grid</button>
@@ -80,21 +83,16 @@
             <p class="mono" id="reset-clock">06d 14h 22m</p>
           </div>
           <div class="stat hide-sm">
-            <p class="kicker mute">Material</p>
-            <p class="mono cyan" id="stat-material">0</p>
+            <p class="kicker mute">Playing as</p>
+            <p class="mono cyan" id="stat-name">—</p>
           </div>
-          <div class="stat hide-sm">
-            <p class="kicker mute">Integrity</p>
-            <p class="mono green" id="stat-integrity">32</p>
+          <div class="stat">
+            <p class="kicker mute">Contracts won</p>
+            <p class="mono green" id="stat-won">0/8</p>
           </div>
+          <button type="button" class="reset-btn" id="reset-btn">Reset</button>
         </div>
-        <div class="chips">
-          <span class="kicker mute">Active contractors · 4 bidding</span>
-          <span class="chip">Kuzin</span>
-          <span class="chip">Kokin</span>
-          <span class="chip">Cheri</span>
-          <span class="chip">Malin</span>
-        </div>
+        <div class="chips" id="contractor-chips"></div>
       </header>
 
       <section class="panel side left" id="tender-panel" aria-label="Infrastructure tender"></section>
@@ -110,9 +108,9 @@
 
     <footer class="foot">
       <a href="https://mkweli.tech">A Mkweli product</a>
-      <span>Public · Civil Service · Government. Not a court.</span>
+      <span>Four contractors. Highest bid takes the house. Not a court.</span>
     </footer>
 
-    <script type="module" src="./app.js?v=vg1"></script>
+    <script type="module" src="./app.js?v=vg2"></script>
   </body>
 </html>

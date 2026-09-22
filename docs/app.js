@@ -8,34 +8,37 @@ const GREEN = new THREE.Color(PALETTE.green);
 const NDC = new THREE.Vector2();
 const HIT = new THREE.Color();
 const SAVE_KEY = "village-grid-save";
+const SAVE_VERSION = 2;
 const MONTH_MS = (6 * 24 + 14) * 60 * 60 * 1000 + 22 * 60 * 1000;
 const SECTOR_LABEL = { public: "Public", civil: "Civil Service", government: "Government" };
+const PLAYER_BID_CORRECT = 100;
+const PLAYER_BID_WRONG = 30;
+const SHORT = { "cwa-pump": "CWA", "block-a": "Blk A", "block-b": "Blk B", school: "School", power: "CEB", drain: "Drain", light: "Light", community: "Hall" };
 
 const CONTRACTORS = [
-  { id: "kuzin", name: "Kuzin", sector: "civil", score: 420, holding: "District Clinic" },
-  { id: "cheri", name: "Cheri", sector: "public", score: 310, holding: "Market Shed" },
-  { id: "malin", name: "Malin", sector: "government", score: 280, holding: "Civic Hall" },
-  { id: "kokin", name: "Kokin", sector: "public", score: 190, holding: "Bus Shelter" },
+  { id: "kuzin", name: "Kuzin", sector: "civil", score: 0, holding: "District Clinic" },
+  { id: "cheri", name: "Cheri", sector: "public", score: 0, holding: "Market Shed" },
+  { id: "malin", name: "Malin", sector: "government", score: 0, holding: "Civic Hall" },
+  { id: "kokin", name: "Kokin", sector: "public", score: 0, holding: "Bus Shelter" },
 ];
 
 const HOUSES = [
   { id: "cwa-pump", name: "CWA Pump House", hint: "Water Grid Renewal · SPEC-01", variant: "pump", x: 0.2, z: 3.4, cost: 80, renovated: false, owner: null, ownerSector: null },
-  { id: "block-a", name: "Terre Rouge Block A", hint: "Cité housing · leaking roofs", variant: "block", x: -4.2, z: 1.6, cost: 60, renovated: false, owner: null, ownerSector: null },
-  { id: "block-b", name: "Terre Rouge Block B", hint: "Cité housing · failed wiring", variant: "block", x: 4.3, z: 1.4, cost: 60, renovated: false, owner: null, ownerSector: null },
+  { id: "block-a", name: "Terre Rouge Block A", hint: "Cité roofs · SPEC-04", variant: "block", x: -4.2, z: 1.6, cost: 60, renovated: false, owner: null, ownerSector: null },
+  { id: "block-b", name: "Terre Rouge Block B", hint: "Cité wiring · SPEC-05", variant: "block", x: 4.3, z: 1.4, cost: 60, renovated: false, owner: null, ownerSector: null },
   { id: "market", name: "Market Shed", hint: "Held by Cheri · Public", variant: "market", x: -3.6, z: -2.1, cost: 50, renovated: true, owner: "Cheri", ownerSector: "public" },
   { id: "clinic", name: "District Clinic", hint: "Held by Kuzin · Civil Service", variant: "clinic", x: 3.9, z: -2.3, cost: 90, renovated: true, owner: "Kuzin", ownerSector: "civil" },
-  { id: "school", name: "Primary School", hint: "Pamplemousses zone 3", variant: "school", x: -1.4, z: -4.8, cost: 70, renovated: false, owner: null, ownerSector: null },
+  { id: "school", name: "Primary School", hint: "School works · SPEC-06", variant: "school", x: -1.4, z: -4.8, cost: 70, renovated: false, owner: null, ownerSector: null },
   { id: "hall", name: "Civic Hall", hint: "Held by Malin · Government", variant: "hall", x: 1.9, z: -4.9, cost: 85, renovated: true, owner: "Malin", ownerSector: "government" },
   { id: "bus", name: "Bus Shelter", hint: "Held by Kokin · Public", variant: "bus", x: 5.4, z: 3.2, cost: 40, renovated: true, owner: "Kokin", ownerSector: "public" },
-  { id: "power", name: "CEB Substation", hint: "Street lighting feed", variant: "power", x: -5.6, z: 3.3, cost: 90, renovated: false, owner: null, ownerSector: null },
-  { id: "drain", name: "Drainage Node", hint: "Land Drainage Authority", variant: "drain", x: 0.1, z: 6.0, cost: 50, renovated: false, owner: null, ownerSector: null },
-  { id: "light", name: "Street Lighting Mast", hint: "CEB · classified road", variant: "light", x: 6.4, z: -0.4, cost: 40, renovated: false, owner: null, ownerSector: null },
-  { id: "community", name: "Community Centre", hint: "Village committee hall", variant: "community", x: -6.2, z: -0.6, cost: 70, renovated: false, owner: null, ownerSector: null },
+  { id: "power", name: "CEB Substation", hint: "Street lighting feed · SPEC-07", variant: "power", x: -5.6, z: 3.3, cost: 90, renovated: false, owner: null, ownerSector: null },
+  { id: "drain", name: "Drainage Node", hint: "Land Drainage Authority · SPEC-08", variant: "drain", x: 0.1, z: 6.0, cost: 50, renovated: false, owner: null, ownerSector: null },
+  { id: "light", name: "Street Lighting Mast", hint: "CEB classified road · SPEC-09", variant: "light", x: 6.4, z: -0.4, cost: 40, renovated: false, owner: null, ownerSector: null },
+  { id: "community", name: "Community Centre", hint: "Village committee hall · SPEC-10", variant: "community", x: -6.2, z: -0.6, cost: 70, renovated: false, owner: null, ownerSector: null },
 ];
 
 const TENDERS = [
-  {
-    id: "spec-01", week: 1, spec: "SPEC-01", title: "Water Grid Renewal",
+  { id: "spec-01", houseId: "cwa-pump", spec: "SPEC-01", title: "Water Grid Renewal",
     question: "A subcontractor offers an off-books rebate to expedite materials. Under the transparency framework, how must this be logged?",
     options: [
       { id: "A", text: "Accept it as a CWA facilitation discount and offset it against the Terre Rouge connection fee, keeping the rebate off the tender file." },
@@ -43,21 +46,44 @@ const TENDERS = [
       { id: "C", text: "Park the sum in a Pamplemousses District Council village-works account and spend it later on informal community improvements." },
       { id: "D", text: "File it as a customary contractor commission under the Public Procurement Act, visible only inside the Ministry of Finance." },
     ],
-    correct: "B", rewardMaterial: 100, rewardIntegrity: 50,
-  },
-  {
-    id: "spec-02", week: 2, spec: "SPEC-02", title: "CEB Street Lighting",
-    question: "A supplier offers unregistered LED fittings at 40% below the approved schedule of rates, cash-in-hand, if the inspection sheet is signed tonight. What is the lawful action?",
+    correct: "B", npcBids: { kuzin: 82, cheri: 64, malin: 71, kokin: 88 } },
+  { id: "spec-04", houseId: "block-a", spec: "SPEC-04", title: "Cité Roof Renewal",
+    question: "A supplier offers an uncertified roof membrane at half the schedule if the inspection photo is taken from the courtyard, not the roof. What is the lawful action?",
     options: [
-      { id: "A", text: "Sign the sheet and record the saving later as a CEB energy-efficiency rebate after the poles are up." },
-      { id: "B", text: "Refuse the fittings, disclose the offer in full, and keep the approved schedule of rates." },
-      { id: "C", text: "Accept the fittings on cité side streets only and keep approved stock on the classified road." },
-      { id: "D", text: "Hold the cash in the village committee safe until the National Audit Office asks for it." },
+      { id: "A", text: "Accept it for rear blocks only and keep certified stock on the street elevation." },
+      { id: "B", text: "File the saving as a CWA waterproofing rebate after the sheets are up." },
+      { id: "C", text: "Refuse the membrane, disclose the offer, and keep the specified certified system." },
+      { id: "D", text: "Fit the cheap membrane now and replace it after cyclone season." },
     ],
-    correct: "B", rewardMaterial: 100, rewardIntegrity: 50,
-  },
-  {
-    id: "spec-03", week: 3, spec: "SPEC-03", title: "Monsoon Culverts",
+    correct: "C", npcBids: { kuzin: 77, cheri: 85, malin: 58, kokin: 69 } },
+  { id: "spec-05", houseId: "block-b", spec: "SPEC-05", title: "Block B Wiring",
+    question: "The nominated electrician is booked for three weeks. A cousin offers to energise Block B tonight without a CEB test sheet. How must this be handled?",
+    options: [
+      { id: "A", text: "Decline. Keep the specified electrician and wait for a signed CEB test sheet." },
+      { id: "B", text: "Energise the common stair only and log it as emergency lighting." },
+      { id: "C", text: "Let the cousin work if a village committee member watches." },
+      { id: "D", text: "Pay a CEB clerk cash to backdate the test sheet." },
+    ],
+    correct: "A", npcBids: { kuzin: 88, cheri: 61, malin: 74, kokin: 55 } },
+  { id: "spec-06", houseId: "school", spec: "SPEC-06", title: "Primary School Works",
+    question: "The PTA treasurer offers a cash envelope to skip the fire-certificate wait so classes reopen on Monday. What must you do?",
+    options: [
+      { id: "A", text: "Take the envelope, reopen, and file the certificate later." },
+      { id: "B", text: "Reopen the ground floor only and keep the upper floor locked." },
+      { id: "C", text: "Hold the cash in the school safe until the Ministry of Education asks." },
+      { id: "D", text: "Refuse the envelope, disclose it, and wait for the lawful fire certificate." },
+    ],
+    correct: "D", npcBids: { kuzin: 70, cheri: 79, malin: 66, kokin: 84 } },
+  { id: "spec-07", houseId: "power", spec: "SPEC-07", title: "CEB Substation",
+    question: "Night works can start 48 hours early if you skip the Traffic Management and Road Safety Unit diversion order. What is the lawful action?",
+    options: [
+      { id: "A", text: "Start at 21:00 and put cones out yourselves." },
+      { id: "B", text: "Start on cité lanes only and keep the classified road closed." },
+      { id: "C", text: "Do not open the ground until the signed diversion order is on the file." },
+      { id: "D", text: "Phone the district councillor and treat a verbal go-ahead as the order." },
+    ],
+    correct: "C", npcBids: { kuzin: 86, cheri: 52, malin: 73, kokin: 67 } },
+  { id: "spec-08", houseId: "drain", spec: "SPEC-08", title: "Monsoon Culverts",
     question: "The contractor proposes using uncertified culvert pipes leftover from a private villa in Grand Baie to beat the monsoon deadline. How must this be handled?",
     options: [
       { id: "A", text: "Approve a variation order and relabel the pipes as National Development Unit emergency stock." },
@@ -65,9 +91,40 @@ const TENDERS = [
       { id: "C", text: "Use the leftover pipes under the CWA reserve and replace them after cyclone season." },
       { id: "D", text: "Split the lot: certified pipes on the classified road, leftovers inside the cités." },
     ],
-    correct: "B", rewardMaterial: 100, rewardIntegrity: 50,
-  },
+    correct: "B", npcBids: { kuzin: 63, cheri: 70, malin: 81, kokin: 76 } },
+  { id: "spec-09", houseId: "light", spec: "SPEC-09", title: "CEB Street Lighting",
+    question: "A supplier offers unregistered LED fittings at 40% below the approved schedule of rates, cash-in-hand, if the inspection sheet is signed tonight. What is the lawful action?",
+    options: [
+      { id: "A", text: "Sign the sheet and record the saving later as a CEB energy-efficiency rebate after the poles are up." },
+      { id: "B", text: "Accept the fittings on cité side streets only and keep approved stock on the classified road." },
+      { id: "C", text: "Hold the cash in the village committee safe until the National Audit Office asks for it." },
+      { id: "D", text: "Refuse the fittings, disclose the offer, and keep the approved schedule of rates." },
+    ],
+    correct: "D", npcBids: { kuzin: 59, cheri: 74, malin: 68, kokin: 87 } },
+  { id: "spec-10", houseId: "community", spec: "SPEC-10", title: "Community Centre",
+    question: "The committee treasurer asks to split the hall refurbishment into three invoices so each stays under the Public Procurement Act threshold. How must this be logged?",
+    options: [
+      { id: "A", text: "Keep it as one contract. Do not split works to evade the threshold." },
+      { id: "B", text: "Split it and award one invoice to each friendly contractor." },
+      { id: "C", text: "Split only the paint and electrical, keep the roof as one lot." },
+      { id: "D", text: "Park two invoices in the social-welfare account and one on the hall file." },
+    ],
+    correct: "A", npcBids: { kuzin: 75, cheri: 88, malin: 80, kokin: 60 } },
 ];
+
+function contractorById(id) { return CONTRACTORS.find((c) => c.id === id) ?? CONTRACTORS[0]; }
+function tenderForHouse(houseId) { return TENDERS.find((t) => t.houseId === houseId) ?? null; }
+function firstOpenHouseId(results) {
+  const done = new Set(results.map((r) => r.houseId));
+  return TENDERS.find((t) => !done.has(t.houseId))?.houseId ?? TENDERS[0].houseId;
+}
+function winnerOf(bids) { return Object.entries(bids).sort((a, b) => b[1] - a[1])[0][0]; }
+function holdingsLabel(name, houses) {
+  const owned = houses.filter((h) => h.owner === name);
+  if (owned.length === 0) return "No holding";
+  if (owned.length === 1) return owned[0].name;
+  return `${owned.length} contracts`;
+}
 
 const LINE_VERT = `uniform float uTime; uniform float uRenovate; uniform float uSeed;
 void main(){ vec3 p=position; float g=1.0-uRenovate; float n=sin(dot(p.xz,vec2(12.1,7.3))+uTime*19.0+uSeed); float spike=step(0.92,n);
@@ -439,9 +496,11 @@ class VillageEngine {
 
 function defaultState() {
   return {
-    phase: "boot", sector: null, callsign: "OP-NODE", material: 0, integrity: 32, score: 0,
-    weekIndex: 0, results: [], houses: HOUSES.map((h) => ({ ...h })),
-    hoveredId: null, selectedId: null, mobileTab: "tender", resetAt: Date.now() + MONTH_MS, toast: null,
+    phase: "boot", contractorId: null, integrity: 32, results: [],
+    houses: HOUSES.map((h) => ({ ...h })),
+    contractors: CONTRACTORS.map((c) => ({ ...c })),
+    activeHouseId: TENDERS[0].houseId, hoveredId: null, selectedId: null,
+    mobileTab: "tender", resetAt: Date.now() + MONTH_MS, toast: null,
   };
 }
 
@@ -450,7 +509,7 @@ function loadState() {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return defaultState();
     const data = JSON.parse(raw);
-    if (data.version !== 1) return defaultState();
+    if (data.version !== SAVE_VERSION) return defaultState();
     return { ...defaultState(), ...data, hoveredId: null, selectedId: null, toast: null };
   } catch {
     return defaultState();
@@ -460,9 +519,9 @@ function loadState() {
 function persist(state) {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
-      version: 1, phase: state.phase, sector: state.sector, callsign: state.callsign,
-      material: state.material, integrity: state.integrity, score: state.score,
-      weekIndex: state.weekIndex, results: state.results, houses: state.houses, resetAt: state.resetAt,
+      version: SAVE_VERSION, phase: state.phase, contractorId: state.contractorId,
+      integrity: state.integrity, results: state.results, houses: state.houses,
+      contractors: state.contractors, activeHouseId: state.activeHouseId, resetAt: state.resetAt,
     }));
   } catch { /* ignore */ }
 }
@@ -472,7 +531,19 @@ const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const canvas = document.getElementById("village");
 const engine = new VillageEngine(canvas, state.houses, {
   onHover: (id) => { state.hoveredId = id; renderDock(); engine.sync(syncPayload()); },
-  onSelect: (id) => { state.selectedId = id; renderDock(); engine.sync(syncPayload()); },
+  onSelect: (id) => {
+    state.selectedId = id;
+    if (id && tenderForHouse(id)) {
+      state.activeHouseId = id;
+      state.mobileTab = "tender";
+      play.classList.add("show-tender");
+      play.classList.remove("show-board");
+      document.querySelectorAll("#mobile-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === "tender"));
+      renderTender();
+    }
+    renderDock();
+    engine.sync(syncPayload());
+  },
 });
 function syncPayload() {
   return { houses: state.houses, hoveredId: state.hoveredId, selectedId: state.selectedId, integrity: state.integrity, reducedMotion: reduced };
@@ -482,23 +553,34 @@ engine.sync(syncPayload());
 const boot = document.getElementById("boot");
 const play = document.getElementById("play");
 const enterBtn = document.getElementById("enter-btn");
-let pickedSector = state.sector;
+let pickedId = state.contractorId;
 
 document.querySelectorAll(".class-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
-    pickedSector = btn.dataset.sector;
+    pickedId = btn.dataset.id;
     document.querySelectorAll(".class-btn").forEach((b) => b.classList.toggle("on", b === btn));
     enterBtn.disabled = false;
   });
 });
 enterBtn.addEventListener("click", () => {
-  if (!pickedSector) return;
+  if (!pickedId) return;
   state.phase = "play";
-  state.sector = pickedSector;
-  const tag = pickedSector === "public" ? "PUB" : pickedSector === "civil" ? "CIV" : "GOV";
-  state.callsign = `OP-${tag}-07`;
+  state.contractorId = pickedId;
+  state.activeHouseId = firstOpenHouseId(state.results);
   persist(state);
   showPlay();
+});
+
+document.getElementById("reset-btn").addEventListener("click", () => {
+  try { localStorage.removeItem(SAVE_KEY); } catch { /* ignore */ }
+  Object.assign(state, defaultState());
+  state.resetAt = Date.now() + MONTH_MS;
+  pickedId = null;
+  document.querySelectorAll(".class-btn").forEach((b) => b.classList.remove("on"));
+  enterBtn.disabled = true;
+  boot.hidden = false;
+  play.hidden = true;
+  engine.sync(syncPayload());
 });
 
 function showPlay() {
@@ -507,28 +589,56 @@ function showPlay() {
   renderAll();
 }
 
-function currentTender() { return TENDERS[Math.min(state.weekIndex, TENDERS.length - 1)]; }
-function resultFor(id) { return state.results.find((r) => r.tenderId === id) ?? null; }
+function resultFor(houseId) { return state.results.find((r) => r.houseId === houseId) ?? null; }
+
+function renderHeader() {
+  const you = contractorById(state.contractorId);
+  document.getElementById("stat-name").textContent = you?.name ?? "—";
+  const won = state.results.filter((r) => r.winnerId === state.contractorId).length;
+  document.getElementById("stat-won").textContent = `${won}/${TENDERS.length}`;
+  document.getElementById("contractor-chips").innerHTML = `
+    <span class="kicker mute">Active contractors · 4 bidding</span>
+    ${CONTRACTORS.map((c) => `<span class="chip${c.id === state.contractorId ? " you" : ""}">${c.name}${c.id === state.contractorId ? " · you" : ""}</span>`).join("")}
+  `;
+}
 
 function renderTender() {
-  const t = currentTender();
-  const result = resultFor(t.id);
+  const tender = tenderForHouse(state.activeHouseId) ?? TENDERS[0];
+  const house = state.houses.find((h) => h.id === tender.houseId);
+  const result = resultFor(tender.houseId);
   const locked = Boolean(result);
-  const hasNext = state.weekIndex < TENDERS.length - 1 && locked;
+  const remaining = TENDERS.some((t) => !resultFor(t.houseId));
+  const bidRows = result
+    ? Object.entries(result.bids).sort((a, b) => b[1] - a[1]).map(([id, score], i) => {
+        const name = contractorById(id).name;
+        const win = id === result.winnerId;
+        const me = id === state.contractorId;
+        return `<div class="bid-row${win ? " win" : ""}${me ? " me" : ""}"><span class="rank">${i + 1}</span><span class="who">${name}${me ? " · you" : ""}${win ? " · awarded" : ""}</span><span class="mono">${score}</span></div>`;
+      }).join("")
+    : "";
   document.getElementById("tender-panel").innerHTML = `
     <div class="side-head" style="display:flex;gap:.75rem;align-items:flex-start">
       <div style="flex:1;min-width:0">
-        <p class="kicker cyan">Infrastructure tender · ${t.spec}</p>
-        <h2>${t.title}</h2>
+        <p class="kicker cyan">Infrastructure tender · ${tender.spec}</p>
+        <h2>${tender.title}</h2>
+        <p class="mute" style="margin:.25rem 0 0;font-size:11px">${house?.name ?? ""}</p>
       </div>
-      <span class="week">WEEK ${t.week}</span>
+      <span class="week">${state.results.length}/${TENDERS.length}</span>
+    </div>
+    <div class="spec-nav">
+      ${TENDERS.map((t) => {
+        const done = Boolean(resultFor(t.houseId));
+        const on = t.houseId === tender.houseId;
+        const won = done && resultFor(t.houseId).winnerId === state.contractorId;
+        return `<button type="button" data-house="${t.houseId}" class="${on ? "on" : won ? "won" : ""}">${SHORT[t.houseId] ?? t.spec}</button>`;
+      }).join("")}
     </div>
     <div class="side-body">
-      <p class="q">${t.question}</p>
+      <p class="q">${tender.question}</p>
       <ul class="opts">
-        ${t.options.map((opt) => {
+        ${tender.options.map((opt) => {
           const picked = result?.picked === opt.id;
-          const good = opt.id === t.correct;
+          const good = opt.id === tender.correct;
           const cls = picked && result.correct ? "good" : picked && !result.correct ? "bad" : locked && good ? "good" : "";
           return `<li><button type="button" class="opt ${cls}" data-opt="${opt.id}" ${locked ? "disabled" : ""}>
             <span class="letter">${opt.id}</span><span class="txt">${opt.text}</span>
@@ -537,38 +647,55 @@ function renderTender() {
       </ul>
     </div>
     <div class="side-foot">
-      <p class="kicker mute">Reward badge</p>
-      <p class="green" style="margin:.35rem 0 0;font-size:.8rem">+100 Material Points / +50 Village Integrity</p>
-      ${result ? `<p style="margin:.5rem 0 0;font-size:.8rem;color:${result.correct ? "var(--green)" : "var(--crimson)"}">${result.correct ? "Logged. Rebate rejected and disclosed. Spend material on decaying nodes." : "Flagged. Off-books rebate paths fail the transparency framework."}</p>` : ""}
-      ${hasNext ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">Open week ${state.weekIndex + 2} tender</button>` : ""}
+      ${result ? `
+        <p class="kicker mute">Bid result · highest score wins</p>
+        ${bidRows}
+        ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">Next renovation</button>` : `<p style="margin:.5rem 0 0;font-size:.8rem;color:var(--cyan)">Round complete. Check bid standings.</p>`}
+      ` : `
+        <p class="kicker mute">Award rule</p>
+        <p class="green" style="margin:.35rem 0 0;font-size:.8rem">Correct bid 100 · wrong bid 30 · highest score takes the house</p>
+      `}
     </div>`;
+  document.querySelectorAll("[data-house]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.activeHouseId = btn.dataset.house;
+      state.selectedId = btn.dataset.house;
+      persist(state);
+      renderAll();
+    });
+  });
   document.querySelectorAll("[data-opt]").forEach((btn) => {
     btn.addEventListener("click", () => answer(btn.dataset.opt));
   });
   document.getElementById("next-week")?.addEventListener("click", () => {
-    state.weekIndex = Math.min(TENDERS.length - 1, state.weekIndex + 1);
+    const remainingNow = TENDERS.some((t) => !resultFor(t.houseId));
+    if (!remainingNow) return;
+    state.activeHouseId = firstOpenHouseId(state.results);
+    state.selectedId = state.activeHouseId;
     persist(state);
-    renderTender();
+    renderAll();
   });
 }
 
 function renderBoard() {
-  const holding = state.houses.find((h) => h.owner === state.callsign)?.name ?? "No holding yet";
-  const rows = [
-    ...CONTRACTORS,
-    ...(state.sector ? [{ id: "player", name: state.callsign, sector: state.sector, score: state.score, holding }] : []),
-  ].sort((a, b) => b.score - a.score);
+  const rows = [...state.contractors]
+    .map((row) => ({
+      ...row,
+      wins: state.results.filter((r) => r.winnerId === row.id).length,
+      holding: holdingsLabel(row.name, state.houses),
+    }))
+    .sort((a, b) => b.score - a.score || b.wins - a.wins);
   document.getElementById("board-panel").innerHTML = `
     <div class="side-head">
       <p class="kicker cyan">Bid standings</p>
       <h2>Leading contractors</h2>
-      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">Public · Civil Service · Government. Highest score holds the renovation bid.</p>
+      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">Highest score on each renovation wins that contract. ${state.results.length}/${TENDERS.length} awarded.</p>
     </div>
     <div class="side-body">
       ${rows.map((row, i) => `
-        <div class="board-row ${row.id === "player" ? "me" : ""}">
+        <div class="board-row ${row.id === state.contractorId ? "me" : ""}">
           <span class="rank">${i + 1}</span>
-          <div class="who"><strong>${row.name}</strong><span>${SECTOR_LABEL[row.sector]} · ${row.holding}</span></div>
+          <div class="who"><strong>${row.name}${row.id === state.contractorId ? " · you" : ""}</strong><span>${SECTOR_LABEL[row.sector]} · ${row.holding}</span></div>
           <span class="mono cyan">${row.score}</span>
         </div>`).join("")}
     </div>`;
@@ -579,21 +706,27 @@ function renderDock() {
   const house = state.houses.find((h) => h.id === id);
   const dock = document.getElementById("house-dock");
   if (!house) { dock.hidden = true; dock.innerHTML = ""; return; }
-  const can = !house.renovated && state.material >= house.cost;
+  const tender = tenderForHouse(house.id);
+  const result = resultFor(house.id);
+  const status = result
+    ? `Awarded to ${house.owner}`
+    : house.renovated
+      ? `Held by ${house.owner ?? "contractor"} · ${house.ownerSector ? SECTOR_LABEL[house.ownerSector] : ""}`
+      : house.hint;
   dock.hidden = false;
   dock.innerHTML = `<div class="panel dock-inner">
     <div style="flex:1;min-width:0">
       <strong>${house.name}</strong>
-      <p>${house.renovated ? `Stable · ${house.owner ?? "held"} · ${house.ownerSector ? SECTOR_LABEL[house.ownerSector] : ""}` : house.hint}</p>
+      <p>${status}</p>
     </div>
-    ${house.renovated ? "" : `<button type="button" class="reno" id="reno-btn" ${can ? "" : "disabled"}>Renovate · ${house.cost}</button>`}
+    ${tender ? `<button type="button" class="reno" id="open-spec">${result ? "Bids" : "Open spec"}</button>` : ""}
   </div>`;
-  document.getElementById("reno-btn")?.addEventListener("click", () => renovate(house.id));
-}
-
-function renderHeader() {
-  document.getElementById("stat-material").textContent = String(state.material);
-  document.getElementById("stat-integrity").textContent = String(state.integrity);
+  document.getElementById("open-spec")?.addEventListener("click", () => {
+    state.activeHouseId = house.id;
+    state.selectedId = house.id;
+    persist(state);
+    renderAll();
+  });
 }
 
 function showToast(msg) {
@@ -613,35 +746,32 @@ function renderAll() {
 }
 
 function answer(picked) {
-  const t = currentTender();
-  if (resultFor(t.id)) return;
-  const correct = picked === t.correct;
-  state.results.push({ tenderId: t.id, picked, correct });
-  if (correct) {
-    state.material += t.rewardMaterial;
-    state.integrity += t.rewardIntegrity;
-    state.score += t.rewardMaterial + t.rewardIntegrity;
-    showToast(`+${t.rewardMaterial} Material · +${t.rewardIntegrity} Integrity`);
-  } else {
-    state.integrity = Math.max(0, state.integrity - 20);
-    showToast("Integrity flag · rebate path rejected");
+  if (!state.contractorId) return;
+  const tender = tenderForHouse(state.activeHouseId);
+  if (!tender || resultFor(tender.houseId)) return;
+  const correct = picked === tender.correct;
+  const playerScore = correct ? PLAYER_BID_CORRECT : PLAYER_BID_WRONG;
+  const bids = { ...tender.npcBids, [state.contractorId]: playerScore };
+  const winnerId = winnerOf(bids);
+  const winner = contractorById(winnerId);
+  const house = state.houses.find((h) => h.id === tender.houseId);
+  state.results.push({ houseId: tender.houseId, picked, correct, playerScore, bids, winnerId });
+  if (house) {
+    house.renovated = true;
+    house.owner = winner.name;
+    house.ownerSector = winner.sector;
   }
-  persist(state);
-  renderAll();
-}
-
-function renovate(houseId) {
-  const house = state.houses.find((h) => h.id === houseId);
-  if (!house || house.renovated) return;
-  if (state.material < house.cost) { showToast(`Need ${house.cost} material points`); return; }
-  house.renovated = true;
-  house.owner = state.callsign;
-  house.ownerSector = state.sector;
-  state.material -= house.cost;
-  state.integrity += 10;
-  state.score += 30;
-  state.selectedId = houseId;
-  showToast(`${house.name} renovated`);
+  state.contractors = state.contractors.map((c) => ({
+    ...c,
+    score: c.id === winnerId ? c.score + 100 : c.score,
+    holding: holdingsLabel(c.name, state.houses),
+  }));
+  state.integrity += 12;
+  state.selectedId = tender.houseId;
+  const youWon = winnerId === state.contractorId;
+  showToast(youWon
+    ? `${winner.name} takes ${house?.name ?? "the contract"} · bid ${playerScore}`
+    : `${winner.name} takes ${house?.name ?? "the contract"} · your bid ${playerScore}`);
   persist(state);
   renderAll();
 }

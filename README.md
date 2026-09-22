@@ -4,7 +4,7 @@ A [Mkweli](https://mkweli.tech) product.
 
 **Play now:** [honesty.mkweli.tech](https://honesty.mkweli.tech)
 
-Pick one of four contractors — Kuzin, Cheri, Malin, or Kokin. Answer a spec for each open renovation. Highest bid on that house wins the contract.
+Pick one of four contractors — Kuzin, Cheri, Malin, or Kokin. Answer a spec for each open renovation. Only a correct top-score bid awards the house. Wrong answers are rejected and the building stays decaying.
 
 This is not a court. Points show what you logged.
 
@@ -19,7 +19,7 @@ This is not a court. Points show what you logged.
 
 1. Choose Kuzin, Cheri, Malin, or Kokin.
 2. Open each decaying house's spec. Only the disclosed, lawful option scores 100. A wrong answer scores 30.
-3. The highest of the four bids takes that renovation.
+3. Only a correct top-score bid awards the renovation. Wrong or second-place bids are rejected — nobody takes the house that round.
 4. Reset clears the round.
 
 Eight contracts are on the table: CWA pump, Block A, Block B, primary school, CEB substation, drainage node, street lighting, and the community centre.

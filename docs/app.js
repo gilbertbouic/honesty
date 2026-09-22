@@ -8,7 +8,7 @@ const GREEN = new THREE.Color(PALETTE.green);
 const NDC = new THREE.Vector2();
 const HIT = new THREE.Color();
 const SAVE_KEY = "village-grid-save";
-const SAVE_VERSION = 2;
+const SAVE_VERSION = 3;
 const MONTH_MS = (6 * 24 + 14) * 60 * 60 * 1000 + 22 * 60 * 1000;
 const SECTOR_LABEL = { public: "Public", civil: "Civil Service", government: "Government" };
 const PLAYER_BID_CORRECT = 100;
@@ -613,7 +613,8 @@ function renderTender() {
         const name = contractorById(id).name;
         const win = id === result.winnerId;
         const me = id === state.contractorId;
-        return `<div class="bid-row${win ? " win" : ""}${me ? " me" : ""}"><span class="rank">${i + 1}</span><span class="who">${name}${me ? " · you" : ""}${win ? " · awarded" : ""}</span><span class="mono">${score}</span></div>`;
+        const rejected = me && !win;
+        return `<div class="bid-row${win ? " win" : ""}${me ? " me" : ""}${rejected ? " rejected" : ""}"><span class="rank">${i + 1}</span><span class="who">${name}${me ? " · you" : ""}${win ? " · awarded" : ""}${rejected ? " · rejected" : ""}</span><span class="mono">${score}</span></div>`;
       }).join("")
     : "";
   document.getElementById("tender-panel").innerHTML = `
@@ -630,7 +631,8 @@ function renderTender() {
         const done = Boolean(resultFor(t.houseId));
         const on = t.houseId === tender.houseId;
         const won = done && resultFor(t.houseId).winnerId === state.contractorId;
-        return `<button type="button" data-house="${t.houseId}" class="${on ? "on" : won ? "won" : ""}">${SHORT[t.houseId] ?? t.spec}</button>`;
+        const rejected = done && !resultFor(t.houseId).winnerId;
+        return `<button type="button" data-house="${t.houseId}" class="${on ? "on" : won ? "won" : rejected ? "rejected" : ""}">${SHORT[t.houseId] ?? t.spec}</button>`;
       }).join("")}
     </div>
     <div class="side-body">
@@ -648,12 +650,12 @@ function renderTender() {
     </div>
     <div class="side-foot">
       ${result ? `
-        <p class="kicker mute">Bid result · highest score wins</p>
+        <p class="kicker mute">${result.winnerId ? "Bid awarded · correct top score" : "Bid rejected · need a correct top score"}</p>
         ${bidRows}
         ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">Next renovation</button>` : `<p style="margin:.5rem 0 0;font-size:.8rem;color:var(--cyan)">Round complete. Check bid standings.</p>`}
       ` : `
         <p class="kicker mute">Award rule</p>
-        <p class="green" style="margin:.35rem 0 0;font-size:.8rem">Correct bid 100 · wrong bid 30 · highest score takes the house</p>
+        <p class="green" style="margin:.35rem 0 0;font-size:.8rem">Only a correct top-score bid awards the renovation. Wrong answers are rejected.</p>
       `}
     </div>`;
   document.querySelectorAll("[data-house]").forEach((btn) => {
@@ -689,7 +691,7 @@ function renderBoard() {
     <div class="side-head">
       <p class="kicker cyan">Bid standings</p>
       <h2>Leading contractors</h2>
-      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">Highest score on each renovation wins that contract. ${state.results.length}/${TENDERS.length} awarded.</p>
+      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">Only a correct top-score bid awards the renovation. ${state.results.filter((r) => r.winnerId).length}/${TENDERS.length} awarded.</p>
     </div>
     <div class="side-body">
       ${rows.map((row, i) => `
@@ -709,7 +711,9 @@ function renderDock() {
   const tender = tenderForHouse(house.id);
   const result = resultFor(house.id);
   const status = result
-    ? `Awarded to ${house.owner}`
+    ? result.winnerId
+      ? `Awarded to ${house.owner}`
+      : "Bid rejected · house still decaying"
     : house.renovated
       ? `Held by ${house.owner ?? "contractor"} · ${house.ownerSector ? SECTOR_LABEL[house.ownerSector] : ""}`
       : house.hint;
@@ -752,26 +756,27 @@ function answer(picked) {
   const correct = picked === tender.correct;
   const playerScore = correct ? PLAYER_BID_CORRECT : PLAYER_BID_WRONG;
   const bids = { ...tender.npcBids, [state.contractorId]: playerScore };
-  const winnerId = winnerOf(bids);
-  const winner = contractorById(winnerId);
+  const topId = winnerOf(bids);
+  const awarded = correct && topId === state.contractorId;
+  const winnerId = awarded ? state.contractorId : null;
+  const winner = awarded ? contractorById(state.contractorId) : null;
   const house = state.houses.find((h) => h.id === tender.houseId);
   state.results.push({ houseId: tender.houseId, picked, correct, playerScore, bids, winnerId });
-  if (house) {
+  if (awarded && house && winner) {
     house.renovated = true;
     house.owner = winner.name;
     house.ownerSector = winner.sector;
+    state.contractors = state.contractors.map((c) => ({
+      ...c,
+      score: c.id === winnerId ? c.score + 100 : c.score,
+      holding: holdingsLabel(c.name, state.houses),
+    }));
+    state.integrity += 12;
   }
-  state.contractors = state.contractors.map((c) => ({
-    ...c,
-    score: c.id === winnerId ? c.score + 100 : c.score,
-    holding: holdingsLabel(c.name, state.houses),
-  }));
-  state.integrity += 12;
   state.selectedId = tender.houseId;
-  const youWon = winnerId === state.contractorId;
-  showToast(youWon
+  showToast(awarded
     ? `${winner.name} takes ${house?.name ?? "the contract"} · bid ${playerScore}`
-    : `${winner.name} takes ${house?.name ?? "the contract"} · your bid ${playerScore}`);
+    : "Bid rejected. Only a correct top score awards the renovation.");
   persist(state);
   renderAll();
 }

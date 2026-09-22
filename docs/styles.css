@@ -393,6 +393,8 @@ button { font: inherit; color: inherit; }
   background: color-mix(in oklab, var(--cyan) 12%, var(--raised));
 }
 .spec-nav button.won { color: var(--green); border-color: color-mix(in oklab, var(--green) 40%, var(--line)); }
+.spec-nav button.rejected { color: var(--crimson); border-color: color-mix(in oklab, var(--crimson) 40%, var(--line)); }
+.bid-row.rejected { color: var(--crimson); }
 .chip.you {
   border-color: var(--cyan);
   color: var(--cyan);

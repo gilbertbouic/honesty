@@ -10,6 +10,11 @@ const GOLD = new THREE.Color(0xc4a35a);
 const CHAR = new THREE.Color(0x1a1210);
 const PAPER = new THREE.Color(0xe7eef2);
 const BAG = new THREE.Color(0xd4b06a);
+const FLAG_RED = new THREE.Color(0xff3b4e);
+const FLAG_BLUE = new THREE.Color(0x2d6bff);
+const FLAG_YELLOW = new THREE.Color(0xffd428);
+const FLAG_GREEN = new THREE.Color(0x2ee86a);
+const FLAG_COLORS = [FLAG_RED, FLAG_BLUE, FLAG_YELLOW, FLAG_GREEN];
 const COMPOUND = { x: 8.4, z: 6.2 };
 const LODGING = { x: 4.55, z: 8.55 };
 const NDC = new THREE.Vector2();
@@ -572,6 +577,34 @@ class VillageEngine {
     return g;
   }
 
+  addWhistleblower(x, z, scale) {
+    const g = new THREE.Group();
+    const mats = [];
+    const headGeo = new THREE.SphereGeometry(0.1 * scale, 8, 8);
+    this.wGeos.push(headGeo);
+    const headMat = new THREE.MeshBasicMaterial({ color: FLAG_RED, transparent: true, opacity: 0.95, depthWrite: true });
+    mats.push(headMat);
+    const head = new THREE.Mesh(headGeo, headMat);
+    head.position.y = 0.82 * scale;
+    g.add(head);
+    const bandH = 0.16 * scale;
+    const bands = [FLAG_BLUE, FLAG_YELLOW, FLAG_GREEN];
+    for (let i = 0; i < bands.length; i++) {
+      const geo = new THREE.BoxGeometry(0.24 * scale, bandH, 0.16 * scale);
+      this.wGeos.push(geo);
+      const mat = new THREE.MeshBasicMaterial({ color: bands[i], transparent: true, opacity: 0.95, depthWrite: true });
+      mats.push(mat);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.y = 0.62 * scale - i * bandH;
+      g.add(mesh);
+    }
+    g.position.set(x, 0, z);
+    g.userData.mats = mats;
+    g.userData.flagColors = FLAG_COLORS.map((c) => c.clone());
+    this.wGroup.add(g);
+    return g;
+  }
+
   buildWhistle() {
     this.wGroup = new THREE.Group();
     this.wGeos = [];
@@ -638,7 +671,7 @@ class VillageEngine {
     this.glass = new THREE.Mesh(glassGeo, new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.28, depthWrite: false }));
     this.glass.position.set(lx + 0.96, 1.18, lz);
     this.wGroup.add(this.glass);
-    this.watcher = this.addFigure(lx + 0.52, lz, 1.15, CYAN);
+    this.watcher = this.addWhistleblower(lx + 0.52, lz, 1.15);
     this.watcherHome = this.watcher.position.clone();
     const spots = [[x + 1.85, z + 1.55], [x + 2.25, z + 0.85], [x + 1.55, z + 2.15], [x + 2.55, z + 1.95]];
     for (const [fx, fz] of spots) {
@@ -727,7 +760,8 @@ class VillageEngine {
       this.watcher.position.copy(this.watcherHome);
       this.watcher.position.y = 0;
     } else {
-      for (const m of wMats) { m.color.copy(CYAN); m.opacity = 0.95; }
+      const home = this.watcher.userData.flagColors;
+      wMats.forEach((m, i) => { m.color.copy(home[i] ?? FLAG_RED); m.opacity = 0.95; });
       this.watcher.position.x = this.watcherHome.x + Math.sin(t * 1.1) * 0.04;
       this.watcher.position.z = this.watcherHome.z;
       this.watcher.position.y = hide ? -0.42 : Math.sin(t * 1.4) * 0.03;

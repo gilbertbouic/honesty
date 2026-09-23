@@ -13,14 +13,19 @@ const CRIMSON = new THREE.Color(PALETTE.crimson);
 const GOLD = new THREE.Color(0xc4a35a);
 const CHAR = new THREE.Color(0x1a1210);
 const PAPER = new THREE.Color(0xe7eef2);
-const BAG = new THREE.Color(0xd4b06a);
+const PINK = new THREE.Color(0xff4d93);
+const BLUSH = new THREE.Color(0xff8ec0);
+const SKIN = new THREE.Color(0xf2c7a5);
+const HAIR = new THREE.Color(0x3a242c);
+const HOUSE = new THREE.Color(0xd4894a);
+const POOL = new THREE.Color(0x3ec8ff);
 const FLAG_RED = new THREE.Color(0xff3b4e);
 const FLAG_BLUE = new THREE.Color(0x2d6bff);
 const FLAG_YELLOW = new THREE.Color(0xffd428);
 const FLAG_GREEN = new THREE.Color(0x2ee86a);
 const FLAG_COLORS = [FLAG_RED, FLAG_BLUE, FLAG_YELLOW, FLAG_GREEN];
 const COMPOUND = { x: 8.4, z: 6.2 };
-const LODGING = { x: 4.55, z: 8.55 };
+const LODGING = { x: 2.35, z: 8.35 };
 const NDC = new THREE.Vector2();
 const HIT = new THREE.Color();
 const SAVE_KEY = "village-grid-save";
@@ -506,28 +511,21 @@ class VillageEngine {
       return;
     }
     if (this.whistleOutcome === "exile") {
-      this.camera.position.set(14, 8.5, 16);
-      this.controls.target.set(LODGING.x, 0.5, LODGING.z);
       fog.color.set(PALETTE.crimson);
       this.scene.background = new THREE.Color(0x1a080c);
-      return;
-    }
-    if (this.whistleOutcome === "burn") {
-      this.camera.position.set(9.2, 5.4, 12.4);
-      this.controls.target.set(LODGING.x, 0.6, LODGING.z);
+    } else if (this.whistleOutcome === "burn") {
       fog.color.set(0x2a140c);
       this.scene.background = new THREE.Color(0x140c08);
-      return;
-    }
-    this.camera.position.set(10.6, 4.0, 11.4);
-    this.controls.target.set(6.4, 1.2, 7.6);
-    if (this.whistleOutcome === "jail") {
+    } else if (this.whistleOutcome === "jail") {
       fog.color.set(0x102818);
       this.scene.background = new THREE.Color(0x0c1c14);
     } else {
       fog.color.set(PALETTE.void);
       this.scene.background = new THREE.Color(PALETTE.void);
     }
+    const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
+    this.camera.position.set(portrait ? 15.4 : 14.2, portrait ? 11.6 : 8.2, portrait ? 18.4 : 16.6);
+    this.controls.target.set(5.2, 1.15, 5.6);
   }
 
   paintParts(parts, color, fillOp = 0.22, lineOp = 0.85) {
@@ -565,18 +563,26 @@ class VillageEngine {
     group.add(fill, line);
   }
 
-  addFigure(x, z, scale, color) {
+  addLady(x, z, scale) {
     const g = new THREE.Group();
-    const bodyGeo = new THREE.CapsuleGeometry(0.11 * scale, 0.4 * scale, 3, 6);
-    const headGeo = new THREE.SphereGeometry(0.1 * scale, 8, 8);
-    this.wGeos.push(bodyGeo, headGeo);
-    const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.82, depthWrite: true });
-    const headMat = mat.clone();
-    const body = new THREE.Mesh(bodyGeo, mat); body.position.y = 0.42 * scale;
-    const head = new THREE.Mesh(headGeo, headMat); head.position.y = 0.78 * scale;
-    g.add(body, head);
+    const mats = [];
+    const homes = [];
+    const put = (geo, color, y, dz = 0) => {
+      this.wGeos.push(geo);
+      const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.94, depthWrite: true });
+      mats.push(mat);
+      homes.push(color.clone());
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(0, y, dz);
+      g.add(mesh);
+    };
+    put(new THREE.ConeGeometry(0.22 * scale, 0.5 * scale, 8), PINK, 0.28 * scale);
+    put(new THREE.BoxGeometry(0.16 * scale, 0.2 * scale, 0.12 * scale), BLUSH, 0.54 * scale);
+    put(new THREE.SphereGeometry(0.09 * scale, 8, 8), SKIN, 0.74 * scale);
+    put(new THREE.SphereGeometry(0.095 * scale, 8, 6), HAIR, 0.8 * scale, -0.02 * scale);
     g.position.set(x, 0, z);
-    g.userData.mats = [mat, headMat];
+    g.userData.mats = mats;
+    g.userData.homeColors = homes;
     this.wGroup.add(g);
     return g;
   }
@@ -616,7 +622,6 @@ class VillageEngine {
     this.car = { fills: [], lines: [] };
     this.boat = { fills: [], lines: [] };
     this.lodging = { fills: [], lines: [] };
-    this.clothes = { fills: [], lines: [] };
     this.pool = { fills: [], lines: [] };
     this.figures = [];
     this.figureHome = [];
@@ -631,7 +636,7 @@ class VillageEngine {
     this.addWCyl(this.wGroup, this.wGeos, this.villa, x + 1.45, 1.15, z + 1.05, 0.08, 2.3, 6, solid);
     this.addWBox(this.wGroup, this.wGeos, this.pool, x + 0.15, 0.05, z + 2.05, 2.5, 0.08, 1.35, { fill: 0.5, depth: true, color: CYAN });
     this.addWBox(this.wGroup, this.wGeos, this.villa, x + 0.15, 0.1, z + 2.05, 2.7, 0.06, 1.55, solid);
-    const cx = x - 2.85, cz = z + 0.15;
+    const cx = x - 3.35, cz = z - 0.85;
     const carS = { fill: 0.4, depth: true, color: GOLD };
     this.addWBox(this.wGroup, this.wGeos, this.car, cx, 0.38, cz, 2.05, 0.52, 1.05, carS);
     this.addWBox(this.wGroup, this.wGeos, this.car, cx + 0.05, 0.78, cz, 1.25, 0.42, 1.0, carS);
@@ -640,25 +645,15 @@ class VillageEngine {
     this.addWCyl(this.wGroup, this.wGeos, this.car, cx + 0.62, 0.2, cz + 0.52, 0.2, 0.12, 8, carS);
     this.addWCyl(this.wGroup, this.wGeos, this.car, cx - 0.62, 0.2, cz - 0.52, 0.2, 0.12, 8, carS);
     this.addWCyl(this.wGroup, this.wGeos, this.car, cx + 0.62, 0.2, cz - 0.52, 0.2, 0.12, 8, carS);
-    const bx = x + 2.35, bz = z + 1.35;
+    const bx = x + 3.7, bz = z + 0.15;
     const boatS = { fill: 0.4, depth: true, color: CYAN };
     this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.22, bz, 2.9, 0.32, 0.85, boatS);
     this.addWBox(this.wGroup, this.wGeos, this.boat, bx - 0.15, 0.58, bz, 1.35, 0.42, 0.62, boatS);
+    this.addWBox(this.wGroup, this.wGeos, this.boat, bx + 1.15, 0.28, bz, 0.7, 0.16, 0.55, boatS);
     this.addWCyl(this.wGroup, this.wGeos, this.boat, bx + 0.85, 0.85, bz, 0.035, 1.25, 5, boatS);
-    const clx = x - 1.35, clz = z + 1.55;
-    const clS = { fill: 0.48, depth: true, color: BAG };
-    this.addWCyl(this.wGroup, this.wGeos, this.clothes, clx - 0.45, 0.55, clz, 0.03, 1.1, 5, clS);
-    this.addWCyl(this.wGroup, this.wGeos, this.clothes, clx + 0.45, 0.55, clz, 0.03, 1.1, 5, clS);
-    this.addWBox(this.wGroup, this.wGeos, this.clothes, clx, 1.08, clz, 1.0, 0.04, 0.08, clS);
-    this.addWBox(this.wGroup, this.wGeos, this.clothes, clx - 0.28, 0.72, clz, 0.22, 0.55, 0.08, { fill: 0.55, depth: true, color: GOLD });
-    this.addWBox(this.wGroup, this.wGeos, this.clothes, clx, 0.68, clz, 0.2, 0.62, 0.08, { fill: 0.55, depth: true, color: new THREE.Color(PALETTE.amber) });
-    this.addWBox(this.wGroup, this.wGeos, this.clothes, clx + 0.28, 0.7, clz, 0.22, 0.58, 0.08, { fill: 0.55, depth: true, color: PAPER });
-    this.addWBox(this.wGroup, this.wGeos, this.clothes, clx + 0.85, 0.28, clz + 0.15, 0.28, 0.38, 0.16, clS);
-    this.addWBox(this.wGroup, this.wGeos, this.clothes, clx + 1.12, 0.22, clz - 0.05, 0.24, 0.32, 0.14, { fill: 0.5, depth: true, color: GOLD });
-    this.addWCyl(this.wGroup, this.wGeos, this.clothes, clx + 0.95, 0.08, clz + 0.42, 0.09, 0.12, 8, { fill: 0.6, depth: true, color: GOLD });
     const lx = LODGING.x, lz = LODGING.z;
-    const lodS = { fill: 0.62, depth: true, color: CYAN };
-    const W = 2.05, D = 1.7, H = 2.15, wall = 0.14, winW = 0.78, winH = 0.92, winY = 1.18;
+    const lodS = { fill: 0.5, depth: true, color: HOUSE };
+    const W = 2.15, D = 1.75, H = 2.2, wall = 0.12, winW = 1.02, winH = 1.15, winY = 1.28;
     const east = lx + W / 2 - wall / 2;
     const side = (D - winW) / 2;
     this.addWBox(this.wGroup, this.wGeos, this.lodging, lx - W / 2 + wall / 2, H / 2, lz, wall, H, D, lodS);
@@ -670,16 +665,21 @@ class VillageEngine {
     this.addWBox(this.wGroup, this.wGeos, this.lodging, east, winY, lz + winW / 2 + side / 2, wall, winH, side, lodS);
     this.addWBox(this.wGroup, this.wGeos, this.lodging, east, winY, lz - winW / 2 - side / 2, wall, winH, side, lodS);
     this.addWBox(this.wGroup, this.wGeos, this.lodging, lx, H + 0.09, lz, W + 0.22, 0.18, D + 0.22, lodS);
-    const glassGeo = new THREE.BoxGeometry(0.05, 0.88, 0.74);
+    const glassGeo = new THREE.BoxGeometry(0.04, 1.08, 0.96);
     this.wGeos.push(glassGeo);
-    this.glass = new THREE.Mesh(glassGeo, new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.28, depthWrite: false }));
-    this.glass.position.set(lx + 0.96, 1.18, lz);
+    this.glass = new THREE.Mesh(glassGeo, new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.2, depthWrite: false }));
+    this.glass.position.set(lx + 1.02, 1.28, lz);
     this.wGroup.add(this.glass);
-    this.watcher = this.addWhistleblower(lx + 0.52, lz, 1.15);
+    this.watcher = this.addWhistleblower(lx + 0.72, lz, 1.28);
+    this.watcher.position.y = 0.62;
     this.watcherHome = this.watcher.position.clone();
-    const spots = [[x + 1.85, z + 1.55], [x + 2.25, z + 0.85], [x + 1.55, z + 2.15], [x + 2.55, z + 1.95]];
-    for (const [fx, fz] of spots) {
-      const fig = this.addFigure(fx, fz, 1, GOLD);
+    const spots = [
+      [x - 0.9, z + 3.15, 1.45],
+      [x + 0.15, z + 3.35, 1.62],
+      [x + 1.15, z + 3.05, 1.38],
+    ];
+    for (const [fx, fz, fs] of spots) {
+      const fig = this.addLady(fx, fz, fs);
       this.figures.push(fig);
       this.figureHome.push(new THREE.Vector3(fx, 0, fz));
     }
@@ -693,9 +693,9 @@ class VillageEngine {
     const count = 140;
     this.firePos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      this.firePos[i * 3] = LODGING.x + (Math.random() - 0.5) * 1.6;
-      this.firePos[i * 3 + 1] = Math.random() * 2.2;
-      this.firePos[i * 3 + 2] = LODGING.z + (Math.random() - 0.5) * 1.2;
+      this.firePos[i * 3] = COMPOUND.x + (Math.random() - 0.5) * 2.4;
+      this.firePos[i * 3 + 1] = Math.random() * 2.8;
+      this.firePos[i * 3 + 2] = COMPOUND.z + (Math.random() - 0.5) * 1.8;
     }
     const fireGeo = new THREE.BufferGeometry();
     fireGeo.setAttribute("position", new THREE.BufferAttribute(this.firePos, 3));
@@ -708,18 +708,16 @@ class VillageEngine {
   tickWhistle(dt, t) {
     const whistle = this.competition === "whistle";
     const outcome = this.whistleOutcome;
-    const idle = outcome === "jail" ? GREEN : outcome === "burn" ? new THREE.Color(PALETTE.amber) : outcome === "exile" ? CRIMSON : GOLD;
-    this.paintParts(this.villa, outcome === "jail" ? GREEN : outcome === "exile" ? CRIMSON : idle, whistle ? 0.42 : 0.08);
-    this.paintParts(this.car, outcome === "jail" ? GREEN : GOLD, whistle ? 0.48 : 0.08);
-    this.paintParts(this.boat, outcome === "jail" ? GREEN : CYAN, whistle ? 0.44 : 0.08);
-    this.paintParts(this.clothes, outcome === "jail" ? GREEN : BAG, whistle ? 0.5 : 0.08);
-    this.paintParts(this.pool, outcome === "jail" ? GREEN : CYAN, whistle ? 0.55 : 0.1, 0.7);
-    if (outcome === "burn") this.paintParts(this.lodging, CHAR, 0.7, 0.45);
-    else if (outcome === "exile") this.paintParts(this.lodging, CRIMSON, 0.42);
-    else this.paintParts(this.lodging, whistle ? CYAN : GOLD, whistle ? 0.55 : 0.08);
+    const idle = outcome === "burn" ? new THREE.Color(PALETTE.amber) : GOLD;
+    const seized = outcome === "jail" ? GREEN : outcome === "exile" ? CRIMSON : null;
+    const show = whistle ? 1 : 0;
+    this.paintParts(this.villa, seized ?? idle, 0.5 * show, 0.9 * show);
+    this.paintParts(this.car, seized ?? GOLD, 0.52 * show, 0.92 * show);
+    this.paintParts(this.boat, seized ?? CYAN, 0.5 * show, 0.9 * show);
+    this.paintParts(this.pool, POOL, 0.72 * show, 0.4 * show);
+    this.paintParts(this.lodging, HOUSE, 0.88 * show, 0.95 * show);
     this.glass.visible = whistle;
-    this.glass.material.opacity = whistle ? 0.22 + Math.sin(t * 2.1) * 0.06 : 0;
-    this.glass.material.color.copy(outcome === "burn" ? new THREE.Color(PALETTE.amber) : outcome === "exile" ? CRIMSON : CYAN);
+    this.glass.material.opacity = whistle ? 0.2 : 0;
     this.seize.visible = outcome === "jail";
     this.seize.rotation.y = t * 0.25;
     const burning = outcome === "burn";
@@ -729,9 +727,9 @@ class VillageEngine {
       for (let i = 0; i < this.firePos.length; i += 3) {
         this.firePos[i + 1] += (1.8 + (i % 5) * 0.15) * dt;
         if (this.firePos[i + 1] > 2.6) {
-          this.firePos[i] = LODGING.x + (Math.random() - 0.5) * 1.6;
+          this.firePos[i] = COMPOUND.x + (Math.random() - 0.5) * 2.4;
           this.firePos[i + 1] = 0.1;
-          this.firePos[i + 2] = LODGING.z + (Math.random() - 0.5) * 1.2;
+          this.firePos[i + 2] = COMPOUND.z + (Math.random() - 0.5) * 1.8;
         }
       }
       this.fire.geometry.getAttribute("position").needsUpdate = true;
@@ -741,35 +739,31 @@ class VillageEngine {
       const home = this.figureHome[i];
       fig.visible = whistle;
       const mats = fig.userData.mats;
-      if (outcome === "jail") { for (const m of mats) { m.color.copy(GREEN); m.opacity = 0.18; } }
+      if (outcome === "jail") { for (const m of mats) { m.color.copy(GREEN); m.opacity = 0.16; } }
       else if (outcome === "exile") {
-        for (const m of mats) { m.color.copy(CRIMSON); m.opacity = 0.85; }
-        const u = Math.min(1, (t % 20) / 8);
-        fig.position.x = home.x + (LODGING.x - home.x) * u;
-        fig.position.z = home.z + (LODGING.z - home.z) * u;
+        for (const m of mats) { m.color.copy(CRIMSON); m.opacity = 0.8; }
+        fig.position.x = home.x + Math.sin(t * 0.8 + i) * 0.08;
+        fig.position.z = home.z + (Math.sin(t * 0.35) * 0.5 + 0.6);
       } else {
-        for (const m of mats) { m.color.copy(i % 2 === 0 ? GOLD : PAPER); m.opacity = 0.82; }
-        fig.position.x = home.x + Math.sin(t * 0.8 + i) * 0.12;
-        fig.position.z = home.z + Math.cos(t * 0.55 + i) * 0.08;
+        const homes = fig.userData.homeColors;
+        mats.forEach((m, mi) => { m.color.copy(homes?.[mi] ?? PINK); m.opacity = 0.94; });
+        fig.position.x = home.x + Math.sin(t * 0.8 + i) * 0.1;
+        fig.position.z = home.z + Math.cos(t * 0.55 + i) * 0.06;
       }
     }
     this.watcher.visible = whistle;
     const wMats = this.watcher.userData.mats;
-    const hide = !this.reduced && Math.sin(t * 0.7) < -0.42;
     if (outcome === "burn") {
-      for (const m of wMats) { m.color.copy(CHAR); m.opacity = 0.35; }
-      this.watcher.position.y = -0.45;
+      for (const m of wMats) { m.color.copy(CHAR); m.opacity = 0.45; }
     } else if (outcome === "exile") {
       for (const m of wMats) { m.color.copy(CRIMSON); m.opacity = 0.9; }
-      this.watcher.position.copy(this.watcherHome);
-      this.watcher.position.y = 0;
     } else {
       const home = this.watcher.userData.flagColors;
-      wMats.forEach((m, i) => { m.color.copy(home[i] ?? FLAG_RED); m.opacity = 0.95; });
-      this.watcher.position.x = this.watcherHome.x + Math.sin(t * 1.1) * 0.04;
-      this.watcher.position.z = this.watcherHome.z;
-      this.watcher.position.y = hide ? -0.42 : Math.sin(t * 1.4) * 0.03;
+      wMats.forEach((m, i) => { m.color.copy(home[i] ?? FLAG_RED); m.opacity = 0.98; });
     }
+    this.watcher.position.x = this.watcherHome.x + Math.sin(t * 1.1) * 0.03;
+    this.watcher.position.z = this.watcherHome.z;
+    this.watcher.position.y = this.watcherHome.y + Math.sin(t * 1.4) * 0.02;
   }
 
   resize = () => {

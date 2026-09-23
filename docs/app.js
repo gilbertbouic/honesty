@@ -1,5 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { t as tr, localizeTender, localizeCase, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js";
+
+let lang = loadLang();
+const L = (key, vars) => tr(lang, key, vars);
 
 const PALETTE = { void: 0x08080c, cyan: 0x00e5ff, green: 0x3dff9a, amber: 0xe07030, crimson: 0xff3b4e };
 const DECAY = new THREE.Color(PALETTE.amber);
@@ -950,6 +954,7 @@ function resetRound() {
   boot.hidden = false;
   play.hidden = true;
   engine.sync(syncPayload());
+  renderBoot();
 }
 document.getElementById("reset-btn").addEventListener("click", resetRound);
 document.getElementById("tab-reset").addEventListener("click", resetRound);
@@ -960,16 +965,52 @@ function showPlay() {
   renderAll();
 }
 
+function paintLang(root) {
+  if (!root) return;
+  root.innerHTML = ["en", "fr"].map((id) => `<button type="button" data-lang="${id}" class="${lang === id ? "on" : ""}">${id}</button>`).join("");
+  root.querySelectorAll("[data-lang]").forEach((btn) => {
+    btn.addEventListener("click", () => setLang(btn.dataset.lang));
+  });
+}
+
+function setLang(next) {
+  lang = next === "fr" ? "fr" : "en";
+  try { localStorage.setItem(LANG_KEY, lang); } catch { /* ignore */ }
+  document.documentElement.lang = lang;
+  document.title = L("title");
+  renderBoot();
+  if (!play.hidden) renderAll();
+}
+
+function renderBoot() {
+  document.getElementById("boot-title").textContent = L("title");
+  document.getElementById("boot-goal").textContent = L("goal");
+  document.getElementById("boot-choose").textContent = L("choose");
+  document.getElementById("enter-btn").textContent = L("enter");
+  document.getElementById("foot-note").textContent = L("foot");
+  document.getElementById("boot-stages").innerHTML = ["stage1", "stage2", "stage3", "stage4", "stage5", "stage6"]
+    .map((key) => `<li>${L(key)}${key === "stage2" ? ` <span class="dev">(${L("dev")})</span>` : ""}</li>`)
+    .join("");
+  paintLang(document.getElementById("boot-lang"));
+  paintLang(document.getElementById("play-lang"));
+  paintLang(document.getElementById("play-lang-mobile"));
+  document.getElementById("reset-btn").textContent = L("reset");
+  document.getElementById("tab-reset").textContent = L("reset");
+  document.getElementById("tab-grid").textContent = L("grid");
+}
+
 function resultFor(houseId) { return state.results.find((r) => r.houseId === houseId) ?? null; }
 
 function renderHeader() {
   const you = contractorById(state.contractorId);
   const whistle = state.competition === "whistle";
   document.getElementById("stat-name").textContent = you?.name ?? "—";
-  document.getElementById("phase-title").textContent = whistle
-    ? "Whistle-blower · unexplained wealth"
-    : "Village Infrastructure Overhaul";
-  document.getElementById("stat-label").textContent = whistle ? "Whistle score" : "Contracts won";
+  document.getElementById("phase-kicker").textContent = L("projectPhase");
+  document.getElementById("playing-kicker").textContent = L("playingAs");
+  document.querySelector('#comp-switch [data-comp="tender"]').textContent = L("tenders");
+  document.querySelector('#comp-switch [data-comp="whistle"]').textContent = L("whistle");
+  document.getElementById("phase-title").textContent = whistle ? L("phaseWhistle") : L("phaseTender");
+  document.getElementById("stat-label").textContent = whistle ? L("whistleScore") : L("contractsWon");
   const won = state.results.filter((r) => r.winnerId === state.contractorId).length;
   const wscore = whistleTotal(state.contractorId, state.whistleResults);
   const stat = document.getElementById("stat-won");
@@ -980,7 +1021,7 @@ function renderHeader() {
     b.classList.toggle("on", b.dataset.comp === state.competition);
     if (b.dataset.comp === "whistle") {
       b.classList.toggle("locked", !swept);
-      b.title = swept ? "Whistle-blower brief" : "Win every renovation with a correct top-score bid to unlock round 2";
+      b.title = swept ? L("whistleHint") : L("lockHint");
     }
   });
   const qcount = document.getElementById("qcount");
@@ -988,19 +1029,20 @@ function renderHeader() {
     ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
     : `${state.results.length}/${TENDERS.length}`;
   qcount.className = whistle ? "qcount amber" : "qcount green";
-  document.getElementById("tab-case").textContent = whistle ? "Case" : "Tender";
-  document.getElementById("tab-round").textContent = whistle ? "Tenders" : "Whistle";
+  document.getElementById("tab-case").textContent = whistle ? L("case") : L("tender");
+  document.getElementById("tab-round").textContent = whistle ? L("tenders") : L("whistle");
   document.querySelectorAll("#mobile-tabs button[data-tab]").forEach((b) => {
     b.classList.toggle("whistle", whistle && b.classList.contains("on"));
   });
   document.getElementById("contractor-chips").innerHTML = `
-    <span class="kicker mute">${whistle ? `Cases · ${state.whistleResults.length}/${WHISTLE_CASES.length} filed` : "Active contractors · 4 bidding"}</span>
-    ${CONTRACTORS.map((c) => `<span class="chip${c.id === state.contractorId ? " you" : ""}">${c.name}${c.id === state.contractorId ? " · you" : ""}</span>`).join("")}
+    <span class="kicker mute">${whistle ? L("casesFiled", { n: state.whistleResults.length, total: WHISTLE_CASES.length }) : L("activeBidders")}</span>
+    ${CONTRACTORS.map((c) => `<span class="chip${c.id === state.contractorId ? " you" : ""}">${c.name}${c.id === state.contractorId ? ` · ${L("you")}` : ""}</span>`).join("")}
   `;
 }
 
 function renderTender() {
-  const tender = tenderForHouse(state.activeHouseId) ?? TENDERS[0];
+  const raw = tenderForHouse(state.activeHouseId) ?? TENDERS[0];
+  const tender = localizeTender(raw, lang);
   const house = state.houses.find((h) => h.id === tender.houseId);
   const result = resultFor(tender.houseId);
   const locked = Boolean(result);
@@ -1011,15 +1053,15 @@ function renderTender() {
         const win = id === result.winnerId;
         const me = id === state.contractorId;
         const rejected = me && !win;
-        return `<div class="bid-row${win ? " win" : ""}${me ? " me" : ""}${rejected ? " rejected" : ""}"><span class="rank">${i + 1}</span><span class="who">${name}${me ? " · you" : ""}${win ? " · awarded" : ""}${rejected ? " · rejected" : ""}</span><span class="mono">${score}</span></div>`;
+        return `<div class="bid-row${win ? " win" : ""}${me ? " me" : ""}${rejected ? " rejected" : ""}"><span class="rank">${i + 1}</span><span class="who">${name}${me ? ` · ${L("you")}` : ""}${win ? ` · ${L("awardedTag")}` : ""}${rejected ? ` · ${L("rejectedTag")}` : ""}</span><span class="mono">${score}</span></div>`;
       }).join("")
     : "";
   document.getElementById("tender-panel").innerHTML = `
     <div class="side-head" style="display:flex;gap:.75rem;align-items:flex-start">
       <div style="flex:1;min-width:0">
-        <p class="kicker cyan">Infrastructure tender · ${tender.spec}</p>
+        <p class="kicker cyan">${L("infra")} · ${tender.spec}</p>
         <h2>${tender.title}</h2>
-        <p class="mute" style="margin:.25rem 0 0;font-size:11px">${house?.name ?? ""}</p>
+        <p class="mute" style="margin:.25rem 0 0;font-size:11px">${houseLabel(house, lang)}</p>
       </div>
       <span class="week">${state.results.length}/${TENDERS.length}</span>
     </div>
@@ -1029,7 +1071,7 @@ function renderTender() {
         const on = t.houseId === tender.houseId;
         const won = done && resultFor(t.houseId).winnerId === state.contractorId;
         const rejected = done && !resultFor(t.houseId).winnerId;
-        return `<button type="button" data-house="${t.houseId}" class="${on ? "on" : won ? "won" : rejected ? "rejected" : ""}">${SHORT[t.houseId] ?? t.spec}</button>`;
+        return `<button type="button" data-house="${t.houseId}" class="${on ? "on" : won ? "won" : rejected ? "rejected" : ""}">${shortLabel(t.houseId, lang, SHORT[t.houseId] ?? t.spec)}</button>`;
       }).join("")}
     </div>
     <div class="side-body">
@@ -1047,12 +1089,12 @@ function renderTender() {
     </div>
     <div class="side-foot">
       ${result ? `
-        <p class="kicker mute">${result.winnerId ? "Bid awarded · correct top score" : "Bid rejected · need a correct top score"}</p>
+        <p class="kicker mute">${result.winnerId ? L("awardedGreen") : L("rejectedRed")}</p>
         ${bidRows}
-        ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">Next renovation</button>` : (roundOneCleared(state.results, state.contractorId) ? `<button type="button" class="cta" id="open-whistle" style="margin-top:.75rem;background:var(--amber)">Open whistle-blower brief</button>` : `<p style="margin:.5rem 0 0;font-size:.8rem;color:var(--crimson)">No clean sweep. Reset and win every contract to unlock round 2.</p>`)}
+        ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">${L("nextReno")}</button>` : (roundOneCleared(state.results, state.contractorId) ? `<button type="button" class="cta" id="open-whistle" style="margin-top:.75rem;background:var(--amber)">${L("openBrief")}</button>` : `<p style="margin:.5rem 0 0;font-size:.8rem;color:var(--crimson)">${L("noSweep")}</p>`)}
       ` : `
-        <p class="kicker mute">Award rule</p>
-        <p class="green" style="margin:.35rem 0 0;font-size:.8rem">Only a correct top-score bid awards the renovation. Win every contract to unlock round 2.</p>
+        <p class="kicker mute">${L("awardRule")}</p>
+        <p class="green" style="margin:.35rem 0 0;font-size:.8rem">${L("awardBody", { n: TENDERS.length })}</p>
       `}
     </div>`;
   document.querySelectorAll("[data-house]").forEach((btn) => {
@@ -1076,7 +1118,7 @@ function renderTender() {
   });
   document.getElementById("open-whistle")?.addEventListener("click", () => {
     if (!roundOneCleared(state.results, state.contractorId)) {
-      showToast("Round 2 is locked. Win every renovation with a correct top-score bid first.", "info");
+      showToast(L("toastLock"), "info");
       return;
     }
     state.competition = "whistle";
@@ -1091,7 +1133,8 @@ function whistleResultFor(caseId) { return state.whistleResults.find((r) => r.ca
 
 function renderCase() {
   if (state.competition !== "whistle") return renderTender();
-  const item = whistleCaseById(state.activeCaseId);
+  const raw = whistleCaseById(state.activeCaseId);
+  const item = localizeCase(raw, lang);
   const result = whistleResultFor(item.id);
   const locked = Boolean(result);
   const remaining = WHISTLE_CASES.some((c) => !whistleResultFor(c.id));
@@ -1103,15 +1146,15 @@ function renderCase() {
     ? Object.entries(result.reports).sort((a, b) => b[1] - a[1]).map(([id, score], i) => {
         const name = contractorById(id).name;
         const me = id === state.contractorId;
-        return `<div class="bid-row${i === 0 && me && awarded ? " win" : ""}${me && !awarded ? " rejected" : ""}"><span class="rank">${i + 1}</span><span class="who">${name}${me ? " · you" : ""}</span><span class="mono">${score}</span></div>`;
+        return `<div class="bid-row${i === 0 && me && awarded ? " win" : ""}${me && !awarded ? " rejected" : ""}"><span class="rank">${i + 1}</span><span class="who">${name}${me ? ` · ${L("you")}` : ""}</span><span class="mono">${score}</span></div>`;
       }).join("")
     : "";
   panel.innerHTML = `
     <div class="side-head" style="display:flex;gap:.75rem;align-items:flex-start">
       <div style="flex:1;min-width:0">
-        <p class="kicker amber">Whistle-blower · ${item.spec}</p>
+        <p class="kicker amber">${L("brief")} · ${item.spec}</p>
         <h2>${item.title}</h2>
-        <p class="mute" style="margin:.25rem 0 0;font-size:11px">Ravi · Dive master · Rs 15,000 / month</p>
+        <p class="mute" style="margin:.25rem 0 0;font-size:11px">Ravi · ${L("job")} · ${L("wage")}</p>
       </div>
       <span class="week">${state.whistleResults.length}/${WHISTLE_CASES.length}</span>
     </div>
@@ -1122,7 +1165,7 @@ function renderCase() {
         const hit = whistleResultFor(c.id);
         const won = done && hit?.correct;
         const lost = done && !hit?.correct;
-        return `<button type="button" data-case="${c.id}" class="${on && !done ? "whistle-on" : on ? (won ? "won" : "rejected") : won ? "won" : lost ? "rejected" : ""}">${WSHORT[c.id]}</button>`;
+        return `<button type="button" data-case="${c.id}" class="${on && !done ? "whistle-on" : on ? (won ? "won" : "rejected") : won ? "won" : lost ? "rejected" : ""}">${shortLabel(c.id, lang, WSHORT[c.id])}</button>`;
       }).join("")}
     </div>
     <div class="side-body">
@@ -1140,17 +1183,17 @@ function renderCase() {
     </div>
     <div class="side-foot">
       ${result ? `
-        <p class="kicker ${awarded ? "cyan" : "mute"}">${awarded ? "Report holds · +100" : "Weak file · +20"}</p>
+        <p class="kicker ${awarded ? "cyan" : "mute"}">${awarded ? L("reportHolds") : L("weakFile")}</p>
         ${rows}
-        ${remaining ? `<button type="button" class="cta" id="next-case" style="margin-top:.75rem;background:var(--amber)">Next case</button>`
+        ${remaining ? `<button type="button" class="cta" id="next-case" style="margin-top:.75rem;background:var(--amber)">${L("nextCase")}</button>`
           : `<p class="kicker ${state.whistleOutcome === "jail" ? "cyan" : ""}" style="margin:.5rem 0 0">${
-              state.whistleOutcome === "jail" ? "Brief complete · trafficker jailed"
-              : state.whistleOutcome === "burn" ? "Brief complete · lodging burned"
-              : "Brief complete · you are exiled"
+              state.whistleOutcome === "jail" ? L("doneJail")
+              : state.whistleOutcome === "burn" ? L("doneBurn")
+              : L("doneExile")
             }</p>`}
       ` : `
-        <p class="kicker mute">Scoring</p>
-        <p style="margin:.35rem 0 0;font-size:.8rem">4–5 correct: Ravi jailed, assets seized. 2–3: he burns your lodging. 0–1: you are chased out of the village.</p>
+        <p class="kicker mute">${L("scoring")}</p>
+        <p style="margin:.35rem 0 0;font-size:.8rem">${L("scoringBody", { name: "Ravi" })}</p>
       `}
     </div>`;
   document.querySelectorAll("[data-case]").forEach((btn) => {
@@ -1186,13 +1229,13 @@ function answerWhistle(picked) {
   if (finished) {
     state.showOutcome = true;
     showToast(
-      state.whistleOutcome === "jail" ? "Top score. Ravi is jailed. Villa, car and boat seized."
-      : state.whistleOutcome === "burn" ? "Mid score. Ravi torches your lodging."
-      : "Low score. Ravi's crew run you out of the village.",
+      state.whistleOutcome === "jail" ? L("toastJail")
+      : state.whistleOutcome === "burn" ? L("toastBurn")
+      : L("toastExile"),
       state.whistleOutcome
     );
   } else {
-    showToast(correct ? "Report filed. Keep going." : "Weak file. That answer will not hold.", correct ? "award" : "reject");
+    showToast(correct ? L("toastFiled") : L("toastWeak"), correct ? "award" : "reject");
   }
   persist(state);
   renderAll();
@@ -1204,14 +1247,15 @@ function renderOutcome() {
   const card = document.getElementById("outcome-card");
   if (!state.showOutcome || state.whistleOutcome === "open") { el.hidden = true; return; }
   const copy = {
-    jail: { kicker: "Top score", title: "Ravi jailed", body: "The file held. Police remand the dive master. Villa, car and boat are seized.", cls: "award" },
-    burn: { kicker: "Mid score", title: "Your lodging is burning", body: "The file was too thin. Ravi’s crew torch the lodging you sleep in. The villa still stands.", cls: "burn" },
-    exile: { kicker: "Low score", title: "Chased out of the village", body: "You stayed too quiet. Ravi’s crew run you off the Terre Rouge grid.", cls: "reject" },
+    jail: { kicker: L("topScore"), title: L("jailTitle", { name: "Ravi" }), body: L("jailBody"), cls: "award" },
+    burn: { kicker: L("midScore"), title: L("burnTitle"), body: L("burnBody"), cls: "burn" },
+    exile: { kicker: L("lowScore"), title: L("exileTitle"), body: L("exileBody"), cls: "reject" },
   }[state.whistleOutcome];
   document.getElementById("outcome-kicker").textContent = copy.kicker;
   document.getElementById("outcome-title").textContent = copy.title;
   document.getElementById("outcome-body").textContent = copy.body;
-  document.getElementById("outcome-score").textContent = `Whistle score · ${state.whistleScore}/500`;
+  document.getElementById("outcome-score").textContent = L("scoreLine", { score: state.whistleScore });
+  document.getElementById("outcome-dismiss").textContent = L("watchGrid");
   card.className = "panel boot-card " + copy.cls;
   el.hidden = false;
 }
@@ -1227,8 +1271,8 @@ function renderBoard() {
     .sort((a, b) => state.competition === "whistle" ? b.report - a.report || b.score - a.score : b.score - a.score || b.wins - a.wins);
   document.getElementById("board-panel").innerHTML = `
     <div class="side-head">
-      <p class="kicker cyan">${state.competition === "whistle" ? "Report standings" : "Bid standings"}</p>
-      <h2>${state.competition === "whistle" ? "Who filed the stronger brief" : "Leading contractors"}</h2>
+      <p class="kicker cyan">${state.competition === "whistle" ? L("reportStandings") : L("bidStandings")}</p>
+      <h2>${state.competition === "whistle" ? L("stronger") : L("leading")}</h2>
       <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">${state.competition === "whistle"
         ? `${state.whistleResults.length}/${WHISTLE_CASES.length} cases · ${state.whistleOutcome === "open" ? "file still open" : state.whistleOutcome}`
         : `Only a correct top-score bid awards the renovation. ${state.results.filter((r) => r.winnerId).length}/${TENDERS.length} awarded.`}</p>
@@ -1237,7 +1281,7 @@ function renderBoard() {
       ${rows.map((row, i) => `
         <div class="board-row ${row.id === state.contractorId ? "me" : ""}">
           <span class="rank">${i + 1}</span>
-          <div class="who"><strong>${row.name}${row.id === state.contractorId ? " · you" : ""}</strong><span>${SECTOR_LABEL[row.sector]} · ${row.holding}</span></div>
+          <div class="who"><strong>${row.name}${row.id === state.contractorId ? ` · ${L("you")}` : ""}</strong><span>${row.holding}</span></div>
           <span class="mono ${state.competition === "whistle" ? "amber" : "cyan"}">${state.competition === "whistle" ? row.report : row.score}</span>
         </div>`).join("")}
     </div>`;
@@ -1252,18 +1296,16 @@ function renderDock() {
   const result = resultFor(house.id);
   const status = result
     ? result.winnerId
-      ? `Awarded to ${house.owner}`
-      : "Bid rejected · house still decaying"
-    : house.renovated
-      ? `Held by ${house.owner ?? "contractor"} · ${house.ownerSector ? SECTOR_LABEL[house.ownerSector] : ""}`
-      : house.hint;
+      ? L("dockAward", { owner: house.owner ?? "" })
+      : L("dockReject")
+    : houseHint(house, lang);
   dock.hidden = false;
   dock.innerHTML = `<div class="panel dock-inner">
     <div style="flex:1;min-width:0">
-      <strong>${house.name}</strong>
+      <strong>${houseLabel(house, lang)}</strong>
       <p>${status}</p>
     </div>
-    ${tender ? `<button type="button" class="reno" id="open-spec">${result ? "Bids" : "Open spec"}</button>` : ""}
+    ${tender ? `<button type="button" class="reno" id="open-spec">${result ? L("bids") : L("openSpec")}</button>` : ""}
   </div>`;
   document.getElementById("open-spec")?.addEventListener("click", () => {
     state.activeHouseId = house.id;
@@ -1317,8 +1359,8 @@ function answer(picked) {
   }
   state.selectedId = tender.houseId;
   showToast(awarded
-    ? `${winner.name} takes ${house?.name ?? "the contract"} · bid ${playerScore}`
-    : "Bid rejected. Only a correct top score awards the renovation.", awarded ? "award" : "reject");
+    ? L("toastAward", { name: winner.name, house: houseLabel(house, lang), score: playerScore })
+    : L("toastReject"), awarded ? "award" : "reject");
   persist(state);
   renderAll();
 }
@@ -1365,6 +1407,7 @@ document.getElementById("tab-round").addEventListener("click", () => {
 play.classList.add("show-tender");
 
 if (!roundOneCleared(state.results, state.contractorId) && state.competition === "whistle") state.competition = "tender";
+renderBoot();
 if (state.phase === "play") showPlay();
 window.addEventListener("pagehide", () => persist(state));
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") persist(state); });

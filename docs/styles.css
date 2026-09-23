@@ -88,8 +88,34 @@ button { font: inherit; color: inherit; }
 .boot-card {
   pointer-events: auto;
   width: min(100%, 32rem);
-  padding: 1.5rem 1.75rem;
+  max-height: calc(100dvh - 1.5rem);
+  overflow: auto;
+  padding: 1.15rem 1.25rem;
 }
+.lang-row { display: flex; justify-content: flex-end; }
+.lang-switch {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  padding: 2px;
+  background: var(--raised);
+}
+.lang-switch button {
+  min-height: 2.1rem;
+  min-width: 2.5rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  font-family: var(--display);
+  letter-spacing: 0.14em;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+.lang-switch button.on { background: color-mix(in oklab, var(--cyan) 16%, transparent); color: var(--cyan); }
+.stages { margin: 0.7rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.15rem; }
+.stages li { font-size: 0.85rem; color: var(--mute); line-height: 1.35; }
+.stages .dev { margin-left: 0.35rem; color: var(--amber); font-family: var(--display); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.mobile-tools { display: none; }
 .boot-card h1 {
   margin: 0.4rem 0 0;
   font-family: var(--display);
@@ -98,20 +124,20 @@ button { font: inherit; color: inherit; }
   text-transform: uppercase;
 }
 .lede {
-  margin: 0.85rem 0 0;
-  max-width: 42ch;
-  line-height: 1.55;
-  color: var(--mute);
+  margin: 0.7rem 0 0;
+  max-width: 46ch;
+  line-height: 1.45;
+  color: var(--paper);
   font-size: 0.9rem;
 }
 .class-list { display: grid; gap: 0.5rem; margin-top: 0.7rem; }
 .class-btn {
   display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-height: 3.5rem;
-  text-align: left;
-  padding: 0.7rem 0.9rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  text-align: center;
+  padding: 0.55rem 0.8rem;
   border-radius: 1rem;
   border: 1px solid var(--line);
   background: var(--raised);
@@ -345,6 +371,8 @@ button { font: inherit; color: inherit; }
     display: flex;
     justify-content: center;
   }
+  .mobile-tools { display: flex; align-items: center; justify-content: center; gap: 0.45rem; }
+  .desk-lang { display: none; }
   .header-row,
   .chips { display: none; }
   .qcount {

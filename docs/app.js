@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js";
+import { t as tr, localizeTender, localizeCase, localizeHaven, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg13";
+import { HavenScene } from "./haven.js?v=vg13";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -35,6 +36,8 @@ const PLAYER_BID_CORRECT = 100;
 const PLAYER_BID_WRONG = 30;
 const WHISTLE_CORRECT = 100;
 const WHISTLE_WRONG = 20;
+const HAVEN_CORRECT = 100;
+const HAVEN_WRONG = 20;
 const SHORT = { "cwa-pump": "CWA", "block-a": "Blk A", "block-b": "Blk B", school: "School", power: "CEB", drain: "Drain", light: "Light", community: "Hall", market: "Mkt", clinic: "Clinic", hall: "Civic", bus: "Bus" };
 const WSHORT = { car: "Car", villa: "Villa", boat: "Boat", clothes: "Clothes", entourage: "Entourage" };
 
@@ -207,6 +210,63 @@ function roundOneCleared(results, contractorId) {
   if (results.length < TENDERS.length) return false;
   const byHouse = new Map(results.map((r) => [r.houseId, r]));
   return TENDERS.every((t) => byHouse.get(t.houseId)?.winnerId === contractorId);
+}
+function roundTwoCleared(results) {
+  return results.length >= WHISTLE_CASES.length && results.every((r) => r.correct);
+}
+const HAVEN_CASES = [
+  { id: "private", spec: "LINE-01", title: "Not a private matter",
+    question: "Shouting comes from the house at the end of the lane. A neighbour says it is just between a couple. What does integrity do?",
+    options: [
+      { id: "A", text: "Tell them to keep it down so the lane can sleep." },
+      { id: "B", text: "Walk away. What happens indoors is nobody's business." },
+      { id: "C", text: "If someone may be unsafe, it is not a private matter. Do not barge in. Do not film it. Help them reach safety." },
+      { id: "D", text: "Record through the curtain and post it so the village shames the house." },
+    ], correct: "C" },
+  { id: "believe", spec: "LINE-02", title: "Believe them",
+    question: "Someone you know says their partner hurt them, then asks you not to make a scene. What is the safe answer?",
+    options: [
+      { id: "A", text: "Sit both of them down tonight and mediate until there is an apology." },
+      { id: "B", text: "Tell them to go back and calm the partner down." },
+      { id: "C", text: "Believe them. Do not confront the partner. Help them reach a safe place, and call 139 — free, day and night." },
+      { id: "D", text: "Ask what they did to cause it before you take a side." },
+    ], correct: "C" },
+  { id: "control", spec: "LINE-03", title: "Control counts",
+    question: "You see no bruise. The partner holds the money, the phone, and who they are allowed to see. Is this domestic violence?",
+    options: [
+      { id: "A", text: "No. If there is no mark, there is no violence." },
+      { id: "B", text: "Only if they are married." },
+      { id: "C", text: "Yes. Control, isolation, threats, and cutting off money are abuse, even with no visible injury." },
+      { id: "D", text: "Only once a neighbour has complained in writing." },
+    ], correct: "C" },
+  { id: "grok", spec: "LINE-04", title: "What Grok refuses",
+    question: "Someone asks Grok to draft a threat to a partner, or to explain how to follow them home. What does Grok do?",
+    options: [
+      { id: "A", text: "Write the threat, but softer, so it sounds like a joke." },
+      { id: "B", text: "Refuse. Grok will not help anyone harm, threaten, stalk, or control a partner. It will help the person in danger get safe." },
+      { id: "C", text: "Give the tracking steps if they say it is for protection." },
+      { id: "D", text: "Stay neutral and explain both how to threaten and how to get away." },
+    ], correct: "B" },
+  { id: "hotline", spec: "LINE-05", title: "Call 139",
+    question: "It is late in Terre Rouge. Someone needs help now and cannot talk safely inside the house. Which line is the free, 24-hour domestic violence hotline in Mauritius?",
+    options: [
+      { id: "A", text: "Wait for the Saturday market and tell the council." },
+      { id: "B", text: "139." },
+      { id: "C", text: "Post a message in the village group first." },
+      { id: "D", text: "Call only if a bruise will show in a photo." },
+    ], correct: "B" },
+];
+const HSHORT = { private: "Private", believe: "Believe", control: "Control", grok: "Grok", hotline: "139" };
+function havenCaseById(id) { return HAVEN_CASES.find((c) => c.id === id) ?? HAVEN_CASES[0]; }
+function firstOpenHavenId(results) {
+  const done = new Set(results.map((r) => r.caseId));
+  return HAVEN_CASES.find((c) => !done.has(c.id))?.id ?? HAVEN_CASES[0].id;
+}
+function havenOutcomeOf(score, answered) {
+  if (answered < HAVEN_CASES.length) return "open";
+  if (score >= 400) return "line";
+  if (score >= 200) return "lamp";
+  return "fog";
 }
 function winnerOf(bids) { return Object.entries(bids).sort((a, b) => b[1] - a[1])[0][0]; }
 function holdingsLabel(name, houses) {
@@ -477,6 +537,9 @@ class VillageEngine {
     this.competition = "tender";
     this.whistleOutcome = "open";
     this.buildWhistle();
+    this.haven = new HavenScene(this.scene);
+    this.havenOutcome = "open";
+    this.havenCorrect = 0;
 
     this.observer = new ResizeObserver(() => this.resize());
     this.observer.observe(canvas.parentElement ?? canvas);
@@ -496,13 +559,26 @@ class VillageEngine {
     const switched = next.competition !== this.competition;
     this.competition = next.competition || "tender";
     this.whistleOutcome = next.whistleOutcome || "open";
-    this.controls.autoRotate = !next.reducedMotion && this.whistleOutcome !== "exile";
-    this.rain.visible = !next.reducedMotion;
-    if (switched || this.whistleOutcome !== "open") this.frameCompetition();
+    this.havenOutcome = next.havenOutcome || "open";
+    this.havenCorrect = next.havenCorrect || 0;
+    this.haven.sync(this.competition, this.havenOutcome, this.havenCorrect);
+    this.controls.autoRotate = !next.reducedMotion && this.competition !== "haven" && this.whistleOutcome !== "exile";
+    this.rain.visible = !next.reducedMotion && this.competition !== "haven";
+    if (switched || this.whistleOutcome !== "open" || this.havenOutcome !== "open") this.frameCompetition();
   }
 
   frameCompetition() {
     const fog = this.scene.fog;
+    if (this.competition === "haven") {
+      fog.color.set(0x100c14);
+      this.scene.background = new THREE.Color(0x0c0a12);
+      const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
+      this.camera.position.set(portrait ? 2.8 : 1.6, portrait ? 8.6 : 5.5, portrait ? 16.4 : 13.6);
+      this.controls.target.set(-1.2, 1.2, 6.2);
+      this.controls.minDistance = 7;
+      this.controls.maxDistance = 24;
+      return;
+    }
     if (this.competition !== "whistle") {
       this.camera.position.set(11.2, 7.4, 11.2);
       this.controls.target.set(0, 0.6, 0);
@@ -850,6 +926,7 @@ class VillageEngine {
       } else v.group.position.x = house.x;
     }
     this.tickWhistle(dt, t);
+    this.haven.tick(dt, t, this.reduced);
     this.renderer.render(this.scene, this.camera);
   };
 }
@@ -863,6 +940,7 @@ function defaultState() {
     mobileTab: "tender", toast: null, toastKind: null,
     whistleResults: [], activeCaseId: WHISTLE_CASES[0].id, whistleScore: 0,
     whistleOutcome: "open", showOutcome: false,
+    havenResults: [], activeHavenId: HAVEN_CASES[0].id, havenScore: 0, havenOutcome: "open",
   };
 }
 
@@ -886,6 +964,8 @@ function persist(state) {
       contractors: state.contractors, activeHouseId: state.activeHouseId,
       whistleResults: state.whistleResults, activeCaseId: state.activeCaseId,
       whistleScore: state.whistleScore, whistleOutcome: state.whistleOutcome,
+      havenResults: state.havenResults, activeHavenId: state.activeHavenId,
+      havenScore: state.havenScore, havenOutcome: state.havenOutcome,
     }));
   } catch { /* ignore */ }
 }
@@ -914,6 +994,8 @@ function syncPayload() {
     houses: state.houses, hoveredId: state.hoveredId, selectedId: state.selectedId,
     integrity: state.integrity, reducedMotion: reduced,
     competition: state.competition, whistleOutcome: state.whistleOutcome,
+    havenOutcome: state.havenOutcome,
+    havenCorrect: (state.havenResults || []).filter((r) => r.correct).length,
   };
 }
 engine.sync(syncPayload());
@@ -998,38 +1080,56 @@ function resultFor(houseId) { return state.results.find((r) => r.houseId === hou
 function renderHeader() {
   const you = contractorById(state.contractorId);
   const whistle = state.competition === "whistle";
+  const haven = state.competition === "haven";
   document.getElementById("stat-name").textContent = you?.name ?? "—";
   document.getElementById("phase-kicker").textContent = L("projectPhase");
   document.getElementById("playing-kicker").textContent = L("playingAs");
   document.querySelector('#comp-switch [data-comp="tender"]').textContent = L("tenders");
   document.querySelector('#comp-switch [data-comp="whistle"]').textContent = L("whistle");
-  document.getElementById("phase-title").textContent = whistle ? L("phaseWhistle") : L("phaseTender");
-  document.getElementById("stat-label").textContent = whistle ? L("whistleScore") : L("contractsWon");
+  document.querySelector('#comp-switch [data-comp="haven"]').textContent = L("haven");
+  document.getElementById("phase-title").textContent = haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
+  document.getElementById("stat-label").textContent = haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
   const won = state.results.filter((r) => r.winnerId === state.contractorId).length;
   const wscore = whistleTotal(state.contractorId, state.whistleResults);
   const stat = document.getElementById("stat-won");
-  stat.textContent = whistle ? `${wscore}/500` : `${won}/${TENDERS.length}`;
-  stat.className = whistle ? "mono amber" : "mono green";
+  stat.textContent = haven ? `${state.havenScore}/500` : whistle ? `${wscore}/500` : `${won}/${TENDERS.length}`;
+  stat.className = haven ? "mono rose" : whistle ? "mono amber" : "mono green";
   const swept = roundOneCleared(state.results, state.contractorId);
+  const lineOpen = roundTwoCleared(state.whistleResults);
   document.querySelectorAll("#comp-switch button").forEach((b) => {
     b.classList.toggle("on", b.dataset.comp === state.competition);
     if (b.dataset.comp === "whistle") {
       b.classList.toggle("locked", !swept);
       b.title = swept ? L("whistleHint") : L("lockHint");
     }
+    if (b.dataset.comp === "haven") {
+      b.classList.toggle("locked", !lineOpen);
+      b.title = lineOpen ? L("havenHint") : L("lockHaven");
+    }
   });
   const qcount = document.getElementById("qcount");
-  qcount.textContent = whistle
-    ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
-    : `${state.results.length}/${TENDERS.length}`;
-  qcount.className = whistle ? "qcount amber" : "qcount green";
-  document.getElementById("tab-case").textContent = whistle ? L("case") : L("tender");
-  document.getElementById("tab-round").textContent = whistle ? L("tenders") : L("whistle");
+  qcount.textContent = haven
+    ? `${state.havenResults.length}/${HAVEN_CASES.length}`
+    : whistle
+      ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
+      : `${state.results.length}/${TENDERS.length}`;
+  qcount.className = haven ? "qcount rose" : whistle ? "qcount amber" : "qcount green";
+  document.getElementById("tab-case").textContent = haven || whistle ? L("case") : L("tender");
+  document.getElementById("tab-round").textContent = state.competition === "tender"
+    ? L("whistle")
+    : state.competition === "whistle" && lineOpen
+      ? L("haven")
+      : L("tenders");
   document.querySelectorAll("#mobile-tabs button[data-tab]").forEach((b) => {
     b.classList.toggle("whistle", whistle && b.classList.contains("on"));
+    b.classList.toggle("haven", haven && b.classList.contains("on"));
   });
   document.getElementById("contractor-chips").innerHTML = `
-    <span class="kicker mute">${whistle ? L("casesFiled", { n: state.whistleResults.length, total: WHISTLE_CASES.length }) : L("activeBidders")}</span>
+    <span class="kicker mute">${haven
+      ? L("signalsHeld", { n: state.havenResults.filter((r) => r.correct).length, total: HAVEN_CASES.length })
+      : whistle
+        ? L("casesFiled", { n: state.whistleResults.length, total: WHISTLE_CASES.length })
+        : L("activeBidders")}</span>
     ${CONTRACTORS.map((c) => `<span class="chip${c.id === state.contractorId ? " you" : ""}">${c.name}${c.id === state.contractorId ? ` · ${L("you")}` : ""}</span>`).join("")}
   `;
 }
@@ -1125,7 +1225,99 @@ function renderTender() {
 
 function whistleResultFor(caseId) { return state.whistleResults.find((r) => r.caseId === caseId) ?? null; }
 
+function renderHaven() {
+  const raw = havenCaseById(state.activeHavenId);
+  const item = localizeHaven(raw, lang);
+  const result = state.havenResults.find((r) => r.caseId === item.id) ?? null;
+  const locked = Boolean(result);
+  const remaining = HAVEN_CASES.some((c) => !state.havenResults.some((r) => r.caseId === c.id));
+  const held = Boolean(result?.correct);
+  const panel = document.getElementById("tender-panel");
+  panel.classList.toggle("award", held);
+  panel.classList.toggle("reject", locked && !held);
+  panel.innerHTML = `
+    <div class="side-head">
+      <p class="kicker rose">${L("briefHaven")} · ${item.spec}</p>
+      <h2>${item.title}</h2>
+      <p class="mono mute">${state.havenResults.length}/${HAVEN_CASES.length}</p>
+    </div>
+    <div class="spec-nav">
+      ${HAVEN_CASES.map((c) => {
+        const done = state.havenResults.some((r) => r.caseId === c.id);
+        const hit = state.havenResults.find((r) => r.caseId === c.id);
+        const on = c.id === item.id;
+        const won = done && hit?.correct;
+        const lost = done && !hit?.correct;
+        return `<button type="button" data-haven="${c.id}" class="${on && !done ? "haven-on" : ""} ${won ? "won" : ""} ${lost ? "rejected" : ""}">${shortLabel(c.id, lang, HSHORT[c.id])}</button>`;
+      }).join("")}
+    </div>
+    <div class="side-body">
+      <p>${item.question}</p>
+      <div class="opts">
+        ${item.options.map((opt) => {
+          const picked = result?.picked === opt.id;
+          const isCorrect = opt.id === item.correct;
+          const cls = picked && held ? "correct" : picked && locked ? "wrong" : locked && isCorrect ? "correct" : "";
+          return `<button type="button" class="opt ${cls}" data-hopt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
+        }).join("")}
+      </div>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holds") : L("looksAway")) : L("scoring")}</p>
+      <p style="font-size:.8rem">${L("scoringHaven")}</p>
+      <p class="rose" style="font-size:.8rem">${L("hotlineNote")}</p>
+      ${result && remaining ? `<button type="button" class="cta" id="next-haven" style="margin-top:.75rem">${L("nextSignal")}</button>` : ""}
+      ${result && !remaining ? `<p class="kicker ${state.havenOutcome === "line" ? "green" : state.havenOutcome === "lamp" ? "amber" : "crimson"}" style="margin:.5rem 0 0">${
+        state.havenOutcome === "line" ? L("doneLine") : state.havenOutcome === "lamp" ? L("doneLamp") : L("doneFog")
+      }</p>` : ""}
+    </div>`;
+  panel.querySelectorAll("[data-haven]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!roundTwoCleared(state.whistleResults)) {
+        showToast(L("toastLockHaven"), "info");
+        return;
+      }
+      state.activeHavenId = btn.dataset.haven;
+      state.competition = "haven";
+      persist(state);
+      renderAll();
+    });
+  });
+  panel.querySelectorAll("[data-hopt]").forEach((btn) => {
+    btn.addEventListener("click", () => answerHaven(btn.dataset.hopt));
+  });
+  document.getElementById("next-haven")?.addEventListener("click", () => {
+    if (state.havenOutcome !== "open") return;
+    state.activeHavenId = firstOpenHavenId(state.havenResults);
+    persist(state);
+    renderAll();
+  });
+}
+
+function answerHaven(picked) {
+  if (!state.contractorId || !roundTwoCleared(state.whistleResults)) return;
+  const item = havenCaseById(state.activeHavenId);
+  if (state.havenResults.some((r) => r.caseId === item.id)) return;
+  const correct = picked === item.correct;
+  const playerScore = correct ? HAVEN_CORRECT : HAVEN_WRONG;
+  state.havenResults.push({ caseId: item.id, picked, correct, playerScore });
+  state.havenScore += playerScore;
+  state.havenOutcome = havenOutcomeOf(state.havenScore, state.havenResults.length);
+  const finished = state.havenOutcome !== "open";
+  if (finished) {
+    state.showOutcome = true;
+    showToast(
+      state.havenOutcome === "line" ? L("toastLine") : state.havenOutcome === "lamp" ? L("toastLamp") : L("toastFog"),
+      state.havenOutcome
+    );
+  } else {
+    showToast(correct ? L("toastSignal") : L("toastMiss"), correct ? "award" : "reject");
+  }
+  persist(state);
+  renderAll();
+  renderOutcome();
+}
+
 function renderCase() {
+  if (state.competition === "haven") return renderHaven();
   if (state.competition !== "whistle") return renderTender();
   const raw = whistleCaseById(state.activeCaseId);
   const item = localizeCase(raw, lang);
@@ -1223,7 +1415,8 @@ function answerWhistle(picked) {
   if (finished) {
     state.showOutcome = true;
     showToast(
-      state.whistleOutcome === "jail" ? L("toastJail")
+      state.whistleOutcome === "jail" && state.whistleScore >= 500 ? L("toastPerfect")
+      : state.whistleOutcome === "jail" ? L("toastJail")
       : state.whistleOutcome === "burn" ? L("toastBurn")
       : L("toastExile"),
       state.whistleOutcome
@@ -1239,8 +1432,14 @@ function answerWhistle(picked) {
 function renderOutcome() {
   const el = document.getElementById("outcome");
   const card = document.getElementById("outcome-card");
-  if (!state.showOutcome || state.whistleOutcome === "open") { el.hidden = true; return; }
-  const copy = {
+  const haven = state.competition === "haven";
+  const outcome = haven ? state.havenOutcome : state.whistleOutcome;
+  if (!state.showOutcome || state.competition === "tender" || outcome === "open") { el.hidden = true; return; }
+  const copy = haven ? {
+    line: { kicker: L("topScore"), title: L("lineTitle"), body: L("lineBody"), cls: "award" },
+    lamp: { kicker: L("midScore"), title: L("lampTitle"), body: L("lampBody"), cls: "burn" },
+    fog: { kicker: L("lowScore"), title: L("fogTitle"), body: L("fogBody"), cls: "reject" },
+  }[state.havenOutcome] : {
     jail: { kicker: L("topScore"), title: L("jailTitle", { name: "Ravi" }), body: L("jailBody"), cls: "award" },
     burn: { kicker: L("midScore"), title: L("burnTitle"), body: L("burnBody"), cls: "burn" },
     exile: { kicker: L("lowScore"), title: L("exileTitle"), body: L("exileBody"), cls: "reject" },
@@ -1248,13 +1447,32 @@ function renderOutcome() {
   document.getElementById("outcome-kicker").textContent = copy.kicker;
   document.getElementById("outcome-title").textContent = copy.title;
   document.getElementById("outcome-body").textContent = copy.body;
-  document.getElementById("outcome-score").textContent = L("scoreLine", { score: state.whistleScore });
+  document.getElementById("outcome-score").textContent = haven
+    ? L("scoreHaven", { score: state.havenScore }) + " · " + L("hotlineNote")
+    : L("scoreLine", { score: state.whistleScore });
   document.getElementById("outcome-dismiss").textContent = L("watchGrid");
   card.className = "panel boot-card " + copy.cls;
   el.hidden = false;
 }
 
 function renderBoard() {
+  if (state.competition === "haven") {
+    const held = state.havenResults.filter((r) => r.correct).length;
+    document.getElementById("board-panel").innerHTML = `
+      <div class="side-head">
+        <p class="kicker rose">${L("boardHaven")}</p>
+        <h2>${L("notRanking")}</h2>
+        <p style="margin:.4rem 0 0;font-size:.8rem">${L("grokRefuse")}</p>
+      </div>
+      <div class="side-body">
+        <p class="rose" style="font-family:var(--display);font-size:2rem;letter-spacing:.12em;margin:0">${L("hotlineBig")}</p>
+        <p style="font-size:.8rem">${L("hotlineCaption")}</p>
+        <p style="font-size:.8rem">${L("childLine")}</p>
+        <p class="mute" style="font-size:.75rem">${L("lespwar")}</p>
+        <p class="mono green">${L("signalsHeld", { n: held, total: HAVEN_CASES.length })}</p>
+      </div>`;
+    return;
+  }
   const rows = [...state.contractors]
     .map((row) => ({
       ...row,
@@ -1363,9 +1581,14 @@ document.getElementById("comp-switch").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-comp]");
   if (!btn) return;
   if (btn.dataset.comp === "whistle" && !roundOneCleared(state.results, state.contractorId)) {
-    showToast("Round 2 is locked. Win every renovation with a correct top-score bid first.", "info");
+    showToast(L("toastLock"), "info");
     return;
   }
+  if (btn.dataset.comp === "haven" && !roundTwoCleared(state.whistleResults)) {
+    showToast(L("toastLockHaven"), "info");
+    return;
+  }
+  state.showOutcome = false;
   state.competition = btn.dataset.comp;
   state.mobileTab = "tender";
   play.classList.add("show-tender");
@@ -1386,12 +1609,19 @@ document.getElementById("mobile-tabs").addEventListener("click", (e) => {
   play.classList.toggle("show-board", tab === "board");
 });
 document.getElementById("tab-round").addEventListener("click", () => {
-  const next = state.competition === "tender" ? "whistle" : "tender";
+  let next = "tender";
+  if (state.competition === "tender") next = "whistle";
+  else if (state.competition === "whistle" && roundTwoCleared(state.whistleResults)) next = "haven";
   if (next === "whistle" && !roundOneCleared(state.results, state.contractorId)) {
-    showToast("Round 2 is locked. Win every renovation with a correct top-score bid first.", "info");
+    showToast(L("toastLock"), "info");
+    return;
+  }
+  if (next === "haven" && !roundTwoCleared(state.whistleResults)) {
+    showToast(L("toastLockHaven"), "info");
     return;
   }
   state.competition = next;
+  state.showOutcome = false;
   state.mobileTab = "tender";
   play.classList.add("show-tender");
   play.classList.remove("show-board");
@@ -1401,6 +1631,9 @@ document.getElementById("tab-round").addEventListener("click", () => {
 play.classList.add("show-tender");
 
 if (!roundOneCleared(state.results, state.contractorId) && state.competition === "whistle") state.competition = "tender";
+if (!roundTwoCleared(state.whistleResults) && state.competition === "haven") {
+  state.competition = roundOneCleared(state.results, state.contractorId) ? "whistle" : "tender";
+}
 renderBoot();
 if (state.phase === "play") showPlay();
 window.addEventListener("pagehide", () => persist(state));

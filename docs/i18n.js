@@ -94,7 +94,43 @@ var UI = {
     wage: "Rs 15,000 / month",
     job: "Dive master",
     foot: "Six stages. Not a court.",
-    resetRound: "Reset round"
+    resetRound: "Reset round",
+    phaseHaven: "Domestic violence \xB7 the quiet line",
+    haven: "Line",
+    havenScore: "Line score",
+    havenHint: "Stage 3 \xB7 the quiet line",
+    lockHaven: "Win every whistle-blower case to open stage 3",
+    briefHaven: "Quiet line",
+    holds: "This holds \xB7 +100",
+    looksAway: "That looks away \xB7 +20",
+    scoringHaven: "4\u20135 correct: the door opens and the path reaches safety. 2\u20133: a lamp stays on. 0\u20131: the silence closes. The column does not leave.",
+    hotlineNote: "In danger now, in Mauritius: call 139, free, day and night. A child in danger: 113. The Lespwar app can alert the police with your location.",
+    nextSignal: "Next signal",
+    doneLine: "The line is open",
+    doneLamp: "A lamp, not a way out",
+    doneFog: "The silence closed",
+    lineTitle: "The line is open",
+    lineBody: "The answers held. The door opens from the inside. Light runs from the step to safety. Grok stays outside the house: it does not step in, and it will not help anyone do harm.",
+    lampTitle: "A lamp, not a way out",
+    lampBody: "Some answers held. A lamp stays on the step. The door does not open. Do not send someone back to calm an abuser down.",
+    fogTitle: "The silence closed",
+    fogBody: "Too many answers looked away. The fog thickens. The listening column does not leave. Looking away is not neutral.",
+    scoreHaven: "Line score \xB7 {score}/500",
+    toastLockHaven: "Stage 3 is locked. File every whistle-blower case correctly first.",
+    toastPerfect: "Perfect file. Stage 3, the quiet line, is open.",
+    toastLine: "The line is open. The door opens from the inside.",
+    toastLamp: "A lamp stays on. The door does not open.",
+    toastFog: "The silence closed. The column does not leave.",
+    toastSignal: "Signal held. Keep the line.",
+    toastMiss: "That answer looks away.",
+    boardHaven: "The quiet line",
+    notRanking: "Not a ranking",
+    grokRefuse: "Grok will not help anyone harm, threaten, stalk, or control a partner. It will help the person in danger get safe.",
+    hotlineBig: "139",
+    hotlineCaption: "Free, day and night. Domestic violence hotline, Mauritius.",
+    childLine: "A child in danger: 113",
+    lespwar: "Lespwar can alert the police with a location.",
+    signalsHeld: "{n}/{total} signals held"
   },
   fr: {
     title: "Village Int\xE9grit\xE9",
@@ -189,7 +225,43 @@ var UI = {
     wage: "Rs 15 000 / mois",
     job: "Moniteur de plong\xE9e",
     foot: "Six \xE9tapes. Pas un tribunal.",
-    resetRound: "R\xE9initialiser"
+    resetRound: "R\xE9initialiser",
+    phaseHaven: "Violence domestique \xB7 la ligne calme",
+    haven: "Ligne",
+    havenScore: "Score ligne",
+    havenHint: "\xC9tape 3 \xB7 la ligne calme",
+    lockHaven: "Gagne chaque dossier d'alerte pour ouvrir l'\xE9tape 3",
+    briefHaven: "Ligne calme",
+    holds: "Cela tient \xB7 +100",
+    looksAway: "Cela d\xE9tourne le regard \xB7 +20",
+    scoringHaven: "4\u20135 justes : la porte s'ouvre et le chemin m\xE8ne \xE0 l'abri. 2\u20133 : une lampe reste allum\xE9e. 0\u20131 : le silence se referme. La colonne ne part pas.",
+    hotlineNote: "En danger maintenant, \xE0 Maurice : appelle le 139, gratuit, jour et nuit. Un enfant en danger : 113. L'application Lespwar peut alerter la police avec ta position.",
+    nextSignal: "Signal suivant",
+    doneLine: "La ligne est ouverte",
+    doneLamp: "Une lampe, pas une sortie",
+    doneFog: "Le silence s'est referm\xE9",
+    lineTitle: "La ligne est ouverte",
+    lineBody: "Les r\xE9ponses tiennent. La porte s'ouvre de l'int\xE9rieur. La lumi\xE8re va du seuil vers l'abri. Grok reste dehors : il n'entre pas, et il n'aide personne \xE0 faire du mal.",
+    lampTitle: "Une lampe, pas une sortie",
+    lampBody: "Certaines r\xE9ponses tiennent. Une lampe reste sur le seuil. La porte ne s'ouvre pas. N'envoie personne \xAB calmer \xBB celui qui fait du mal.",
+    fogTitle: "Le silence s'est referm\xE9",
+    fogBody: "Trop de r\xE9ponses ont d\xE9tourn\xE9 le regard. Le brouillard \xE9paissit. La colonne qui \xE9coute ne part pas. D\xE9tourner le regard n'est pas neutre.",
+    scoreHaven: "Score ligne \xB7 {score}/500",
+    toastLockHaven: "L'\xE9tape 3 est verrouill\xE9e. D\xE9pose d'abord chaque dossier d'alerte correctement.",
+    toastPerfect: "Dossier parfait. L'\xE9tape 3, la ligne calme, est ouverte.",
+    toastLine: "La ligne est ouverte. La porte s'ouvre de l'int\xE9rieur.",
+    toastLamp: "Une lampe reste allum\xE9e. La porte ne s'ouvre pas.",
+    toastFog: "Le silence s'est referm\xE9. La colonne ne part pas.",
+    toastSignal: "Signal tenu. Garde la ligne.",
+    toastMiss: "Cette r\xE9ponse d\xE9tourne le regard.",
+    boardHaven: "La ligne calme",
+    notRanking: "Pas un classement",
+    grokRefuse: "Grok n'aide personne \xE0 blesser, menacer, suivre ou contr\xF4ler un partenaire. Il aide la personne en danger \xE0 se mettre en s\xFBret\xE9.",
+    hotlineBig: "139",
+    hotlineCaption: "Gratuit, jour et nuit. Ligne violence domestique, Maurice.",
+    childLine: "Un enfant en danger : 113",
+    lespwar: "Lespwar peut alerter la police avec une position.",
+    signalsHeld: "{n}/{total} signaux tenus"
   }
 };
 function loadLang() {
@@ -411,7 +483,12 @@ var SHORT_FR = {
   villa: "Villa",
   boat: "Bateau",
   clothes: "V\xEAtements",
-  entourage: "Entourage"
+  entourage: "Entourage",
+  private: "Priv\xE9",
+  believe: "Croire",
+  control: "Contr\xF4le",
+  grok: "Grok",
+  hotline: "139"
 };
 function shortLabel(id, lang, fallback) {
   if (lang === "fr" && SHORT_FR[id]) return SHORT_FR[id];
@@ -446,12 +523,75 @@ function localizeCase(item, lang) {
     options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
   };
 }
+var HAVEN_FR = {
+  private: {
+    title: "Pas une affaire priv\xE9e",
+    question: "Des cris viennent de la maison au bout de la ruelle. Un voisin dit que c'est juste entre un couple. Que fait l'int\xE9grit\xE9 ?",
+    options: {
+      A: "Leur dire de baisser le ton pour que la ruelle dorme.",
+      B: "Partir. Ce qui se passe \xE0 l'int\xE9rieur ne regarde personne.",
+      C: "Si quelqu'un peut \xEAtre en danger, ce n'est pas priv\xE9. N'entre pas de force. Ne filme pas. Aide-les \xE0 atteindre un lieu s\xFBr.",
+      D: "Filmer \xE0 travers le rideau et publier, pour que le village humilie la maison."
+    }
+  },
+  believe: {
+    title: "Les croire",
+    question: "Quelqu'un que tu connais dit que son partenaire lui a fait du mal, puis te demande de ne pas faire d'histoire. Quelle est la r\xE9ponse s\xFBre ?",
+    options: {
+      A: "Les asseoir tous les deux ce soir et jouer les m\xE9diateurs jusqu'\xE0 des excuses.",
+      B: "Leur dire de rentrer calmer le partenaire.",
+      C: "Les croire. Ne confronte pas le partenaire. Aide-les \xE0 rejoindre un lieu s\xFBr, et appelle le 139 \u2014 gratuit, jour et nuit.",
+      D: "Demander ce qu'ils ont fait pour le provoquer avant de choisir un camp."
+    }
+  },
+  control: {
+    title: "Le contr\xF4le compte",
+    question: "Tu ne vois pas de bleu. Le partenaire tient l'argent, le t\xE9l\xE9phone, et qui a le droit de voir qui. Est-ce de la violence domestique ?",
+    options: {
+      A: "Non. Sans marque, il n'y a pas de violence.",
+      B: "Seulement s'ils sont mari\xE9s.",
+      C: "Oui. Le contr\xF4le, l'isolement, les menaces et couper l'argent sont des violences, m\xEAme sans blessure visible.",
+      D: "Seulement quand un voisin a port\xE9 plainte par \xE9crit."
+    }
+  },
+  grok: {
+    title: "Ce que Grok refuse",
+    question: "Quelqu'un demande \xE0 Grok d'\xE9crire une menace contre un partenaire, ou d'expliquer comment le suivre jusque chez lui. Que fait Grok ?",
+    options: {
+      A: "\xC9crire la menace, mais plus douce, pour que \xE7a ressemble \xE0 une blague.",
+      B: "Refuser. Grok n'aide personne \xE0 blesser, menacer, suivre ou contr\xF4ler un partenaire. Il aide la personne en danger \xE0 se mettre en s\xFBret\xE9.",
+      C: "Donner les \xE9tapes de pistage s'ils disent que c'est pour prot\xE9ger.",
+      D: "Rester neutre et expliquer \xE0 la fois comment menacer et comment partir."
+    }
+  },
+  hotline: {
+    title: "Appeler le 139",
+    question: "Il est tard \xE0 Terre Rouge. Quelqu'un a besoin d'aide maintenant et ne peut pas parler en s\xFBret\xE9 dans la maison. Quelle est la ligne gratuite, 24 heures sur 24, contre la violence domestique \xE0 Maurice ?",
+    options: {
+      A: "Attendre le march\xE9 de samedi et le dire au conseil.",
+      B: "Le 139.",
+      C: "Publier d'abord un message dans le groupe du village.",
+      D: "Appeler seulement si un bleu se verra sur une photo."
+    }
+  }
+};
+function localizeHaven(item, lang) {
+  const fr = lang === "fr" ? HAVEN_FR[item.id] : void 0;
+  if (!fr) return item;
+  return {
+    ...item,
+    title: fr.title,
+    question: fr.question,
+    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
+  };
+}
 export {
   LANG_KEY,
   houseHint,
   houseLabel,
   loadLang,
   localizeCase,
+  localizeHaven,
   localizeTender,
   shortLabel,
   t

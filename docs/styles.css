@@ -9,6 +9,7 @@
   --green: #3dff9a;
   --amber: #e07030;
   --crimson: #ff3b4e;
+  --rose: #f0a0c8;
   --display: "Orbitron", ui-sans-serif, system-ui, sans-serif;
   --mono: "Share Tech Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
@@ -488,6 +489,20 @@ button { font: inherit; color: inherit; }
   background: color-mix(in oklab, var(--amber) 15%, transparent);
   color: var(--amber);
 }
+.comp-switch button[data-comp="haven"].on {
+  background: color-mix(in oklab, var(--rose) 18%, transparent);
+  color: var(--rose);
+}
+.rose, .kicker.rose, .qcount.rose { color: var(--rose); }
+.toast.line { border-color: var(--green); color: var(--green); background: color-mix(in oklab, var(--green) 12%, var(--surface)); }
+.toast.lamp { border-color: var(--amber); color: var(--amber); background: color-mix(in oklab, var(--amber) 12%, var(--surface)); }
+.toast.fog { border-color: var(--crimson); color: var(--crimson); background: color-mix(in oklab, var(--crimson) 12%, var(--surface)); }
+.spec-nav button.haven-on {
+  border-color: var(--rose);
+  color: var(--rose);
+  background: color-mix(in oklab, var(--rose) 12%, var(--raised));
+}
+.tabs button.on.haven { color: var(--rose); }
 .amber { color: var(--amber); }
 .crimson { color: var(--crimson); }
 .kicker.amber { color: var(--amber); }

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg16";
-import { HavenScene } from "./haven.js?v=vg16";
+import { t as tr, localizeTender, localizeCase, localizeHaven, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg17";
+import { HavenScene } from "./haven.js?v=vg17";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -1106,7 +1106,7 @@ function renderBoot() {
   document.getElementById("enter-btn").textContent = L("enter");
   document.getElementById("foot-note").textContent = L("foot");
   document.getElementById("boot-stages").innerHTML = ["stage1", "stage2", "stage3", "stage4", "stage5", "stage6"]
-    .map((key) => `<li>${L(key)}${key === "stage2" ? ` <span class="dev">(${L("dev")})</span>` : ""}</li>`)
+    .map((key) => `<li>${L(key)}</li>`)
     .join("");
   paintLang(document.getElementById("boot-lang"));
   paintLang(document.getElementById("play-lang"));
@@ -1557,9 +1557,19 @@ function renderBoard() {
 }
 
 function renderDock() {
+  const dock = document.getElementById("house-dock");
+  if (state.competition === "whistle") {
+    dock.hidden = false;
+    dock.innerHTML = `<div class="panel dock-inner"><p class="amber" style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px">${L("dockWhistle")}</p></div>`;
+    return;
+  }
+  if (state.competition === "haven") {
+    dock.hidden = false;
+    dock.innerHTML = `<div class="panel dock-inner"><p class="rose" style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px">${L("dockHaven")}</p></div>`;
+    return;
+  }
   const id = state.selectedId ?? state.hoveredId;
   const house = state.houses.find((h) => h.id === id);
-  const dock = document.getElementById("house-dock");
   if (!house) { dock.hidden = true; dock.innerHTML = ""; return; }
   const tender = tenderForHouse(house.id);
   const result = resultFor(house.id);

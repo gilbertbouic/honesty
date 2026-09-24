@@ -342,7 +342,14 @@ button { font: inherit; color: inherit; }
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
-.tabs button.on { color: var(--cyan); }
+.tabs button.reset-tab {
+  flex: 0.9;
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  padding: 0 0.15rem;
+  white-space: normal;
+}
 
 .foot {
   position: fixed;

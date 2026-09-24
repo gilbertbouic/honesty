@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg13";
-import { HavenScene } from "./haven.js?v=vg13";
+import { t as tr, localizeTender, localizeCase, localizeHaven, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg14";
+import { HavenScene } from "./haven.js?v=vg14";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -1021,7 +1021,7 @@ enterBtn.addEventListener("click", () => {
   showPlay();
 });
 
-function resetRound() {
+function resetGame() {
   try { localStorage.removeItem(SAVE_KEY); } catch { /* ignore */ }
   Object.assign(state, defaultState());
   pickedId = null;
@@ -1032,8 +1032,39 @@ function resetRound() {
   engine.sync(syncPayload());
   renderBoot();
 }
-document.getElementById("reset-btn").addEventListener("click", resetRound);
-document.getElementById("tab-reset").addEventListener("click", resetRound);
+function resetStage() {
+  state.showOutcome = false;
+  state.mobileTab = "tender";
+  state.hoveredId = null;
+  state.selectedId = null;
+  if (state.competition === "haven") {
+    state.havenResults = [];
+    state.activeHavenId = HAVEN_CASES[0].id;
+    state.havenScore = 0;
+    state.havenOutcome = "open";
+  } else if (state.competition === "whistle") {
+    state.whistleResults = [];
+    state.activeCaseId = WHISTLE_CASES[0].id;
+    state.whistleScore = 0;
+    state.whistleOutcome = "open";
+  } else {
+    state.competition = "tender";
+    state.results = [];
+    state.houses = HOUSES.map((h) => ({ ...h }));
+    state.contractors = CONTRACTORS.map((c) => ({ ...c }));
+    state.integrity = 32;
+    state.activeHouseId = TENDERS[0].houseId;
+  }
+  showToast(L("toastStage"), "info");
+  persist(state);
+  play.classList.add("show-tender");
+  play.classList.remove("show-board");
+  renderAll();
+}
+document.getElementById("reset-stage").addEventListener("click", resetStage);
+document.getElementById("reset-game").addEventListener("click", resetGame);
+document.getElementById("tab-reset-stage").addEventListener("click", resetStage);
+document.getElementById("tab-reset-game").addEventListener("click", resetGame);
 
 function showPlay() {
   boot.hidden = true;
@@ -1070,8 +1101,10 @@ function renderBoot() {
   paintLang(document.getElementById("boot-lang"));
   paintLang(document.getElementById("play-lang"));
   paintLang(document.getElementById("play-lang-mobile"));
-  document.getElementById("reset-btn").textContent = L("reset");
-  document.getElementById("tab-reset").textContent = L("reset");
+  document.getElementById("reset-stage").textContent = L("resetStage");
+  document.getElementById("reset-game").textContent = L("resetGame");
+  document.getElementById("tab-reset-stage").textContent = L("resetStage");
+  document.getElementById("tab-reset-game").textContent = L("resetGame");
   document.getElementById("tab-grid").textContent = L("grid");
 }
 

@@ -75,7 +75,7 @@ var UI = {
     burnBody: "The file was too thin. Ravi\u2019s crew torch the lodging you sleep in. The villa still stands.",
     exileTitle: "Chased out of the village",
     exileBody: "You stayed too quiet. Ravi\u2019s crew run you off the Terre Rouge grid. Do not come back on this round.",
-    scoreLine: "Whistle score \xB7 {score}/500",
+    scoreLine: "Whistle score \xB7 {score}/600",
     watchGrid: "Watch the grid",
     openSpec: "Spec",
     bids: "Bids",
@@ -121,7 +121,7 @@ var UI = {
     lampBody: "Some answers held. A lamp stays on the step. The door does not open. Do not send someone back to calm an abuser down.",
     fogTitle: "The silence closed",
     fogBody: "Too many answers looked away. The fog thickens. The listening column does not leave. Looking away is not neutral.",
-    scoreHaven: "Line score \xB7 {score}/500",
+    scoreHaven: "Line score \xB7 {score}/600",
     toastLockHaven: "Stage 3 is locked. File every whistle-blower case correctly first.",
     toastPerfect: "Perfect file. Stage 3, the quiet line, is open.",
     toastLine: "The line is open. The door opens from the inside.",
@@ -212,7 +212,7 @@ var UI = {
     burnBody: "Le dossier \xE9tait trop mince. L'\xE9quipe de Ravi incendie le logement o\xF9 tu dors. La villa tient encore.",
     exileTitle: "Chass\xE9 du village",
     exileBody: "Tu es rest\xE9 trop silencieux. L'\xE9quipe de Ravi te chasse de la grille de Terre Rouge. Ne reviens pas sur cette manche.",
-    scoreLine: "Score alerte \xB7 {score}/500",
+    scoreLine: "Score alerte \xB7 {score}/600",
     watchGrid: "Voir la grille",
     openSpec: "Cahier",
     bids: "Offres",
@@ -258,7 +258,7 @@ var UI = {
     lampBody: "Certaines r\xE9ponses tiennent. Une lampe reste sur le seuil. La porte ne s'ouvre pas. N'envoie personne \xAB calmer \xBB celui qui fait du mal.",
     fogTitle: "Le silence s'est referm\xE9",
     fogBody: "Trop de r\xE9ponses ont d\xE9tourn\xE9 le regard. Le brouillard \xE9paissit. La colonne qui \xE9coute ne part pas. D\xE9tourner le regard n'est pas neutre.",
-    scoreHaven: "Score ligne \xB7 {score}/500",
+    scoreHaven: "Score ligne \xB7 {score}/600",
     toastLockHaven: "L'\xE9tape 3 est verrouill\xE9e. D\xE9pose d'abord chaque dossier d'alerte correctement.",
     toastPerfect: "Dossier parfait. L'\xE9tape 3, la ligne calme, est ouverte.",
     toastLine: "La ligne est ouverte. La porte s'ouvre de l'int\xE9rieur.",
@@ -462,6 +462,16 @@ var CASE_FR = {
       C: "Entrer seul dans la villa la nuit et ordonner au groupe de partir, sans dossier de police.",
       D: "Signaler un h\xE9bergement et un trafic suspects \xE0 la police. Ne pas se taire. Ne pas affronter la villa soi-m\xEAme."
     }
+  },
+  cash: {
+    title: "Dons en liquide",
+    question: "Ravi se met \xE0 payer en liquide les dettes de boutique et les frais d'\xE9cole des voisins, toujours avec un salaire de moniteur de Rs 15 000. Il appelle \xE7a de la charit\xE9 et te demande de ne rien \xE9crire. Quelle est l'action licite ?",
+    options: {
+      A: "Se taire. Payer les frais d'un voisin est une gentillesse. Un village ne contr\xF4le pas un don.",
+      B: "Prendre une part du liquide pour tes propres frais et laisser le reste hors dossier.",
+      C: "Joindre ces dons en liquide inexpliqu\xE9s au signalement de richesse suspecte. Un salaire de Rs 15 000 ne finance pas la cit\xE9. Ne prends pas de part.",
+      D: "Le remercier dans le groupe du village pour que les dons paraissent publics et que le dossier se ferme."
+    }
   }
 };
 var HOUSE_FR = {
@@ -496,11 +506,13 @@ var SHORT_FR = {
   boat: "Bateau",
   clothes: "V\xEAtements",
   entourage: "Entourage",
+  cash: "Liquide",
   private: "Priv\xE9",
   believe: "Croire",
   control: "Contr\xF4le",
   grok: "Grok",
-  hotline: "139"
+  hotline: "139",
+  child: "Enfant"
 };
 function shortLabel(id, lang, fallback) {
   if (lang === "fr" && SHORT_FR[id]) return SHORT_FR[id];
@@ -584,6 +596,16 @@ var HAVEN_FR = {
       B: "Le 139.",
       C: "Publier d'abord un message dans le groupe du village.",
       D: "Appeler seulement si un bleu se verra sur une photo."
+    }
+  },
+  child: {
+    title: "Un enfant a peur",
+    question: "Un enfant de la maison dit qu'il a peur des cris et te demande de garder le secret. Quelle est la r\xE9ponse s\xFBre ?",
+    options: {
+      A: "Promettre de ne rien dire, et renvoyer l'enfant voir si \xE7a s'est arr\xEAt\xE9.",
+      B: "Demander \xE0 l'enfant de d\xE9crire la violence en d\xE9tail avant de d\xE9cider.",
+      C: "Un enfant en danger ne garde pas ce secret. Ne le renvoie pas. Appelle le 113. Si un adulte est aussi en danger, appelle le 139.",
+      D: "Attendre qu'un parent t'invite, puis jouer les m\xE9diateurs entre les adultes."
     }
   }
 };

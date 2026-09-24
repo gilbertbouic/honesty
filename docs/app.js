@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg17";
-import { HavenScene } from "./haven.js?v=vg17";
+import { t as tr, localizeTender, localizeCase, localizeHaven, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg18";
+import { HavenScene } from "./haven.js?v=vg18";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -39,7 +39,7 @@ const WHISTLE_WRONG = 20;
 const HAVEN_CORRECT = 100;
 const HAVEN_WRONG = 20;
 const SHORT = { "cwa-pump": "CWA", "block-a": "Blk A", "block-b": "Blk B", school: "School", power: "CEB", drain: "Drain", light: "Light", community: "Hall", market: "Mkt", clinic: "Clinic", hall: "Civic", bus: "Bus" };
-const WSHORT = { car: "Car", villa: "Villa", boat: "Boat", clothes: "Clothes", entourage: "Entourage" };
+const WSHORT = { car: "Car", villa: "Villa", boat: "Boat", clothes: "Clothes", entourage: "Entourage", cash: "Cash" };
 
 const CONTRACTORS = [
   { id: "kuzin", name: "Kuzin", sector: "civil", score: 0, holding: "District Clinic" },
@@ -52,11 +52,11 @@ const HOUSES = [
   { id: "cwa-pump", name: "CWA Pump House", hint: "Water Grid Renewal · SPEC-01", variant: "pump", x: 0.2, z: 3.4, cost: 80, renovated: false, owner: null, ownerSector: null },
   { id: "block-a", name: "Terre Rouge Block A", hint: "Cité roofs · SPEC-04", variant: "block", x: -4.2, z: 1.6, cost: 60, renovated: false, owner: null, ownerSector: null },
   { id: "block-b", name: "Terre Rouge Block B", hint: "Cité wiring · SPEC-05", variant: "block", x: 4.3, z: 1.4, cost: 60, renovated: false, owner: null, ownerSector: null },
-  { id: "market", name: "Market Shed", hint: "Held by Cheri · Public", variant: "market", x: -3.6, z: -2.1, cost: 50, renovated: true, owner: "Cheri", ownerSector: "public" },
-  { id: "clinic", name: "District Clinic", hint: "Held by Kuzin · Civil Service", variant: "clinic", x: 3.9, z: -2.3, cost: 90, renovated: true, owner: "Kuzin", ownerSector: "civil" },
+  { id: "market", name: "Market Shed", hint: "Market stalls · SPEC-02", variant: "market", x: -3.6, z: -2.1, cost: 50, renovated: false, owner: null, ownerSector: null },
+  { id: "clinic", name: "District Clinic", hint: "Clinic stores · SPEC-03", variant: "clinic", x: 3.9, z: -2.3, cost: 90, renovated: false, owner: null, ownerSector: null },
   { id: "school", name: "Primary School", hint: "School works · SPEC-06", variant: "school", x: -1.4, z: -4.8, cost: 70, renovated: false, owner: null, ownerSector: null },
-  { id: "hall", name: "Civic Hall", hint: "Held by Malin · Government", variant: "hall", x: 1.9, z: -4.9, cost: 85, renovated: true, owner: "Malin", ownerSector: "government" },
-  { id: "bus", name: "Bus Shelter", hint: "Held by Kokin · Public", variant: "bus", x: 5.4, z: 3.2, cost: 40, renovated: true, owner: "Kokin", ownerSector: "public" },
+  { id: "hall", name: "Civic Hall", hint: "Hall hire · SPEC-11", variant: "hall", x: 1.9, z: -4.9, cost: 85, renovated: false, owner: null, ownerSector: null },
+  { id: "bus", name: "Bus Shelter", hint: "Shelter panels · SPEC-12", variant: "bus", x: 5.4, z: 3.2, cost: 40, renovated: false, owner: null, ownerSector: null },
   { id: "power", name: "CEB Substation", hint: "Street lighting feed · SPEC-07", variant: "power", x: -5.6, z: 3.3, cost: 90, renovated: false, owner: null, ownerSector: null },
   { id: "drain", name: "Drainage Node", hint: "Land Drainage Authority · SPEC-08", variant: "drain", x: 0.1, z: 6.0, cost: 50, renovated: false, owner: null, ownerSector: null },
   { id: "light", name: "Street Lighting Mast", hint: "CEB classified road · SPEC-09", variant: "light", x: 6.4, z: -0.4, cost: 40, renovated: false, owner: null, ownerSector: null },
@@ -73,6 +73,24 @@ const TENDERS = [
       { id: "D", text: "File it as a customary contractor commission under the Public Procurement Act, visible only inside the Ministry of Finance." },
     ],
     correct: "B", npcBids: { kuzin: 82, cheri: 64, malin: 71, kokin: 88 } },
+  { id: "spec-02", houseId: "market", spec: "SPEC-02", title: "Market Stall Register",
+    question: "A stallholder offers a weekly envelope so their pitch stays off the official allocation list. How must this be logged?",
+    options: [
+      { id: "A", text: "Take the envelope and keep the stall as an informal extension of the market." },
+      { id: "B", text: "Refuse the envelope, disclose it, and keep every pitch on the official allocation list." },
+      { id: "C", text: "Park the cash in the market committee tea fund and spend it on tarpaulins." },
+      { id: "D", text: "Accept it as a CWA connection fee for the stall's water tap." },
+    ],
+    correct: "B", npcBids: { kuzin: 61, cheri: 86, malin: 72, kokin: 68 } },
+  { id: "spec-03", houseId: "clinic", spec: "SPEC-03", title: "Clinic Store Tender",
+    question: "A supplier offers expired malaria tests at half price if the batch number is rewritten on the goods-received note. What is the lawful action?",
+    options: [
+      { id: "A", text: "Rewrite the note and issue the tests to the outpost only." },
+      { id: "B", text: "Accept the lot for the storeroom and replace it after cyclone season." },
+      { id: "C", text: "Refuse the tests, disclose the offer, and keep the specified in-date stock." },
+      { id: "D", text: "File it as a Ministry of Health emergency donation." },
+    ],
+    correct: "C", npcBids: { kuzin: 87, cheri: 58, malin: 76, kokin: 64 } },
   { id: "spec-04", houseId: "block-a", spec: "SPEC-04", title: "Cité Roof Renewal",
     question: "A supplier offers an uncertified roof membrane at half the schedule if the inspection photo is taken from the courtyard, not the roof. What is the lawful action?",
     options: [
@@ -136,6 +154,24 @@ const TENDERS = [
       { id: "D", text: "Park two invoices in the social-welfare account and one on the hall file." },
     ],
     correct: "A", npcBids: { kuzin: 75, cheri: 88, malin: 80, kokin: 60 } },
+  { id: "spec-11", houseId: "hall", spec: "SPEC-11", title: "Civic Hall Hire",
+    question: "The hall clerk says weekend hire can skip the receipt if the cash is paid to him after hours. How must this be handled?",
+    options: [
+      { id: "A", text: "Take the cash and log it as a village-committee donation later." },
+      { id: "B", text: "Issue a numbered receipt, bank the hire, and keep the booking on the hall file." },
+      { id: "C", text: "Split the cash: half to the clerk, half to the social-welfare account." },
+      { id: "D", text: "Allow cash-only hire for residents of Terre Rouge, receipts for outsiders." },
+    ],
+    correct: "B", npcBids: { kuzin: 66, cheri: 73, malin: 85, kokin: 54 } },
+  { id: "spec-12", houseId: "bus", spec: "SPEC-12", title: "Bus Shelter Panels",
+    question: "An advertiser offers to fit the shelter panels for free if the contract is awarded off-tender and the fee is paid in cash. What is the lawful action?",
+    options: [
+      { id: "A", text: "Accept the free panels and record the cash as a CEB lighting rebate." },
+      { id: "B", text: "Award it verbally if the district councillor agrees." },
+      { id: "C", text: "Fit the panels now and run a tender after cyclone season." },
+      { id: "D", text: "Refuse the off-tender deal, disclose the offer, and keep the advertised procurement." },
+    ],
+    correct: "D", npcBids: { kuzin: 70, cheri: 62, malin: 79, kokin: 88 } },
 ];
 
 
@@ -185,6 +221,15 @@ const WHISTLE_CASES = [
       { id: "D", text: "Report suspected harbouring and trafficking to the police. Do not stay silent. Do not confront the villa yourself." },
     ],
     correct: "D", npcReports: { kuzin: 70, cheri: 62, malin: 77, kokin: 85 } },
+  { id: "cash", spec: "CASE-06", title: "Cash gifts",
+    question: "Ravi starts paying neighbours’ shop debts and school fees in cash, still on a dive-master wage of Rs 15,000. He calls it charity and asks you not to write it down. What is the lawful action?",
+    options: [
+      { id: "A", text: "Stay silent. Paying a neighbour’s fee is kindness. A village should not audit a gift." },
+      { id: "B", text: "Take a share of the cash for your own fees and leave the rest off the file." },
+      { id: "C", text: "File the unexplained cash gifts with the suspicious-wealth report. A Rs 15,000 wage does not fund the lane. Do not take a cut." },
+      { id: "D", text: "Thank him in the village group so the gifts look public and the file can close." },
+    ],
+    correct: "C", npcReports: { kuzin: 74, cheri: 68, malin: 57, kokin: 83 } },
 ];
 function whistleCaseById(id) { return WHISTLE_CASES.find((c) => c.id === id) ?? WHISTLE_CASES[0]; }
 function firstOpenWhistleId(results) {
@@ -255,8 +300,16 @@ const HAVEN_CASES = [
       { id: "C", text: "Post a message in the village group first." },
       { id: "D", text: "Call only if a bruise will show in a photo." },
     ], correct: "B" },
+  { id: "child", spec: "LINE-06", title: "A child is scared",
+    question: "A child from the house says they are scared of the shouting and asks you to keep it a secret. What is the safe answer?",
+    options: [
+      { id: "A", text: "Promise to tell no one, and send the child back inside to see if it has stopped." },
+      { id: "B", text: "Ask the child to describe the violence in detail before you decide." },
+      { id: "C", text: "A child in danger does not keep that secret. Do not send them back in. Call 113. If an adult is also unsafe, call 139." },
+      { id: "D", text: "Wait until a parent invites you in, then mediate between the adults." },
+    ], correct: "C" },
 ];
-const HSHORT = { private: "Private", believe: "Believe", control: "Control", grok: "Grok", hotline: "139" };
+const HSHORT = { private: "Private", believe: "Believe", control: "Control", grok: "Grok", hotline: "139", child: "Child" };
 function havenCaseById(id) { return HAVEN_CASES.find((c) => c.id === id) ?? HAVEN_CASES[0]; }
 function firstOpenHavenId(results) {
   const done = new Set(results.map((r) => r.caseId));
@@ -1131,7 +1184,7 @@ function renderHeader() {
   document.getElementById("stat-label").textContent = haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
   const won = state.results.filter((r) => r.winnerId === "you").length;
   const stat = document.getElementById("stat-won");
-  stat.textContent = haven ? `${state.havenScore}/500` : whistle ? `${state.whistleScore}/500` : `${won}/${TENDERS.length}`;
+  stat.textContent = haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
   stat.className = haven ? "mono rose" : whistle ? "mono amber" : "mono green";
   const swept = roundOneCleared(state.results, state.contractorId);
   const lineOpen = roundTwoCleared(state.whistleResults);
@@ -1456,7 +1509,7 @@ function answerWhistle(picked) {
   if (finished) {
     state.showOutcome = true;
     showToast(
-      state.whistleOutcome === "jail" && state.whistleScore >= 500 ? L("toastPerfect")
+      state.whistleOutcome === "jail" && state.whistleScore >= WHISTLE_CASES.length * 100 ? L("toastPerfect")
       : state.whistleOutcome === "jail" ? L("toastJail")
       : state.whistleOutcome === "burn" ? L("toastBurn")
       : L("toastExile"),
@@ -1696,6 +1749,18 @@ document.getElementById("tab-round").addEventListener("click", () => {
 });
 play.classList.add("show-tender");
 
+if ((state.whistleResults || []).length < WHISTLE_CASES.length) state.whistleOutcome = "open";
+if ((state.havenResults || []).length < HAVEN_CASES.length) state.havenOutcome = "open";
+for (const id of ["market", "clinic", "hall", "bus"]) {
+  if (state.results.some((r) => r.houseId === id)) continue;
+  const h = state.houses.find((x) => x.id === id);
+  if (h && h.owner && h.owner !== "You") {
+    h.renovated = false;
+    h.rejected = false;
+    h.owner = null;
+    h.ownerSector = null;
+  }
+}
 if (!roundOneCleared(state.results, state.contractorId) && state.competition === "whistle") state.competition = "tender";
 if (!roundTwoCleared(state.whistleResults) && state.competition === "haven") {
   state.competition = roundOneCleared(state.results, state.contractorId) ? "whistle" : "tender";

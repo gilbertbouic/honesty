@@ -222,6 +222,7 @@ button { font: inherit; color: inherit; }
 }
 .side.left { grid-column: 1; grid-row: 2; }
 .side.right { grid-column: 3; grid-row: 2; }
+.side[hidden] { display: none !important; }
 .side h2 {
   margin: 0;
   font-family: var(--display);

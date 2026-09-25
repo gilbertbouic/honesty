@@ -8,7 +8,7 @@ var UI = {
     stage2: "Stage 2: Whistle-blower",
     dev: "In development",
     stage3: "Stage 3: Domestic Violence",
-    stage4: "Stage 4: Land",
+    stage4: "Stage 4: Land Use",
     stage5: "Stage 5: Agriculture",
     stage6: "Stage 6: Elections",
     choose: "Choose your character",
@@ -137,7 +137,38 @@ var UI = {
     hotlineCaption: "Free, day and night. Domestic violence hotline, Mauritius.",
     childLine: "A child in danger: 113",
     lespwar: "Lespwar can alert the police with a location.",
-    signalsHeld: "{n}/{total} signals held"
+    signalsHeld: "{n}/{total} signals held",
+    phaseLand: "Land use \xB7 the public shore",
+    land: "Land",
+    landScore: "Land score",
+    landHint: "Stage 4 \xB7 land use",
+    lockLand: "Hold every quiet-line answer to open stage 4",
+    briefLand: "Land file",
+    holdsLand: "Line holds \xB7 +100",
+    missLand: "Line slips \xB7 +20",
+    scoringLand: "Five or six correct: the path opens. Two to four: the rope stays half up. None or one: the fill stays.",
+    nextPlot: "Next plot",
+    doneHeld: "File complete \xB7 the path is open",
+    doneShift: "File complete \xB7 the rope still hangs",
+    doneLost: "File complete \xB7 the wetland stays filled",
+    heldTitle: "The path stays open",
+    heldBody: "The rope comes down. The wetland is left wet. The pegs match the public file. The village stays in the distance, and the shore stays for everyone.",
+    shiftTitle: "The rope still hangs",
+    shiftBody: "Some pegs are true and some are not. The path is only half clear. The fill has not all gone back.",
+    lostTitle: "The fill stays",
+    lostBody: "The file did not hold. The rope stays up, and the wetland stays buried. Reset the stage and walk the questions again.",
+    scoreLand: "Land score \xB7 {score}/600",
+    toastLockLand: "Stage 4 is locked. Hold every quiet-line answer first.",
+    toastHeld: "The path is open. The shore stays public.",
+    toastShift: "The rope still hangs. The file is only half clear.",
+    toastLost: "The fill stays. The wetland is still buried.",
+    toastPlot: "Plot held. Keep the public line.",
+    toastSlip: "That answer lets the line slip.",
+    boardLand: "Public shore",
+    landRule: "Pas G\xE9om\xE9triques stay state land. A lease is not the beach. A wetland is not spare soil.",
+    plotsHeld: "{n}/{total} plots held",
+    openLand: "Open land use",
+    dockLand: "Shore \xB7 pegs"
   },
   fr: {
     title: "Village Int\xE9grit\xE9",
@@ -146,7 +177,7 @@ var UI = {
     stage2: "\xC9tape 2 : Lanceur d'alerte",
     dev: "En d\xE9veloppement",
     stage3: "\xC9tape 3 : Violence domestique",
-    stage4: "\xC9tape 4 : Terrain",
+    stage4: "\xC9tape 4 : Usage des terres",
     stage5: "\xC9tape 5 : Agriculture",
     stage6: "\xC9tape 6 : \xC9lections",
     choose: "Choisis ton personnage",
@@ -275,7 +306,38 @@ var UI = {
     hotlineCaption: "Gratuit, jour et nuit. Ligne violence domestique, Maurice.",
     childLine: "Un enfant en danger : 113",
     lespwar: "Lespwar peut alerter la police avec une position.",
-    signalsHeld: "{n}/{total} signaux tenus"
+    signalsHeld: "{n}/{total} signaux tenus",
+    phaseLand: "Usage des terres \xB7 le rivage public",
+    land: "Terres",
+    landScore: "Score terres",
+    landHint: "\xC9tape 4 \xB7 usage des terres",
+    lockLand: "Tiens chaque r\xE9ponse de la ligne calme pour ouvrir l'\xE9tape 4",
+    briefLand: "Dossier foncier",
+    holdsLand: "La ligne tient \xB7 +100",
+    missLand: "La ligne c\xE8de \xB7 +20",
+    scoringLand: "Cinq ou six justes : le chemin s'ouvre. Deux \xE0 quatre : la corde reste \xE0 mi-hauteur. Z\xE9ro ou un : le remblai reste.",
+    nextPlot: "Parcelle suivante",
+    doneHeld: "Dossier clos \xB7 le chemin est ouvert",
+    doneShift: "Dossier clos \xB7 la corde pend encore",
+    doneLost: "Dossier clos \xB7 le marais reste remblay\xE9",
+    heldTitle: "Le chemin reste ouvert",
+    heldBody: "La corde tombe. Le marais reste humide. Les piquets suivent le dossier public. Le village reste au loin, et le rivage reste \xE0 tout le monde.",
+    shiftTitle: "La corde pend encore",
+    shiftBody: "Certains piquets sont justes, d'autres non. Le chemin n'est qu'\xE0 moiti\xE9 libre. Le remblai n'est pas tout reparti.",
+    lostTitle: "Le remblai reste",
+    lostBody: "Le dossier n'a pas tenu. La corde reste haute, et le marais reste enseveli. R\xE9initialise l'\xE9tape et reprends les questions.",
+    scoreLand: "Score terres \xB7 {score}/600",
+    toastLockLand: "L'\xE9tape 4 est verrouill\xE9e. Tiens d'abord chaque r\xE9ponse de la ligne calme.",
+    toastHeld: "Le chemin est ouvert. Le rivage reste public.",
+    toastShift: "La corde pend encore. Le dossier n'est qu'\xE0 moiti\xE9 clair.",
+    toastLost: "Le remblai reste. Le marais est encore enseveli.",
+    toastPlot: "Parcelle tenue. Garde la ligne publique.",
+    toastSlip: "Cette r\xE9ponse laisse la ligne c\xE9der.",
+    boardLand: "Rivage public",
+    landRule: "Les Pas G\xE9om\xE9triques restent des terres de l'\xC9tat. Un bail n'est pas la plage. Un marais n'est pas un sol de reste.",
+    plotsHeld: "{n}/{total} parcelles tenues",
+    openLand: "Ouvrir l'usage des terres",
+    dockLand: "Rivage \xB7 piquets"
   }
 };
 function loadLang() {
@@ -514,7 +576,13 @@ var SHORT_FR = {
   control: "Contr\xF4le",
   grok: "AI",
   hotline: "139",
-  child: "Enfant"
+  child: "Enfant",
+  shore: "Rivage",
+  title: "Titre",
+  split: "D\xE9coupe",
+  wetland: "Marais",
+  sign: "Signature",
+  idle: "Friche"
 };
 function shortLabel(id, lang, fallback) {
   if (lang === "fr" && SHORT_FR[id]) return SHORT_FR[id];
@@ -621,6 +689,78 @@ function localizeHaven(item, lang) {
     options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
   };
 }
+var LAND_FR = {
+  shore: {
+    title: "Le chemin ferm\xE9",
+    question: "Un voisin barre avec une corde le chemin que le village emprunte vers la mer et cloue un panneau : \xAB Plage priv\xE9e \xBB. Il dit que son bail de campement comprend le sable. Quelle est l'action licite ?",
+    options: {
+      A: "Laisser faire. Un bail sur une terre de l'\xC9tat comprend la plage devant.",
+      B: "D\xE9placer la corde la nuit et ne rien dire.",
+      C: "Le rivage et le chemin public restent ouverts. Un bail de campement n'est pas un titre sur la plage. Demande au minist\xE8re du Logement et des Terres et au conseil de district d'enlever l'obstacle.",
+      D: "Faire payer les visiteurs et partager avec lui."
+    }
+  },
+  title: {
+    title: "Vendu comme pleine propri\xE9t\xE9",
+    question: "Un agent propose un terrain en bord de mer \xAB \xE0 vendre \xBB et dit que l'acheteur en sera pleinement propri\xE9taire. Le plan montre des Pas G\xE9om\xE9triques. Quelle est l'action licite ?",
+    options: {
+      A: "Prendre une commission et appeler \xE7a une pleine propri\xE9t\xE9 priv\xE9e.",
+      B: "Les Pas G\xE9om\xE9triques sont des terres de l'\xC9tat. Elles ne se vendent pas comme un bien priv\xE9. Ne sers pas d'interm\xE9diaire. Signale l'annonce au minist\xE8re du Logement et des Terres.",
+      C: "Laisser le plus offrant prendre le terrain si le village a une part.",
+      D: "Redessiner le plan pour que la parcelle paraisse \xE0 l'int\xE9rieur des terres et que la vente se fasse."
+    }
+  },
+  split: {
+    title: "Sous le seuil",
+    question: "Un promoteur veut 20 villas sur une terre c\xF4ti\xE8re de l'\xC9tat. Il d\xE9coupe le dossier en petits lots pour rester sous la ligne de l'EIA, et commence \xE0 vendre sur plan avant un permis de construire et d'usage des terres. Quelle est l'action licite ?",
+    options: {
+      A: "D\xE9couper le dossier. Sous 50 unit\xE9s, pas d'EIA, et les ventes peuvent commencer.",
+      B: "Couper les arbres d'abord pour que le site paraisse pr\xEAt quand le permis arrivera.",
+      C: "Un projet, un dossier. Ni travaux ni vente sur plan avant l'EIA et le permis. Ne d\xE9coupe pas le projet pour \xE9viter l'\xE9tude.",
+      D: "Demander au commis du conseil de l'approuver apr\xE8s les heures."
+    }
+  },
+  wetland: {
+    title: "Le marais remblay\xE9",
+    question: "Un entrepreneur d\xE9verse du remblai dans le marais derri\xE8re la ruelle pour couler une dalle. Il appelle \xE7a de l'am\xE9nagement et dit que le drain pourra \xEAtre bus\xE9 plus tard. Quelle est l'action licite ?",
+    options: {
+      A: "Signer comme am\xE9nagement. Le sol d'un marais est un sol de reste.",
+      B: "Buser le drain sous le remblai et garder le marais hors du plan.",
+      C: "Un marais et son drain ne sont pas un sol de reste. Arr\xEAte le remblai. Signale-le. Un marais remblay\xE9 envoie la crue sur les maisons en aval.",
+      D: "Ne remblayer que le bord, pour que \xAB l'essentiel \xBB du marais reste."
+    }
+  },
+  sign: {
+    title: "La signature emprunt\xE9e",
+    question: "Quelqu'un propose de t\xE9l\xE9verser des plans sur le National Electronic Licensing System avec la signature \xE9lectronique d'un architecte inscrit. L'architecte ne les a pas dessin\xE9s. La maison d\xE9passe 150 m\xB2. Quelle est l'action licite ?",
+    options: {
+      A: "Utiliser la signature. La plateforme v\xE9rifie seulement qu'un nom est sur le dossier.",
+      B: "C'est un faux document. Refuse. Les plans de cette taille doivent \xEAtre pr\xE9par\xE9s et sign\xE9s par l'architecte qui a fait le travail. Signale l'offre.",
+      C: "Payer une petite somme \xE0 l'architecte apr\xE8s le permis et antidater le dessin.",
+      D: "Mettre ton propre nom comme architecte. Le conseil ne v\xE9rifiera pas le registre."
+    }
+  },
+  idle: {
+    title: "Allocation en friche",
+    question: "Un proche a re\xE7u une terre agricole de l'\xC9tat et l'a laiss\xE9e vide. Un promoteur offre du liquide pour couler une dalle, l'appeler un hangar, et \xAB convertir plus tard \xBB. Quelle est l'action licite ?",
+    options: {
+      A: "Couler la dalle. La conversion peut \xEAtre demand\xE9e une fois la maison debout.",
+      B: "Laisser en friche. Une terre allou\xE9e peut rester inutilis\xE9e aussi longtemps que la famille veut.",
+      C: "Prendre le liquide et garder le dossier marqu\xE9 \xAB cultures \xBB.",
+      D: "Une terre allou\xE9e est pour l'agriculture. Les parcelles en friche peuvent \xEAtre reprises. Un changement d'usage exige un permis de conversion avant toute dalle. Ne prends pas le liquide."
+    }
+  }
+};
+function localizeLand(item, lang) {
+  const fr = lang === "fr" ? LAND_FR[item.id] : void 0;
+  if (!fr) return item;
+  return {
+    ...item,
+    title: fr.title,
+    question: fr.question,
+    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
+  };
+}
 export {
   LANG_KEY,
   houseHint,
@@ -628,6 +768,7 @@ export {
   loadLang,
   localizeCase,
   localizeHaven,
+  localizeLand,
   localizeTender,
   shortLabel,
   t

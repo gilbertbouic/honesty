@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg19";
-import { HavenScene } from "./haven.js?v=vg19";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg20";
+import { HavenScene } from "./haven.js?v=vg20";
+import { LandScene } from "./land.js?v=vg20";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -38,6 +39,8 @@ const WHISTLE_CORRECT = 100;
 const WHISTLE_WRONG = 20;
 const HAVEN_CORRECT = 100;
 const HAVEN_WRONG = 20;
+const LAND_CORRECT = 100;
+const LAND_WRONG = 20;
 const SHORT = { "cwa-pump": "CWA", "block-a": "Blk A", "block-b": "Blk B", school: "School", power: "CEB", drain: "Drain", light: "Light", community: "Hall", market: "Mkt", clinic: "Clinic", hall: "Civic", bus: "Bus" };
 const WSHORT = { car: "Car", villa: "Villa", boat: "Boat", clothes: "Clothes", entourage: "Entourage", cash: "Cash" };
 
@@ -321,6 +324,71 @@ function havenOutcomeOf(score, answered) {
   if (score >= 200) return "lamp";
   return "fog";
 }
+const LAND_CASES = [
+  { id: "shore", spec: "PLOT-01", title: "The closed path", correct: "C",
+    question: "A neighbour ropes off the path the village uses to the sea and nails up a board: “Private beach”. He says his campement lease includes the sand. What is the lawful action?",
+    options: [
+      { id: "A", text: "Leave it. A lease on state land includes the beach in front." },
+      { id: "B", text: "Move the rope at night and say nothing." },
+      { id: "C", text: "The shore and the public path stay open. A campement lease is not a title to the beach. Ask Housing and Lands and the district council to clear the obstruction." },
+      { id: "D", text: "Charge visitors a fee and split it with him." },
+    ] },
+  { id: "title", spec: "PLOT-02", title: "Sold as freehold", correct: "B",
+    question: "An agent offers a beachfront plot “for sale” and says the buyer will own it outright. The plan shows Pas Géométriques. What is the lawful action?",
+    options: [
+      { id: "A", text: "Take a commission and call it a private freehold." },
+      { id: "B", text: "Pas Géométriques are state land. They are not sold as private property. Do not broker the deal. Report the advert to the Ministry of Housing and Lands." },
+      { id: "C", text: "Let the highest bidder take it if the village gets a share." },
+      { id: "D", text: "Redraw the plan so the plot looks inland and the sale can proceed." },
+    ] },
+  { id: "split", spec: "PLOT-03", title: "Under the threshold", correct: "C",
+    question: "A promoter wants 20 villas on state coastal land. He splits the file into small lots so each stays under the EIA line, and starts selling off-plan before a Building and Land Use Permit. What is the lawful action?",
+    options: [
+      { id: "A", text: "Split the file. Under 50 units, no EIA is needed, and sales can start now." },
+      { id: "B", text: "Cut the trees first so the site looks ready when the permit arrives." },
+      { id: "C", text: "One project is one file. No works and no off-plan sale before the EIA and the permit. Do not split the scheme to dodge the study." },
+      { id: "D", text: "Ask the council clerk to nod it through after hours." },
+    ] },
+  { id: "wetland", spec: "PLOT-04", title: "The filled wetland", correct: "C",
+    question: "A contractor dumps fill into the wetland behind the lane so a slab can be poured. He calls it landscaping and says the flood drain can be piped later. What is the lawful action?",
+    options: [
+      { id: "A", text: "Sign it as landscaping. Wetland soil is spare land." },
+      { id: "B", text: "Pipe the drain under the fill and keep the wetland off the plan." },
+      { id: "C", text: "A wetland and its drain are not spare land. Stop the fill. Report it. A filled wetland sends the flood onto the houses downstream." },
+      { id: "D", text: "Fill only the edge, so most of the wetland “remains”." },
+    ] },
+  { id: "sign", spec: "PLOT-05", title: "The borrowed signature", correct: "B",
+    question: "Someone offers to upload plans on the National Electronic Licensing System using a registered architect’s electronic signature. The architect did not draw them. The house is over 150 m². What is the lawful action?",
+    options: [
+      { id: "A", text: "Use the signature. The platform only checks that a name is on the file." },
+      { id: "B", text: "That is a false document. Refuse. Plans of that size must be prepared and signed by the architect who did the work. Report the offer." },
+      { id: "C", text: "Pay the architect a small fee after the permit and backdate the drawing." },
+      { id: "D", text: "Put your own name down as architect. The council will not check the register." },
+    ] },
+  { id: "idle", spec: "PLOT-06", title: "Idle allocation", correct: "D",
+    question: "A relative was given agricultural land by the state and has left it empty. A developer offers cash to pour a slab, call it a shed, and “convert it later”. What is the lawful action?",
+    options: [
+      { id: "A", text: "Pour the slab. Conversion can be applied for after the house is up." },
+      { id: "B", text: "Leave it idle. Allocated land can sit unused as long as the family likes." },
+      { id: "C", text: "Take the cash and keep the file marked as crops." },
+      { id: "D", text: "Allocated land is for farming. Idle plots can be taken back. A change of use needs a land-conversion permit before any slab. Do not take the cash." },
+    ] },
+];
+const LSHORT = { shore: "Shore", title: "Title", split: "Split", wetland: "Wetland", sign: "Sign", idle: "Idle" };
+function roundThreeCleared(results) {
+  return results.length >= HAVEN_CASES.length && results.every((r) => r.correct);
+}
+function landCaseById(id) { return LAND_CASES.find((c) => c.id === id) ?? LAND_CASES[0]; }
+function firstOpenLandId(results) {
+  const done = new Set(results.map((r) => r.caseId));
+  return LAND_CASES.find((c) => !done.has(c.id))?.id ?? LAND_CASES[0].id;
+}
+function landOutcomeOf(score, answered) {
+  if (answered < LAND_CASES.length) return "open";
+  if (score >= 500) return "held";
+  if (score >= 280) return "shift";
+  return "lost";
+}
 function winnerOf(bids) { return Object.entries(bids).sort((a, b) => b[1] - a[1])[0][0]; }
 function holdingsLabel(name, houses) {
   const owned = houses.filter((h) => h.owner === name);
@@ -537,12 +605,14 @@ class VillageEngine {
     this.gridMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uIntegrity: { value: 0.32 } }, vertexShader: GRID_VERT, fragmentShader: GRID_FRAG });
     const ground = new THREE.Mesh(new THREE.CircleGeometry(16, 64), this.gridMat);
     ground.rotation.x = -Math.PI / 2;
+    this.ground = ground;
     this.scene.add(ground);
 
     this.waterMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uTime: { value: 0 } }, vertexShader: GRID_VERT, fragmentShader: WATER_FRAG });
     const canal = new THREE.Mesh(new THREE.PlaneGeometry(22, 1.15), this.waterMat);
     canal.rotation.x = -Math.PI / 2;
     canal.position.set(0, 0.02, 4.7);
+    this.canal = canal;
     this.scene.add(canal);
 
     const plaza = new THREE.Mesh(new THREE.RingGeometry(1.55, 1.68, 48), new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false }));
@@ -591,8 +661,11 @@ class VillageEngine {
     this.whistleOutcome = "open";
     this.buildWhistle();
     this.haven = new HavenScene(this.scene);
+    this.land = new LandScene(this.scene);
     this.havenOutcome = "open";
     this.havenCorrect = 0;
+    this.landOutcome = "open";
+    this.landCorrect = 0;
 
     this.observer = new ResizeObserver(() => this.resize());
     this.observer.observe(canvas.parentElement ?? canvas);
@@ -614,14 +687,31 @@ class VillageEngine {
     this.whistleOutcome = next.whistleOutcome || "open";
     this.havenOutcome = next.havenOutcome || "open";
     this.havenCorrect = next.havenCorrect || 0;
+    this.landOutcome = next.landOutcome || "open";
+    this.landCorrect = next.landCorrect || 0;
     this.haven.sync(this.competition, this.havenOutcome, this.havenCorrect);
-    this.controls.autoRotate = !next.reducedMotion && this.competition !== "haven" && this.whistleOutcome !== "exile";
-    this.rain.visible = !next.reducedMotion && this.competition !== "haven";
+    this.land.sync(this.competition, this.landOutcome, this.landCorrect);
+    const landOn = this.competition === "land";
+    if (this.ground) this.ground.visible = !landOn;
+    if (this.canal) this.canal.visible = !landOn;
+    this.plazaRing.visible = !landOn;
+    this.controls.autoRotate = !next.reducedMotion && this.competition !== "haven" && !landOn && this.whistleOutcome !== "exile";
+    this.rain.visible = !next.reducedMotion && this.competition !== "haven" && !landOn;
     if (switched || this.whistleOutcome !== "open" || this.havenOutcome !== "open") this.frameCompetition();
   }
 
   frameCompetition() {
     const fog = this.scene.fog;
+    if (this.competition === "land") {
+      fog.color.set(0x12160f);
+      this.scene.background = new THREE.Color(0x10140f);
+      const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
+      this.camera.position.set(portrait ? 0.4 : 0.2, portrait ? 7.2 : 4.8, portrait ? 16.8 : 13.4);
+      this.controls.target.set(0.2, 0.8, 1.2);
+      this.controls.minDistance = 6;
+      this.controls.maxDistance = 28;
+      return;
+    }
     if (this.competition === "haven") {
       fog.color.set(0x100c14);
       this.scene.background = new THREE.Color(0x0c0a12);
@@ -949,6 +1039,8 @@ class VillageEngine {
     for (const house of this.houseState) {
       const v = this.visuals.get(house.id);
       if (!v) continue;
+      v.group.visible = this.competition !== "land";
+      if (this.competition === "land") continue;
       const hovered = this.hoveredId === house.id || this.hoverId === house.id;
       const selected = this.selectedId === house.id;
       const target = house.renovated || hovered ? 1 : 0;
@@ -980,6 +1072,7 @@ class VillageEngine {
     }
     this.tickWhistle(dt, t);
     this.haven.tick(dt, t, this.reduced);
+    this.land.tick(dt, t, this.reduced);
     this.renderer.render(this.scene, this.camera);
   };
 }
@@ -994,6 +1087,7 @@ function defaultState() {
     whistleResults: [], activeCaseId: WHISTLE_CASES[0].id, whistleScore: 0,
     whistleOutcome: "open", showOutcome: false,
     havenResults: [], activeHavenId: HAVEN_CASES[0].id, havenScore: 0, havenOutcome: "open",
+    landResults: [], activeLandId: LAND_CASES[0].id, landScore: 0, landOutcome: "open",
   };
 }
 
@@ -1043,6 +1137,8 @@ function persist(state) {
       whistleScore: state.whistleScore, whistleOutcome: state.whistleOutcome,
       havenResults: state.havenResults, activeHavenId: state.activeHavenId,
       havenScore: state.havenScore, havenOutcome: state.havenOutcome,
+      landResults: state.landResults, activeLandId: state.activeLandId,
+      landScore: state.landScore, landOutcome: state.landOutcome,
     }));
   } catch { /* ignore */ }
 }
@@ -1073,6 +1169,8 @@ function syncPayload() {
     competition: state.competition, whistleOutcome: state.whistleOutcome,
     havenOutcome: state.havenOutcome,
     havenCorrect: (state.havenResults || []).filter((r) => r.correct).length,
+    landOutcome: state.landOutcome,
+    landCorrect: (state.landResults || []).filter((r) => r.correct).length,
   };
 }
 engine.sync(syncPayload());
@@ -1101,7 +1199,12 @@ function resetStage() {
   state.mobileTab = "tender";
   state.hoveredId = null;
   state.selectedId = null;
-  if (state.competition === "haven") {
+  if (state.competition === "land") {
+    state.landResults = [];
+    state.activeLandId = LAND_CASES[0].id;
+    state.landScore = 0;
+    state.landOutcome = "open";
+  } else if (state.competition === "haven") {
     state.havenResults = [];
     state.activeHavenId = HAVEN_CASES[0].id;
     state.havenScore = 0;
@@ -1176,18 +1279,22 @@ function resultFor(houseId) { return state.results.find((r) => r.houseId === hou
 function renderHeader() {
   const whistle = state.competition === "whistle";
   const haven = state.competition === "haven";
+  const land = state.competition === "land";
   document.getElementById("phase-kicker").textContent = L("projectPhase");
   document.querySelector('#comp-switch [data-comp="tender"]').textContent = L("tenders");
   document.querySelector('#comp-switch [data-comp="whistle"]').textContent = L("whistle");
   document.querySelector('#comp-switch [data-comp="haven"]').textContent = L("haven");
-  document.getElementById("phase-title").textContent = haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
-  document.getElementById("stat-label").textContent = haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
+  document.querySelector('#comp-switch [data-comp="land"]').textContent = L("land");
+  document.getElementById("phase-title").textContent = land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
+  document.getElementById("stat-label").textContent = land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
   const won = state.results.filter((r) => r.winnerId === "you").length;
   const stat = document.getElementById("stat-won");
-  stat.textContent = haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
-  stat.className = haven ? "mono rose" : whistle ? "mono amber" : "mono green";
+  stat.textContent = land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
+  stat.className = land ? "mono" : haven ? "mono rose" : whistle ? "mono amber" : "mono green";
+  if (land) stat.style.color = "#e6c36a"; else stat.style.color = "";
   const swept = roundOneCleared(state.results, state.contractorId);
   const lineOpen = roundTwoCleared(state.whistleResults);
+  const landOpen = roundThreeCleared(state.havenResults);
   document.querySelectorAll("#comp-switch button").forEach((b) => {
     b.classList.toggle("on", b.dataset.comp === state.competition);
     if (b.dataset.comp === "whistle") {
@@ -1198,31 +1305,42 @@ function renderHeader() {
       b.classList.toggle("locked", !lineOpen);
       b.title = lineOpen ? L("havenHint") : L("lockHaven");
     }
+    if (b.dataset.comp === "land") {
+      b.classList.toggle("locked", !landOpen);
+      b.title = landOpen ? L("landHint") : L("lockLand");
+    }
   });
   const qcount = document.getElementById("qcount");
-  qcount.textContent = haven
-    ? `${state.havenResults.length}/${HAVEN_CASES.length}`
-    : whistle
-      ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
-      : `${state.results.length}/${TENDERS.length}`;
+  qcount.textContent = land
+    ? `${state.landResults.length}/${LAND_CASES.length}`
+    : haven
+      ? `${state.havenResults.length}/${HAVEN_CASES.length}`
+      : whistle
+        ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
+        : `${state.results.length}/${TENDERS.length}`;
   qcount.className = haven ? "qcount rose" : whistle ? "qcount amber" : "qcount green";
-  document.getElementById("tab-case").textContent = haven || whistle ? L("case") : L("tender");
+  if (land) qcount.style.color = "#e6c36a"; else qcount.style.color = "";
+  document.getElementById("tab-case").textContent = land || haven || whistle ? L("case") : L("tender");
   document.getElementById("tab-round").textContent = state.competition === "tender"
     ? L("whistle")
     : state.competition === "whistle" && lineOpen
       ? L("haven")
-      : L("tenders");
+      : state.competition === "haven" && landOpen
+        ? L("land")
+        : L("tenders");
   document.querySelectorAll("#mobile-tabs button[data-tab]").forEach((b) => {
     b.classList.toggle("whistle", whistle && b.classList.contains("on"));
     b.classList.toggle("haven", haven && b.classList.contains("on"));
   });
   document.getElementById("contractor-chips").innerHTML = `
-    <span class="kicker mute">${haven
-      ? L("signalsHeld", { n: state.havenResults.filter((r) => r.correct).length, total: HAVEN_CASES.length })
-      : whistle
-        ? L("casesFiled", { n: state.whistleResults.length, total: WHISTLE_CASES.length })
-        : L("activeBidders")}</span>
-    ${CONTRACTORS.map((c) => `<span class="chip">${c.name}</span>`).join("")}
+    <span class="kicker mute">${land
+      ? L("plotsHeld", { n: state.landResults.filter((r) => r.correct).length, total: LAND_CASES.length })
+      : haven
+        ? L("signalsHeld", { n: state.havenResults.filter((r) => r.correct).length, total: HAVEN_CASES.length })
+        : whistle
+          ? L("casesFiled", { n: state.whistleResults.length, total: WHISTLE_CASES.length })
+          : L("activeBidders")}</span>
+    ${(land || haven) ? "" : CONTRACTORS.map((c) => `<span class="chip">${c.name}</span>`).join("")}
   `;
 }
 
@@ -1360,7 +1478,7 @@ function renderHaven() {
       ${result && remaining ? `<button type="button" class="cta" id="next-haven" style="margin-top:.75rem">${L("nextSignal")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker ${state.havenOutcome === "line" ? "green" : state.havenOutcome === "lamp" ? "amber" : "crimson"}" style="margin:.5rem 0 0">${
         state.havenOutcome === "line" ? L("doneLine") : state.havenOutcome === "lamp" ? L("doneLamp") : L("doneFog")
-      }</p>` : ""}
+      }</p>${roundThreeCleared(state.havenResults) ? `<button type="button" class="cta" id="open-land" style="margin-top:.75rem;background:#e6c36a">${L("openLand")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-haven]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1380,6 +1498,16 @@ function renderHaven() {
   document.getElementById("next-haven")?.addEventListener("click", () => {
     if (state.havenOutcome !== "open") return;
     state.activeHavenId = firstOpenHavenId(state.havenResults);
+    persist(state);
+    renderAll();
+  });
+  document.getElementById("open-land")?.addEventListener("click", () => {
+    if (!roundThreeCleared(state.havenResults)) return;
+    state.competition = "land";
+    state.mobileTab = "tender";
+    state.showOutcome = false;
+    play.classList.add("show-tender");
+    play.classList.remove("show-board");
     persist(state);
     renderAll();
   });
@@ -1409,7 +1537,98 @@ function answerHaven(picked) {
   renderOutcome();
 }
 
+function renderLand() {
+  const raw = landCaseById(state.activeLandId);
+  const item = localizeLand(raw, lang);
+  const result = state.landResults.find((r) => r.caseId === item.id);
+  const locked = Boolean(result);
+  const remaining = LAND_CASES.some((c) => !state.landResults.some((r) => r.caseId === c.id));
+  const held = Boolean(result?.correct);
+  const panel = document.getElementById("tender-panel");
+  panel.classList.toggle("award", held);
+  panel.classList.toggle("reject", locked && !held);
+  panel.innerHTML = `
+    <div class="side-head">
+      <p class="kicker" style="color:#e6c36a">${L("briefLand")} · ${item.spec}</p>
+      <h2>${item.title}</h2>
+      <p class="mono mute">${state.landResults.length}/${LAND_CASES.length}</p>
+    </div>
+    <div class="spec-nav">
+      ${LAND_CASES.map((c) => {
+        const done = state.landResults.some((r) => r.caseId === c.id);
+        const hit = state.landResults.find((r) => r.caseId === c.id);
+        const on = c.id === item.id;
+        const won = done && hit?.correct;
+        const lost = done && !hit?.correct;
+        return `<button type="button" data-land="${c.id}" class="${on && !done ? "haven-on" : ""} ${won ? "won" : ""} ${lost ? "rejected" : ""}">${shortLabel(c.id, lang, LSHORT[c.id])}</button>`;
+      }).join("")}
+    </div>
+    <div class="side-body">
+      <p>${item.question}</p>
+      <div class="opts">
+        ${item.options.map((opt) => {
+          const picked = result?.picked === opt.id;
+          const isCorrect = opt.id === item.correct;
+          const cls = picked && held ? "correct" : picked && locked ? "wrong" : locked && isCorrect ? "correct" : "";
+          return `<button type="button" class="opt ${cls}" data-lopt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
+        }).join("")}
+      </div>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsLand") : L("missLand")) : L("scoring")}</p>
+      <p style="font-size:.8rem">${L("scoringLand")}</p>
+      ${result && remaining ? `<button type="button" class="cta" id="next-land" style="margin-top:.75rem;background:#e6c36a">${L("nextPlot")}</button>` : ""}
+      ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.landOutcome === "held" ? "var(--green)" : state.landOutcome === "shift" ? "#e6c36a" : "var(--crimson)"}">${
+        state.landOutcome === "held" ? L("doneHeld") : state.landOutcome === "shift" ? L("doneShift") : L("doneLost")
+      }</p>` : ""}
+    </div>`;
+  panel.querySelectorAll("[data-land]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!roundThreeCleared(state.havenResults)) {
+        showToast(L("toastLockLand"), "info");
+        return;
+      }
+      state.activeLandId = btn.dataset.land;
+      state.competition = "land";
+      persist(state);
+      renderAll();
+    });
+  });
+  panel.querySelectorAll("[data-lopt]").forEach((btn) => {
+    btn.addEventListener("click", () => answerLand(btn.dataset.lopt));
+  });
+  document.getElementById("next-land")?.addEventListener("click", () => {
+    if (state.landOutcome !== "open") return;
+    state.activeLandId = firstOpenLandId(state.landResults);
+    persist(state);
+    renderAll();
+  });
+}
+
+function answerLand(picked) {
+  if (!state.contractorId || !roundThreeCleared(state.havenResults)) return;
+  const item = landCaseById(state.activeLandId);
+  if (state.landResults.some((r) => r.caseId === item.id)) return;
+  const correct = picked === item.correct;
+  const playerScore = correct ? LAND_CORRECT : LAND_WRONG;
+  state.landResults.push({ caseId: item.id, picked, correct, playerScore });
+  state.landScore += playerScore;
+  state.landOutcome = landOutcomeOf(state.landScore, state.landResults.length);
+  const finished = state.landOutcome !== "open";
+  if (finished) {
+    state.showOutcome = true;
+    showToast(
+      state.landOutcome === "held" ? L("toastHeld") : state.landOutcome === "shift" ? L("toastShift") : L("toastLost"),
+      state.landOutcome
+    );
+  } else {
+    showToast(correct ? L("toastPlot") : L("toastSlip"), correct ? "award" : "reject");
+  }
+  persist(state);
+  renderAll();
+  renderOutcome();
+}
+
 function renderCase() {
+  if (state.competition === "land") return renderLand();
   if (state.competition === "haven") return renderHaven();
   if (state.competition !== "whistle") return renderTender();
   const raw = whistleCaseById(state.activeCaseId);
@@ -1537,9 +1756,14 @@ function renderOutcome() {
   const el = document.getElementById("outcome");
   const card = document.getElementById("outcome-card");
   const haven = state.competition === "haven";
-  const outcome = haven ? state.havenOutcome : state.whistleOutcome;
+  const land = state.competition === "land";
+  const outcome = land ? state.landOutcome : haven ? state.havenOutcome : state.whistleOutcome;
   if (!state.showOutcome || state.competition === "tender" || outcome === "open") { el.hidden = true; return; }
-  const copy = haven ? {
+  const copy = land ? {
+    held: { kicker: L("topScore"), title: L("heldTitle"), body: L("heldBody"), cls: "award" },
+    shift: { kicker: L("midScore"), title: L("shiftTitle"), body: L("shiftBody"), cls: "burn" },
+    lost: { kicker: L("lowScore"), title: L("lostTitle"), body: L("lostBody"), cls: "reject" },
+  }[state.landOutcome] : haven ? {
     line: { kicker: L("topScore"), title: L("lineTitle"), body: L("lineBody"), cls: "award" },
     lamp: { kicker: L("midScore"), title: L("lampTitle"), body: L("lampBody"), cls: "burn" },
     fog: { kicker: L("lowScore"), title: L("fogTitle"), body: L("fogBody"), cls: "reject" },
@@ -1551,9 +1775,11 @@ function renderOutcome() {
   document.getElementById("outcome-kicker").textContent = copy.kicker;
   document.getElementById("outcome-title").textContent = copy.title;
   document.getElementById("outcome-body").textContent = copy.body;
-  document.getElementById("outcome-score").textContent = haven
-    ? L("scoreHaven", { score: state.havenScore }) + " · " + L("hotlineNote")
-    : L("scoreLine", { score: state.whistleScore });
+  document.getElementById("outcome-score").textContent = land
+    ? L("scoreLand", { score: state.landScore })
+    : haven
+      ? L("scoreHaven", { score: state.havenScore }) + " · " + L("hotlineNote")
+      : L("scoreLine", { score: state.whistleScore });
   document.getElementById("outcome-dismiss").textContent = L("watchGrid");
   card.className = "panel boot-card " + copy.cls;
   el.hidden = false;
@@ -1567,6 +1793,19 @@ function renderBoard() {
     return;
   }
   board.hidden = false;
+  if (state.competition === "land") {
+    const plots = state.landResults.filter((r) => r.correct).length;
+    board.innerHTML = `
+      <div class="side-head">
+        <p class="kicker" style="color:#e6c36a">${L("boardLand")}</p>
+        <h2>${L("notRanking")}</h2>
+      </div>
+      <div class="side-body">
+        <p style="font-size:.8rem">${L("landRule")}</p>
+        <p class="mono green">${L("plotsHeld", { n: plots, total: LAND_CASES.length })}</p>
+      </div>`;
+    return;
+  }
   if (state.competition === "haven") {
     const held = state.havenResults.filter((r) => r.correct).length;
     document.getElementById("board-panel").innerHTML = `
@@ -1629,6 +1868,11 @@ function renderDock() {
   if (state.competition === "haven") {
     dock.hidden = false;
     dock.innerHTML = `<div class="panel dock-inner"><p class="rose" style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px">${L("dockHaven")}</p></div>`;
+    return;
+  }
+  if (state.competition === "land") {
+    dock.hidden = false;
+    dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#e6c36a">${L("dockLand")}</p></div>`;
     return;
   }
   const id = state.selectedId ?? state.hoveredId;
@@ -1717,6 +1961,10 @@ document.getElementById("comp-switch").addEventListener("click", (e) => {
     showToast(L("toastLockHaven"), "info");
     return;
   }
+  if (btn.dataset.comp === "land" && !roundThreeCleared(state.havenResults)) {
+    showToast(L("toastLockLand"), "info");
+    return;
+  }
   state.showOutcome = false;
   state.competition = btn.dataset.comp;
   state.mobileTab = "tender";
@@ -1741,12 +1989,17 @@ document.getElementById("tab-round").addEventListener("click", () => {
   let next = "tender";
   if (state.competition === "tender") next = "whistle";
   else if (state.competition === "whistle" && roundTwoCleared(state.whistleResults)) next = "haven";
+  else if (state.competition === "haven" && roundThreeCleared(state.havenResults)) next = "land";
   if (next === "whistle" && !roundOneCleared(state.results, state.contractorId)) {
     showToast(L("toastLock"), "info");
     return;
   }
   if (next === "haven" && !roundTwoCleared(state.whistleResults)) {
     showToast(L("toastLockHaven"), "info");
+    return;
+  }
+  if (next === "land" && !roundThreeCleared(state.havenResults)) {
+    showToast(L("toastLockLand"), "info");
     return;
   }
   state.competition = next;
@@ -1761,6 +2014,7 @@ play.classList.add("show-tender");
 
 if ((state.whistleResults || []).length < WHISTLE_CASES.length) state.whistleOutcome = "open";
 if ((state.havenResults || []).length < HAVEN_CASES.length) state.havenOutcome = "open";
+if ((state.landResults || []).length < LAND_CASES.length) state.landOutcome = "open";
 for (const id of ["market", "clinic", "hall", "bus"]) {
   if (state.results.some((r) => r.houseId === id)) continue;
   const h = state.houses.find((x) => x.id === id);
@@ -1774,6 +2028,9 @@ for (const id of ["market", "clinic", "hall", "bus"]) {
 if (!roundOneCleared(state.results, state.contractorId) && state.competition === "whistle") state.competition = "tender";
 if (!roundTwoCleared(state.whistleResults) && state.competition === "haven") {
   state.competition = roundOneCleared(state.results, state.contractorId) ? "whistle" : "tender";
+}
+if (!roundThreeCleared(state.havenResults) && state.competition === "land") {
+  state.competition = roundTwoCleared(state.whistleResults) ? "haven" : (roundOneCleared(state.results, state.contractorId) ? "whistle" : "tender");
 }
 renderBoot();
 if (state.phase === "play") showPlay();

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg18";
-import { HavenScene } from "./haven.js?v=vg18";
+import { t as tr, localizeTender, localizeCase, localizeHaven, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg19";
+import { HavenScene } from "./haven.js?v=vg19";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -50,8 +50,8 @@ const CONTRACTORS = [
 
 const HOUSES = [
   { id: "cwa-pump", name: "CWA Pump House", hint: "Water Grid Renewal · SPEC-01", variant: "pump", x: 0.2, z: 3.4, cost: 80, renovated: false, owner: null, ownerSector: null },
-  { id: "block-a", name: "Terre Rouge Block A", hint: "Cité roofs · SPEC-04", variant: "block", x: -4.2, z: 1.6, cost: 60, renovated: false, owner: null, ownerSector: null },
-  { id: "block-b", name: "Terre Rouge Block B", hint: "Cité wiring · SPEC-05", variant: "block", x: 4.3, z: 1.4, cost: 60, renovated: false, owner: null, ownerSector: null },
+  { id: "block-a", name: "Village Block A", hint: "Cité roofs · SPEC-04", variant: "block", x: -4.2, z: 1.6, cost: 60, renovated: false, owner: null, ownerSector: null },
+  { id: "block-b", name: "Village Block B", hint: "Cité wiring · SPEC-05", variant: "block", x: 4.3, z: 1.4, cost: 60, renovated: false, owner: null, ownerSector: null },
   { id: "market", name: "Market Shed", hint: "Market stalls · SPEC-02", variant: "market", x: -3.6, z: -2.1, cost: 50, renovated: false, owner: null, ownerSector: null },
   { id: "clinic", name: "District Clinic", hint: "Clinic stores · SPEC-03", variant: "clinic", x: 3.9, z: -2.3, cost: 90, renovated: false, owner: null, ownerSector: null },
   { id: "school", name: "Primary School", hint: "School works · SPEC-06", variant: "school", x: -1.4, z: -4.8, cost: 70, renovated: false, owner: null, ownerSector: null },
@@ -67,7 +67,7 @@ const TENDERS = [
   { id: "spec-01", houseId: "cwa-pump", spec: "SPEC-01", title: "Water Grid Renewal",
     question: "A subcontractor offers an off-books rebate to expedite materials. Under the transparency framework, how must this be logged?",
     options: [
-      { id: "A", text: "Accept it as a CWA facilitation discount and offset it against the Terre Rouge connection fee, keeping the rebate off the tender file." },
+      { id: "A", text: "Accept it as a CWA facilitation discount and offset it against the village connection fee, keeping the rebate off the tender file." },
       { id: "B", text: "The rebate must not be accepted; it must be fully disclosed and rejected as a compliance violation." },
       { id: "C", text: "Park the sum in a Pamplemousses District Council village-works account and spend it later on informal community improvements." },
       { id: "D", text: "File it as a customary contractor commission under the Public Procurement Act, visible only inside the Ministry of Finance." },
@@ -160,7 +160,7 @@ const TENDERS = [
       { id: "A", text: "Take the cash and log it as a village-committee donation later." },
       { id: "B", text: "Issue a numbered receipt, bank the hire, and keep the booking on the hall file." },
       { id: "C", text: "Split the cash: half to the clerk, half to the social-welfare account." },
-      { id: "D", text: "Allow cash-only hire for residents of Terre Rouge, receipts for outsiders." },
+      { id: "D", text: "Allow cash-only hire for residents of the village, receipts for outsiders." },
     ],
     correct: "B", npcBids: { kuzin: 66, cheri: 73, malin: 85, kokin: 54 } },
   { id: "spec-12", houseId: "bus", spec: "SPEC-12", title: "Bus Shelter Panels",
@@ -213,7 +213,7 @@ const WHISTLE_CASES = [
     ],
     correct: "C", npcReports: { kuzin: 59, cheri: 73, malin: 81, kokin: 64 } },
   { id: "entourage", spec: "CASE-05", title: "The entourage",
-    question: "A rotating group of foreign women now stay at the villa. None have family in Terre Rouge, none show a work permit, and they are never on the daytime bus. Ravi says stay silent or lose the roof over your head. What must you do?",
+    question: "A rotating group of foreign women now stay at the villa. None have family in the village, none show a work permit, and they are never on the daytime bus. Ravi says stay silent or lose the roof over your head. What must you do?",
     options: [
       { id: "A", text: "Stay silent. Guests are private. A dive master may host whoever he likes." },
       { id: "B", text: "Take cash to “look the other way at the gate” and keep the names off every file." },
@@ -284,16 +284,16 @@ const HAVEN_CASES = [
       { id: "C", text: "Yes. Control, isolation, threats, and cutting off money are abuse, even with no visible injury." },
       { id: "D", text: "Only once a neighbour has complained in writing." },
     ], correct: "C" },
-  { id: "grok", spec: "LINE-04", title: "What Grok refuses",
-    question: "Someone asks Grok to draft a threat to a partner, or to explain how to follow them home. What does Grok do?",
+  { id: "grok", spec: "LINE-04", title: "What AI refuses",
+    question: "Someone asks AI to draft a threat to a partner, or to explain how to follow them home. What does AI do?",
     options: [
       { id: "A", text: "Write the threat, but softer, so it sounds like a joke." },
-      { id: "B", text: "Refuse. Grok will not help anyone harm, threaten, stalk, or control a partner. It will help the person in danger get safe." },
+      { id: "B", text: "Refuse. AI will not help anyone harm, threaten, stalk, or control a partner. It will help the person in danger get safe." },
       { id: "C", text: "Give the tracking steps if they say it is for protection." },
       { id: "D", text: "Stay neutral and explain both how to threaten and how to get away." },
     ], correct: "B" },
   { id: "hotline", spec: "LINE-05", title: "Call 139",
-    question: "It is late in Terre Rouge. Someone needs help now and cannot talk safely inside the house. Which line is the free, 24-hour domestic violence hotline in Mauritius?",
+    question: "It is late in the village. Someone needs help now and cannot talk safely inside the house. Which line is the free, 24-hour domestic violence hotline in Mauritius?",
     options: [
       { id: "A", text: "Wait for the Saturday market and tell the council." },
       { id: "B", text: "139." },
@@ -309,7 +309,7 @@ const HAVEN_CASES = [
       { id: "D", text: "Wait until a parent invites you in, then mediate between the adults." },
     ], correct: "C" },
 ];
-const HSHORT = { private: "Private", believe: "Believe", control: "Control", grok: "Grok", hotline: "139", child: "Child" };
+const HSHORT = { private: "Private", believe: "Believe", control: "Control", grok: "AI", hotline: "139", child: "Child" };
 function havenCaseById(id) { return HAVEN_CASES.find((c) => c.id === id) ?? HAVEN_CASES[0]; }
 function firstOpenHavenId(results) {
   const done = new Set(results.map((r) => r.caseId));
@@ -1470,7 +1470,7 @@ function renderCase() {
               state.whistleOutcome === "jail" ? L("doneJail")
               : state.whistleOutcome === "burn" ? L("doneBurn")
               : L("doneExile")
-            }</p>`}
+            }</p>${roundTwoCleared(state.whistleResults) ? `<button type="button" class="cta" id="open-haven" style="margin-top:.75rem;background:var(--rose)">${L("openLine")}</button>` : ""}`}
       ` : `
         <p class="kicker mute">${L("scoring")}</p>
         <p style="margin:.35rem 0 0;font-size:.8rem">${L("scoringBody", { name: "Ravi" })}</p>
@@ -1489,6 +1489,16 @@ function renderCase() {
   document.getElementById("next-case")?.addEventListener("click", () => {
     if (state.whistleOutcome !== "open") return;
     state.activeCaseId = firstOpenWhistleId(state.whistleResults);
+    persist(state);
+    renderAll();
+  });
+  document.getElementById("open-haven")?.addEventListener("click", () => {
+    if (!roundTwoCleared(state.whistleResults)) return;
+    state.competition = "haven";
+    state.mobileTab = "tender";
+    state.showOutcome = false;
+    play.classList.add("show-tender");
+    play.classList.remove("show-board");
     persist(state);
     renderAll();
   });

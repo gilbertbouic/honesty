@@ -53,6 +53,7 @@ var UI = {
     doneJail: "Brief complete \xB7 trafficker jailed",
     doneBurn: "Brief complete \xB7 lodging burned",
     doneExile: "Brief complete \xB7 you are exiled",
+    openLine: "Open the quiet line",
     bidStandings: "Bid standings",
     reportStandings: "Report standings",
     leading: "Leading characters",
@@ -74,9 +75,9 @@ var UI = {
     burnTitle: "Your lodging is burning",
     burnBody: "The file was too thin. Ravi\u2019s crew torch the lodging you sleep in. The villa still stands.",
     exileTitle: "Chased out of the village",
-    exileBody: "You stayed too quiet. Ravi\u2019s crew run you off the Terre Rouge grid. Do not come back on this round.",
+    exileBody: "You stayed too quiet. Ravi\u2019s crew run you off the village. Do not come back on this round.",
     scoreLine: "Whistle score \xB7 {score}/600",
-    watchGrid: "Watch the grid",
+    watchGrid: "Continue",
     openSpec: "Spec",
     bids: "Bids",
     dockAward: "Green \xB7 {owner}",
@@ -116,7 +117,7 @@ var UI = {
     doneLamp: "A lamp, not a way out",
     doneFog: "The silence closed",
     lineTitle: "The line is open",
-    lineBody: "The answers held. The door opens from the inside. Light runs from the step to safety. Grok stays outside the house: it does not step in, and it will not help anyone do harm.",
+    lineBody: "The answers held. The door opens from the inside. Light runs from the step to safety. AI stays outside the house: it does not step in, and it will not help anyone do harm.",
     lampTitle: "A lamp, not a way out",
     lampBody: "Some answers held. A lamp stays on the step. The door does not open. Do not send someone back to calm an abuser down.",
     fogTitle: "The silence closed",
@@ -131,7 +132,7 @@ var UI = {
     toastMiss: "That answer looks away.",
     boardHaven: "The quiet line",
     notRanking: "Not a ranking",
-    grokRefuse: "Grok will not help anyone harm, threaten, stalk, or control a partner. It will help the person in danger get safe.",
+    grokRefuse: "AI will not help anyone harm, threaten, stalk, or control a partner. It will help the person in danger get safe.",
     hotlineBig: "139",
     hotlineCaption: "Free, day and night. Domestic violence hotline, Mauritius.",
     childLine: "A child in danger: 113",
@@ -190,6 +191,7 @@ var UI = {
     doneJail: "Dossier clos \xB7 trafiquant emprisonn\xE9",
     doneBurn: "Dossier clos \xB7 logement br\xFBl\xE9",
     doneExile: "Dossier clos \xB7 tu es exil\xE9",
+    openLine: "Ouvrir la ligne calme",
     bidStandings: "Classement des offres",
     reportStandings: "Classement des signalements",
     leading: "Personnages en t\xEAte",
@@ -211,9 +213,9 @@ var UI = {
     burnTitle: "Ton logement br\xFBle",
     burnBody: "Le dossier \xE9tait trop mince. L'\xE9quipe de Ravi incendie le logement o\xF9 tu dors. La villa tient encore.",
     exileTitle: "Chass\xE9 du village",
-    exileBody: "Tu es rest\xE9 trop silencieux. L'\xE9quipe de Ravi te chasse de la grille de Terre Rouge. Ne reviens pas sur cette manche.",
+    exileBody: "Tu es rest\xE9 trop silencieux. L'\xE9quipe de Ravi te chasse du village. Ne reviens pas sur cette manche.",
     scoreLine: "Score alerte \xB7 {score}/600",
-    watchGrid: "Voir la grille",
+    watchGrid: "Continuer",
     openSpec: "Cahier",
     bids: "Offres",
     dockAward: "Verte \xB7 {owner}",
@@ -253,7 +255,7 @@ var UI = {
     doneLamp: "Une lampe, pas une sortie",
     doneFog: "Le silence s'est referm\xE9",
     lineTitle: "La ligne est ouverte",
-    lineBody: "Les r\xE9ponses tiennent. La porte s'ouvre de l'int\xE9rieur. La lumi\xE8re va du seuil vers l'abri. Grok reste dehors : il n'entre pas, et il n'aide personne \xE0 faire du mal.",
+    lineBody: "Les r\xE9ponses tiennent. La porte s'ouvre de l'int\xE9rieur. La lumi\xE8re va du seuil vers l'abri. L'IA reste dehors : elle n'entre pas, et elle n'aide personne \xE0 faire du mal.",
     lampTitle: "Une lampe, pas une sortie",
     lampBody: "Certaines r\xE9ponses tiennent. Une lampe reste sur le seuil. La porte ne s'ouvre pas. N'envoie personne \xAB calmer \xBB celui qui fait du mal.",
     fogTitle: "Le silence s'est referm\xE9",
@@ -268,7 +270,7 @@ var UI = {
     toastMiss: "Cette r\xE9ponse d\xE9tourne le regard.",
     boardHaven: "La ligne calme",
     notRanking: "Pas un classement",
-    grokRefuse: "Grok n'aide personne \xE0 blesser, menacer, suivre ou contr\xF4ler un partenaire. Il aide la personne en danger \xE0 se mettre en s\xFBret\xE9.",
+    grokRefuse: "L'IA n'aide personne \xE0 blesser, menacer, suivre ou contr\xF4ler un partenaire. Elle aide la personne en danger \xE0 se mettre en s\xFBret\xE9.",
     hotlineBig: "139",
     hotlineCaption: "Gratuit, jour et nuit. Ligne violence domestique, Maurice.",
     childLine: "Un enfant en danger : 113",
@@ -295,7 +297,7 @@ var TENDER_FR = {
     title: "Renouvellement du r\xE9seau d'eau",
     question: "Un sous-traitant propose une ristourne hors livres pour acc\xE9l\xE9rer les mat\xE9riaux. Dans le cadre de transparence, comment faut-il l'enregistrer ?",
     options: {
-      A: "L'accepter comme remise CWA et la d\xE9duire des frais de raccordement de Terre Rouge, hors dossier d'appel d'offres.",
+      A: "L'accepter comme remise CWA et la d\xE9duire des frais de raccordement du village, hors dossier d'appel d'offres.",
       B: "La ristourne ne doit pas \xEAtre accept\xE9e ; elle doit \xEAtre enti\xE8rement divulgu\xE9e et rejet\xE9e comme manquement.",
       C: "Placer la somme sur un compte de travaux du conseil de district de Pamplemousses pour des am\xE9nagements informels plus tard.",
       D: "La classer comme commission coutumi\xE8re au titre du Public Procurement Act, visible seulement au minist\xE8re des Finances."
@@ -398,7 +400,7 @@ var TENDER_FR = {
       A: "Prendre le liquide et le noter plus tard comme don du comit\xE9 de village.",
       B: "\xC9mettre un re\xE7u num\xE9rot\xE9, verser la location en banque, et garder la r\xE9servation au dossier.",
       C: "Partager : moiti\xE9 au commis, moiti\xE9 au compte d'aide sociale.",
-      D: "Autoriser le liquide seulement pour les habitants de Terre Rouge, re\xE7us pour les autres."
+      D: "Autoriser le liquide seulement pour les habitants du village, re\xE7us pour les autres."
     }
   },
   "spec-12": {
@@ -455,7 +457,7 @@ var CASE_FR = {
   },
   entourage: {
     title: "L'entourage",
-    question: "Un groupe tournant de femmes \xE9trang\xE8res loge maintenant \xE0 la villa. Aucune n'a de famille \xE0 Terre Rouge, aucune ne montre de permis de travail, et elles ne prennent jamais le bus de jour. Ravi dit de se taire ou de perdre ton toit. Que dois-tu faire ?",
+    question: "Un groupe tournant de femmes \xE9trang\xE8res loge maintenant \xE0 la villa. Aucune n'a de famille au village, aucune ne montre de permis de travail, et elles ne prennent jamais le bus de jour. Ravi dit de se taire ou de perdre ton toit. Que dois-tu faire ?",
     options: {
       A: "Se taire. Les invit\xE9s sont priv\xE9s. Un moniteur peut recevoir qui il veut.",
       B: "Prendre de l'argent pour \xAB regarder ailleurs \xE0 la grille \xBB et garder les noms hors de tout dossier.",
@@ -476,8 +478,8 @@ var CASE_FR = {
 };
 var HOUSE_FR = {
   "cwa-pump": { name: "Station de pompage CWA", hint: "R\xE9seau d'eau \xB7 SPEC-01" },
-  "block-a": { name: "Bloc A de Terre Rouge", hint: "Toitures de cit\xE9 \xB7 SPEC-04" },
-  "block-b": { name: "Bloc B de Terre Rouge", hint: "C\xE2blage de cit\xE9 \xB7 SPEC-05" },
+  "block-a": { name: "Bloc A du village", hint: "Toitures de cit\xE9 \xB7 SPEC-04" },
+  "block-b": { name: "Bloc B du village", hint: "C\xE2blage de cit\xE9 \xB7 SPEC-05" },
   market: { name: "Hangar du march\xE9", hint: "\xC9tals \xB7 SPEC-02" },
   clinic: { name: "Dispensaire de district", hint: "R\xE9serves \xB7 SPEC-03" },
   school: { name: "\xC9cole primaire", hint: "Travaux scolaires \xB7 SPEC-06" },
@@ -510,7 +512,7 @@ var SHORT_FR = {
   private: "Priv\xE9",
   believe: "Croire",
   control: "Contr\xF4le",
-  grok: "Grok",
+  grok: "AI",
   hotline: "139",
   child: "Enfant"
 };
@@ -579,18 +581,18 @@ var HAVEN_FR = {
     }
   },
   grok: {
-    title: "Ce que Grok refuse",
-    question: "Quelqu'un demande \xE0 Grok d'\xE9crire une menace contre un partenaire, ou d'expliquer comment le suivre jusque chez lui. Que fait Grok ?",
+    title: "Ce que l'IA refuse",
+    question: "Quelqu'un demande \xE0 l'IA d'\xE9crire une menace contre un partenaire, ou d'expliquer comment le suivre jusque chez lui. Que fait l'IA ?",
     options: {
       A: "\xC9crire la menace, mais plus douce, pour que \xE7a ressemble \xE0 une blague.",
-      B: "Refuser. Grok n'aide personne \xE0 blesser, menacer, suivre ou contr\xF4ler un partenaire. Il aide la personne en danger \xE0 se mettre en s\xFBret\xE9.",
+      B: "Refuser. L'IA n'aide personne \xE0 blesser, menacer, suivre ou contr\xF4ler un partenaire. Elle aide la personne en danger \xE0 se mettre en s\xFBret\xE9.",
       C: "Donner les \xE9tapes de pistage s'ils disent que c'est pour prot\xE9ger.",
       D: "Rester neutre et expliquer \xE0 la fois comment menacer et comment partir."
     }
   },
   hotline: {
     title: "Appeler le 139",
-    question: "Il est tard \xE0 Terre Rouge. Quelqu'un a besoin d'aide maintenant et ne peut pas parler en s\xFBret\xE9 dans la maison. Quelle est la ligne gratuite, 24 heures sur 24, contre la violence domestique \xE0 Maurice ?",
+    question: "Il est tard au village. Quelqu'un a besoin d'aide maintenant et ne peut pas parler en s\xFBret\xE9 dans la maison. Quelle est la ligne gratuite, 24 heures sur 24, contre la violence domestique \xE0 Maurice ?",
     options: {
       A: "Attendre le march\xE9 de samedi et le dire au conseil.",
       B: "Le 139.",

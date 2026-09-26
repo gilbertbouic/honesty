@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg20";
-import { HavenScene } from "./haven.js?v=vg20";
-import { LandScene } from "./land.js?v=vg20";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg21";
+import { HavenScene } from "./haven.js?v=vg21";
+import { LandScene } from "./land.js?v=vg21";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -1339,8 +1339,7 @@ function renderHeader() {
         ? L("signalsHeld", { n: state.havenResults.filter((r) => r.correct).length, total: HAVEN_CASES.length })
         : whistle
           ? L("casesFiled", { n: state.whistleResults.length, total: WHISTLE_CASES.length })
-          : L("activeBidders")}</span>
-    ${(land || haven) ? "" : CONTRACTORS.map((c) => `<span class="chip">${c.name}</span>`).join("")}
+          : L("awardedN", { n: state.results.filter((r) => r.winnerId === "you").length })}</span>
   `;
 }
 
@@ -1352,14 +1351,7 @@ function renderTender() {
   const locked = Boolean(result);
   const remaining = TENDERS.some((t) => !resultFor(t.houseId));
   const bidRows = result
-    ? [...Object.entries(result.bids).map(([id, score]) => ({ id, score, me: false })), { id: "you", score: result.playerScore, me: true }]
-        .sort((a, b) => b.score - a.score)
-        .map((row, i) => {
-        const name = row.me ? L("youName") : contractorById(row.id).name;
-        const win = row.me && result.winnerId === "you";
-        const rejected = row.me && !win;
-        return `<div class="bid-row${win ? " win" : ""}${row.me ? " me" : ""}${rejected ? " rejected" : ""}"><span class="rank">${i + 1}</span><span class="who">${name}${win ? ` · ${L("awardedTag")}` : ""}${rejected ? ` · ${L("rejectedTag")}` : ""}</span><span class="mono">${row.score}</span></div>`;
-      }).join("")
+    ? `<div class="bid-row${result.winnerId === "you" ? " win" : " rejected"} me"><span class="who">${L("youName")}${result.winnerId === "you" ? ` · ${L("awardedTag")}` : ` · ${L("rejectedTag")}`}</span><span class="mono">${result.playerScore}</span></div>`
     : "";
   document.getElementById("tender-panel").innerHTML = `
     <div class="side-head" style="display:flex;gap:.75rem;align-items:flex-start">
@@ -1641,12 +1633,7 @@ function renderCase() {
   panel.classList.toggle("award", awarded);
   panel.classList.toggle("reject", locked && !awarded);
   const rows = result
-    ? [...Object.entries(result.reports).map(([id, score]) => ({ id, score, me: false })), { id: "you", score: result.playerScore, me: true }]
-        .sort((a, b) => b.score - a.score)
-        .map((row, i) => {
-        const name = row.me ? L("youName") : contractorById(row.id).name;
-        return `<div class="bid-row${i === 0 && row.me && awarded ? " win" : ""}${row.me && !awarded ? " rejected" : ""}"><span class="rank">${i + 1}</span><span class="who">${name}</span><span class="mono">${row.score}</span></div>`;
-      }).join("")
+    ? `<div class="bid-row${awarded ? " win" : " rejected"}"><span class="who">${L("youName")}</span><span class="mono">${result.playerScore}</span></div>`
     : "";
   panel.innerHTML = `
     <div class="side-head" style="display:flex;gap:.75rem;align-items:flex-start">
@@ -1824,37 +1811,17 @@ function renderBoard() {
     return;
   }
   const playerWins = state.results.filter((r) => r.winnerId === "you").length;
-  const rows = [...state.contractors]
-    .map((row) => ({
-      ...row,
-      wins: state.results.filter((r) => r.winnerId === row.id).length,
-      holding: holdingsLabel(row.name, state.houses),
-    }))
-    .map((row) => ({ ...row, report: whistleTotal(row.id, state.whistleResults) }));
-  rows.push({
-    id: "you",
-    name: L("youName"),
-    wins: playerWins,
-    score: playerWins * 100,
-    holding: holdingsLabel("You", state.houses),
-    report: state.whistleScore,
-  });
-  rows.sort((a, b) => state.competition === "whistle" ? b.report - a.report || b.score - a.score : b.score - a.score || b.wins - a.wins);
   document.getElementById("board-panel").innerHTML = `
     <div class="side-head">
-      <p class="kicker cyan">${state.competition === "whistle" ? L("reportStandings") : L("bidStandings")}</p>
-      <h2>${state.competition === "whistle" ? L("stronger") : L("leading")}</h2>
-      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">${state.competition === "whistle"
-        ? `${state.whistleResults.length}/${WHISTLE_CASES.length} cases · ${state.whistleOutcome === "open" ? "file still open" : state.whistleOutcome}`
-        : `Only a correct top-score bid awards the renovation. ${state.results.filter((r) => r.winnerId).length}/${TENDERS.length} awarded.`}</p>
+      <p class="kicker cyan">${L("bidStandings")}</p>
+      <h2>${L("youName")}</h2>
+      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">${playerWins}/${TENDERS.length} awarded.</p>
     </div>
     <div class="side-body">
-      ${rows.map((row, i) => `
-        <div class="board-row ${row.id === "you" ? "me" : ""}">
-          <span class="rank">${i + 1}</span>
-          <div class="who"><strong>${row.name}</strong><span>${row.holding}</span></div>
-          <span class="mono ${state.competition === "whistle" ? "amber" : "cyan"}">${state.competition === "whistle" ? row.report : row.score}</span>
-        </div>`).join("")}
+      <div class="board-row me">
+        <div class="who"><strong>${L("youName")}</strong><span>${holdingsLabel("You", state.houses)}</span></div>
+        <span class="mono cyan">${playerWins * 100}</span>
+      </div>
     </div>`;
 }
 

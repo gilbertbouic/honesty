@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg38";
-import { HavenScene } from "./haven.js?v=vg38";
-import { LandScene } from "./land.js?v=vg38";
-import { FairScene } from "./fair.js?v=vg38";
-import { CropScene } from "./crop.js?v=vg38";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg39";
+import { HavenScene } from "./haven.js?v=vg39";
+import { LandScene } from "./land.js?v=vg39";
+import { FairScene } from "./fair.js?v=vg39";
+import { CropScene } from "./crop.js?v=vg39";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -928,7 +928,7 @@ class VillageEngine {
     if (this.competition === "fair") {
       fog.color.set(0x140e1c);
       this.scene.background = new THREE.Color(0x100c16);
-      this.aimStage(new THREE.Vector3(0, 1.2, 0), new THREE.Vector3(0.4, 5.3, 10.4), 2.3);
+      this.aimStage(new THREE.Vector3(0, 1.2, 0), new THREE.Vector3(0.4, 5.3, 10.4), 3.6);
       return;
     }
     if (this.competition === "land") {

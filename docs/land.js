@@ -334,34 +334,34 @@ var LandScene = class {
     this.group.add(this.flood);
   }
   buildPermit() {
-    const geo = new THREE.BoxGeometry(1.85, 2.25, 0.08);
+    const geo = new THREE.BoxGeometry(0.82, 1.05, 0.05);
     const edges = new THREE.EdgesGeometry(geo);
     this.geos.push(geo, edges);
     this.pageMat = new THREE.MeshBasicMaterial({ color: PAPER, transparent: true, opacity: 0.9, depthWrite: true });
     const page = new THREE.Mesh(geo, this.pageMat);
-    page.position.set(0.15, 2.25, 3.15);
+    page.position.set(4.35, 1.15, 1.7);
     const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: PAPER, transparent: true, opacity: 0.95 }));
     frame.position.copy(page.position);
     this.group.add(page, frame);
     const strokes = [
-      { x: -0.42, y: 0.22, w: 0.7, h: 0.1, rot: 0.4 },
-      { x: 0.05, y: 0.02, w: 0.85, h: 0.1, rot: -0.22 },
-      { x: 0.42, y: 0.2, w: 0.55, h: 0.1, rot: 0.55 },
-      { x: 0.02, y: -0.28, w: 1.05, h: 0.09, rot: 0.06 },
-      { x: -0.38, y: -0.48, w: 0.5, h: 0.09, rot: -0.45 },
-      { x: 0.32, y: -0.5, w: 0.42, h: 0.09, rot: 0.3 }
+      { x: -0.18, y: 0.1, w: 0.32, h: 0.045, rot: 0.4 },
+      { x: 0.02, y: 0.01, w: 0.38, h: 0.045, rot: -0.22 },
+      { x: 0.18, y: 0.09, w: 0.24, h: 0.045, rot: 0.55 },
+      { x: 0.01, y: -0.12, w: 0.46, h: 0.04, rot: 0.06 },
+      { x: -0.16, y: -0.22, w: 0.22, h: 0.04, rot: -0.45 },
+      { x: 0.14, y: -0.22, w: 0.18, h: 0.04, rot: 0.3 }
     ];
     strokes.forEach((stroke, i) => {
-      const mark = new THREE.BoxGeometry(stroke.w, stroke.h, 0.06);
+      const mark = new THREE.BoxGeometry(stroke.w, stroke.h, 0.04);
       this.geos.push(mark);
       const bit = new THREE.Mesh(
         mark,
         new THREE.MeshBasicMaterial({ color: CRIMSON, transparent: true, opacity: 1, depthWrite: true })
       );
-      bit.position.set(page.position.x + stroke.x, page.position.y + stroke.y, page.position.z + 0.08);
+      bit.position.set(page.position.x + stroke.x, page.position.y + stroke.y, page.position.z + 0.05);
       bit.rotation.z = stroke.rot;
       bit.userData.home = bit.position.clone();
-      bit.userData.fly = new THREE.Vector3((i - 2.5) * 0.7, 1.15 + i % 3 * 0.25, 0.85);
+      bit.userData.fly = new THREE.Vector3((i - 2.5) * 0.28, 0.55 + i % 3 * 0.1, 0.2);
       this.signBits.push(bit);
       this.group.add(bit);
     });

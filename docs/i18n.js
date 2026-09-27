@@ -9,7 +9,7 @@ var UI = {
     dev: "In development",
     stage3: "Stage 3: Domestic Violence",
     stage4: "Stage 4: Land Use",
-    stage5: "Stage 5: Agriculture",
+    stage5: "Stage 5: Discrimination",
     stage6: "Stage 6: Elections",
     choose: "Choose your character",
     enter: "Enter",
@@ -168,7 +168,38 @@ var UI = {
     landRule: "Pas G\xE9om\xE9triques stay state land. A lease is not the beach. A wetland is not spare soil.",
     plotsHeld: "{n}/{total} plots held",
     openLand: "Open land use",
-    dockLand: "Shore \xB7 pegs"
+    dockLand: "Shore \xB7 pegs",
+    phaseFair: "Discrimination \xB7 the open square",
+    fair: "Fair",
+    fairScore: "Fair score",
+    fairHint: "Stage 5 \xB7 discrimination",
+    lockFair: "Hold every land-use answer to open stage 5",
+    briefFair: "Equal file",
+    holdsFair: "The line holds \xB7 +100",
+    missFair: "The line slips \xB7 +20",
+    scoringFair: "Five or six correct: the gates lift. Two to four: the square stays half shut. None or one: the bars stay down.",
+    nextGate: "Next gate",
+    doneFair: "File complete \xB7 the square is open",
+    doneHalf: "File complete \xB7 the square is half shut",
+    doneBarred: "File complete \xB7 the bars stay down",
+    fairTitle: "The square stays open",
+    fairBody: "The six bars lift. Race, creed, sex, age and colour do not close a door. The hall stays for everyone.",
+    halfTitle: "The square is half shut",
+    halfBody: "Some gates lift and some do not. A bar still closes part of the square. The file is not finished.",
+    barredTitle: "The bars stay down",
+    barredBody: "The file did not hold. The gates stay shut. Reset the stage and walk the questions again.",
+    scoreFair: "Fair score \xB7 {score}/600",
+    toastLockFair: "Stage 5 is locked. Hold every land-use answer first.",
+    toastFair: "The square is open. The gates stay up.",
+    toastHalf: "The square is only half open.",
+    toastBarred: "The bars stay down.",
+    toastGate: "Gate held. Keep the square open.",
+    toastBar: "That answer lets a bar stay down.",
+    boardFair: "Open square",
+    fairRule: "The Equal Opportunities Act protects age, caste, colour, creed, ethnic origin, race and sex. A shop, a school, a job and a hall stay open.",
+    gatesHeld: "{n}/{total} gates held",
+    openFair: "Open the square",
+    dockFair: "Square \xB7 gates"
   },
   fr: {
     title: "Village Int\xE9grit\xE9",
@@ -178,7 +209,7 @@ var UI = {
     dev: "En d\xE9veloppement",
     stage3: "\xC9tape 3 : Violence domestique",
     stage4: "\xC9tape 4 : Usage des terres",
-    stage5: "\xC9tape 5 : Agriculture",
+    stage5: "\xC9tape 5 : Discrimination",
     stage6: "\xC9tape 6 : \xC9lections",
     choose: "Choisis ton personnage",
     enter: "Entrer",
@@ -337,7 +368,38 @@ var UI = {
     landRule: "Les Pas G\xE9om\xE9triques restent des terres de l'\xC9tat. Un bail n'est pas la plage. Un marais n'est pas un sol de reste.",
     plotsHeld: "{n}/{total} parcelles tenues",
     openLand: "Ouvrir l'usage des terres",
-    dockLand: "Rivage \xB7 piquets"
+    dockLand: "Rivage \xB7 piquets",
+    phaseFair: "Discrimination \xB7 la place ouverte",
+    fair: "\xC9galit\xE9",
+    fairScore: "Score \xE9galit\xE9",
+    fairHint: "\xC9tape 5 \xB7 discrimination",
+    lockFair: "Tiens chaque r\xE9ponse sur les terres pour ouvrir l'\xE9tape 5",
+    briefFair: "Dossier \xE9gal",
+    holdsFair: "La ligne tient \xB7 +100",
+    missFair: "La ligne c\xE8de \xB7 +20",
+    scoringFair: "Cinq ou six justes : les portes se l\xE8vent. Deux \xE0 quatre : la place reste \xE0 moiti\xE9 ferm\xE9e. Z\xE9ro ou un : les barres restent basses.",
+    nextGate: "Porte suivante",
+    doneFair: "Dossier clos \xB7 la place est ouverte",
+    doneHalf: "Dossier clos \xB7 la place est \xE0 moiti\xE9 ferm\xE9e",
+    doneBarred: "Dossier clos \xB7 les barres restent basses",
+    fairTitle: "La place reste ouverte",
+    fairBody: "Les six barres se l\xE8vent. La race, la croyance, le sexe, l'\xE2ge et la couleur ne ferment pas une porte. La salle reste \xE0 tout le monde.",
+    halfTitle: "La place est \xE0 moiti\xE9 ferm\xE9e",
+    halfBody: "Certaines portes se l\xE8vent, d'autres non. Une barre ferme encore une part de la place. Le dossier n'est pas tenu.",
+    barredTitle: "Les barres restent basses",
+    barredBody: "Le dossier n'a pas tenu. Les portes restent ferm\xE9es. R\xE9initialise l'\xE9tape et reprends les questions.",
+    scoreFair: "Score \xE9galit\xE9 \xB7 {score}/600",
+    toastLockFair: "L'\xE9tape 5 est verrouill\xE9e. Tiens d'abord chaque r\xE9ponse sur les terres.",
+    toastFair: "La place est ouverte. Les portes restent hautes.",
+    toastHalf: "La place n'est qu'\xE0 moiti\xE9 ouverte.",
+    toastBarred: "Les barres restent basses.",
+    toastGate: "Porte tenue. Garde la place ouverte.",
+    toastBar: "Cette r\xE9ponse laisse une barre en bas.",
+    boardFair: "Place ouverte",
+    fairRule: "L'Equal Opportunities Act prot\xE8ge l'\xE2ge, la caste, la couleur, la croyance, l'origine ethnique, la race et le sexe. Une boutique, une \xE9cole, un emploi et une salle restent ouverts.",
+    gatesHeld: "{n}/{total} portes tenues",
+    openFair: "Ouvrir la place",
+    dockFair: "Place \xB7 portes"
   }
 };
 function loadLang() {
@@ -582,7 +644,13 @@ var SHORT_FR = {
   split: "D\xE9coupe",
   wetland: "Marais",
   sign: "Signature",
-  idle: "Friche"
+  idle: "Friche",
+  race: "Race",
+  creed: "Croyance",
+  sex: "Sexe",
+  age: "\xC2ge",
+  colour: "Couleur",
+  notice: "Avis"
 };
 function shortLabel(id, lang, fallback) {
   if (lang === "fr" && SHORT_FR[id]) return SHORT_FR[id];
@@ -761,12 +829,85 @@ function localizeLand(item, lang) {
     options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
   };
 }
+var FAIR_FR = {
+  race: {
+    title: "Le comptoir ferm\xE9",
+    question: "Un commer\xE7ant te dit de refuser un client \xE0 cause de sa race. Il dit que la boutique est \xE0 lui, et que la porte est \xE0 lui de fermer. Quelle est l'action licite ?",
+    options: {
+      A: "Faire comme il dit. Une boutique priv\xE9e peut choisir ses clients selon la race.",
+      B: "Refuser l'ordre. La race est un statut prot\xE9g\xE9 par l'Equal Opportunities Act. Le comptoir reste ouvert. Une plainte \xE9crite peut aller \xE0 l'Equal Opportunities Commission.",
+      C: "Les servir seulement \xE0 la porte de derri\xE8re.",
+      D: "Leur demander d'envoyer quelqu'un d'autre de la famille."
+    }
+  },
+  creed: {
+    title: "Le pupitre vide",
+    question: "Une \xE9cole laisse un pupitre vide parce que l'enfant suit une autre croyance. Un enseignant dit que l'enfant peut s'asseoir s'il cache le signe de sa foi. Quelle est l'action licite ?",
+    options: {
+      A: "Laisser le pupitre vide. La croyance appartient \xE0 la maison.",
+      B: "Dire \xE0 l'enfant de cacher le signe, puis le laisser s'asseoir.",
+      C: "La croyance est prot\xE9g\xE9e. Le pupitre reste ouvert. Ne force pas un enfant \xE0 cacher sa foi. Signale l'interdiction \xE0 l'Equal Opportunities Commission.",
+      D: "Mettre l'enfant dans une classe \xE0 part \xAB pour la paix \xBB."
+    }
+  },
+  sex: {
+    title: "Ray\xE9e de la liste",
+    question: "Un contrema\xEEtre raye une femme qualifi\xE9e de la liste de nuit. Il dit que le travail n'est pas pour les femmes, et qu'elle pourrait devenir enceinte. Quelle est l'action licite ?",
+    options: {
+      A: "La remettre sur la liste. Le sexe, la grossesse et la responsabilit\xE9 familiale sont prot\xE9g\xE9s. Ne transmets pas cet ordre.",
+      B: "Lui offrir un poste de jour moins pay\xE9 et appeler \xE7a de la gentillesse.",
+      C: "Lui demander de signer qu'elle n'aura pas d'enfants.",
+      D: "Laisser la liste. Le contrema\xEEtre conna\xEEt le travail."
+    }
+  },
+  age: {
+    title: "Trop \xE2g\xE9e pour la ligne",
+    question: "Une conductrice qualifi\xE9e de 58 ans est refus\xE9e sur la ligne. Aucune r\xE8gle de s\xE9curit\xE9 ne fixe un \xE2ge. La note dit \xAB trop \xE2g\xE9e \xBB. Quelle est l'action licite ?",
+    options: {
+      A: "\xCAtre d'accord. Apr\xE8s 55 ans la ligne est ferm\xE9e.",
+      B: "R\xE9\xE9crire son \xE2ge sur le formulaire pour que la note disparaisse.",
+      C: "Lui donner une semaine non pay\xE9e, puis d\xE9cider.",
+      D: "L'\xE2ge seul n'est pas une raison. R\xE9tablis sa demande. Si l'\xE2ge n'est pas une vraie condition, signale-le \xE0 l'Equal Opportunities Commission."
+    }
+  },
+  colour: {
+    title: "Descendu dans la file",
+    question: "Un commis au logement descend un dossier dans la file \xE0 cause de la couleur du demandeur. Il dit que \xE7a \xAB gardera la paix \xBB. Quelle est l'action licite ?",
+    options: {
+      A: "Laisser le dossier l\xE0 o\xF9 il l'a mis. La file est \xE0 lui.",
+      B: "Regrouper tous les dossiers de cette couleur et appeler \xE7a de l'ordre.",
+      C: "La couleur est prot\xE9g\xE9e. Remets le dossier \xE0 sa place. Ne te tais pas. D\xE9pose une plainte \xE9crite \xE0 l'Equal Opportunities Commission.",
+      D: "Dire au demandeur d'attendre un an et de refaire la demande sous un autre nom."
+    }
+  },
+  notice: {
+    title: "La salle interdite",
+    question: "Quelqu'un te demande d'imprimer un avis qui interdit une race, une foi, les femmes, ou les personnes au-del\xE0 d'un certain \xE2ge dans la salle du village. Quelle est l'action licite ?",
+    options: {
+      A: "L'imprimer si le comit\xE9 de la salle a vot\xE9.",
+      B: "Refuser. Ne l'imprime pas et n'aide pas \xE0 l'\xE9crire. Une salle ne peut pas \xEAtre ferm\xE9e sur ces motifs. Signale la demande.",
+      C: "Imprimer une ligne plus douce qui dit \xAB pr\xE9f\xE9rence \xBB au lieu d'\xAB interdit \xBB.",
+      D: "Afficher l'avis une semaine, puis le retirer."
+    }
+  }
+};
+function localizeFair(item, lang) {
+  const fr = lang === "fr" ? FAIR_FR[item.id] : void 0;
+  if (!fr) return item;
+  return {
+    ...item,
+    title: fr.title,
+    question: fr.question,
+    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
+  };
+}
 export {
   LANG_KEY,
   houseHint,
   houseLabel,
   loadLang,
   localizeCase,
+  localizeFair,
   localizeHaven,
   localizeLand,
   localizeTender,

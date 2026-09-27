@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg21";
-import { HavenScene } from "./haven.js?v=vg21";
-import { LandScene } from "./land.js?v=vg21";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg22";
+import { HavenScene } from "./haven.js?v=vg22";
+import { LandScene } from "./land.js?v=vg22";
+import { FairScene } from "./fair.js?v=vg22";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -389,6 +390,73 @@ function landOutcomeOf(score, answered) {
   if (score >= 280) return "shift";
   return "lost";
 }
+const FAIR_CORRECT = 100;
+const FAIR_WRONG = 20;
+const FAIR_CASES = [
+  { id: "race", spec: "FAIR-01", title: "The closed counter", correct: "B",
+    question: "A shop owner tells you to refuse a customer because of their race. He says the shop is his, and the door is his to close. What is the lawful action?",
+    options: [
+      { id: "A", text: "Do as he says. A private shop can choose its customers by race." },
+      { id: "B", text: "Refuse the order. Race is a protected status under the Equal Opportunities Act. The counter stays open. A written complaint can go to the Equal Opportunities Commission." },
+      { id: "C", text: "Serve them at the back door only." },
+      { id: "D", text: "Ask them to send someone else from the family." },
+    ] },
+  { id: "creed", spec: "FAIR-02", title: "The empty desk", correct: "C",
+    question: "A school keeps a desk empty because the child follows another creed. A teacher says the child can sit if they hide the sign of their faith. What is the lawful action?",
+    options: [
+      { id: "A", text: "Keep the desk empty. Creed belongs at home." },
+      { id: "B", text: "Tell the child to hide the sign, then let them sit." },
+      { id: "C", text: "Creed is protected. The desk stays open. Do not make a child hide their faith. Report the bar to the Equal Opportunities Commission." },
+      { id: "D", text: "Move the child to a separate class “for peace”." },
+    ] },
+  { id: "sex", spec: "FAIR-03", title: "Struck from the list", correct: "A",
+    question: "A foreman strikes a qualified woman from the night-shift list. He says the work is not for women, and that she might become pregnant. What is the lawful action?",
+    options: [
+      { id: "A", text: "Put her back on the list. Sex, pregnancy and family responsibility are protected. Do not pass that instruction on." },
+      { id: "B", text: "Offer her a lower-paid day role and call it kindness." },
+      { id: "C", text: "Ask her to sign that she will not have children." },
+      { id: "D", text: "Leave the list. The foreman knows the work." },
+    ] },
+  { id: "age", spec: "FAIR-04", title: "Too old for the route", correct: "D",
+    question: "A qualified driver of 58 is refused the route. There is no safety rule that sets an age. The note says “too old”. What is the lawful action?",
+    options: [
+      { id: "A", text: "Agree. After 55 the route is closed." },
+      { id: "B", text: "Rewrite her age on the form so the note goes away." },
+      { id: "C", text: "Give her a week unpaid, then decide." },
+      { id: "D", text: "Age alone is not a reason. Restore her application. Where age is not a real qualification, report it to the Equal Opportunities Commission." },
+    ] },
+  { id: "colour", spec: "FAIR-05", title: "Moved down the queue", correct: "C",
+    question: "A housing clerk moves a file down the queue because of the applicant’s colour. He says it will “keep the peace”. What is the lawful action?",
+    options: [
+      { id: "A", text: "Leave the file where he put it. The queue is his." },
+      { id: "B", text: "Move every file of that colour together and call it order." },
+      { id: "C", text: "Colour is protected. Put the file back in its place. Do not stay quiet. Lodge a written complaint with the Equal Opportunities Commission." },
+      { id: "D", text: "Tell the applicant to wait a year and apply under another name." },
+    ] },
+  { id: "notice", spec: "FAIR-06", title: "The barred hall", correct: "B",
+    question: "Someone asks you to print a notice that bars a race, a faith, women, or people over a certain age from the village hall. What is the lawful action?",
+    options: [
+      { id: "A", text: "Print it if the hall committee voted." },
+      { id: "B", text: "Refuse. Do not print it and do not help write it. A hall cannot be closed on those grounds. Report the request." },
+      { id: "C", text: "Print a softer line that says “preference” instead of “barred”." },
+      { id: "D", text: "Put the notice up for one week, then take it down." },
+    ] },
+];
+const FSHORT = { race: "Race", creed: "Creed", sex: "Sex", age: "Age", colour: "Colour", notice: "Notice" };
+function roundFourCleared(results) {
+  return results.length >= LAND_CASES.length && results.every((r) => r.correct);
+}
+function fairCaseById(id) { return FAIR_CASES.find((c) => c.id === id) ?? FAIR_CASES[0]; }
+function firstOpenFairId(results) {
+  const done = new Set(results.map((r) => r.caseId));
+  return FAIR_CASES.find((c) => !done.has(c.id))?.id ?? FAIR_CASES[0].id;
+}
+function fairOutcomeOf(score, answered) {
+  if (answered < FAIR_CASES.length) return "open";
+  if (score >= 500) return "fair";
+  if (score >= 280) return "half";
+  return "barred";
+}
 function winnerOf(bids) { return Object.entries(bids).sort((a, b) => b[1] - a[1])[0][0]; }
 function holdingsLabel(name, houses) {
   const owned = houses.filter((h) => h.owner === name);
@@ -662,6 +730,7 @@ class VillageEngine {
     this.buildWhistle();
     this.haven = new HavenScene(this.scene);
     this.land = new LandScene(this.scene);
+    this.fair = new FairScene(this.scene);
     this.havenOutcome = "open";
     this.havenCorrect = 0;
     this.landOutcome = "open";
@@ -689,19 +758,32 @@ class VillageEngine {
     this.havenCorrect = next.havenCorrect || 0;
     this.landOutcome = next.landOutcome || "open";
     this.landCorrect = next.landCorrect || 0;
+    this.fairOutcome = next.fairOutcome || "open";
+    this.fairCorrect = next.fairCorrect || 0;
     this.haven.sync(this.competition, this.havenOutcome, this.havenCorrect);
     this.land.sync(this.competition, this.landOutcome, this.landCorrect);
-    const landOn = this.competition === "land";
-    if (this.ground) this.ground.visible = !landOn;
-    if (this.canal) this.canal.visible = !landOn;
-    this.plazaRing.visible = !landOn;
-    this.controls.autoRotate = !next.reducedMotion && this.competition !== "haven" && !landOn && this.whistleOutcome !== "exile";
-    this.rain.visible = !next.reducedMotion && this.competition !== "haven" && !landOn;
+    this.fair.sync(this.competition, this.fairOutcome, this.fairCorrect);
+    const solo = this.competition === "land" || this.competition === "fair";
+    if (this.ground) this.ground.visible = !solo;
+    if (this.canal) this.canal.visible = !solo;
+    this.plazaRing.visible = !solo;
+    this.controls.autoRotate = !next.reducedMotion && this.competition !== "haven" && !solo && this.whistleOutcome !== "exile";
+    this.rain.visible = !next.reducedMotion && this.competition !== "haven" && !solo;
     if (switched || this.whistleOutcome !== "open" || this.havenOutcome !== "open") this.frameCompetition();
   }
 
   frameCompetition() {
     const fog = this.scene.fog;
+    if (this.competition === "fair") {
+      fog.color.set(0x140e1c);
+      this.scene.background = new THREE.Color(0x100c16);
+      const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
+      this.camera.position.set(portrait ? 0.2 : 0.4, portrait ? 8.4 : 6.2, portrait ? 12.6 : 10.4);
+      this.controls.target.set(0, 0.9, 0);
+      this.controls.minDistance = 6;
+      this.controls.maxDistance = 22;
+      return;
+    }
     if (this.competition === "land") {
       fog.color.set(0x12160f);
       this.scene.background = new THREE.Color(0x10140f);
@@ -1039,8 +1121,8 @@ class VillageEngine {
     for (const house of this.houseState) {
       const v = this.visuals.get(house.id);
       if (!v) continue;
-      v.group.visible = this.competition !== "land";
-      if (this.competition === "land") continue;
+      v.group.visible = this.competition !== "land" && this.competition !== "fair";
+      if (this.competition === "land" || this.competition === "fair") continue;
       const hovered = this.hoveredId === house.id || this.hoverId === house.id;
       const selected = this.selectedId === house.id;
       const target = house.renovated || hovered ? 1 : 0;
@@ -1073,6 +1155,7 @@ class VillageEngine {
     this.tickWhistle(dt, t);
     this.haven.tick(dt, t, this.reduced);
     this.land.tick(dt, t, this.reduced);
+    this.fair.tick(dt, t, this.reduced);
     this.renderer.render(this.scene, this.camera);
   };
 }
@@ -1088,6 +1171,7 @@ function defaultState() {
     whistleOutcome: "open", showOutcome: false,
     havenResults: [], activeHavenId: HAVEN_CASES[0].id, havenScore: 0, havenOutcome: "open",
     landResults: [], activeLandId: LAND_CASES[0].id, landScore: 0, landOutcome: "open",
+    fairResults: [], activeFairId: FAIR_CASES[0].id, fairScore: 0, fairOutcome: "open",
   };
 }
 
@@ -1139,6 +1223,8 @@ function persist(state) {
       havenScore: state.havenScore, havenOutcome: state.havenOutcome,
       landResults: state.landResults, activeLandId: state.activeLandId,
       landScore: state.landScore, landOutcome: state.landOutcome,
+      fairResults: state.fairResults, activeFairId: state.activeFairId,
+      fairScore: state.fairScore, fairOutcome: state.fairOutcome,
     }));
   } catch { /* ignore */ }
 }
@@ -1171,6 +1257,8 @@ function syncPayload() {
     havenCorrect: (state.havenResults || []).filter((r) => r.correct).length,
     landOutcome: state.landOutcome,
     landCorrect: (state.landResults || []).filter((r) => r.correct).length,
+    fairOutcome: state.fairOutcome,
+    fairCorrect: (state.fairResults || []).filter((r) => r.correct).length,
   };
 }
 engine.sync(syncPayload());
@@ -1199,7 +1287,12 @@ function resetStage() {
   state.mobileTab = "tender";
   state.hoveredId = null;
   state.selectedId = null;
-  if (state.competition === "land") {
+  if (state.competition === "fair") {
+    state.fairResults = [];
+    state.activeFairId = FAIR_CASES[0].id;
+    state.fairScore = 0;
+    state.fairOutcome = "open";
+  } else if (state.competition === "land") {
     state.landResults = [];
     state.activeLandId = LAND_CASES[0].id;
     state.landScore = 0;
@@ -1280,21 +1373,27 @@ function renderHeader() {
   const whistle = state.competition === "whistle";
   const haven = state.competition === "haven";
   const land = state.competition === "land";
+  const fair = state.competition === "fair";
   document.getElementById("phase-kicker").textContent = L("projectPhase");
   document.querySelector('#comp-switch [data-comp="tender"]').textContent = L("tenders");
   document.querySelector('#comp-switch [data-comp="whistle"]').textContent = L("whistle");
   document.querySelector('#comp-switch [data-comp="haven"]').textContent = L("haven");
   document.querySelector('#comp-switch [data-comp="land"]').textContent = L("land");
-  document.getElementById("phase-title").textContent = land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
-  document.getElementById("stat-label").textContent = land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
+  document.querySelector('#comp-switch [data-comp="fair"]').textContent = L("fair");
+  document.getElementById("phase-title").textContent = fair ? L("phaseFair") : land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
+  document.getElementById("stat-label").textContent = fair ? L("fairScore") : land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
   const won = state.results.filter((r) => r.winnerId === "you").length;
   const stat = document.getElementById("stat-won");
-  stat.textContent = land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
-  stat.className = land ? "mono" : haven ? "mono rose" : whistle ? "mono amber" : "mono green";
-  if (land) stat.style.color = "#e6c36a"; else stat.style.color = "";
+  stat.textContent = fair ? `${state.fairScore}/${FAIR_CASES.length * 100}` : land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
+  stat.className = "mono";
+  stat.style.color = fair ? "#b388ff" : land ? "#e6c36a" : haven ? "" : whistle ? "" : "";
+  if (haven) stat.className = "mono rose";
+  if (whistle) stat.className = "mono amber";
+  if (!fair && !land && !haven && !whistle) stat.className = "mono green";
   const swept = roundOneCleared(state.results, state.contractorId);
   const lineOpen = roundTwoCleared(state.whistleResults);
   const landOpen = roundThreeCleared(state.havenResults);
+  const fairOpen = roundFourCleared(state.landResults);
   document.querySelectorAll("#comp-switch button").forEach((b) => {
     b.classList.toggle("on", b.dataset.comp === state.competition);
     if (b.dataset.comp === "whistle") {
@@ -1309,32 +1408,42 @@ function renderHeader() {
       b.classList.toggle("locked", !landOpen);
       b.title = landOpen ? L("landHint") : L("lockLand");
     }
+    if (b.dataset.comp === "fair") {
+      b.classList.toggle("locked", !fairOpen);
+      b.title = fairOpen ? L("fairHint") : L("lockFair");
+    }
   });
   const qcount = document.getElementById("qcount");
-  qcount.textContent = land
-    ? `${state.landResults.length}/${LAND_CASES.length}`
-    : haven
-      ? `${state.havenResults.length}/${HAVEN_CASES.length}`
-      : whistle
-        ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
-        : `${state.results.length}/${TENDERS.length}`;
+  qcount.textContent = fair
+    ? `${state.fairResults.length}/${FAIR_CASES.length}`
+    : land
+      ? `${state.landResults.length}/${LAND_CASES.length}`
+      : haven
+        ? `${state.havenResults.length}/${HAVEN_CASES.length}`
+        : whistle
+          ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
+          : `${state.results.length}/${TENDERS.length}`;
   qcount.className = haven ? "qcount rose" : whistle ? "qcount amber" : "qcount green";
-  if (land) qcount.style.color = "#e6c36a"; else qcount.style.color = "";
-  document.getElementById("tab-case").textContent = land || haven || whistle ? L("case") : L("tender");
+  qcount.style.color = fair ? "#b388ff" : land ? "#e6c36a" : "";
+  document.getElementById("tab-case").textContent = fair || land || haven || whistle ? L("case") : L("tender");
   document.getElementById("tab-round").textContent = state.competition === "tender"
     ? L("whistle")
     : state.competition === "whistle" && lineOpen
       ? L("haven")
       : state.competition === "haven" && landOpen
         ? L("land")
-        : L("tenders");
+        : state.competition === "land" && fairOpen
+          ? L("fair")
+          : L("tenders");
   document.querySelectorAll("#mobile-tabs button[data-tab]").forEach((b) => {
     b.classList.toggle("whistle", whistle && b.classList.contains("on"));
     b.classList.toggle("haven", haven && b.classList.contains("on"));
   });
   document.getElementById("contractor-chips").innerHTML = `
-    <span class="kicker mute">${land
-      ? L("plotsHeld", { n: state.landResults.filter((r) => r.correct).length, total: LAND_CASES.length })
+    <span class="kicker mute">${fair
+      ? L("gatesHeld", { n: state.fairResults.filter((r) => r.correct).length, total: FAIR_CASES.length })
+      : land
+        ? L("plotsHeld", { n: state.landResults.filter((r) => r.correct).length, total: LAND_CASES.length })
       : haven
         ? L("signalsHeld", { n: state.havenResults.filter((r) => r.correct).length, total: HAVEN_CASES.length })
         : whistle
@@ -1570,7 +1679,7 @@ function renderLand() {
       ${result && remaining ? `<button type="button" class="cta" id="next-land" style="margin-top:.75rem;background:#e6c36a">${L("nextPlot")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.landOutcome === "held" ? "var(--green)" : state.landOutcome === "shift" ? "#e6c36a" : "var(--crimson)"}">${
         state.landOutcome === "held" ? L("doneHeld") : state.landOutcome === "shift" ? L("doneShift") : L("doneLost")
-      }</p>` : ""}
+      }</p>${roundFourCleared(state.landResults) ? `<button type="button" class="cta" id="open-fair" style="margin-top:.75rem;background:#b388ff">${L("openFair")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-land]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1590,6 +1699,16 @@ function renderLand() {
   document.getElementById("next-land")?.addEventListener("click", () => {
     if (state.landOutcome !== "open") return;
     state.activeLandId = firstOpenLandId(state.landResults);
+    persist(state);
+    renderAll();
+  });
+  document.getElementById("open-fair")?.addEventListener("click", () => {
+    if (!roundFourCleared(state.landResults)) return;
+    state.competition = "fair";
+    state.mobileTab = "tender";
+    state.showOutcome = false;
+    play.classList.add("show-tender");
+    play.classList.remove("show-board");
     persist(state);
     renderAll();
   });
@@ -1619,7 +1738,87 @@ function answerLand(picked) {
   renderOutcome();
 }
 
+function renderFair() {
+  const raw = fairCaseById(state.activeFairId);
+  const item = localizeFair(raw, lang);
+  const result = state.fairResults.find((r) => r.caseId === item.id);
+  const locked = Boolean(result);
+  const remaining = FAIR_CASES.some((c) => !state.fairResults.some((r) => r.caseId === c.id));
+  const held = Boolean(result?.correct);
+  const panel = document.getElementById("tender-panel");
+  panel.classList.toggle("award", held);
+  panel.classList.toggle("reject", locked && !held);
+  panel.innerHTML = `
+    <div class="side-head">
+      <p class="kicker" style="color:#b388ff">${L("briefFair")} · ${item.spec}</p>
+      <h2>${item.title}</h2>
+      <p class="mono mute">${state.fairResults.length}/${FAIR_CASES.length}</p>
+    </div>
+    <div class="spec-nav">
+      ${FAIR_CASES.map((c) => {
+        const done = state.fairResults.some((r) => r.caseId === c.id);
+        const hit = state.fairResults.find((r) => r.caseId === c.id);
+        const on = c.id === item.id;
+        return `<button type="button" data-fair="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, FSHORT[c.id])}</button>`;
+      }).join("")}
+    </div>
+    <div class="side-body">
+      <p>${item.question}</p>
+      <div class="opts">
+        ${item.options.map((opt) => {
+          const picked = result?.picked === opt.id;
+          const isCorrect = opt.id === item.correct;
+          const cls = picked && held ? "correct" : picked && locked ? "wrong" : locked && isCorrect ? "correct" : "";
+          return `<button type="button" class="opt ${cls}" data-fopt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
+        }).join("")}
+      </div>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsFair") : L("missFair")) : L("scoring")}</p>
+      <p style="font-size:.8rem">${L("scoringFair")}</p>
+      ${result && remaining ? `<button type="button" class="cta" id="next-fair" style="margin-top:.75rem;background:#b388ff">${L("nextGate")}</button>` : ""}
+      ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.fairOutcome === "fair" ? "var(--green)" : state.fairOutcome === "half" ? "#b388ff" : "var(--crimson)"}">${
+        state.fairOutcome === "fair" ? L("doneFair") : state.fairOutcome === "half" ? L("doneHalf") : L("doneBarred")
+      }</p>` : ""}
+    </div>`;
+  panel.querySelectorAll("[data-fair]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!roundFourCleared(state.landResults)) {
+        showToast(L("toastLockFair"), "info");
+        return;
+      }
+      state.activeFairId = btn.dataset.fair;
+      state.competition = "fair";
+      persist(state);
+      renderAll();
+    });
+  });
+  panel.querySelectorAll("[data-fopt]").forEach((btn) => btn.addEventListener("click", () => answerFair(btn.dataset.fopt)));
+  document.getElementById("next-fair")?.addEventListener("click", () => {
+    if (state.fairOutcome !== "open") return;
+    state.activeFairId = firstOpenFairId(state.fairResults);
+    persist(state);
+    renderAll();
+  });
+}
+
+function answerFair(picked) {
+  if (!state.contractorId || !roundFourCleared(state.landResults)) return;
+  const item = fairCaseById(state.activeFairId);
+  if (state.fairResults.some((r) => r.caseId === item.id)) return;
+  const correct = picked === item.correct;
+  state.fairResults.push({ caseId: item.id, picked, correct, playerScore: correct ? FAIR_CORRECT : FAIR_WRONG });
+  state.fairScore += correct ? FAIR_CORRECT : FAIR_WRONG;
+  state.fairOutcome = fairOutcomeOf(state.fairScore, state.fairResults.length);
+  if (state.fairOutcome !== "open") {
+    state.showOutcome = true;
+    showToast(state.fairOutcome === "fair" ? L("toastFair") : state.fairOutcome === "half" ? L("toastHalf") : L("toastBarred"), state.fairOutcome);
+  } else showToast(correct ? L("toastGate") : L("toastBar"), correct ? "award" : "reject");
+  persist(state);
+  renderAll();
+  renderOutcome();
+}
+
 function renderCase() {
+  if (state.competition === "fair") return renderFair();
   if (state.competition === "land") return renderLand();
   if (state.competition === "haven") return renderHaven();
   if (state.competition !== "whistle") return renderTender();
@@ -1744,9 +1943,14 @@ function renderOutcome() {
   const card = document.getElementById("outcome-card");
   const haven = state.competition === "haven";
   const land = state.competition === "land";
-  const outcome = land ? state.landOutcome : haven ? state.havenOutcome : state.whistleOutcome;
+  const fair = state.competition === "fair";
+  const outcome = fair ? state.fairOutcome : land ? state.landOutcome : haven ? state.havenOutcome : state.whistleOutcome;
   if (!state.showOutcome || state.competition === "tender" || outcome === "open") { el.hidden = true; return; }
-  const copy = land ? {
+  const copy = fair ? {
+    fair: { kicker: L("topScore"), title: L("fairTitle"), body: L("fairBody"), cls: "award" },
+    half: { kicker: L("midScore"), title: L("halfTitle"), body: L("halfBody"), cls: "burn" },
+    barred: { kicker: L("lowScore"), title: L("barredTitle"), body: L("barredBody"), cls: "reject" },
+  }[state.fairOutcome] : land ? {
     held: { kicker: L("topScore"), title: L("heldTitle"), body: L("heldBody"), cls: "award" },
     shift: { kicker: L("midScore"), title: L("shiftTitle"), body: L("shiftBody"), cls: "burn" },
     lost: { kicker: L("lowScore"), title: L("lostTitle"), body: L("lostBody"), cls: "reject" },
@@ -1762,7 +1966,9 @@ function renderOutcome() {
   document.getElementById("outcome-kicker").textContent = copy.kicker;
   document.getElementById("outcome-title").textContent = copy.title;
   document.getElementById("outcome-body").textContent = copy.body;
-  document.getElementById("outcome-score").textContent = land
+  document.getElementById("outcome-score").textContent = fair
+    ? L("scoreFair", { score: state.fairScore })
+    : land
     ? L("scoreLand", { score: state.landScore })
     : haven
       ? L("scoreHaven", { score: state.havenScore }) + " · " + L("hotlineNote")
@@ -1780,6 +1986,19 @@ function renderBoard() {
     return;
   }
   board.hidden = false;
+  if (state.competition === "fair") {
+    const gates = state.fairResults.filter((r) => r.correct).length;
+    board.innerHTML = `
+      <div class="side-head">
+        <p class="kicker" style="color:#b388ff">${L("boardFair")}</p>
+        <h2>${L("notRanking")}</h2>
+      </div>
+      <div class="side-body">
+        <p style="font-size:.8rem">${L("fairRule")}</p>
+        <p class="mono green">${L("gatesHeld", { n: gates, total: FAIR_CASES.length })}</p>
+      </div>`;
+    return;
+  }
   if (state.competition === "land") {
     const plots = state.landResults.filter((r) => r.correct).length;
     board.innerHTML = `
@@ -1840,6 +2059,11 @@ function renderDock() {
   if (state.competition === "land") {
     dock.hidden = false;
     dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#e6c36a">${L("dockLand")}</p></div>`;
+    return;
+  }
+  if (state.competition === "fair") {
+    dock.hidden = false;
+    dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#b388ff">${L("dockFair")}</p></div>`;
     return;
   }
   const id = state.selectedId ?? state.hoveredId;
@@ -1932,6 +2156,10 @@ document.getElementById("comp-switch").addEventListener("click", (e) => {
     showToast(L("toastLockLand"), "info");
     return;
   }
+  if (btn.dataset.comp === "fair" && !roundFourCleared(state.landResults)) {
+    showToast(L("toastLockFair"), "info");
+    return;
+  }
   state.showOutcome = false;
   state.competition = btn.dataset.comp;
   state.mobileTab = "tender";
@@ -1957,6 +2185,7 @@ document.getElementById("tab-round").addEventListener("click", () => {
   if (state.competition === "tender") next = "whistle";
   else if (state.competition === "whistle" && roundTwoCleared(state.whistleResults)) next = "haven";
   else if (state.competition === "haven" && roundThreeCleared(state.havenResults)) next = "land";
+  else if (state.competition === "land" && roundFourCleared(state.landResults)) next = "fair";
   if (next === "whistle" && !roundOneCleared(state.results, state.contractorId)) {
     showToast(L("toastLock"), "info");
     return;
@@ -1967,6 +2196,10 @@ document.getElementById("tab-round").addEventListener("click", () => {
   }
   if (next === "land" && !roundThreeCleared(state.havenResults)) {
     showToast(L("toastLockLand"), "info");
+    return;
+  }
+  if (next === "fair" && !roundFourCleared(state.landResults)) {
+    showToast(L("toastLockFair"), "info");
     return;
   }
   state.competition = next;
@@ -1982,6 +2215,7 @@ play.classList.add("show-tender");
 if ((state.whistleResults || []).length < WHISTLE_CASES.length) state.whistleOutcome = "open";
 if ((state.havenResults || []).length < HAVEN_CASES.length) state.havenOutcome = "open";
 if ((state.landResults || []).length < LAND_CASES.length) state.landOutcome = "open";
+if ((state.fairResults || []).length < FAIR_CASES.length) state.fairOutcome = "open";
 for (const id of ["market", "clinic", "hall", "bus"]) {
   if (state.results.some((r) => r.houseId === id)) continue;
   const h = state.houses.find((x) => x.id === id);
@@ -1998,6 +2232,9 @@ if (!roundTwoCleared(state.whistleResults) && state.competition === "haven") {
 }
 if (!roundThreeCleared(state.havenResults) && state.competition === "land") {
   state.competition = roundTwoCleared(state.whistleResults) ? "haven" : (roundOneCleared(state.results, state.contractorId) ? "whistle" : "tender");
+}
+if (!roundFourCleared(state.landResults) && state.competition === "fair") {
+  state.competition = roundThreeCleared(state.havenResults) ? "land" : "haven";
 }
 renderBoot();
 if (state.phase === "play") showPlay();

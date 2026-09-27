@@ -71,6 +71,9 @@ var HavenScene = class {
     this.ribbon = this.buildRibbon();
     this.beacon = this.buildBeacon();
     this.fog = this.buildFog();
+    const midX = (QUIET.x + (QUIET.x - 2.25)) / 2;
+    const midZ = (QUIET.z + (QUIET.z - 0.15)) / 2;
+    this.group.position.set(-midX, 0, -midZ);
     this.group.visible = false;
     scene.add(this.group);
   }

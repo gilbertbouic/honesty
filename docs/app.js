@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg26";
-import { HavenScene } from "./haven.js?v=vg26";
-import { LandScene } from "./land.js?v=vg26";
-import { FairScene } from "./fair.js?v=vg26";
-import { CropScene } from "./crop.js?v=vg26";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg27";
+import { HavenScene } from "./haven.js?v=vg27";
+import { LandScene } from "./land.js?v=vg27";
+import { FairScene } from "./fair.js?v=vg27";
+import { CropScene } from "./crop.js?v=vg27";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -881,10 +881,10 @@ class VillageEngine {
       fog.color.set(0x100c14);
       this.scene.background = new THREE.Color(0x0c0a12);
       const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
-      this.camera.position.set(portrait ? 2.8 : 1.6, portrait ? 8.6 : 5.5, portrait ? 16.4 : 13.6);
-      this.controls.target.set(-1.2, 1.2, 6.2);
-      this.controls.minDistance = 7;
-      this.controls.maxDistance = 24;
+      this.camera.position.set(portrait ? 0.35 : 0.2, portrait ? 6.6 : 4.4, portrait ? 10.4 : 7.6);
+      this.controls.target.set(0, 1.15, 0);
+      this.controls.minDistance = 5;
+      this.controls.maxDistance = 16;
       return;
     }
     if (this.competition !== "whistle") {
@@ -1231,7 +1231,7 @@ class VillageEngine {
     for (const house of this.houseState) {
       const v = this.visuals.get(house.id);
       if (!v) continue;
-      v.group.visible = this.competition !== "land" && this.competition !== "fair" && this.competition !== "crop";
+      v.group.visible = this.competition !== "land" && this.competition !== "fair" && this.competition !== "crop" && this.competition !== "haven";
       if (this.competition === "land" || this.competition === "fair" || this.competition === "crop") continue;
       const hovered = this.hoveredId === house.id || this.hoverId === house.id;
       const selected = this.selectedId === house.id;

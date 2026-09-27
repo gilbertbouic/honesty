@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg39";
-import { HavenScene } from "./haven.js?v=vg39";
-import { LandScene } from "./land.js?v=vg39";
-import { FairScene } from "./fair.js?v=vg39";
-import { CropScene } from "./crop.js?v=vg39";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg40";
+import { HavenScene } from "./haven.js?v=vg40";
+import { LandScene } from "./land.js?v=vg40";
+import { FairScene } from "./fair.js?v=vg40";
+import { CropScene } from "./crop.js?v=vg40";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -738,6 +738,11 @@ class VillageEngine {
     this.controls.minPolarAngle = 0.55;
     this.controls.maxPolarAngle = 1.2;
     this.controls.target.set(0, 0.6, 0);
+    this.holdOrbit = false;
+    this.controls.addEventListener("start", () => {
+      this.holdOrbit = true;
+      this.controls.autoRotate = false;
+    });
 
     this.scene.add(new THREE.AmbientLight(0x8a96a4, 0.5));
     this.scene.add(new THREE.HemisphereLight(0x1a3348, 0x1a0c08, 0.55));
@@ -850,8 +855,10 @@ class VillageEngine {
     if (this.ground) this.ground.visible = !solo;
     if (this.canal) this.canal.visible = !solo;
     this.plazaRing.visible = !solo;
-    this.controls.autoRotate = !next.reducedMotion && this.competition !== "haven" && !solo && this.whistleOutcome !== "exile";
+    const mobile = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
+    this.controls.autoRotate = !mobile && !this.holdOrbit && !next.reducedMotion && this.competition !== "haven" && !solo && this.whistleOutcome !== "exile";
     this.rain.visible = !next.reducedMotion && this.competition !== "haven" && !solo;
+    if (switched) this.holdOrbit = false;
     if (switched || this.whistleOutcome !== "open" || this.havenOutcome !== "open") this.frameCompetition();
   }
 
@@ -879,6 +886,8 @@ class VillageEngine {
   }
 
   aimStage(focus, view, radius) {
+    const mobile = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
+    if (this.holdOrbit && mobile) return;
     const band = this.openBand();
     const fracW = Math.max(0.35, (band.right - band.left) / band.w);
     const fracH = Math.max(0.28, (band.bottom - band.top) / band.h);
@@ -915,6 +924,20 @@ class VillageEngine {
     this.controls.minDistance = Math.max(5, dist * 0.55);
     this.controls.maxDistance = dist * 1.85;
     this.camera.updateProjectionMatrix();
+    this.controls.update();
+    if (!mobile) {
+      this.controls.minAzimuthAngle = -Infinity;
+      this.controls.maxAzimuthAngle = Infinity;
+      this.controls.minPolarAngle = 0.55;
+      this.controls.maxPolarAngle = 1.2;
+      return;
+    }
+    this.controls.autoRotate = false;
+    const az = this.controls.getAzimuthalAngle();
+    this.controls.minAzimuthAngle = az - Math.PI / 2;
+    this.controls.maxAzimuthAngle = az + Math.PI / 2;
+    this.controls.minPolarAngle = 0.2;
+    this.controls.maxPolarAngle = Math.PI / 2 - 0.05;
   }
 
   frameCompetition() {

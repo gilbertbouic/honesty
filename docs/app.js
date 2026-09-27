@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg37";
-import { HavenScene } from "./haven.js?v=vg37";
-import { LandScene } from "./land.js?v=vg37";
-import { FairScene } from "./fair.js?v=vg37";
-import { CropScene } from "./crop.js?v=vg37";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg38";
+import { HavenScene } from "./haven.js?v=vg38";
+import { LandScene } from "./land.js?v=vg38";
+import { FairScene } from "./fair.js?v=vg38";
+import { CropScene } from "./crop.js?v=vg38";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -855,77 +855,98 @@ class VillageEngine {
     if (switched || this.whistleOutcome !== "open" || this.havenOutcome !== "open") this.frameCompetition();
   }
 
+  openBand() {
+    const canvas = this.canvas.getBoundingClientRect();
+    let left = canvas.left, top = canvas.top, right = canvas.right, bottom = canvas.bottom;
+    const cut = (el) => {
+      if (!el || el.hidden) return;
+      const cs = getComputedStyle(el);
+      if (cs.display === "none" || cs.visibility === "hidden") return;
+      const r = el.getBoundingClientRect();
+      if (r.width < 8 || r.height < 8) return;
+      if (r.width > canvas.width * 0.6 && r.top > canvas.top + canvas.height * 0.22) bottom = Math.min(bottom, r.top);
+      else if (r.height > canvas.height * 0.3 && r.left > canvas.left + canvas.width * 0.35) right = Math.min(right, r.left);
+      else if (r.height > canvas.height * 0.3 && r.right < canvas.left + canvas.width * 0.65) left = Math.max(left, r.right);
+      else if (r.width > canvas.width * 0.55 && r.bottom < canvas.top + canvas.height * 0.45) top = Math.max(top, r.bottom);
+    };
+    cut(document.querySelector(".side.left"));
+    cut(document.querySelector(".side.right"));
+    cut(document.querySelector(".header"));
+    cut(document.getElementById("mobile-sheet-foot"));
+    if (right - left < 80) { left = canvas.left; right = canvas.right; }
+    if (bottom - top < 72) { top = canvas.top; bottom = canvas.bottom; }
+    return { left: left - canvas.left, top: top - canvas.top, right: right - canvas.left, bottom: bottom - canvas.top, w: Math.max(1, canvas.width), h: Math.max(1, canvas.height) };
+  }
+
+  aimStage(focus, view, radius) {
+    const band = this.openBand();
+    const fracW = Math.max(0.35, (band.right - band.left) / band.w);
+    const fracH = Math.max(0.28, (band.bottom - band.top) / band.h);
+    const ndcX = ((band.left + band.right) / 2 / band.w) * 2 - 1;
+    const ndcY = -(((band.top + band.bottom) / 2 / band.h) * 2 - 1);
+    const fov = band.h / band.w >= 1.05 ? 50 : 46;
+    const vFov = (fov * Math.PI) / 180;
+    const aspect = band.w / band.h;
+    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
+    const dist = Math.max(radius / Math.tan((vFov * fracH * 0.62) / 2), radius / Math.tan((hFov * fracW * 0.7) / 2), 7);
+    const dir = view.clone().normalize();
+    const pos = focus.clone().addScaledVector(dir, dist);
+    pos.y += dist * 0.05;
+    const target = focus.clone();
+    this.camera.fov = fov;
+    this.camera.aspect = aspect;
+    this.camera.updateProjectionMatrix();
+    for (let i = 0; i < 12; i++) {
+      this.camera.position.copy(pos);
+      this.camera.up.set(0, 1, 0);
+      this.camera.lookAt(target);
+      this.camera.updateMatrixWorld();
+      const p = focus.clone().project(this.camera);
+      const ex = ndcX - p.x, ey = ndcY - p.y;
+      if (Math.hypot(ex, ey) < 0.02) break;
+      const forward = target.clone().sub(this.camera.position).normalize();
+      const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+      const up = new THREE.Vector3().crossVectors(right, forward).normalize();
+      const reach = this.camera.position.distanceTo(target) * Math.tan(vFov / 2);
+      target.addScaledVector(right, -ex * reach * aspect);
+      target.addScaledVector(up, -ey * reach);
+    }
+    this.controls.target.copy(target);
+    this.controls.minDistance = Math.max(5, dist * 0.55);
+    this.controls.maxDistance = dist * 1.85;
+    this.camera.updateProjectionMatrix();
+  }
+
   frameCompetition() {
     const fog = this.scene.fog;
-    const sheet = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait" || this.canvas.clientWidth < 900;
     if (this.competition === "crop") {
       fog.color.set(0x12160e);
       this.scene.background = new THREE.Color(0x10140c);
-      if (sheet) {
-        this.camera.position.set(0.3, 9, 14.5);
-        this.controls.target.set(0, -1.6, 2.2);
-      } else {
-        this.camera.position.set(0.4, 5.2, 11.2);
-        this.controls.target.set(0, 0.6, 0.2);
-      }
-      this.controls.minDistance = 6;
-      this.controls.maxDistance = 24;
+      this.aimStage(new THREE.Vector3(0, 0.8, 0), new THREE.Vector3(0.4, 4.6, 11), 2.2);
       return;
     }
     if (this.competition === "fair") {
       fog.color.set(0x140e1c);
       this.scene.background = new THREE.Color(0x100c16);
-      if (sheet) {
-        this.camera.position.set(0.3, 8.4, 14);
-        this.controls.target.set(0, -1.5, 2);
-      } else {
-        this.camera.position.set(0.4, 6.2, 10.4);
-        this.controls.target.set(0, 0.9, 0);
-      }
-      this.controls.minDistance = 6;
-      this.controls.maxDistance = 24;
+      this.aimStage(new THREE.Vector3(0, 1.2, 0), new THREE.Vector3(0.4, 5.3, 10.4), 2.3);
       return;
     }
     if (this.competition === "land") {
       fog.color.set(0x12160f);
       this.scene.background = new THREE.Color(0x10140f);
-      if (sheet) {
-        this.camera.position.set(10, 14, 26);
-        this.controls.target.set(0.4, -5, 5);
-      } else {
-        this.camera.position.set(0.2, 4.8, 13.4);
-        this.controls.target.set(0.2, 0.8, 1.2);
-      }
-      this.controls.minDistance = 6;
-      this.controls.maxDistance = 42;
+      this.aimStage(new THREE.Vector3(0.8, 1.2, 2.2), new THREE.Vector3(0, 4, 12.2), 4.4);
       return;
     }
     if (this.competition === "haven") {
       fog.color.set(0x100c14);
       this.scene.background = new THREE.Color(0x0c0a12);
-      if (sheet) {
-        this.camera.position.set(0.35, 8.2, 13.4);
-        this.controls.target.set(0, -1.7, 2.2);
-      } else {
-        this.camera.position.set(0.2, 4.4, 7.6);
-        this.controls.target.set(0, 1.15, 0);
-      }
-      this.controls.minDistance = 5;
-      this.controls.maxDistance = 22;
+      this.aimStage(new THREE.Vector3(0, 1.3, 0), new THREE.Vector3(0.2, 3.3, 7.6), 1.7);
       return;
     }
     if (this.competition !== "whistle") {
-      if (sheet) {
-        this.camera.position.set(8, 16, 28);
-        this.controls.target.set(0, -6, 6);
-        this.controls.minDistance = 10;
-        this.controls.maxDistance = 42;
-      } else {
-        this.camera.position.set(11.2, 7.4, 11.2);
-        this.controls.target.set(0, 0.6, 0);
-      }
       fog.color.set(PALETTE.void);
       this.scene.background = new THREE.Color(PALETTE.void);
+      this.aimStage(new THREE.Vector3(0, 1.2, 0), new THREE.Vector3(11.2, 6.8, 11.2), 5.2);
       return;
     }
     if (this.whistleOutcome === "exile") {
@@ -941,16 +962,7 @@ class VillageEngine {
       fog.color.set(PALETTE.void);
       this.scene.background = new THREE.Color(PALETTE.void);
     }
-    const portrait = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
-    const chosen = document.documentElement.dataset.orient === "portrait";
-    const compact = chosen || portrait || this.canvas.clientWidth < 900;
-    if (compact) {
-      this.camera.position.set(6, 13, 23);
-      this.controls.target.set(5.2, -1.6, 10.4);
-    } else {
-      this.camera.position.set(14.2, 8.2, 16.6);
-      this.controls.target.set(5.2, 1.15, 5.6);
-    }
+    this.aimStage(new THREE.Vector3(5.2, 1.8, 6), new THREE.Vector3(9, 7, 11), 4.2);
   }
 
   paintParts(parts, color, fillOp = 0.22, lineOp = 0.85) {
@@ -1225,6 +1237,12 @@ class VillageEngine {
     this.camera.updateProjectionMatrix();
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     this.renderer.setSize(w, h, false);
+    const band = this.openBand();
+    const key = [Math.round(band.w / 24), Math.round(band.h / 24), Math.round(band.bottom / 24), Math.round(band.right / 24), Math.round(band.top / 24)].join(":");
+    if (key !== this.bandKey) {
+      this.bandKey = key;
+      this.frameCompetition();
+    }
   };
 
   onMove = (e) => {
@@ -1493,6 +1511,7 @@ function showPlay() {
   boot.hidden = true;
   play.hidden = false;
   renderAll();
+  requestAnimationFrame(() => engine.frameCompetition());
 }
 
 function paintLang(root) {

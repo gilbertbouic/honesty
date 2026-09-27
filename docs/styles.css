@@ -89,7 +89,7 @@ button { font: inherit; color: inherit; }
 .boot-card {
   pointer-events: auto;
   width: min(100%, 32rem);
-  max-height: calc(100dvh - 1.5rem);
+  max-height: calc(100svh - 1.5rem);
   overflow: auto;
   padding: 1.15rem 1.25rem;
 }
@@ -102,8 +102,8 @@ button { font: inherit; color: inherit; }
   background: var(--raised);
 }
 .lang-switch button {
-  min-height: 2.1rem;
-  min-width: 2.5rem;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
   border: 0;
   border-radius: 0.55rem;
   background: transparent;
@@ -215,12 +215,12 @@ button { font: inherit; color: inherit; }
 .side {
   pointer-events: auto;
   align-self: start;
-  max-height: calc(100dvh - 12rem);
+  max-height: calc(100svh - 12rem);
   overflow: auto;
   display: flex;
   flex-direction: column;
 }
-.side.left { grid-column: 1; grid-row: 2; }
+.side.left { grid-column: 1; grid-row: 2; container-type: inline-size; }
 .side.right { grid-column: 3; grid-row: 2; }
 .side[hidden] { display: none !important; }
 .side h2 {
@@ -231,7 +231,7 @@ button { font: inherit; color: inherit; }
 .side-head, .side-foot { padding: 0.85rem 1rem; border-bottom: 1px solid var(--line); }
 .side-foot { border-bottom: 0; border-top: 1px solid var(--line); }
 .side-body { padding: 0.85rem 1rem; flex: 1; }
-.q { margin: 0; font-size: 0.88rem; line-height: 1.5; }
+.q { margin: 0; max-width: 62ch; font-size: 0.88rem; line-height: 1.5; }
 .opts { list-style: none; margin: 0.75rem 0 0; padding: 0; display: grid; gap: 0.45rem; }
 .opt {
   width: 100%;
@@ -247,6 +247,10 @@ button { font: inherit; color: inherit; }
 .opt:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); }
 .opt .letter { color: var(--cyan); font-family: var(--display); font-size: 0.75rem; width: 1rem; }
 .opt .txt { flex: 1; font-size: 0.8rem; line-height: 1.4; }
+@container (max-width: 26rem) {
+  .q { font-size: 1rem; }
+  .opt .txt { font-size: 0.95rem; }
+}
 .opt.good { border-color: var(--green); background: color-mix(in oklab, var(--green) 12%, var(--raised)); color: var(--green); }
 .opt.bad { border-color: var(--crimson); background: color-mix(in oklab, var(--crimson) 12%, var(--raised)); color: var(--crimson); }
 .week { margin-left: auto; border: 1px solid var(--line); border-radius: 0.4rem; padding: 0.2rem 0.45rem; font-size: 10px; color: var(--mute); }
@@ -376,7 +380,7 @@ button { font: inherit; color: inherit; }
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  min-height: 2rem;
+  min-height: 2.75rem;
 }
 html[data-orient="portrait"] .hud {
   display: flex;
@@ -395,7 +399,7 @@ html[data-orient="portrait"] .week { display: none !important; }
 html[data-orient="portrait"] .side.left {
   display: flex !important;
   width: 100%;
-  max-height: 46dvh;
+  max-height: min(42svh, 24rem);
   margin: 0;
   align-self: stretch;
   border-radius: 1.15rem 1.15rem 0 0;
@@ -421,7 +425,7 @@ html[data-orient="portrait"] .mobile-sheet-foot .cta { margin-top: 0; }
   background: var(--raised);
 }
 .orient-switch button {
-  min-height: 2.1rem;
+  min-height: 2.75rem;
   border: 0;
   border-radius: 0.55rem;
   background: transparent;
@@ -453,7 +457,7 @@ html[data-orient="portrait"] .mobile-sheet-foot .cta { margin-top: 0; }
   .side.left {
     display: flex !important;
     width: 100%;
-    max-height: 46dvh;
+    max-height: min(42svh, 24rem);
     margin: 0;
     align-self: stretch;
     border-radius: 1.15rem 1.15rem 0 0;

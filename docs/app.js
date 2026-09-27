@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg36";
-import { HavenScene } from "./haven.js?v=vg36";
-import { LandScene } from "./land.js?v=vg36";
-import { FairScene } from "./fair.js?v=vg36";
-import { CropScene } from "./crop.js?v=vg36";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg37";
+import { HavenScene } from "./haven.js?v=vg37";
+import { LandScene } from "./land.js?v=vg37";
+import { FairScene } from "./fair.js?v=vg37";
+import { CropScene } from "./crop.js?v=vg37";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -857,49 +857,73 @@ class VillageEngine {
 
   frameCompetition() {
     const fog = this.scene.fog;
+    const sheet = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait" || this.canvas.clientWidth < 900;
     if (this.competition === "crop") {
       fog.color.set(0x12160e);
       this.scene.background = new THREE.Color(0x10140c);
-      const portrait = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
-      this.camera.position.set(portrait ? 0.2 : 0.4, portrait ? 7.4 : 5.2, portrait ? 13.2 : 11.2);
-      this.controls.target.set(0, 0.6, 0.2);
+      if (sheet) {
+        this.camera.position.set(0.3, 9, 14.5);
+        this.controls.target.set(0, -1.6, 2.2);
+      } else {
+        this.camera.position.set(0.4, 5.2, 11.2);
+        this.controls.target.set(0, 0.6, 0.2);
+      }
       this.controls.minDistance = 6;
-      this.controls.maxDistance = 22;
+      this.controls.maxDistance = 24;
       return;
     }
     if (this.competition === "fair") {
       fog.color.set(0x140e1c);
       this.scene.background = new THREE.Color(0x100c16);
-      const portrait = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
-      this.camera.position.set(portrait ? 0.2 : 0.4, portrait ? 8.4 : 6.2, portrait ? 12.6 : 10.4);
-      this.controls.target.set(0, 0.9, 0);
+      if (sheet) {
+        this.camera.position.set(0.3, 8.4, 14);
+        this.controls.target.set(0, -1.5, 2);
+      } else {
+        this.camera.position.set(0.4, 6.2, 10.4);
+        this.controls.target.set(0, 0.9, 0);
+      }
       this.controls.minDistance = 6;
-      this.controls.maxDistance = 22;
+      this.controls.maxDistance = 24;
       return;
     }
     if (this.competition === "land") {
       fog.color.set(0x12160f);
       this.scene.background = new THREE.Color(0x10140f);
-      const portrait = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
-      this.camera.position.set(portrait ? 0.4 : 0.2, portrait ? 7.2 : 4.8, portrait ? 16.8 : 13.4);
-      this.controls.target.set(0.2, 0.8, 1.2);
+      if (sheet) {
+        this.camera.position.set(10, 14, 26);
+        this.controls.target.set(0.4, -5, 5);
+      } else {
+        this.camera.position.set(0.2, 4.8, 13.4);
+        this.controls.target.set(0.2, 0.8, 1.2);
+      }
       this.controls.minDistance = 6;
-      this.controls.maxDistance = 28;
+      this.controls.maxDistance = 42;
       return;
     }
     if (this.competition === "haven") {
       fog.color.set(0x100c14);
       this.scene.background = new THREE.Color(0x0c0a12);
-      const portrait = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
-      this.camera.position.set(portrait ? 0.35 : 0.2, portrait ? 6.6 : 4.4, portrait ? 10.4 : 7.6);
-      this.controls.target.set(0, 1.15, 0);
+      if (sheet) {
+        this.camera.position.set(0.35, 8.2, 13.4);
+        this.controls.target.set(0, -1.7, 2.2);
+      } else {
+        this.camera.position.set(0.2, 4.4, 7.6);
+        this.controls.target.set(0, 1.15, 0);
+      }
       this.controls.minDistance = 5;
-      this.controls.maxDistance = 16;
+      this.controls.maxDistance = 22;
       return;
     }
     if (this.competition !== "whistle") {
-      this.camera.position.set(11.2, 7.4, 11.2);
-      this.controls.target.set(0, 0.6, 0);
+      if (sheet) {
+        this.camera.position.set(8, 16, 28);
+        this.controls.target.set(0, -6, 6);
+        this.controls.minDistance = 10;
+        this.controls.maxDistance = 42;
+      } else {
+        this.camera.position.set(11.2, 7.4, 11.2);
+        this.controls.target.set(0, 0.6, 0);
+      }
       fog.color.set(PALETTE.void);
       this.scene.background = new THREE.Color(PALETTE.void);
       return;

@@ -26,7 +26,7 @@
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Share+Tech+Mono&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=vg35" />
+    <link rel="stylesheet" href="./styles.css?v=vg36" />
     <script type="importmap">
       {
         "imports": {
@@ -43,6 +43,7 @@
     <div id="boot" class="overlay">
       <div class="panel boot-card">
         <div class="lang-row">
+          <div class="orient-switch" id="boot-orient"></div>
           <div class="lang-switch" id="boot-lang"></div>
         </div>
         <h1 id="boot-title">Integrity Village</h1>
@@ -87,6 +88,10 @@
         <p id="mobile-meta" class="mobile-meta"></p>
         <button type="button" class="cta" id="mobile-go" hidden>Continue</button>
         <button type="button" class="mobile-reset" id="mobile-reset-game">Reset game</button>
+        <div id="stage-resets" class="stage-resets" hidden>
+          <button type="button" class="mobile-reset" id="sheet-reset-stage">Reset stage</button>
+          <button type="button" class="mobile-reset" id="sheet-reset-game">Reset game</button>
+        </div>
       </div>
       <section class="panel side right" id="board-panel" aria-label="Contractor leaderboard"></section>
       <div class="dock" id="house-dock" hidden></div>
@@ -115,6 +120,6 @@
       <span id="foot-note">Six stages. Not a court.</span>
     </footer>
 
-    <script type="module" src="./app.js?v=vg35"></script>
+    <script type="module" src="./app.js?v=vg36"></script>
   </body>
 </html>

@@ -1,13 +1,23 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg35";
-import { HavenScene } from "./haven.js?v=vg35";
-import { LandScene } from "./land.js?v=vg35";
-import { FairScene } from "./fair.js?v=vg35";
-import { CropScene } from "./crop.js?v=vg35";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg36";
+import { HavenScene } from "./haven.js?v=vg36";
+import { LandScene } from "./land.js?v=vg36";
+import { FairScene } from "./fair.js?v=vg36";
+import { CropScene } from "./crop.js?v=vg36";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
+const ORIENT_KEY = "village-orient";
+function readOrient() {
+  try {
+    const saved = localStorage.getItem(ORIENT_KEY);
+    if (saved === "portrait" || saved === "landscape") return saved;
+  } catch { /* ignore */ }
+  return window.innerHeight > window.innerWidth ? "portrait" : "landscape";
+}
+let orient = readOrient();
+document.documentElement.dataset.orient = orient;
 
 const PALETTE = { void: 0x08080c, cyan: 0x00e5ff, green: 0x3dff9a, amber: 0xe07030, crimson: 0xff3b4e };
 const DECAY = new THREE.Color(PALETTE.amber);
@@ -850,7 +860,7 @@ class VillageEngine {
     if (this.competition === "crop") {
       fog.color.set(0x12160e);
       this.scene.background = new THREE.Color(0x10140c);
-      const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
+      const portrait = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
       this.camera.position.set(portrait ? 0.2 : 0.4, portrait ? 7.4 : 5.2, portrait ? 13.2 : 11.2);
       this.controls.target.set(0, 0.6, 0.2);
       this.controls.minDistance = 6;
@@ -860,7 +870,7 @@ class VillageEngine {
     if (this.competition === "fair") {
       fog.color.set(0x140e1c);
       this.scene.background = new THREE.Color(0x100c16);
-      const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
+      const portrait = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
       this.camera.position.set(portrait ? 0.2 : 0.4, portrait ? 8.4 : 6.2, portrait ? 12.6 : 10.4);
       this.controls.target.set(0, 0.9, 0);
       this.controls.minDistance = 6;
@@ -870,7 +880,7 @@ class VillageEngine {
     if (this.competition === "land") {
       fog.color.set(0x12160f);
       this.scene.background = new THREE.Color(0x10140f);
-      const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
+      const portrait = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
       this.camera.position.set(portrait ? 0.4 : 0.2, portrait ? 7.2 : 4.8, portrait ? 16.8 : 13.4);
       this.controls.target.set(0.2, 0.8, 1.2);
       this.controls.minDistance = 6;
@@ -880,7 +890,7 @@ class VillageEngine {
     if (this.competition === "haven") {
       fog.color.set(0x100c14);
       this.scene.background = new THREE.Color(0x0c0a12);
-      const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
+      const portrait = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
       this.camera.position.set(portrait ? 0.35 : 0.2, portrait ? 6.6 : 4.4, portrait ? 10.4 : 7.6);
       this.controls.target.set(0, 1.15, 0);
       this.controls.minDistance = 5;
@@ -907,8 +917,9 @@ class VillageEngine {
       fog.color.set(PALETTE.void);
       this.scene.background = new THREE.Color(PALETTE.void);
     }
-    const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
-    const compact = portrait || this.canvas.clientWidth < 900;
+    const portrait = this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
+    const chosen = document.documentElement.dataset.orient === "portrait";
+    const compact = chosen || portrait || this.canvas.clientWidth < 900;
     if (compact) {
       this.camera.position.set(6, 13, 23);
       this.controls.target.set(5.2, -1.6, 10.4);
@@ -1488,6 +1499,19 @@ function renderBoot() {
   paintLang(document.getElementById("boot-lang"));
   paintLang(document.getElementById("play-lang"));
   paintLang(document.getElementById("play-lang-mobile"));
+  const orientRoot = document.getElementById("boot-orient");
+  if (orientRoot) {
+    orientRoot.innerHTML = ["portrait", "landscape"].map((id) => `<button type="button" data-orient="${id}" class="${orient === id ? "on" : ""}">${L(id)}</button>`).join("");
+    orientRoot.querySelectorAll("[data-orient]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        orient = btn.dataset.orient === "landscape" ? "landscape" : "portrait";
+        try { localStorage.setItem(ORIENT_KEY, orient); } catch { /* ignore */ }
+        document.documentElement.dataset.orient = orient;
+        renderBoot();
+        engine.frameCompetition();
+      });
+    });
+  }
   document.getElementById("reset-stage").textContent = L("resetStage");
   document.getElementById("reset-game").textContent = L("resetGame");
   document.getElementById("tab-reset-stage").textContent = L("resetStage");
@@ -2447,6 +2471,19 @@ function renderMobileFoot() {
     wipe.textContent = L("resetGame");
     wipe.classList.remove("armed");
   }
+  const later = state.competition !== "tender";
+  const row = document.getElementById("stage-resets");
+  const stageBtn = document.getElementById("sheet-reset-stage");
+  const stageWipe = document.getElementById("sheet-reset-game");
+  if (row && stageBtn && stageWipe) {
+    row.hidden = !later;
+    wipe.hidden = later;
+    stageBtn.textContent = L("resetStage");
+    if (!resetArmed) {
+      stageWipe.textContent = L("resetGame");
+      stageWipe.classList.remove("armed");
+    }
+  }
 }
 function advanceQuestion() {
   if (state.competition === "whistle") state.activeCaseId = firstOpenWhistleId(state.whistleResults);
@@ -2545,6 +2582,21 @@ document.getElementById("mobile-go").addEventListener("click", () => {
 });
 document.getElementById("mobile-reset-game").addEventListener("click", () => {
   const wipe = document.getElementById("mobile-reset-game");
+  if (!resetArmed) {
+    resetArmed = true;
+    wipe.textContent = L("confirmReset");
+    wipe.classList.add("armed");
+    return;
+  }
+  resetArmed = false;
+  resetGame();
+});
+document.getElementById("sheet-reset-stage")?.addEventListener("click", () => {
+  resetArmed = false;
+  resetStage();
+});
+document.getElementById("sheet-reset-game")?.addEventListener("click", () => {
+  const wipe = document.getElementById("sheet-reset-game");
   if (!resetArmed) {
     resetArmed = true;
     wipe.textContent = L("confirmReset");

@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg31";
-import { HavenScene } from "./haven.js?v=vg31";
-import { LandScene } from "./land.js?v=vg31";
-import { FairScene } from "./fair.js?v=vg31";
-import { CropScene } from "./crop.js?v=vg31";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg32";
+import { HavenScene } from "./haven.js?v=vg32";
+import { LandScene } from "./land.js?v=vg32";
+import { FairScene } from "./fair.js?v=vg32";
+import { CropScene } from "./crop.js?v=vg32";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);

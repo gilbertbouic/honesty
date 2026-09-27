@@ -166,7 +166,7 @@ var LandScene = class {
       mat.color.copy(warm ? WINDOW : lost ? VOID : WINDOW);
       mat.opacity = warm ? 0.95 : lost ? 0.06 : 0.26;
     });
-    this.seaMat.opacity = 0.42 + (reduced ? 0 : Math.sin(t * 0.8) * 0.05);
+    this.seaMat.uniforms.uTime.value = reduced ? 0.4 : t;
   }
   dispose() {
     this.group.removeFromParent();
@@ -208,12 +208,40 @@ var LandScene = class {
   buildGround() {
     const parts = { fills: [], lines: [] };
     box(this.group, this.geos, parts, 0, -0.08, 1.4, 18, 0.08, 16, SAND, 0.28);
-    const seaGeo = new THREE.PlaneGeometry(20, 7);
+    const seaGeo = new THREE.PlaneGeometry(20, 7, 32, 12);
     this.geos.push(seaGeo);
-    this.seaMat = new THREE.MeshBasicMaterial({ color: SEA, transparent: true, opacity: 0.45, side: THREE.DoubleSide });
+    this.seaMat = new THREE.ShaderMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      uniforms: {
+        uTime: { value: 0 },
+        uColor: { value: SEA }
+      },
+      vertexShader: `
+        uniform float uTime;
+        varying float vH;
+        void main() {
+          vec3 p = position;
+          float w = sin(p.x * 0.62 + uTime * 1.25) * 0.09 + sin(p.y * 1.05 + uTime * 0.85) * 0.05;
+          p.z += w;
+          vH = w;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uColor;
+        varying float vH;
+        void main() {
+          float crest = smoothstep(-0.01, 0.09, vH);
+          vec3 col = mix(uColor, vec3(0.78, 0.95, 1.0), crest * 0.7);
+          gl_FragColor = vec4(col, 0.46 + crest * 0.28);
+        }
+      `
+    });
     const sea = new THREE.Mesh(seaGeo, this.seaMat);
     sea.rotation.x = -Math.PI / 2;
-    sea.position.set(0, -0.02, 8.4);
+    sea.position.set(0, 0.02, 8.4);
     this.group.add(sea);
   }
   buildPath() {
@@ -334,34 +362,34 @@ var LandScene = class {
     this.group.add(this.flood);
   }
   buildPermit() {
-    const geo = new THREE.BoxGeometry(0.82, 1.05, 0.05);
+    const geo = new THREE.BoxGeometry(0.58, 0.74, 0.04);
     const edges = new THREE.EdgesGeometry(geo);
     this.geos.push(geo, edges);
     this.pageMat = new THREE.MeshBasicMaterial({ color: PAPER, transparent: true, opacity: 0.9, depthWrite: true });
     const page = new THREE.Mesh(geo, this.pageMat);
-    page.position.set(4.35, 1.15, 1.7);
+    page.position.set(5.55, 0.82, 2.55);
     const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: PAPER, transparent: true, opacity: 0.95 }));
     frame.position.copy(page.position);
     this.group.add(page, frame);
     const strokes = [
-      { x: -0.18, y: 0.1, w: 0.32, h: 0.045, rot: 0.4 },
-      { x: 0.02, y: 0.01, w: 0.38, h: 0.045, rot: -0.22 },
-      { x: 0.18, y: 0.09, w: 0.24, h: 0.045, rot: 0.55 },
-      { x: 0.01, y: -0.12, w: 0.46, h: 0.04, rot: 0.06 },
-      { x: -0.16, y: -0.22, w: 0.22, h: 0.04, rot: -0.45 },
-      { x: 0.14, y: -0.22, w: 0.18, h: 0.04, rot: 0.3 }
+      { x: -0.12, y: 0.08, w: 0.22, h: 0.03, rot: 0.4 },
+      { x: 0.02, y: 0, w: 0.26, h: 0.03, rot: -0.22 },
+      { x: 0.13, y: 0.07, w: 0.16, h: 0.03, rot: 0.55 },
+      { x: 0, y: -0.1, w: 0.32, h: 0.028, rot: 0.06 },
+      { x: -0.11, y: -0.16, w: 0.14, h: 0.028, rot: -0.45 },
+      { x: 0.1, y: -0.16, w: 0.12, h: 0.028, rot: 0.3 }
     ];
     strokes.forEach((stroke, i) => {
-      const mark = new THREE.BoxGeometry(stroke.w, stroke.h, 0.04);
+      const mark = new THREE.BoxGeometry(stroke.w, stroke.h, 0.03);
       this.geos.push(mark);
       const bit = new THREE.Mesh(
         mark,
         new THREE.MeshBasicMaterial({ color: CRIMSON, transparent: true, opacity: 1, depthWrite: true })
       );
-      bit.position.set(page.position.x + stroke.x, page.position.y + stroke.y, page.position.z + 0.05);
+      bit.position.set(page.position.x + stroke.x, page.position.y + stroke.y, page.position.z + 0.04);
       bit.rotation.z = stroke.rot;
       bit.userData.home = bit.position.clone();
-      bit.userData.fly = new THREE.Vector3((i - 2.5) * 0.28, 0.55 + i % 3 * 0.1, 0.2);
+      bit.userData.fly = new THREE.Vector3((i - 2.5) * 0.18, 0.42, 0.12);
       this.signBits.push(bit);
       this.group.add(bit);
     });

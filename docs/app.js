@@ -1,9 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg22";
-import { HavenScene } from "./haven.js?v=vg22";
-import { LandScene } from "./land.js?v=vg22";
-import { FairScene } from "./fair.js?v=vg22";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg23";
+import { HavenScene } from "./haven.js?v=vg23";
+import { LandScene } from "./land.js?v=vg23";
+import { FairScene } from "./fair.js?v=vg23";
+import { CropScene } from "./crop.js?v=vg23";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -457,6 +458,73 @@ function fairOutcomeOf(score, answered) {
   if (score >= 280) return "half";
   return "barred";
 }
+const CROP_CORRECT = 100;
+const CROP_WRONG = 20;
+const CROP_CASES = [
+  { id: "spray", spec: "CROP-01", title: "The wrong spray", correct: "C",
+    question: "A neighbour says the fungicide he uses on tomatoes will do for your lettuce. The label does not list lettuce. What is the lawful action?",
+    options: [
+      { id: "A", text: "Use it. A fungicide is a fungicide." },
+      { id: "B", text: "Use half the dose so the residue stays small." },
+      { id: "C", text: "Do not use it. Under the Use of Pesticides Act a pesticide may be used on a crop only if it is the one allowed for that crop. Ask FAREI which product is listed for lettuce." },
+      { id: "D", text: "Spray at night so no one sees the label." },
+    ] },
+  { id: "wait", spec: "CROP-02", title: "The waiting days", correct: "D",
+    question: "The lettuce was sprayed this morning. The label says do not harvest for seven days. A buyer is at the gate and will pay cash today. What is the lawful action?",
+    options: [
+      { id: "A", text: "Cut it. Washing removes the residue." },
+      { id: "B", text: "Cut only the outer leaves and sell the heart." },
+      { id: "C", text: "Tell the buyer it is organic and take the cash." },
+      { id: "D", text: "Wait out the interval on the label. Selling before then is how residue goes over the limit. Do not take the cash today." },
+    ] },
+  { id: "bottle", spec: "CROP-03", title: "The unmarked bottle", correct: "B",
+    question: "A seller offers a cheap pesticide in a soft-drink bottle, with no label and no approval for your crop. He says everyone in the field uses it. What is the lawful action?",
+    options: [
+      { id: "A", text: "Buy it. A lower price is the same chemical." },
+      { id: "B", text: "Refuse it. Do not store it and do not spray it. Use only a labelled product that is allowed on that crop. Report the unmarked bottle to the Pesticides Regulatory Office." },
+      { id: "C", text: "Pour it into your own tank and write the crop name on the bottle yourself." },
+      { id: "D", text: "Use it once, on a corner of the field, to test it." },
+    ] },
+  { id: "cans", spec: "CROP-04", title: "The empty cans", correct: "D",
+    question: "After spraying, the empty cans are piled by the canal. Someone says to rinse them into the water, or to burn them behind the shed. What is the lawful action?",
+    options: [
+      { id: "A", text: "Rinse them into the canal. The water will carry it off." },
+      { id: "B", text: "Burn them. Ash is cleaner than plastic." },
+      { id: "C", text: "Bury them in the bed you will plant next week." },
+      { id: "D", text: "Do not pour them into the canal and do not burn them. Triple-rinse into the spray tank, then take the empties to the collection point in the Pesticides Code of Practice. The canal is not a drain for chemicals." },
+    ] },
+  { id: "mix", spec: "CROP-05", title: "The mix", correct: "C",
+    question: "A grower mixes three pesticides so that each one stays under its own limit. He says the law only checks one chemical at a time. What is the lawful action?",
+    options: [
+      { id: "A", text: "Mix them. If each stays under its limit, the lot is legal." },
+      { id: "B", text: "Mix them, then add water until the colour looks light." },
+      { id: "C", text: "Do not mix them to dodge the limit. Use only the product allowed for that crop, at the dose on the label. A cocktail is not a way around the Use of Pesticides Act." },
+      { id: "D", text: "Mix them on the imported lot only. Local lots must stay single." },
+    ] },
+  { id: "stall", spec: "CROP-06", title: "The lot already eaten", correct: "C",
+    question: "A lot of coriander fails the test: the pesticide was not recommended for that crop. The result is late. The stallholder says sell what is left, because people have already eaten the rest. What is the lawful action?",
+    options: [
+      { id: "A", text: "Sell the rest. The damage is already done." },
+      { id: "B", text: "Move it to another stall and do not mention the test." },
+      { id: "C", text: "Do not sell the rest. A failed lot stays off the stall. Keep the spray record and tell the Pesticides Regulatory Office. A late result is not a licence to clear the stock." },
+      { id: "D", text: "Sell it cooked. Heat removes the residue." },
+    ] },
+];
+const CSHORT = { spray: "Spray", wait: "Wait", bottle: "Bottle", cans: "Cans", mix: "Mix", stall: "Stall" };
+function roundFiveCleared(results) {
+  return results.length >= FAIR_CASES.length && results.every((r) => r.correct);
+}
+function cropCaseById(id) { return CROP_CASES.find((c) => c.id === id) ?? CROP_CASES[0]; }
+function firstOpenCropId(results) {
+  const done = new Set(results.map((r) => r.caseId));
+  return CROP_CASES.find((c) => !done.has(c.id))?.id ?? CROP_CASES[0].id;
+}
+function cropOutcomeOf(score, answered) {
+  if (answered < CROP_CASES.length) return "open";
+  if (score >= 500) return "grown";
+  if (score >= 280) return "thin";
+  return "bare";
+}
 function winnerOf(bids) { return Object.entries(bids).sort((a, b) => b[1] - a[1])[0][0]; }
 function holdingsLabel(name, houses) {
   const owned = houses.filter((h) => h.owner === name);
@@ -731,6 +799,7 @@ class VillageEngine {
     this.haven = new HavenScene(this.scene);
     this.land = new LandScene(this.scene);
     this.fair = new FairScene(this.scene);
+    this.crop = new CropScene(this.scene);
     this.havenOutcome = "open";
     this.havenCorrect = 0;
     this.landOutcome = "open";
@@ -760,10 +829,13 @@ class VillageEngine {
     this.landCorrect = next.landCorrect || 0;
     this.fairOutcome = next.fairOutcome || "open";
     this.fairCorrect = next.fairCorrect || 0;
+    this.cropOutcome = next.cropOutcome || "open";
+    this.cropCorrect = next.cropCorrect || 0;
     this.haven.sync(this.competition, this.havenOutcome, this.havenCorrect);
     this.land.sync(this.competition, this.landOutcome, this.landCorrect);
     this.fair.sync(this.competition, this.fairOutcome, this.fairCorrect);
-    const solo = this.competition === "land" || this.competition === "fair";
+    this.crop.sync(this.competition, this.cropOutcome, this.cropCorrect);
+    const solo = this.competition === "land" || this.competition === "fair" || this.competition === "crop";
     if (this.ground) this.ground.visible = !solo;
     if (this.canal) this.canal.visible = !solo;
     this.plazaRing.visible = !solo;
@@ -774,6 +846,16 @@ class VillageEngine {
 
   frameCompetition() {
     const fog = this.scene.fog;
+    if (this.competition === "crop") {
+      fog.color.set(0x12160e);
+      this.scene.background = new THREE.Color(0x10140c);
+      const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
+      this.camera.position.set(portrait ? 0.2 : 0.4, portrait ? 7.4 : 5.2, portrait ? 13.2 : 11.2);
+      this.controls.target.set(0, 0.6, 0.2);
+      this.controls.minDistance = 6;
+      this.controls.maxDistance = 22;
+      return;
+    }
     if (this.competition === "fair") {
       fog.color.set(0x140e1c);
       this.scene.background = new THREE.Color(0x100c16);
@@ -1121,8 +1203,8 @@ class VillageEngine {
     for (const house of this.houseState) {
       const v = this.visuals.get(house.id);
       if (!v) continue;
-      v.group.visible = this.competition !== "land" && this.competition !== "fair";
-      if (this.competition === "land" || this.competition === "fair") continue;
+      v.group.visible = this.competition !== "land" && this.competition !== "fair" && this.competition !== "crop";
+      if (this.competition === "land" || this.competition === "fair" || this.competition === "crop") continue;
       const hovered = this.hoveredId === house.id || this.hoverId === house.id;
       const selected = this.selectedId === house.id;
       const target = house.renovated || hovered ? 1 : 0;
@@ -1156,6 +1238,7 @@ class VillageEngine {
     this.haven.tick(dt, t, this.reduced);
     this.land.tick(dt, t, this.reduced);
     this.fair.tick(dt, t, this.reduced);
+    this.crop.tick(dt, t, this.reduced);
     this.renderer.render(this.scene, this.camera);
   };
 }
@@ -1172,6 +1255,7 @@ function defaultState() {
     havenResults: [], activeHavenId: HAVEN_CASES[0].id, havenScore: 0, havenOutcome: "open",
     landResults: [], activeLandId: LAND_CASES[0].id, landScore: 0, landOutcome: "open",
     fairResults: [], activeFairId: FAIR_CASES[0].id, fairScore: 0, fairOutcome: "open",
+    cropResults: [], activeCropId: CROP_CASES[0].id, cropScore: 0, cropOutcome: "open",
   };
 }
 
@@ -1225,6 +1309,8 @@ function persist(state) {
       landScore: state.landScore, landOutcome: state.landOutcome,
       fairResults: state.fairResults, activeFairId: state.activeFairId,
       fairScore: state.fairScore, fairOutcome: state.fairOutcome,
+      cropResults: state.cropResults, activeCropId: state.activeCropId,
+      cropScore: state.cropScore, cropOutcome: state.cropOutcome,
     }));
   } catch { /* ignore */ }
 }
@@ -1259,6 +1345,8 @@ function syncPayload() {
     landCorrect: (state.landResults || []).filter((r) => r.correct).length,
     fairOutcome: state.fairOutcome,
     fairCorrect: (state.fairResults || []).filter((r) => r.correct).length,
+    cropOutcome: state.cropOutcome,
+    cropCorrect: (state.cropResults || []).filter((r) => r.correct).length,
   };
 }
 engine.sync(syncPayload());
@@ -1287,7 +1375,12 @@ function resetStage() {
   state.mobileTab = "tender";
   state.hoveredId = null;
   state.selectedId = null;
-  if (state.competition === "fair") {
+  if (state.competition === "crop") {
+    state.cropResults = [];
+    state.activeCropId = CROP_CASES[0].id;
+    state.cropScore = 0;
+    state.cropOutcome = "open";
+  } else if (state.competition === "fair") {
     state.fairResults = [];
     state.activeFairId = FAIR_CASES[0].id;
     state.fairScore = 0;
@@ -1374,26 +1467,29 @@ function renderHeader() {
   const haven = state.competition === "haven";
   const land = state.competition === "land";
   const fair = state.competition === "fair";
+  const crop = state.competition === "crop";
   document.getElementById("phase-kicker").textContent = L("projectPhase");
   document.querySelector('#comp-switch [data-comp="tender"]').textContent = L("tenders");
   document.querySelector('#comp-switch [data-comp="whistle"]').textContent = L("whistle");
   document.querySelector('#comp-switch [data-comp="haven"]').textContent = L("haven");
   document.querySelector('#comp-switch [data-comp="land"]').textContent = L("land");
   document.querySelector('#comp-switch [data-comp="fair"]').textContent = L("fair");
-  document.getElementById("phase-title").textContent = fair ? L("phaseFair") : land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
-  document.getElementById("stat-label").textContent = fair ? L("fairScore") : land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
+  document.querySelector('#comp-switch [data-comp="crop"]').textContent = L("crop");
+  document.getElementById("phase-title").textContent = crop ? L("phaseCrop") : fair ? L("phaseFair") : land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
+  document.getElementById("stat-label").textContent = crop ? L("cropScore") : fair ? L("fairScore") : land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
   const won = state.results.filter((r) => r.winnerId === "you").length;
   const stat = document.getElementById("stat-won");
-  stat.textContent = fair ? `${state.fairScore}/${FAIR_CASES.length * 100}` : land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
+  stat.textContent = crop ? `${state.cropScore}/${CROP_CASES.length * 100}` : fair ? `${state.fairScore}/${FAIR_CASES.length * 100}` : land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
   stat.className = "mono";
-  stat.style.color = fair ? "#b388ff" : land ? "#e6c36a" : haven ? "" : whistle ? "" : "";
+  stat.style.color = crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
   if (haven) stat.className = "mono rose";
   if (whistle) stat.className = "mono amber";
-  if (!fair && !land && !haven && !whistle) stat.className = "mono green";
+  if (!crop && !fair && !land && !haven && !whistle) stat.className = "mono green";
   const swept = roundOneCleared(state.results, state.contractorId);
   const lineOpen = roundTwoCleared(state.whistleResults);
   const landOpen = roundThreeCleared(state.havenResults);
   const fairOpen = roundFourCleared(state.landResults);
+  const cropOpen = roundFiveCleared(state.fairResults);
   document.querySelectorAll("#comp-switch button").forEach((b) => {
     b.classList.toggle("on", b.dataset.comp === state.competition);
     if (b.dataset.comp === "whistle") {
@@ -1412,20 +1508,26 @@ function renderHeader() {
       b.classList.toggle("locked", !fairOpen);
       b.title = fairOpen ? L("fairHint") : L("lockFair");
     }
+    if (b.dataset.comp === "crop") {
+      b.classList.toggle("locked", !cropOpen);
+      b.title = cropOpen ? L("cropHint") : L("lockCrop");
+    }
   });
   const qcount = document.getElementById("qcount");
-  qcount.textContent = fair
-    ? `${state.fairResults.length}/${FAIR_CASES.length}`
-    : land
-      ? `${state.landResults.length}/${LAND_CASES.length}`
-      : haven
-        ? `${state.havenResults.length}/${HAVEN_CASES.length}`
-        : whistle
-          ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
-          : `${state.results.length}/${TENDERS.length}`;
+  qcount.textContent = crop
+    ? `${state.cropResults.length}/${CROP_CASES.length}`
+    : fair
+      ? `${state.fairResults.length}/${FAIR_CASES.length}`
+      : land
+        ? `${state.landResults.length}/${LAND_CASES.length}`
+        : haven
+          ? `${state.havenResults.length}/${HAVEN_CASES.length}`
+          : whistle
+            ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
+            : `${state.results.length}/${TENDERS.length}`;
   qcount.className = haven ? "qcount rose" : whistle ? "qcount amber" : "qcount green";
-  qcount.style.color = fair ? "#b388ff" : land ? "#e6c36a" : "";
-  document.getElementById("tab-case").textContent = fair || land || haven || whistle ? L("case") : L("tender");
+  qcount.style.color = crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
+  document.getElementById("tab-case").textContent = crop || fair || land || haven || whistle ? L("case") : L("tender");
   document.getElementById("tab-round").textContent = state.competition === "tender"
     ? L("whistle")
     : state.competition === "whistle" && lineOpen
@@ -1434,13 +1536,17 @@ function renderHeader() {
         ? L("land")
         : state.competition === "land" && fairOpen
           ? L("fair")
-          : L("tenders");
+          : state.competition === "fair" && cropOpen
+            ? L("crop")
+            : L("tenders");
   document.querySelectorAll("#mobile-tabs button[data-tab]").forEach((b) => {
     b.classList.toggle("whistle", whistle && b.classList.contains("on"));
     b.classList.toggle("haven", haven && b.classList.contains("on"));
   });
   document.getElementById("contractor-chips").innerHTML = `
-    <span class="kicker mute">${fair
+    <span class="kicker mute">${crop
+      ? L("rowsHeld", { n: state.cropResults.filter((r) => r.correct).length, total: CROP_CASES.length })
+      : fair
       ? L("gatesHeld", { n: state.fairResults.filter((r) => r.correct).length, total: FAIR_CASES.length })
       : land
         ? L("plotsHeld", { n: state.landResults.filter((r) => r.correct).length, total: LAND_CASES.length })
@@ -1777,7 +1883,7 @@ function renderFair() {
       ${result && remaining ? `<button type="button" class="cta" id="next-fair" style="margin-top:.75rem;background:#b388ff">${L("nextGate")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.fairOutcome === "fair" ? "var(--green)" : state.fairOutcome === "half" ? "#b388ff" : "var(--crimson)"}">${
         state.fairOutcome === "fair" ? L("doneFair") : state.fairOutcome === "half" ? L("doneHalf") : L("doneBarred")
-      }</p>` : ""}
+      }</p>${roundFiveCleared(state.fairResults) ? `<button type="button" class="cta" id="open-crop" style="margin-top:.75rem;background:#6fbf73">${L("openCrop")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-fair]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1795,6 +1901,16 @@ function renderFair() {
   document.getElementById("next-fair")?.addEventListener("click", () => {
     if (state.fairOutcome !== "open") return;
     state.activeFairId = firstOpenFairId(state.fairResults);
+    persist(state);
+    renderAll();
+  });
+  document.getElementById("open-crop")?.addEventListener("click", () => {
+    if (!roundFiveCleared(state.fairResults)) return;
+    state.competition = "crop";
+    state.mobileTab = "tender";
+    state.showOutcome = false;
+    play.classList.add("show-tender");
+    play.classList.remove("show-board");
     persist(state);
     renderAll();
   });
@@ -1817,7 +1933,87 @@ function answerFair(picked) {
   renderOutcome();
 }
 
+function renderCrop() {
+  const raw = cropCaseById(state.activeCropId);
+  const item = localizeCrop(raw, lang);
+  const result = state.cropResults.find((r) => r.caseId === item.id);
+  const locked = Boolean(result);
+  const remaining = CROP_CASES.some((c) => !state.cropResults.some((r) => r.caseId === c.id));
+  const held = Boolean(result?.correct);
+  const panel = document.getElementById("tender-panel");
+  panel.classList.toggle("award", held);
+  panel.classList.toggle("reject", locked && !held);
+  panel.innerHTML = `
+    <div class="side-head">
+      <p class="kicker" style="color:#6fbf73">${L("briefCrop")} · ${item.spec}</p>
+      <h2>${item.title}</h2>
+      <p class="mono mute">${state.cropResults.length}/${CROP_CASES.length}</p>
+    </div>
+    <div class="spec-nav">
+      ${CROP_CASES.map((c) => {
+        const done = state.cropResults.some((r) => r.caseId === c.id);
+        const hit = state.cropResults.find((r) => r.caseId === c.id);
+        const on = c.id === item.id;
+        return `<button type="button" data-crop="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, CSHORT[c.id])}</button>`;
+      }).join("")}
+    </div>
+    <div class="side-body">
+      <p>${item.question}</p>
+      <div class="opts">
+        ${item.options.map((opt) => {
+          const picked = result?.picked === opt.id;
+          const isCorrect = opt.id === item.correct;
+          const cls = picked && held ? "correct" : picked && locked ? "wrong" : locked && isCorrect ? "correct" : "";
+          return `<button type="button" class="opt ${cls}" data-copt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
+        }).join("")}
+      </div>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsCrop") : L("missCrop")) : L("scoring")}</p>
+      <p style="font-size:.8rem">${L("scoringCrop")}</p>
+      ${result && remaining ? `<button type="button" class="cta" id="next-crop" style="margin-top:.75rem;background:#6fbf73">${L("nextRow")}</button>` : ""}
+      ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.cropOutcome === "grown" ? "var(--green)" : state.cropOutcome === "thin" ? "#6fbf73" : "var(--crimson)"}">${
+        state.cropOutcome === "grown" ? L("doneGrown") : state.cropOutcome === "thin" ? L("doneThin") : L("doneBare")
+      }</p>` : ""}
+    </div>`;
+  panel.querySelectorAll("[data-crop]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!roundFiveCleared(state.fairResults)) {
+        showToast(L("toastLockCrop"), "info");
+        return;
+      }
+      state.activeCropId = btn.dataset.crop;
+      state.competition = "crop";
+      persist(state);
+      renderAll();
+    });
+  });
+  panel.querySelectorAll("[data-copt]").forEach((btn) => btn.addEventListener("click", () => answerCrop(btn.dataset.copt)));
+  document.getElementById("next-crop")?.addEventListener("click", () => {
+    if (state.cropOutcome !== "open") return;
+    state.activeCropId = firstOpenCropId(state.cropResults);
+    persist(state);
+    renderAll();
+  });
+}
+
+function answerCrop(picked) {
+  if (!state.contractorId || !roundFiveCleared(state.fairResults)) return;
+  const item = cropCaseById(state.activeCropId);
+  if (state.cropResults.some((r) => r.caseId === item.id)) return;
+  const correct = picked === item.correct;
+  state.cropResults.push({ caseId: item.id, picked, correct, playerScore: correct ? CROP_CORRECT : CROP_WRONG });
+  state.cropScore += correct ? CROP_CORRECT : CROP_WRONG;
+  state.cropOutcome = cropOutcomeOf(state.cropScore, state.cropResults.length);
+  if (state.cropOutcome !== "open") {
+    state.showOutcome = true;
+    showToast(state.cropOutcome === "grown" ? L("toastGrown") : state.cropOutcome === "thin" ? L("toastThin") : L("toastBare"), state.cropOutcome);
+  } else showToast(correct ? L("toastRow") : L("toastWilt"), correct ? "award" : "reject");
+  persist(state);
+  renderAll();
+  renderOutcome();
+}
+
 function renderCase() {
+  if (state.competition === "crop") return renderCrop();
   if (state.competition === "fair") return renderFair();
   if (state.competition === "land") return renderLand();
   if (state.competition === "haven") return renderHaven();
@@ -1944,9 +2140,14 @@ function renderOutcome() {
   const haven = state.competition === "haven";
   const land = state.competition === "land";
   const fair = state.competition === "fair";
-  const outcome = fair ? state.fairOutcome : land ? state.landOutcome : haven ? state.havenOutcome : state.whistleOutcome;
+  const crop = state.competition === "crop";
+  const outcome = crop ? state.cropOutcome : fair ? state.fairOutcome : land ? state.landOutcome : haven ? state.havenOutcome : state.whistleOutcome;
   if (!state.showOutcome || state.competition === "tender" || outcome === "open") { el.hidden = true; return; }
-  const copy = fair ? {
+  const copy = crop ? {
+    grown: { kicker: L("topScore"), title: L("grownTitle"), body: L("grownBody"), cls: "award" },
+    thin: { kicker: L("midScore"), title: L("thinTitle"), body: L("thinBody"), cls: "burn" },
+    bare: { kicker: L("lowScore"), title: L("bareTitle"), body: L("bareBody"), cls: "reject" },
+  }[state.cropOutcome] : fair ? {
     fair: { kicker: L("topScore"), title: L("fairTitle"), body: L("fairBody"), cls: "award" },
     half: { kicker: L("midScore"), title: L("halfTitle"), body: L("halfBody"), cls: "burn" },
     barred: { kicker: L("lowScore"), title: L("barredTitle"), body: L("barredBody"), cls: "reject" },
@@ -1966,7 +2167,9 @@ function renderOutcome() {
   document.getElementById("outcome-kicker").textContent = copy.kicker;
   document.getElementById("outcome-title").textContent = copy.title;
   document.getElementById("outcome-body").textContent = copy.body;
-  document.getElementById("outcome-score").textContent = fair
+  document.getElementById("outcome-score").textContent = crop
+    ? L("scoreCrop", { score: state.cropScore })
+    : fair
     ? L("scoreFair", { score: state.fairScore })
     : land
     ? L("scoreLand", { score: state.landScore })
@@ -1986,6 +2189,19 @@ function renderBoard() {
     return;
   }
   board.hidden = false;
+  if (state.competition === "crop") {
+    const rows = state.cropResults.filter((r) => r.correct).length;
+    board.innerHTML = `
+      <div class="side-head">
+        <p class="kicker" style="color:#6fbf73">${L("boardCrop")}</p>
+        <h2>${L("notRanking")}</h2>
+      </div>
+      <div class="side-body">
+        <p style="font-size:.8rem">${L("cropRule")}</p>
+        <p class="mono green">${L("rowsHeld", { n: rows, total: CROP_CASES.length })}</p>
+      </div>`;
+    return;
+  }
   if (state.competition === "fair") {
     const gates = state.fairResults.filter((r) => r.correct).length;
     board.innerHTML = `
@@ -2064,6 +2280,11 @@ function renderDock() {
   if (state.competition === "fair") {
     dock.hidden = false;
     dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#b388ff">${L("dockFair")}</p></div>`;
+    return;
+  }
+  if (state.competition === "crop") {
+    dock.hidden = false;
+    dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#6fbf73">${L("dockCrop")}</p></div>`;
     return;
   }
   const id = state.selectedId ?? state.hoveredId;
@@ -2160,6 +2381,10 @@ document.getElementById("comp-switch").addEventListener("click", (e) => {
     showToast(L("toastLockFair"), "info");
     return;
   }
+  if (btn.dataset.comp === "crop" && !roundFiveCleared(state.fairResults)) {
+    showToast(L("toastLockCrop"), "info");
+    return;
+  }
   state.showOutcome = false;
   state.competition = btn.dataset.comp;
   state.mobileTab = "tender";
@@ -2186,6 +2411,7 @@ document.getElementById("tab-round").addEventListener("click", () => {
   else if (state.competition === "whistle" && roundTwoCleared(state.whistleResults)) next = "haven";
   else if (state.competition === "haven" && roundThreeCleared(state.havenResults)) next = "land";
   else if (state.competition === "land" && roundFourCleared(state.landResults)) next = "fair";
+  else if (state.competition === "fair" && roundFiveCleared(state.fairResults)) next = "crop";
   if (next === "whistle" && !roundOneCleared(state.results, state.contractorId)) {
     showToast(L("toastLock"), "info");
     return;
@@ -2202,6 +2428,10 @@ document.getElementById("tab-round").addEventListener("click", () => {
     showToast(L("toastLockFair"), "info");
     return;
   }
+  if (next === "crop" && !roundFiveCleared(state.fairResults)) {
+    showToast(L("toastLockCrop"), "info");
+    return;
+  }
   state.competition = next;
   state.showOutcome = false;
   state.mobileTab = "tender";
@@ -2216,6 +2446,7 @@ if ((state.whistleResults || []).length < WHISTLE_CASES.length) state.whistleOut
 if ((state.havenResults || []).length < HAVEN_CASES.length) state.havenOutcome = "open";
 if ((state.landResults || []).length < LAND_CASES.length) state.landOutcome = "open";
 if ((state.fairResults || []).length < FAIR_CASES.length) state.fairOutcome = "open";
+if ((state.cropResults || []).length < CROP_CASES.length) state.cropOutcome = "open";
 for (const id of ["market", "clinic", "hall", "bus"]) {
   if (state.results.some((r) => r.houseId === id)) continue;
   const h = state.houses.find((x) => x.id === id);
@@ -2235,6 +2466,9 @@ if (!roundThreeCleared(state.havenResults) && state.competition === "land") {
 }
 if (!roundFourCleared(state.landResults) && state.competition === "fair") {
   state.competition = roundThreeCleared(state.havenResults) ? "land" : "haven";
+}
+if (!roundFiveCleared(state.fairResults) && state.competition === "crop") {
+  state.competition = roundFourCleared(state.landResults) ? "fair" : "land";
 }
 renderBoot();
 if (state.phase === "play") showPlay();

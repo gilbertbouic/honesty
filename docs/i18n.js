@@ -10,7 +10,7 @@ var UI = {
     stage3: "Stage 3: Domestic Violence",
     stage4: "Stage 4: Land Use",
     stage5: "Stage 5: Discrimination",
-    stage6: "Stage 6: Elections",
+    stage6: "Stage 6: Agriculture",
     choose: "Choose your character",
     enter: "Enter",
     langLabel: "Language",
@@ -199,7 +199,38 @@ var UI = {
     fairRule: "The Equal Opportunities Act protects age, caste, colour, creed, ethnic origin, race and sex. A shop, a school, a job and a hall stay open.",
     gatesHeld: "{n}/{total} gates held",
     openFair: "Open the square",
-    dockFair: "Square \xB7 gates"
+    dockFair: "Square \xB7 gates",
+    phaseCrop: "Agriculture \xB7 the field",
+    crop: "Field",
+    cropScore: "Field score",
+    cropHint: "Stage 6 \xB7 agriculture",
+    lockCrop: "Hold every discrimination answer to open stage 6",
+    briefCrop: "Field file",
+    holdsCrop: "The row holds \xB7 +100",
+    missCrop: "The row slips \xB7 +20",
+    scoringCrop: "Five or six correct: the rows grow. Two to four: the field stays thin. None or one: the beds stay bare.",
+    nextRow: "Next row",
+    doneGrown: "File complete \xB7 the field is grown",
+    doneThin: "File complete \xB7 the field stays thin",
+    doneBare: "File complete \xB7 the beds stay bare",
+    grownTitle: "The rows are grown",
+    grownBody: "Lettuce, tomato, chilli, herbs, cabbage and cucumber fill the beds. The spray matched the crop, and the canal stayed clean.",
+    thinTitle: "The field stays thin",
+    thinBody: "Some rows grew and some did not. A bed is still small. The file is not finished.",
+    bareTitle: "The beds stay bare",
+    bareBody: "The file did not hold. The vegetables stay small. Reset the stage and walk the questions again.",
+    scoreCrop: "Field score \xB7 {score}/600",
+    toastLockCrop: "Stage 6 is locked. Hold every discrimination answer first.",
+    toastGrown: "The field is grown. The rows stayed lawful.",
+    toastThin: "The field is only half grown.",
+    toastBare: "The beds stay bare.",
+    toastRow: "Row held. The crop grows.",
+    toastWilt: "That answer keeps the row small.",
+    boardCrop: "The field",
+    cropRule: "A pesticide is allowed only on the crop named for it. Do not sell before the waiting days. Do not rinse cans into the canal.",
+    rowsHeld: "{n}/{total} rows held",
+    openCrop: "Open the field",
+    dockCrop: "Field \xB7 rows"
   },
   fr: {
     title: "Village Int\xE9grit\xE9",
@@ -210,7 +241,7 @@ var UI = {
     stage3: "\xC9tape 3 : Violence domestique",
     stage4: "\xC9tape 4 : Usage des terres",
     stage5: "\xC9tape 5 : Discrimination",
-    stage6: "\xC9tape 6 : \xC9lections",
+    stage6: "\xC9tape 6 : Agriculture",
     choose: "Choisis ton personnage",
     enter: "Entrer",
     langLabel: "Langue",
@@ -399,7 +430,38 @@ var UI = {
     fairRule: "L'Equal Opportunities Act prot\xE8ge l'\xE2ge, la caste, la couleur, la croyance, l'origine ethnique, la race et le sexe. Une boutique, une \xE9cole, un emploi et une salle restent ouverts.",
     gatesHeld: "{n}/{total} portes tenues",
     openFair: "Ouvrir la place",
-    dockFair: "Place \xB7 portes"
+    dockFair: "Place \xB7 portes",
+    phaseCrop: "Agriculture \xB7 le champ",
+    crop: "Champ",
+    cropScore: "Score champ",
+    cropHint: "\xC9tape 6 \xB7 agriculture",
+    lockCrop: "Tiens chaque r\xE9ponse sur la discrimination pour ouvrir l'\xE9tape 6",
+    briefCrop: "Dossier champ",
+    holdsCrop: "Le rang tient \xB7 +100",
+    missCrop: "Le rang c\xE8de \xB7 +20",
+    scoringCrop: "Cinq ou six justes : les rangs poussent. Deux \xE0 quatre : le champ reste maigre. Z\xE9ro ou un : les planches restent nues.",
+    nextRow: "Rang suivant",
+    doneGrown: "Dossier clos \xB7 le champ a pouss\xE9",
+    doneThin: "Dossier clos \xB7 le champ reste maigre",
+    doneBare: "Dossier clos \xB7 les planches restent nues",
+    grownTitle: "Les rangs ont pouss\xE9",
+    grownBody: "Laitue, tomate, piment, herbes, chou et concombre remplissent les planches. Le produit correspondait \xE0 la culture, et le canal est rest\xE9 propre.",
+    thinTitle: "Le champ reste maigre",
+    thinBody: "Certains rangs ont pouss\xE9, d'autres non. Une planche est encore petite. Le dossier n'est pas tenu.",
+    bareTitle: "Les planches restent nues",
+    bareBody: "Le dossier n'a pas tenu. Les l\xE9gumes restent petits. R\xE9initialise l'\xE9tape et reprends les questions.",
+    scoreCrop: "Score champ \xB7 {score}/600",
+    toastLockCrop: "L'\xE9tape 6 est verrouill\xE9e. Tiens d'abord chaque r\xE9ponse sur la discrimination.",
+    toastGrown: "Le champ a pouss\xE9. Les rangs sont rest\xE9s licites.",
+    toastThin: "Le champ n'a pouss\xE9 qu'\xE0 moiti\xE9.",
+    toastBare: "Les planches restent nues.",
+    toastRow: "Rang tenu. La culture pousse.",
+    toastWilt: "Cette r\xE9ponse garde le rang petit.",
+    boardCrop: "Le champ",
+    cropRule: "Un pesticide n'est permis que sur la culture pr\xE9vue. Ne vends pas avant les jours d'attente. Ne rince pas les bidons dans le canal.",
+    rowsHeld: "{n}/{total} rangs tenus",
+    openCrop: "Ouvrir le champ",
+    dockCrop: "Champ \xB7 rangs"
   }
 };
 function loadLang() {
@@ -650,7 +712,13 @@ var SHORT_FR = {
   sex: "Sexe",
   age: "\xC2ge",
   colour: "Couleur",
-  notice: "Avis"
+  notice: "Avis",
+  spray: "Spray",
+  wait: "Attente",
+  bottle: "Fiole",
+  cans: "Bidons",
+  mix: "M\xE9lange",
+  stall: "\xC9tal"
 };
 function shortLabel(id, lang, fallback) {
   if (lang === "fr" && SHORT_FR[id]) return SHORT_FR[id];
@@ -901,12 +969,85 @@ function localizeFair(item, lang) {
     options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
   };
 }
+var CROP_FR = {
+  spray: {
+    title: "Le mauvais produit",
+    question: "Un voisin dit que le fongicide qu'il met sur les tomates ira pour ta laitue. L'\xE9tiquette ne cite pas la laitue. Quelle est l'action licite ?",
+    options: {
+      A: "L'utiliser. Un fongicide est un fongicide.",
+      B: "Mettre la moiti\xE9 de la dose pour que le r\xE9sidu reste petit.",
+      C: "Ne l'utilise pas. Sous la Use of Pesticides Act, un pesticide ne s'emploie sur une culture que s'il est celui permis pour cette culture. Demande au FAREI quel produit est pr\xE9vu pour la laitue.",
+      D: "Pulv\xE9riser la nuit pour que personne ne voie l'\xE9tiquette."
+    }
+  },
+  wait: {
+    title: "Les jours d'attente",
+    question: "La laitue a \xE9t\xE9 trait\xE9e ce matin. L'\xE9tiquette dit de ne pas r\xE9colter avant sept jours. Un acheteur est \xE0 la barri\xE8re et paie comptant aujourd'hui. Quelle est l'action licite ?",
+    options: {
+      A: "La couper. Le lavage enl\xE8ve le r\xE9sidu.",
+      B: "Couper seulement les feuilles du dehors et vendre le c\u0153ur.",
+      C: "Dire \xE0 l'acheteur que c'est bio et prendre l'argent.",
+      D: "Attendre le d\xE9lai de l'\xE9tiquette. Vendre avant, c'est comme \xE7a que le r\xE9sidu d\xE9passe la limite. Ne prends pas l'argent aujourd'hui."
+    }
+  },
+  bottle: {
+    title: "La fiole sans \xE9tiquette",
+    question: "Un vendeur propose un pesticide bon march\xE9 dans une bouteille de boisson, sans \xE9tiquette et sans autorisation pour ta culture. Il dit que tout le champ l'utilise. Quelle est l'action licite ?",
+    options: {
+      A: "L'acheter. Un prix plus bas, c'est le m\xEAme produit.",
+      B: "Le refuser. Ne le stocke pas et ne le pulv\xE9rise pas. N'utilise qu'un produit \xE9tiquet\xE9, permis pour cette culture. Signale la fiole au Pesticides Regulatory Office.",
+      C: "Le verser dans ton propre r\xE9servoir et \xE9crire le nom de la culture toi-m\xEAme.",
+      D: "L'essayer une fois, dans un coin du champ."
+    }
+  },
+  cans: {
+    title: "Les bidons vides",
+    question: "Apr\xE8s la pulv\xE9risation, les bidons vides sont empil\xE9s pr\xE8s du canal. Quelqu'un dit de les rincer dans l'eau, ou de les br\xFBler derri\xE8re le hangar. Quelle est l'action licite ?",
+    options: {
+      A: "Les rincer dans le canal. L'eau emportera le produit.",
+      B: "Les br\xFBler. La cendre est plus propre que le plastique.",
+      C: "Les enterrer dans la planche que tu planteras la semaine prochaine.",
+      D: "Ne les verse pas dans le canal et ne les br\xFBle pas. Rince-les trois fois dans la cuve, puis porte les vides au point de collecte du Pesticides Code of Practice. Le canal n'est pas un \xE9gout pour les produits."
+    }
+  },
+  mix: {
+    title: "Le m\xE9lange",
+    question: "Un planteur m\xE9lange trois pesticides pour que chacun reste sous sa propre limite. Il dit que la loi ne v\xE9rifie qu'un produit \xE0 la fois. Quelle est l'action licite ?",
+    options: {
+      A: "Les m\xE9langer. Si chacun reste sous sa limite, le lot est licite.",
+      B: "Les m\xE9langer, puis ajouter de l'eau jusqu'\xE0 ce que la couleur soit claire.",
+      C: "Ne les m\xE9lange pas pour contourner la limite. N'utilise que le produit permis pour cette culture, \xE0 la dose de l'\xE9tiquette. Un cocktail n'est pas un moyen de contourner la Use of Pesticides Act.",
+      D: "Les m\xE9langer seulement sur le lot import\xE9. Les lots locaux restent simples."
+    }
+  },
+  stall: {
+    title: "Le lot d\xE9j\xE0 mang\xE9",
+    question: "Un lot de coriandre \xE9choue au test : le pesticide n'\xE9tait pas recommand\xE9 pour cette culture. Le r\xE9sultat arrive tard. Le marchand dit de vendre le reste, parce que les gens ont d\xE9j\xE0 mang\xE9 le d\xE9but. Quelle est l'action licite ?",
+    options: {
+      A: "Vendre le reste. Le mal est d\xE9j\xE0 fait.",
+      B: "Le d\xE9placer sur un autre \xE9tal et ne pas parler du test.",
+      C: "Ne vends pas le reste. Un lot \xE9chou\xE9 reste hors de l'\xE9tal. Garde le registre de pulv\xE9risation et pr\xE9viens le Pesticides Regulatory Office. Un r\xE9sultat tardif n'est pas un permis de liquider le stock.",
+      D: "Le vendre cuit. La chaleur enl\xE8ve le r\xE9sidu."
+    }
+  }
+};
+function localizeCrop(item, lang) {
+  const fr = lang === "fr" ? CROP_FR[item.id] : void 0;
+  if (!fr) return item;
+  return {
+    ...item,
+    title: fr.title,
+    question: fr.question,
+    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
+  };
+}
 export {
   LANG_KEY,
   houseHint,
   houseLabel,
   loadLang,
   localizeCase,
+  localizeCrop,
   localizeFair,
   localizeHaven,
   localizeLand,

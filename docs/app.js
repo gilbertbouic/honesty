@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg33";
-import { HavenScene } from "./haven.js?v=vg33";
-import { LandScene } from "./land.js?v=vg33";
-import { FairScene } from "./fair.js?v=vg33";
-import { CropScene } from "./crop.js?v=vg33";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg34";
+import { HavenScene } from "./haven.js?v=vg34";
+import { LandScene } from "./land.js?v=vg34";
+import { FairScene } from "./fair.js?v=vg34";
+import { CropScene } from "./crop.js?v=vg34";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -2356,8 +2356,112 @@ function renderAll() {
   renderCase();
   renderBoard();
   renderDock();
+  renderMobileFoot();
   renderOutcome();
   engine.sync(syncPayload());
+}
+
+let resetArmed = false;
+function sheetState() {
+  const comp = state.competition;
+  if (comp === "whistle") {
+    return {
+      answered: Boolean(whistleResultFor(state.activeCaseId)),
+      n: state.whistleResults.length,
+      total: WHISTLE_CASES.length,
+      score: state.whistleScore,
+      perfect: roundTwoCleared(state.whistleResults),
+      last: false,
+    };
+  }
+  if (comp === "haven") {
+    return {
+      answered: state.havenResults.some((r) => r.caseId === state.activeHavenId),
+      n: state.havenResults.length,
+      total: HAVEN_CASES.length,
+      score: state.havenScore,
+      perfect: roundThreeCleared(state.havenResults),
+      last: false,
+    };
+  }
+  if (comp === "land") {
+    return {
+      answered: state.landResults.some((r) => r.caseId === state.activeLandId),
+      n: state.landResults.length,
+      total: LAND_CASES.length,
+      score: state.landScore,
+      perfect: roundFourCleared(state.landResults),
+      last: false,
+    };
+  }
+  if (comp === "fair") {
+    return {
+      answered: state.fairResults.some((r) => r.caseId === state.activeFairId),
+      n: state.fairResults.length,
+      total: FAIR_CASES.length,
+      score: state.fairScore,
+      perfect: roundFiveCleared(state.fairResults),
+      last: false,
+    };
+  }
+  if (comp === "crop") {
+    return {
+      answered: state.cropResults.some((r) => r.caseId === state.activeCropId),
+      n: state.cropResults.length,
+      total: CROP_CASES.length,
+      score: state.cropScore,
+      perfect: state.cropResults.length >= CROP_CASES.length && state.cropResults.every((r) => r.correct),
+      last: true,
+    };
+  }
+  return {
+    answered: Boolean(resultFor(state.activeHouseId)),
+    n: state.results.length,
+    total: TENDERS.length,
+    score: state.results.reduce((sum, r) => sum + r.playerScore, 0),
+    perfect: roundOneCleared(state.results, state.contractorId),
+    last: false,
+  };
+}
+function renderMobileFoot() {
+  const foot = sheetState();
+  const remaining = foot.n < foot.total;
+  const mode = !foot.answered ? "" : remaining ? "continue" : foot.perfect && !foot.last ? "next" : foot.perfect ? "" : "reset";
+  const meta = document.getElementById("mobile-meta");
+  const go = document.getElementById("mobile-go");
+  const wipe = document.getElementById("mobile-reset-game");
+  if (!meta || !go || !wipe) return;
+  meta.textContent = L("sheetMeta", { n: foot.n, total: foot.total, score: foot.score });
+  go.hidden = !mode;
+  go.dataset.mode = mode;
+  go.textContent = mode === "continue" ? L("continue") : mode === "next" ? L("nextStage") : L("resetStage");
+  go.style.background = mode === "reset" ? "var(--crimson)" : mode === "next" ? "var(--green)" : "var(--cyan)";
+  go.style.color = mode === "reset" ? "var(--paper)" : "var(--void)";
+  if (!resetArmed) {
+    wipe.textContent = L("resetGame");
+    wipe.classList.remove("armed");
+  }
+}
+function advanceQuestion() {
+  if (state.competition === "whistle") state.activeCaseId = firstOpenWhistleId(state.whistleResults);
+  else if (state.competition === "haven") state.activeHavenId = firstOpenHavenId(state.havenResults);
+  else if (state.competition === "land") state.activeLandId = firstOpenLandId(state.landResults);
+  else if (state.competition === "fair") state.activeFairId = firstOpenFairId(state.fairResults);
+  else if (state.competition === "crop") state.activeCropId = firstOpenCropId(state.cropResults);
+  else state.activeHouseId = firstOpenHouseId(state.results);
+  state.selectedId = state.activeHouseId;
+  persist(state);
+  renderAll();
+}
+function goNextStage() {
+  const order = ["tender", "whistle", "haven", "land", "fair", "crop"];
+  const next = order[order.indexOf(state.competition) + 1];
+  if (!next) return;
+  state.competition = next;
+  state.mobileTab = "tender";
+  state.showOutcome = false;
+  persist(state);
+  renderAll();
 }
 
 function answer(picked) {
@@ -2425,6 +2529,24 @@ document.getElementById("comp-switch").addEventListener("click", (e) => {
 document.getElementById("outcome-dismiss").addEventListener("click", () => {
   state.showOutcome = false;
   document.getElementById("outcome").hidden = true;
+});
+document.getElementById("mobile-go").addEventListener("click", () => {
+  resetArmed = false;
+  const mode = document.getElementById("mobile-go").dataset.mode;
+  if (mode === "continue") advanceQuestion();
+  else if (mode === "next") goNextStage();
+  else if (mode === "reset") resetStage();
+});
+document.getElementById("mobile-reset-game").addEventListener("click", () => {
+  const wipe = document.getElementById("mobile-reset-game");
+  if (!resetArmed) {
+    resetArmed = true;
+    wipe.textContent = L("confirmReset");
+    wipe.classList.add("armed");
+    return;
+  }
+  resetArmed = false;
+  resetGame();
 });
 document.getElementById("mobile-tabs").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-tab]");

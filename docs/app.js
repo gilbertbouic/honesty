@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg32";
-import { HavenScene } from "./haven.js?v=vg32";
-import { LandScene } from "./land.js?v=vg32";
-import { FairScene } from "./fair.js?v=vg32";
-import { CropScene } from "./crop.js?v=vg32";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg33";
+import { HavenScene } from "./haven.js?v=vg33";
+import { LandScene } from "./land.js?v=vg33";
+import { FairScene } from "./fair.js?v=vg33";
+import { CropScene } from "./crop.js?v=vg33";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -528,9 +528,9 @@ function cropOutcomeOf(score, answered) {
 function winnerOf(bids) { return Object.entries(bids).sort((a, b) => b[1] - a[1])[0][0]; }
 function holdingsLabel(name, houses) {
   const owned = houses.filter((h) => h.owner === name);
-  if (owned.length === 0) return "No holding";
+  if (owned.length === 0) return L("noAward");
   if (owned.length === 1) return owned[0].name;
-  return `${owned.length} contracts`;
+  return L("awardsHeldN", { n: owned.length });
 }
 
 const LINE_VERT = `uniform float uTime; uniform float uRenovate; uniform float uSeed;
@@ -1595,7 +1595,7 @@ function renderTender() {
   const locked = Boolean(result);
   const remaining = TENDERS.some((t) => !resultFor(t.houseId));
   const bidRows = result
-    ? `<div class="bid-row${result.winnerId === "you" ? " win" : " rejected"} me"><span class="who">${L("youName")}${result.winnerId === "you" ? ` · ${L("awardedTag")}` : ` · ${L("rejectedTag")}`}</span><span class="mono">${result.playerScore}</span></div>`
+    ? `<div class="bid-row${result.winnerId === "you" ? " win" : " rejected"} me"><span class="who">${L("seatName")}${result.winnerId === "you" ? ` · ${L("awardedTag")}` : ` · ${L("rejectedTag")}`}</span><span class="mono">${result.playerScore}</span></div>`
     : "";
   document.getElementById("tender-panel").innerHTML = `
     <div class="side-head" style="display:flex;gap:.75rem;align-items:flex-start">
@@ -2278,12 +2278,12 @@ function renderBoard() {
   document.getElementById("board-panel").innerHTML = `
     <div class="side-head">
       <p class="kicker cyan">${L("bidStandings")}</p>
-      <h2>${L("youName")}</h2>
-      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">${playerWins}/${TENDERS.length} awarded.</p>
+      <h2>${L("seatName")}</h2>
+      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">${L("awardedN", { n: playerWins })}</p>
     </div>
     <div class="side-body">
       <div class="board-row me">
-        <div class="who"><strong>${L("youName")}</strong><span>${holdingsLabel("You", state.houses)}</span></div>
+        <div class="who"><strong>${L("seatName")}</strong><span>${holdingsLabel("You", state.houses)}</span></div>
         <span class="mono cyan">${playerWins * 100}</span>
       </div>
     </div>`;

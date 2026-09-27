@@ -6,18 +6,18 @@ var ROSE = new THREE.Color(15769800);
 var PAPER = new THREE.Color(15199986);
 var VOID = new THREE.Color(1314840);
 var CYAN = new THREE.Color(58879);
-var HOUSE = new THREE.Color(12875834);
+var BLOOD = new THREE.Color(6033956);
+var EMBER = new THREE.Color(16756768);
+var FLAME = new THREE.Color(16726862);
+var STAGE = [
+  new THREE.Color(4063130),
+  new THREE.Color(3074154),
+  new THREE.Color(16726862),
+  new THREE.Color(2976767),
+  new THREE.Color(16765992),
+  new THREE.Color(4063130)
+];
 var QUIET = { x: -2.2, z: 8.7 };
-function paint(parts, color, fillOp, lineOp) {
-  for (const m of parts.fills) {
-    m.color.copy(color);
-    m.opacity = fillOp;
-  }
-  for (const m of parts.lines) {
-    m.color.copy(color);
-    m.opacity = lineOp;
-  }
-}
 function box(group, geos, parts, x, y, z, w, h, d, color, fill = 0.45) {
   const geo = new THREE.BoxGeometry(w, h, d);
   const edges = new THREE.EdgesGeometry(geo);
@@ -48,6 +48,8 @@ var HavenScene = class {
   phone;
   column;
   core;
+  stageMats = [];
+  flames = [];
   beacon;
   ribbon;
   fog;
@@ -64,6 +66,7 @@ var HavenScene = class {
     this.phone = this.buildPhone();
     this.column = this.buildColumn();
     this.core = this.column.userData.core;
+    this.buildFlames();
     this.buildStones();
     this.ribbon = this.buildRibbon();
     this.beacon = this.buildBeacon();
@@ -81,23 +84,46 @@ var HavenScene = class {
     this.group.visible = on;
     if (!on) return;
     const outcome = this.outcome;
-    const lit = outcome === "line" ? 5 : outcome === "fog" ? 0 : this.correct;
-    const shell = outcome === "line" ? GREEN : outcome === "fog" ? VOID : HOUSE;
-    paint(this.shell, shell, outcome === "fog" ? 0.82 : 0.78, 0.95);
+    const n = outcome === "line" ? 6 : outcome === "fog" ? 0 : Math.min(6, this.correct);
+    const lit = Math.min(5, n);
+    const blood = outcome === "fog" ? new THREE.Color(1312266) : BLOOD;
+    const yolk = outcome === "fog" ? new THREE.Color(3809800) : EMBER;
+    for (const m of this.shell.fills) {
+      m.color.copy(blood);
+      m.opacity = 0.88;
+    }
+    for (const m of this.shell.lines) {
+      m.color.copy(yolk);
+      m.opacity = 0.96;
+    }
     const doorTarget = outcome === "line" ? -1.2 : 0;
     const ease = reduced ? 1 : 1 - Math.exp(-3.2 * dt);
     this.door.rotation.y += (doorTarget - this.door.rotation.y) * ease;
     const curtainMat = this.curtain.material;
     const breath = reduced ? 0.34 : 0.28 + Math.sin(t * 1.3) * 0.1;
     curtainMat.opacity = outcome === "line" ? 0.08 : breath;
-    curtainMat.color.copy(outcome === "fog" ? VOID : AMBER);
+    curtainMat.color.copy(outcome === "fog" ? VOID : FLAME);
+    curtainMat.color.lerp(EMBER, reduced ? 0.5 : 0.35 + Math.sin(t * 6) * 0.35);
     const phoneMat = this.phone.material;
     const blink = reduced || outcome !== "open" ? 1 : 0.45 + Math.sin(t * 5.5) * 0.55;
     phoneMat.opacity = outcome === "fog" ? 0.15 : 0.35 + blink * 0.65;
     this.column.rotation.y = reduced ? 0.4 : t * 0.22;
     this.column.position.y = reduced ? 0 : Math.sin(t * 1.1) * 0.04;
     const coreMat = this.core.material;
-    coreMat.opacity = outcome === "fog" ? 0.95 : 0.55 + Math.sin(t * 2.2) * 0.25;
+    coreMat.opacity = outcome === "fog" ? 0.2 : 0.35;
+    this.stageMats.forEach((mat, i) => {
+      const on2 = i < n;
+      mat.color.copy(on2 ? STAGE[i] : VOID);
+      mat.opacity = on2 ? 0.94 : 0.16;
+    });
+    this.flames.forEach((mesh, i) => {
+      const burn = i >= n;
+      mesh.visible = burn;
+      if (!burn) return;
+      const mat = mesh.material;
+      mat.color.copy(FLAME).lerp(EMBER, reduced ? 0.4 : 0.5 + Math.sin(t * 8 + i) * 0.5);
+      mesh.scale.y = reduced ? 1 : 0.7 + Math.abs(Math.sin(t * 9 + i * 1.3)) * 0.55;
+    });
     for (let i = 0; i < this.stones.length; i++) {
       const onStone = i < lit;
       const mat = this.stoneMats[i];
@@ -147,6 +173,7 @@ var HavenScene = class {
       const mesh = obj;
       if (mesh.material && !Array.isArray(mesh.material)) mesh.material.dispose();
     });
+    for (const mesh of this.flames) mesh.material.dispose();
   }
   buildHouse() {
     const x = QUIET.x;
@@ -160,18 +187,18 @@ var HavenScene = class {
     const winY = 1.52;
     const south = z + D / 2 - wall / 2;
     const side = (W - winW) / 2;
-    box(this.group, this.geos, this.shell, x - W / 2 + wall / 2, H / 2, z, wall, H, D, HOUSE, 0.55);
-    box(this.group, this.geos, this.shell, x + W / 2 - wall / 2, H / 2, z, wall, H, D, HOUSE, 0.55);
-    box(this.group, this.geos, this.shell, x, H / 2, z - D / 2 + wall / 2, W, H, wall, HOUSE, 0.55);
-    box(this.group, this.geos, this.shell, x - 0.75, 0.6, south, 0.74, 1.2, wall, HOUSE, 0.7);
-    box(this.group, this.geos, this.shell, x + 0.72, 0.6, south, 0.8, 1.2, wall, HOUSE, 0.7);
-    box(this.group, this.geos, this.shell, x, 1.28, south, W, 0.12, wall, HOUSE, 0.7);
+    box(this.group, this.geos, this.shell, x - W / 2 + wall / 2, H / 2, z, wall, H, D, BLOOD, 0.7);
+    box(this.group, this.geos, this.shell, x + W / 2 - wall / 2, H / 2, z, wall, H, D, BLOOD, 0.7);
+    box(this.group, this.geos, this.shell, x, H / 2, z - D / 2 + wall / 2, W, H, wall, BLOOD, 0.7);
+    box(this.group, this.geos, this.shell, x - 0.75, 0.6, south, 0.74, 1.2, wall, BLOOD, 0.8);
+    box(this.group, this.geos, this.shell, x + 0.72, 0.6, south, 0.8, 1.2, wall, BLOOD, 0.8);
+    box(this.group, this.geos, this.shell, x, 1.28, south, W, 0.12, wall, EMBER, 0.75);
     const topH = H - (winY + winH / 2);
-    box(this.group, this.geos, this.shell, x, winY + winH / 2 + topH / 2, south, W, topH, wall, HOUSE, 0.62);
-    box(this.group, this.geos, this.shell, x - winW / 2 - side / 2, winY, south, side, winH, wall, HOUSE, 0.62);
-    box(this.group, this.geos, this.shell, x + winW / 2 + side / 2, winY, south, side, winH, wall, HOUSE, 0.62);
-    box(this.group, this.geos, this.shell, x, H + 0.08, z, W + 0.24, 0.16, D + 0.2, HOUSE, 0.4);
-    box(this.group, this.geos, this.shell, x, 0.06, z + D / 2 + 0.35, 1.5, 0.08, 0.7, HOUSE, 0.35);
+    box(this.group, this.geos, this.shell, x, winY + winH / 2 + topH / 2, south, W, topH, wall, BLOOD, 0.75);
+    box(this.group, this.geos, this.shell, x - winW / 2 - side / 2, winY, south, side, winH, wall, BLOOD, 0.75);
+    box(this.group, this.geos, this.shell, x + winW / 2 + side / 2, winY, south, side, winH, wall, EMBER, 0.55);
+    box(this.group, this.geos, this.shell, x, H + 0.08, z, W + 0.24, 0.16, D + 0.2, EMBER, 0.35);
+    box(this.group, this.geos, this.shell, x, 0.06, z + D / 2 + 0.35, 1.5, 0.08, 0.7, BLOOD, 0.4);
   }
   buildDoor() {
     const hinge = new THREE.Group();
@@ -179,7 +206,7 @@ var HavenScene = class {
     const geo = new THREE.BoxGeometry(0.7, 1.16, 0.06);
     this.geos.push(geo);
     const mat = new THREE.MeshBasicMaterial({
-      color: HOUSE,
+      color: BLOOD,
       transparent: true,
       opacity: 0.8,
       depthWrite: true
@@ -238,20 +265,23 @@ var HavenScene = class {
       g.add(mesh);
       return mesh;
     };
-    add(new THREE.CylinderGeometry(0.42, 0.5, 0.08, 6), ROSE, 0.06, 0.7);
-    add(new THREE.BoxGeometry(0.46, 0.7, 0.46), PAPER, 0.55, 0.28);
-    add(new THREE.BoxGeometry(0.38, 0.62, 0.38), GREEN, 1.28, 0.38);
-    add(new THREE.BoxGeometry(0.3, 0.5, 0.3), ROSE, 1.92, 0.45);
-    const ringGeo = new THREE.TorusGeometry(0.34, 0.025, 8, 18);
-    geos.push(ringGeo);
-    const ring = new THREE.Mesh(
-      ringGeo,
-      new THREE.MeshBasicMaterial({ color: ROSE, transparent: true, opacity: 0.9 })
-    );
-    ring.rotation.x = Math.PI / 2;
-    ring.position.y = 1.28;
-    g.add(ring);
-    const core = add(new THREE.CylinderGeometry(0.045, 0.045, 2.15, 8), PAPER, 1.15, 0.85);
+    add(new THREE.CylinderGeometry(0.46, 0.52, 0.08, 6), VOID, 0.05, 0.45);
+    for (let i = 0; i < 6; i++) {
+      const w = 0.5 - i * 0.025;
+      const geo = new THREE.BoxGeometry(w, 0.32, w);
+      geos.push(geo);
+      const mat = new THREE.MeshBasicMaterial({
+        color: VOID,
+        transparent: true,
+        opacity: 0.16,
+        depthWrite: true
+      });
+      this.stageMats.push(mat);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.y = 0.28 + i * 0.36;
+      g.add(mesh);
+    }
+    const core = add(new THREE.CylinderGeometry(0.035, 0.035, 2.35, 6), PAPER, 1.2, 0.35);
     const markGeo = new THREE.OctahedronGeometry(0.14, 0);
     geos.push(markGeo);
     const mark = new THREE.Mesh(
@@ -263,6 +293,30 @@ var HavenScene = class {
     g.userData.core = core;
     this.group.add(g);
     return g;
+  }
+  buildFlames() {
+    const spots = [
+      [QUIET.x - 0.85, 0.22, QUIET.z + 1.05],
+      [QUIET.x + 0.85, 0.22, QUIET.z + 1.05],
+      [QUIET.x - 1.15, 0.28, QUIET.z - 0.1],
+      [QUIET.x + 1.15, 0.28, QUIET.z - 0.1],
+      [QUIET.x - 0.35, 2.22, QUIET.z + 0.15],
+      [QUIET.x + 0.4, 2.22, QUIET.z - 0.2]
+    ];
+    for (const [x, y, z] of spots) {
+      const geo = new THREE.ConeGeometry(0.07, 0.26, 5);
+      this.geos.push(geo);
+      const mat = new THREE.MeshBasicMaterial({
+        color: EMBER,
+        transparent: true,
+        opacity: 0.92,
+        depthWrite: false
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y, z);
+      this.flames.push(mesh);
+      this.group.add(mesh);
+    }
   }
   buildStones() {
     for (let i = 0; i < 5; i++) {

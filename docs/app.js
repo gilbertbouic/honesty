@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg24";
-import { HavenScene } from "./haven.js?v=vg24";
-import { LandScene } from "./land.js?v=vg24";
-import { FairScene } from "./fair.js?v=vg24";
-import { CropScene } from "./crop.js?v=vg24";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg25";
+import { HavenScene } from "./haven.js?v=vg25";
+import { LandScene } from "./land.js?v=vg25";
+import { FairScene } from "./fair.js?v=vg25";
+import { CropScene } from "./crop.js?v=vg25";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -1055,7 +1055,7 @@ class VillageEngine {
     for (let i = 0; i < 6; i++) {
       const step = { fills: [], lines: [] };
       this.lodgeSteps.push(step);
-      this.addWBox(this.wGroup, this.wGeos, step, lx, 0.28 + i * 0.36, lz, 2.28, 0.22, 1.9, { fill: 0.04, depth: true, color: GREEN });
+      this.addWBox(this.wGroup, this.wGeos, step, lx, 0.28 + i * 0.36, lz, 2.28, 0.34, 1.9, { fill: 0.04, depth: true, color: GREEN });
     }
     const glassGeo = new THREE.BoxGeometry(0.04, 1.08, 0.96);
     this.wGeos.push(glassGeo);
@@ -1104,8 +1104,6 @@ class VillageEngine {
     const seized = outcome === "jail" ? GREEN : outcome === "exile" ? CRIMSON : null;
     const show = whistle ? 1 : 0;
     const n = Math.max(0, Math.min(6, this.whistleCorrect || 0));
-    const GREEN = new THREE.Color(PALETTE.green);
-    const CRIMSON = new THREE.Color(PALETTE.crimson);
     if (outcome === "burn" || outcome === "exile") {
       this.paintParts(this.villa, seized ?? idle, 0.5 * show, 0.9 * show);
       this.floors.forEach((floor) => this.paintParts(floor, seized ?? idle, 0.5 * show, 0.9 * show));
@@ -1119,9 +1117,15 @@ class VillageEngine {
       this.paintParts(this.boat, n >= 4 ? CRIMSON : CYAN, 0.5 * show, 0.9 * show);
       this.paintParts(this.pool, n >= 5 ? CRIMSON : POOL, 0.72 * show, 0.4 * show);
       this.paintParts(this.car, n >= 6 ? CRIMSON : GOLD, 0.52 * show, 0.92 * show);
-      const house = HOUSE.clone().lerp(GREEN, n / 6);
-      this.paintParts(this.lodging, house, 0.88 * show, 0.95 * show);
-      this.lodgeSteps.forEach((step, i) => this.paintParts(step, GREEN, (n > i ? 0.82 : 0.04) * show, (n > i ? 0.95 : 0.08) * show));
+      if (n >= 6) {
+        this.paintParts(this.lodging, new THREE.Color(0x121212), 0.9 * show, 0.35 * show);
+        const flag = [FLAG_GREEN, FLAG_GREEN, FLAG_YELLOW, FLAG_BLUE, FLAG_RED, FLAG_RED];
+        this.lodgeSteps.forEach((step, i) => this.paintParts(step, flag[i], 0.94 * show, 1 * show));
+      } else {
+        const house = HOUSE.clone().lerp(GREEN, n / 6);
+        this.paintParts(this.lodging, house, 0.88 * show, 0.95 * show);
+        this.lodgeSteps.forEach((step, i) => this.paintParts(step, GREEN, (n > i ? 0.82 : 0.04) * show, (n > i ? 0.95 : 0.08) * show));
+      }
     }
     this.glass.visible = whistle;
     this.glass.material.opacity = whistle ? 0.2 : 0;

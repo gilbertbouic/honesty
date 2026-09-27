@@ -50,6 +50,9 @@ var HavenScene = class {
   core;
   stageMats = [];
   flames = [];
+  walker;
+  walkerPos = new THREE.Vector3();
+  walkStops = [];
   beacon;
   ribbon;
   fog;
@@ -68,6 +71,7 @@ var HavenScene = class {
     this.core = this.column.userData.core;
     this.buildFlames();
     this.buildStones();
+    this.buildWalker();
     this.ribbon = this.buildRibbon();
     this.beacon = this.buildBeacon();
     this.fog = this.buildFog();
@@ -88,7 +92,7 @@ var HavenScene = class {
     if (!on) return;
     const outcome = this.outcome;
     const n = outcome === "line" ? 6 : outcome === "fog" ? 0 : Math.min(6, this.correct);
-    const lit = Math.min(5, n);
+    const lit = Math.min(6, n);
     const blood = outcome === "fog" ? new THREE.Color(1312266) : BLOOD;
     const yolk = outcome === "fog" ? new THREE.Color(3809800) : EMBER;
     for (const m of this.shell.fills) {
@@ -134,6 +138,22 @@ var HavenScene = class {
       mat.opacity = onStone ? 0.9 : 0.18;
       this.stones[i].position.y = onStone && !reduced ? 0.08 + Math.sin(t * 2 + i) * 0.03 : 0.05;
     }
+    const step = Math.max(0, Math.min(this.walkStops.length - 1, n));
+    const goal = this.walkStops[step];
+    const easeWalk = reduced ? 1 : 1 - Math.exp(-3.6 * dt);
+    this.walkerPos.lerp(goal, easeWalk);
+    const grow = 0.32 + n / 6 * 0.96;
+    const s = this.walker.scale.x + (grow - this.walker.scale.x) * easeWalk;
+    this.walker.scale.setScalar(Math.max(0.32, s));
+    this.walker.position.set(this.walkerPos.x, 0.02, this.walkerPos.z);
+    const ahead = this.walkStops[Math.min(step + 1, this.walkStops.length - 1)];
+    const faceX = ahead.x - this.walkerPos.x;
+    const faceZ = ahead.z - this.walkerPos.z;
+    if (faceX * faceX + faceZ * faceZ > 4e-4) {
+      const yaw = Math.atan2(faceX, faceZ);
+      this.walker.rotation.y += (yaw - this.walker.rotation.y) * easeWalk;
+    }
+    this.walker.rotation.z = reduced ? 0 : Math.sin(t * 2.2) * 0.03;
     const ribbonMat = this.ribbon.material;
     if (lit <= 0) {
       this.ribbon.visible = false;
@@ -149,7 +169,7 @@ var HavenScene = class {
       ribbonMat.opacity = outcome === "line" ? 0.85 : 0.45;
     }
     const beaconMat = this.beacon.material;
-    beaconMat.opacity = lit >= 5 ? 0.95 : lit / 5 * 0.4;
+    beaconMat.opacity = lit >= this.stones.length ? 0.95 : lit / this.stones.length * 0.4;
     this.beacon.rotation.y = t * 0.8;
     this.beacon.position.y = 0.55 + (reduced ? 0 : Math.sin(t * 1.6) * 0.06);
     const fogMat = this.fog.material;
@@ -177,6 +197,10 @@ var HavenScene = class {
       if (mesh.material && !Array.isArray(mesh.material)) mesh.material.dispose();
     });
     for (const mesh of this.flames) mesh.material.dispose();
+    this.walker.traverse((obj) => {
+      const mesh = obj;
+      if (mesh.material && !Array.isArray(mesh.material)) mesh.material.dispose();
+    });
   }
   buildHouse() {
     const x = QUIET.x;
@@ -322,9 +346,9 @@ var HavenScene = class {
     }
   }
   buildStones() {
-    for (let i = 0; i < 5; i++) {
-      const x = QUIET.x + 0.15 + i * 0.92;
-      const z = QUIET.z + 0.55 - i * 1.05;
+    for (let i = 0; i < 6; i++) {
+      const x = this.porch.x + Math.sin((i - 2.5) * 0.42) * (0.55 + i * 0.16);
+      const z = this.porch.z + 0.42 + i * 0.36;
       this.stonePos.push(new THREE.Vector3(x, 0.05, z));
       const geo = new THREE.CylinderGeometry(0.16, 0.18, 0.06, 6);
       this.geos.push(geo);
@@ -340,6 +364,32 @@ var HavenScene = class {
       this.stones.push(mesh);
       this.group.add(mesh);
     }
+  }
+  buildWalker() {
+    const g = new THREE.Group();
+    const hair = new THREE.Color(1839126);
+    const skin = new THREE.Color(15910821);
+    const cloth = new THREE.Color(15769800);
+    const put = (geo, color, x, y, z) => {
+      this.geos.push(geo);
+      const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.96, depthWrite: true });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y, z);
+      g.add(mesh);
+    };
+    put(new THREE.ConeGeometry(0.2, 0.46, 7), cloth, 0, 0.3, 0);
+    put(new THREE.BoxGeometry(0.18, 0.22, 0.12), cloth, 0, 0.58, 0);
+    put(new THREE.SphereGeometry(0.1, 8, 8), skin, 0, 0.82, 0);
+    put(new THREE.SphereGeometry(0.11, 8, 6), hair, 0, 0.88, -0.02);
+    put(new THREE.BoxGeometry(0.18, 0.78, 0.05), hair, 0, 0.42, -0.12);
+    put(new THREE.BoxGeometry(0.045, 0.62, 0.045), hair, -0.11, 0.46, -0.05);
+    put(new THREE.BoxGeometry(0.045, 0.62, 0.045), hair, 0.11, 0.46, -0.05);
+    g.scale.setScalar(0.32);
+    this.walkStops = [this.porch.clone(), ...this.stonePos.map((p) => p.clone())];
+    this.walkerPos.copy(this.porch);
+    g.position.copy(this.walkerPos);
+    this.group.add(g);
+    this.walker = g;
   }
   buildRibbon() {
     const geo = new THREE.BoxGeometry(0.08, 0.02, 1);

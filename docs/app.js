@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg34";
-import { HavenScene } from "./haven.js?v=vg34";
-import { LandScene } from "./land.js?v=vg34";
-import { FairScene } from "./fair.js?v=vg34";
-import { CropScene } from "./crop.js?v=vg34";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg35";
+import { HavenScene } from "./haven.js?v=vg35";
+import { LandScene } from "./land.js?v=vg35";
+import { FairScene } from "./fair.js?v=vg35";
+import { CropScene } from "./crop.js?v=vg35";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -908,8 +908,14 @@ class VillageEngine {
       this.scene.background = new THREE.Color(PALETTE.void);
     }
     const portrait = this.canvas.clientHeight > this.canvas.clientWidth;
-    this.camera.position.set(portrait ? 15.4 : 14.2, portrait ? 11.6 : 8.2, portrait ? 18.4 : 16.6);
-    this.controls.target.set(5.2, 1.15, 5.6);
+    const compact = portrait || this.canvas.clientWidth < 900;
+    if (compact) {
+      this.camera.position.set(6, 13, 23);
+      this.controls.target.set(5.2, -1.6, 10.4);
+    } else {
+      this.camera.position.set(14.2, 8.2, 16.6);
+      this.controls.target.set(5.2, 1.15, 5.6);
+    }
   }
 
   paintParts(parts, color, fillOp = 0.22, lineOp = 0.85) {

@@ -47,6 +47,7 @@ var LandScene = class {
   slabHalves = [];
   crops = [];
   seaMat;
+  pageMat;
   competition = "tender";
   outcome = "open";
   correct = 0;
@@ -133,13 +134,16 @@ var LandScene = class {
     this.floodMat.color.copy(lost ? CRIMSON : restored ? SEA : FILL);
     this.floodMat.opacity = restored ? 0.08 : lost ? 0.62 : 0.38;
     const clean = n >= 5 && !lost;
-    this.signBits.forEach((bit, i) => {
+    this.pageMat.color.copy(clean ? PAPER : lost ? CRIMSON : PAPER);
+    this.pageMat.opacity = clean ? 0.96 : lost ? 0.7 : 0.9;
+    this.signBits.forEach((bit) => {
+      const home = bit.userData.home;
+      const fly = bit.userData.fly;
+      const goal = clean ? home.clone().add(fly) : home;
+      bit.position.lerp(goal, ease);
       const mat = bit.material;
-      const s = clean ? 0.02 : 1;
-      bit.scale.x += (s - bit.scale.x) * ease;
-      bit.rotation.z = clean ? 0 : Math.sin(t * 3 + i) * 0.08;
       mat.color.copy(CRIMSON);
-      mat.opacity = clean ? 0 : lost ? 0.75 + Math.sin(t * 4) * 0.2 : 0.9;
+      mat.opacity = clean ? 0 : lost ? 0.85 + Math.sin(t * 5) * 0.15 : 1;
     });
     const farmed = n >= 6 && !lost;
     this.slabHalves.forEach((half, i) => {
@@ -176,6 +180,7 @@ var LandScene = class {
       this.wetMat,
       this.floodMat,
       this.seaMat,
+      this.pageMat,
       this.stamp.material
     ];
     for (const m of mats) m.dispose();
@@ -329,13 +334,34 @@ var LandScene = class {
     this.group.add(this.flood);
   }
   buildPermit() {
-    const page = { fills: [], lines: [] };
-    box(this.group, this.geos, page, 4.4, 1.35, 0.2, 0.06, 1.15, 0.82, PAPER, 0.72);
-    [0.15, 0, -0.15].forEach((z, i) => {
-      const geo = new THREE.BoxGeometry(0.04, 0.02, 0.28 - i * 0.04);
-      this.geos.push(geo);
-      const bit = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: CRIMSON, transparent: true, opacity: 0.9 }));
-      bit.position.set(4.48, 1.15 - i * 0.08, 0.15 + z * 0.2);
+    const geo = new THREE.BoxGeometry(1.85, 2.25, 0.08);
+    const edges = new THREE.EdgesGeometry(geo);
+    this.geos.push(geo, edges);
+    this.pageMat = new THREE.MeshBasicMaterial({ color: PAPER, transparent: true, opacity: 0.9, depthWrite: true });
+    const page = new THREE.Mesh(geo, this.pageMat);
+    page.position.set(0.15, 2.25, 3.15);
+    const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: PAPER, transparent: true, opacity: 0.95 }));
+    frame.position.copy(page.position);
+    this.group.add(page, frame);
+    const strokes = [
+      { x: -0.42, y: 0.22, w: 0.7, h: 0.1, rot: 0.4 },
+      { x: 0.05, y: 0.02, w: 0.85, h: 0.1, rot: -0.22 },
+      { x: 0.42, y: 0.2, w: 0.55, h: 0.1, rot: 0.55 },
+      { x: 0.02, y: -0.28, w: 1.05, h: 0.09, rot: 0.06 },
+      { x: -0.38, y: -0.48, w: 0.5, h: 0.09, rot: -0.45 },
+      { x: 0.32, y: -0.5, w: 0.42, h: 0.09, rot: 0.3 }
+    ];
+    strokes.forEach((stroke, i) => {
+      const mark = new THREE.BoxGeometry(stroke.w, stroke.h, 0.06);
+      this.geos.push(mark);
+      const bit = new THREE.Mesh(
+        mark,
+        new THREE.MeshBasicMaterial({ color: CRIMSON, transparent: true, opacity: 1, depthWrite: true })
+      );
+      bit.position.set(page.position.x + stroke.x, page.position.y + stroke.y, page.position.z + 0.08);
+      bit.rotation.z = stroke.rot;
+      bit.userData.home = bit.position.clone();
+      bit.userData.fly = new THREE.Vector3((i - 2.5) * 0.7, 1.15 + i % 3 * 0.25, 0.85);
       this.signBits.push(bit);
       this.group.add(bit);
     });

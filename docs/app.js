@@ -641,14 +641,15 @@ function createLineMat(seed) {
   });
 }
 
-function addBox(group, geos, lineMat, fillMat, x, y, z, w, h, d) {
+function addBox(group, geos, lineMat, fillMat, x, y, z, w, h, d, material) {
   const geo = new THREE.BoxGeometry(w, h, d);
   geos.push(geo);
-  const fill = new THREE.Mesh(geo, fillMat);
+  const fill = new THREE.Mesh(geo, material || fillMat);
   fill.position.set(x, y, z);
   fill.castShadow = true;
   fill.receiveShadow = true;
   group.add(fill);
+  return fill;
 }
 function addCyl(group, geos, lineMat, fillMat, x, y, z, r, h, seg = 6) {
   const geo = new THREE.CylinderGeometry(r, r, h, seg);
@@ -682,12 +683,14 @@ function buildVariant(variant, group, geos, lineMat, fillMat) {
       addBox(group, geos, lineMat, fillMat, 0.55, 0.7, 0, 0.7, 0.9, 0.7);
       addBox(group, geos, lineMat, fillMat, 0.2, 0.55, 0.7, 0.12, 0.12, 1.1);
       return { w: 2.0, h: 2.0, d: 2.0 };
-    case "clinic":
+    case "clinic": {
       addBox(group, geos, lineMat, fillMat, 0, 0.65, 0, 2.3, 1.3, 1.45);
       addBox(group, geos, lineMat, fillMat, 0, 1.38, 0, 2.4, 0.18, 1.55);
-      addBox(group, geos, lineMat, fillMat, 0, 1.85, 0, 0.18, 0.7, 0.18);
-      addBox(group, geos, lineMat, fillMat, 0, 1.85, 0, 0.7, 0.18, 0.18);
+      const cross = new THREE.MeshStandardMaterial({ color: 0xc4312e, roughness: 0.4, metalness: 0.08, emissive: 0x8a1a16, emissiveIntensity: 0.45 });
+      addBox(group, geos, lineMat, fillMat, 0, 1.92, 0, 0.16, 0.72, 0.16, cross);
+      addBox(group, geos, lineMat, fillMat, 0, 1.98, 0, 0.62, 0.16, 0.16, cross);
       return { w: 2.6, h: 2.3, d: 1.8 };
+    }
     case "hall":
       addBox(group, geos, lineMat, fillMat, 0, 1.05, 0, 1.9, 2.1, 1.5);
       addCyl(group, geos, lineMat, fillMat, -0.7, 0.7, 0.85, 0.1, 1.4, 5);
@@ -848,6 +851,9 @@ class VillageEngine {
     plaza.position.y = 0.04;
     this.plazaRing = plaza;
     this.village.add(plaza);
+    this.buildRoad();
+    this.bus = this.buildBus();
+    this.village.add(this.bus.root);
 
     const rainCount = 420;
     this.rainPositions = new Float32Array(rainCount * 3);
@@ -1163,6 +1169,99 @@ class VillageEngine {
     return g;
   }
 
+  buildRoad() {
+    const road = new THREE.Mesh(
+      new THREE.BoxGeometry(16.5, 0.04, 1.35),
+      new THREE.MeshStandardMaterial({ color: 0x3a3d42, roughness: 0.92 })
+    );
+    road.position.set(0, 0.03, 4.05);
+    road.receiveShadow = true;
+    this.village.add(road);
+    const paint = new THREE.MeshStandardMaterial({ color: 0xf4f1ea, roughness: 0.6 });
+    for (let i = -6; i <= 6; i++) {
+      const dash = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.02, 0.06), paint);
+      dash.position.set(i * 1.15, 0.06, 4.05);
+      this.village.add(dash);
+    }
+  }
+
+  buildBus() {
+    const root = new THREE.Group();
+    const band = (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.48, metalness: 0.08 });
+    const put = (geo, material, x, y, z) => {
+      const mesh = new THREE.Mesh(geo, material);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      root.add(mesh);
+      return mesh;
+    };
+    const colors = [0xea2839, 0x1a206d, 0xffd500, 0x00a551];
+    colors.forEach((color, i) => {
+      put(new THREE.BoxGeometry(0.55, 0.72, 1.15), band(color), 0, 0.62, -1.7 + i * 1.15);
+    });
+    put(new THREE.BoxGeometry(1.15, 0.42, 1.15), band(0xea2839), 0, 0.95, 1.72);
+    put(new THREE.BoxGeometry(1.05, 0.08, 4.7), band(0x1a1c1f), 0, 1.18, 0);
+    put(new THREE.BoxGeometry(0.92, 0.28, 3.3), new THREE.MeshStandardMaterial({ color: 0x142028, roughness: 0.25, metalness: 0.35, emissive: 0x1c3040, emissiveIntensity: 0.25 }), 0, 0.95, -0.15);
+    const wheels = [];
+    [-1.55, 1.45].forEach((z) => {
+      [-0.48, 0.48].forEach((x) => {
+        const wheel = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.22, 0.22, 0.12, 10),
+          new THREE.MeshStandardMaterial({ color: 0x1a1c1f, roughness: 0.7 })
+        );
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(x, 0.22, z);
+        root.add(wheel);
+        wheels.push(wheel);
+      });
+    });
+    root.position.set(5.4, 0, 4.05);
+    return { root, wheels, dir: 1 };
+  }
+
+  tickBus(t) {
+    if (!this.bus) return;
+    const show = this.competition === "tender";
+    this.bus.root.visible = show;
+    if (!show) return;
+    if (this.reduced) {
+      this.bus.root.position.set(5.4, 0, 4.05);
+      this.bus.root.rotation.y = -Math.PI / 2;
+      return;
+    }
+    const legs = [
+      { from: -7.2, to: 5.4, dur: 5.4 },
+      { from: 5.4, to: 5.4, dur: 2.2 },
+      { from: 5.4, to: 7.5, dur: 1.15 },
+      { from: 7.5, to: 5.4, dur: 1.15 },
+      { from: 5.4, to: 5.4, dur: 2.2 },
+      { from: 5.4, to: -7.2, dur: 5.4 },
+      { from: -7.2, to: -7.2, dur: 0.7 },
+    ];
+    const total = legs.reduce((sum, leg) => sum + leg.dur, 0);
+    let u = ((t % total) + total) % total;
+    let x = 5.4;
+    let dir = this.bus.dir;
+    let moving = false;
+    for (const leg of legs) {
+      if (u <= leg.dur) {
+        const k = leg.dur === 0 ? 1 : u / leg.dur;
+        const e = k * k * (3 - 2 * k);
+        x = leg.from + (leg.to - leg.from) * e;
+        if (leg.to !== leg.from) dir = leg.to > leg.from ? 1 : -1;
+        moving = leg.to !== leg.from;
+        break;
+      }
+      u -= leg.dur;
+    }
+    this.bus.dir = dir;
+    this.bus.root.position.set(x, 0, 4.05);
+    this.bus.root.rotation.y = dir > 0 ? -Math.PI / 2 : Math.PI / 2;
+    if (moving) {
+      this.bus.wheels.forEach((wheel) => { wheel.rotation.x += dir * 0.35; });
+    }
+  }
+
   buildWhistle() {
     this.wGroup = new THREE.Group();
     this.wGeos = [];
@@ -1435,6 +1534,7 @@ class VillageEngine {
     this.fair.tick(dt, t, this.reduced);
     this.crop.tick(dt, t, this.reduced);
     this.wash.tick(dt, t, this.reduced);
+    this.tickBus(t);
     this.renderer.render(this.scene, this.camera);
   };
 }

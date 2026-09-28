@@ -12,19 +12,16 @@ var HOUSE = new THREE.Color(12875834);
 var WINDOW = new THREE.Color(16757082);
 var STATE = new THREE.Color(8308963);
 var CROP = new THREE.Color(3074154);
-function box(group, geos, parts, x, y, z, w, h, d, color, fill = 0.5) {
+function box(group, geos, parts, x, y, z, w, h, d, color, fill = 0.92) {
   const geo = new THREE.BoxGeometry(w, h, d);
-  const edges = new THREE.EdgesGeometry(geo);
-  geos.push(geo, edges);
-  const fillMat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: fill, depthWrite: true });
-  const lineMat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.9 });
+  geos.push(geo);
+  const fillMat = new THREE.MeshStandardMaterial({ color, roughness: 0.72, metalness: 0.05, transparent: fill < 0.98, opacity: fill });
   parts.fills.push(fillMat);
-  parts.lines.push(lineMat);
   const mesh = new THREE.Mesh(geo, fillMat);
-  const line = new THREE.LineSegments(edges, lineMat);
   mesh.position.set(x, y, z);
-  line.position.set(x, y, z);
-  group.add(mesh, line);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  group.add(mesh);
   return mesh;
 }
 var LandScene = class {
@@ -61,6 +58,15 @@ var LandScene = class {
     this.buildWetland();
     this.buildPermit();
     this.buildField();
+    const hemi = new THREE.HemisphereLight(0xd5e4f2, 0x5a4328, 0.4);
+    const sun = new THREE.DirectionalLight(0xfff3df, 1);
+    sun.position.set(6, 11, 5);
+    this.group.add(hemi, sun);
+    const yard = new THREE.Mesh(new THREE.CircleGeometry(16, 40), new THREE.MeshStandardMaterial({ color: 0xcbb892, roughness: 1 }));
+    yard.rotation.x = -Math.PI / 2;
+    yard.position.y = -0.14;
+    yard.receiveShadow = true;
+    this.group.add(yard);
     this.group.visible = false;
     scene.add(this.group);
   }
@@ -197,7 +203,7 @@ var LandScene = class {
       box(this.group, this.geos, parts, x, h / 2, z, 1.15, h, 0.9, HOUSE, 0.35);
       const win = new THREE.Mesh(
         new THREE.PlaneGeometry(0.28, 0.22),
-        new THREE.MeshBasicMaterial({ color: WINDOW, transparent: true, opacity: 0.26, side: THREE.DoubleSide })
+        new THREE.MeshStandardMaterial({ color: WINDOW, roughness: 0.35, metalness: 0.05, emissive: WINDOW, emissiveIntensity: 0.15, transparent: true, opacity: 0.9, side: THREE.DoubleSide })
       );
       this.geos.push(win.geometry);
       this.windows.push(win.material);
@@ -248,7 +254,7 @@ var LandScene = class {
     for (let i = 0; i < 5; i++) {
       const geo2 = new THREE.BoxGeometry(0.7, 0.04, 0.85);
       this.geos.push(geo2);
-      const mat2 = new THREE.MeshBasicMaterial({ color: SAND, transparent: true, opacity: 0.22 });
+      const mat2 = new THREE.MeshStandardMaterial({ color: SAND, roughness: 0.9, transparent: true, opacity: 0.9 });
       this.pathMats.push(mat2);
       const mesh = new THREE.Mesh(geo2, mat2);
       mesh.position.set(0.05, 0.04, 5.6 - i * 0.9);
@@ -259,7 +265,7 @@ var LandScene = class {
     box(this.group, this.geos, posts, 0.8, 0.5, 5.5, 0.08, 1, 0.08, PAPER, 0.7);
     const geo = new THREE.BoxGeometry(1.6, 0.045, 0.045);
     this.geos.push(geo);
-    const mat = new THREE.MeshBasicMaterial({ color: SAND, transparent: true, opacity: 0.92 });
+    const mat = new THREE.MeshStandardMaterial({ color: 0x6d5a40, roughness: 0.6, metalness: 0.05, transparent: true, opacity: 0.92 });
     const rope = new THREE.Mesh(geo, mat);
     rope.position.set(0.05, 0.86, 5.5);
     this.group.add(rope);
@@ -275,7 +281,7 @@ var LandScene = class {
     for (const [x, y, z, w, h, d] of ring) {
       const geo = new THREE.BoxGeometry(w, h, d);
       this.geos.push(geo);
-      const mat = new THREE.MeshBasicMaterial({ color: SAND, transparent: true, opacity: 0.45 });
+      const mat = new THREE.MeshStandardMaterial({ color: SAND, roughness: 0.85, transparent: true, opacity: 0.9 });
       this.plotMats.push(mat);
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(x, y, z);
@@ -285,7 +291,7 @@ var LandScene = class {
     this.geos.push(stampGeo);
     const stamp = new THREE.Mesh(
       stampGeo,
-      new THREE.MeshBasicMaterial({ color: STATE, transparent: true, opacity: 0 })
+      new THREE.MeshStandardMaterial({ color: STATE, roughness: 0.45, metalness: 0.1, transparent: true, opacity: 0 })
     );
     stamp.position.set(2.3, 0.08, 1.6);
     stamp.scale.set(0.04, 1, 0.04);
@@ -295,7 +301,7 @@ var LandScene = class {
       this.geos.push(geo);
       const mesh = new THREE.Mesh(
         geo,
-        new THREE.MeshBasicMaterial({ color: SAND, transparent: true, opacity: 0.88 })
+        new THREE.MeshStandardMaterial({ color: 0xf4f5f3, roughness: 0.55, transparent: true, opacity: 0.9 })
       );
       mesh.position.set(2.3 + x, 0.95, 3.35);
       this.boardHalves.push(mesh);
@@ -321,7 +327,7 @@ var LandScene = class {
       this.geos.push(geo);
       const mesh = new THREE.Mesh(
         geo,
-        new THREE.MeshBasicMaterial({ color: SAND, transparent: true, opacity: 0.32 })
+        new THREE.MeshStandardMaterial({ color: 0xd5d6d2, roughness: 0.45, metalness: 0.08, transparent: true, opacity: 0.95 })
       );
       mesh.position.set(x, y, z);
       this.villas.push({ mesh, home: new THREE.Vector3(x, y, z) });
@@ -329,7 +335,7 @@ var LandScene = class {
       if (i < 4) {
         const line = new THREE.BoxGeometry(1.1, 0.02, 0.03);
         this.geos.push(line);
-        const mat = new THREE.MeshBasicMaterial({ color: SAND, transparent: true, opacity: 0.4 });
+        const mat = new THREE.MeshStandardMaterial({ color: SAND, roughness: 0.8, transparent: true, opacity: 0.5 });
         this.lotMats.push(mat);
         const mark = new THREE.Mesh(line, mat);
         mark.position.set(-0.6 + i * 1.1, 0.05, 3.1);
@@ -341,7 +347,7 @@ var LandScene = class {
   buildWetland() {
     const geo = new THREE.CircleGeometry(1.7, 24);
     this.geos.push(geo);
-    this.wetMat = new THREE.MeshBasicMaterial({ color: WET, transparent: true, opacity: 0.62, side: THREE.DoubleSide });
+    this.wetMat = new THREE.MeshStandardMaterial({ color: WET, roughness: 0.25, metalness: 0.05, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
     const wet = new THREE.Mesh(geo, this.wetMat);
     wet.rotation.x = -Math.PI / 2;
     wet.position.set(-3.5, 0.03, 0.8);
@@ -349,14 +355,14 @@ var LandScene = class {
     [-0.55, 0.1, 0.7].forEach((x, i) => {
       const g = new THREE.BoxGeometry(0.62, 0.26, 0.5);
       this.geos.push(g);
-      const mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: FILL, transparent: true, opacity: 0.82 }));
+      const mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: FILL, roughness: 0.9, transparent: true, opacity: 0.9 }));
       mesh.position.set(-3.5 + x, 0.16, 0.7 + i * 0.12);
       this.fills.push(mesh);
       this.group.add(mesh);
     });
     const floodGeo = new THREE.BoxGeometry(0.55, 0.03, 4.2);
     this.geos.push(floodGeo);
-    this.floodMat = new THREE.MeshBasicMaterial({ color: FILL, transparent: true, opacity: 0.38 });
+    this.floodMat = new THREE.MeshStandardMaterial({ color: FILL, roughness: 0.3, transparent: true, opacity: 0.55 });
     this.flood = new THREE.Mesh(floodGeo, this.floodMat);
     this.flood.position.set(-3.5, 0.05, -2.2);
     this.group.add(this.flood);
@@ -365,10 +371,10 @@ var LandScene = class {
     const geo = new THREE.BoxGeometry(0.58, 0.74, 0.04);
     const edges = new THREE.EdgesGeometry(geo);
     this.geos.push(geo, edges);
-    this.pageMat = new THREE.MeshBasicMaterial({ color: PAPER, transparent: true, opacity: 0.9, depthWrite: true });
+    this.pageMat = new THREE.MeshStandardMaterial({ color: PAPER, roughness: 0.8 });
     const page = new THREE.Mesh(geo, this.pageMat);
     page.position.set(5.55, 0.82, 2.55);
-    const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: PAPER, transparent: true, opacity: 0.95 }));
+    const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x1a1c1f, transparent: true, opacity: 0.45 }));
     frame.position.copy(page.position);
     this.group.add(page, frame);
     const strokes = [
@@ -384,7 +390,7 @@ var LandScene = class {
       this.geos.push(mark);
       const bit = new THREE.Mesh(
         mark,
-        new THREE.MeshBasicMaterial({ color: CRIMSON, transparent: true, opacity: 1, depthWrite: true })
+        new THREE.MeshStandardMaterial({ color: CRIMSON, roughness: 0.5, transparent: true, opacity: 1 })
       );
       bit.position.set(page.position.x + stroke.x, page.position.y + stroke.y, page.position.z + 0.04);
       bit.rotation.z = stroke.rot;
@@ -398,7 +404,7 @@ var LandScene = class {
     [-0.18, 0.08].forEach((x) => {
       const geo = new THREE.BoxGeometry(0.55, 0.08, 1.3);
       this.geos.push(geo);
-      const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: FILL, transparent: true, opacity: 0.88 }));
+      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x8a847c, roughness: 0.85, transparent: true, opacity: 0.9 }));
       mesh.position.set(x, 0.08, -2.4);
       this.slabHalves.push(mesh);
       this.group.add(mesh);
@@ -414,7 +420,7 @@ var LandScene = class {
     for (const [x, z] of spots) {
       const geo = new THREE.ConeGeometry(0.1, 0.42, 5);
       this.geos.push(geo);
-      const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: CROP, transparent: true, opacity: 0 }));
+      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: CROP, roughness: 0.6, transparent: true, opacity: 0 }));
       mesh.position.set(x, 0.06, z);
       mesh.scale.y = 0.02;
       this.crops.push(mesh);

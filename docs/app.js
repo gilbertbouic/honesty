@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg42";
-import { HavenScene } from "./haven.js?v=vg42";
-import { LandScene } from "./land.js?v=vg42";
-import { FairScene } from "./fair.js?v=vg42";
-import { CropScene } from "./crop.js?v=vg43";
+import { HavenScene } from "./haven.js?v=vg44";
+import { LandScene } from "./land.js?v=vg44";
+import { FairScene } from "./fair.js?v=vg44";
+import { CropScene } from "./crop.js?v=vg44";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -551,11 +551,14 @@ void main(){ float flicker=1.0-(1.0-uRenovate)*step(0.88,fract(sin(uTime*11.3)*4
 vec3 col=mix(uDecayColor,uCleanColor,uRenovate); gl_FragColor=vec4(col, mix(0.55,1.0,uRenovate)*flicker);}`;
 const GRID_VERT = `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`;
 const GRID_FRAG = `uniform float uIntegrity; varying vec2 vUv;
-void main(){ vec2 p=vUv*2.0-1.0; float dist=length(p); float gx=abs(fract(p.x*14.0)-0.5); float gz=abs(fract(p.y*14.0)-0.5);
-float line=1.0-smoothstep(0.0,0.045,min(gx,gz)); vec3 col=mix(vec3(0.88,0.42,0.16),vec3(0.0,0.9,1.0),uIntegrity);
-gl_FragColor=vec4(col, line*(1.0-smoothstep(0.42,0.98,dist))*0.42);}`;
+void main(){ vec2 p=vUv*2.0-1.0; float dist=length(p);
+vec3 soil=vec3(0.34,0.26,0.18); vec3 lawn=vec3(0.29,0.42,0.26);
+vec3 col=mix(soil,lawn,clamp(uIntegrity,0.0,1.0));
+gl_FragColor=vec4(col, 1.0-smoothstep(0.72,1.0,dist));}`;
 const WATER_FRAG = `uniform float uTime; varying vec2 vUv;
-void main(){ float w=sin(vUv.x*28.0+uTime*1.8)*0.5+0.5; vec3 col=mix(vec3(0.02,0.18,0.22),vec3(0.0,0.85,1.0),w*0.4); gl_FragColor=vec4(col,0.32);}`;
+void main(){ float w=sin(vUv.x*18.0+uTime*1.2)*0.5+0.5;
+vec3 col=mix(vec3(0.45,0.66,0.7),vec3(0.82,0.9,0.9),w*0.45);
+gl_FragColor=vec4(col,0.9);}`;
 
 function hashId(id) { let h = 7; for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0; return Math.abs(h); }
 
@@ -572,27 +575,30 @@ function createLineMat(seed) {
 
 function addBox(group, geos, lineMat, fillMat, x, y, z, w, h, d) {
   const geo = new THREE.BoxGeometry(w, h, d);
-  const edges = new THREE.EdgesGeometry(geo);
-  geos.push(geo, edges);
-  const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z);
-  const lines = new THREE.LineSegments(edges, lineMat); lines.position.set(x, y, z);
-  group.add(fill, lines);
+  geos.push(geo);
+  const fill = new THREE.Mesh(geo, fillMat);
+  fill.position.set(x, y, z);
+  fill.castShadow = true;
+  fill.receiveShadow = true;
+  group.add(fill);
 }
 function addCyl(group, geos, lineMat, fillMat, x, y, z, r, h, seg = 6) {
   const geo = new THREE.CylinderGeometry(r, r, h, seg);
-  const edges = new THREE.EdgesGeometry(geo);
-  geos.push(geo, edges);
-  const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z);
-  const lines = new THREE.LineSegments(edges, lineMat); lines.position.set(x, y, z);
-  group.add(fill, lines);
+  geos.push(geo);
+  const fill = new THREE.Mesh(geo, fillMat);
+  fill.position.set(x, y, z);
+  fill.castShadow = true;
+  fill.receiveShadow = true;
+  group.add(fill);
 }
 function addCone(group, geos, lineMat, fillMat, x, y, z, r, h, rotY = 0) {
   const geo = new THREE.ConeGeometry(r, h, 4);
-  const edges = new THREE.EdgesGeometry(geo);
-  geos.push(geo, edges);
-  const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z); fill.rotation.y = rotY;
-  const lines = new THREE.LineSegments(edges, lineMat); lines.position.set(x, y, z); lines.rotation.y = rotY;
-  group.add(fill, lines);
+  geos.push(geo);
+  const fill = new THREE.Mesh(geo, fillMat);
+  fill.position.set(x, y, z);
+  fill.rotation.y = rotY;
+  fill.castShadow = true;
+  group.add(fill);
 }
 
 function buildVariant(variant, group, geos, lineMat, fillMat) {
@@ -666,26 +672,26 @@ function makeHouse(house) {
   const group = new THREE.Group();
   group.position.set(house.x, 0, house.z);
   const seed = hashId(house.id) % 1000;
-  const lineMat = createLineMat(seed);
-  const fillMat = new THREE.MeshBasicMaterial({ color: DECAY, transparent: true, opacity: 0.07, depthWrite: false });
+  const fillMat = new THREE.MeshStandardMaterial({ color: 0x6e6256, roughness: 0.78, metalness: 0.06 });
+  const lineMat = fillMat;
   const geos = [];
   const size = buildVariant(house.variant, group, geos, lineMat, fillMat);
 
-  const sweepGeo = new THREE.BoxGeometry(size.w * 1.05, 0.07, size.d * 1.05);
+  const sweepGeo = new THREE.BoxGeometry(size.w * 1.02, 0.045, size.d * 1.02);
   geos.push(sweepGeo);
-  const sweep = new THREE.Mesh(sweepGeo, new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const sweep = new THREE.Mesh(sweepGeo, new THREE.MeshStandardMaterial({ color: 0xf4f5f3, emissive: 0xd5d6d2, emissiveIntensity: 0.4, transparent: true, opacity: 0, roughness: 0.3 }));
   sweep.visible = false;
   group.add(sweep);
 
-  const nodeGeo = new THREE.OctahedronGeometry(0.16, 0);
+  const nodeGeo = new THREE.SphereGeometry(0.08, 10, 8);
   geos.push(nodeGeo);
-  const node = new THREE.Mesh(nodeGeo, new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
-  node.position.y = size.h + 0.35;
+  const node = new THREE.Mesh(nodeGeo, new THREE.MeshStandardMaterial({ color: 0x7ec8ff, emissive: 0x7ec8ff, emissiveIntensity: 0.7, roughness: 0.35, transparent: true, opacity: 0.9 }));
+  node.position.y = size.h + 0.28;
   group.add(node);
 
-  const ringGeo = new THREE.RingGeometry(size.w * 0.55, size.w * 0.55 + 0.06, 32);
+  const ringGeo = new THREE.RingGeometry(size.w * 0.5, size.w * 0.5 + 0.05, 32);
   geos.push(ringGeo);
-  const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
+  const ring = new THREE.Mesh(ringGeo, new THREE.MeshStandardMaterial({ color: 0xd5d6d2, emissive: 0x9aa8a0, emissiveIntensity: 0.2, transparent: true, opacity: 0, roughness: 0.4, side: THREE.DoubleSide }));
   ring.rotation.x = -Math.PI / 2;
   ring.position.y = 0.03;
   group.add(ring);
@@ -717,13 +723,15 @@ class VillageEngine {
     this.disposed = false;
 
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
-    this.renderer.setClearColor(PALETTE.void, 1);
+    this.renderer.setClearColor(0x8ea4b8, 1);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.05;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
 
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.Fog(PALETTE.void, 24, 52);
-    this.scene.background = new THREE.Color(PALETTE.void);
+    this.scene.fog = new THREE.Fog(0x8ea4b8, 28, 58);
+    this.scene.background = new THREE.Color(0x8ea4b8);
     this.camera = new THREE.PerspectiveCamera(46, 1, 0.1, 80);
     this.camera.position.set(11.2, 7.4, 11.2);
 
@@ -744,12 +752,12 @@ class VillageEngine {
       this.controls.autoRotate = false;
     });
 
-    this.scene.add(new THREE.AmbientLight(0x8a96a4, 0.5));
-    this.scene.add(new THREE.HemisphereLight(0x1a3348, 0x1a0c08, 0.55));
-    const key = new THREE.DirectionalLight(0x8ad4ff, 0.55);
-    key.position.set(8, 14, 4);
+    this.scene.add(new THREE.AmbientLight(0xc5d0dc, 0.45));
+    this.scene.add(new THREE.HemisphereLight(0xd5e4f2, 0x5a4328, 0.7));
+    const key = new THREE.DirectionalLight(0xfff3df, 1.55);
+    key.position.set(8, 14, 6);
     this.scene.add(key);
-    const fill = new THREE.DirectionalLight(0xe07030, 0.18);
+    const fill = new THREE.DirectionalLight(0xb7c6de, 0.4);
     fill.position.set(-10, 6, -6);
     this.scene.add(fill);
 
@@ -766,7 +774,7 @@ class VillageEngine {
     this.canal = canal;
     this.scene.add(canal);
 
-    const plaza = new THREE.Mesh(new THREE.RingGeometry(1.55, 1.68, 48), new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false }));
+    const plaza = new THREE.Mesh(new THREE.RingGeometry(1.55, 1.78, 48), new THREE.MeshStandardMaterial({ color: 0xd5d6d2, roughness: 0.7, metalness: 0.04 }));
     plaza.rotation.x = -Math.PI / 2;
     plaza.position.y = 0.04;
     this.plazaRing = plaza;
@@ -785,8 +793,7 @@ class VillageEngine {
     this.rain.visible = !this.reduced;
     this.scene.add(this.rain);
 
-    const skyMat = new THREE.MeshBasicMaterial({ color: 0x101018, transparent: true, opacity: 0.9 });
-    const skyLine = new THREE.LineBasicMaterial({ color: PALETTE.amber, transparent: true, opacity: 0.18 });
+    const skyMat = new THREE.MeshStandardMaterial({ color: 0x9aa3ab, roughness: 0.9, metalness: 0.02 });
     for (let i = 0; i < 18; i++) {
       const a = (i / 18) * Math.PI * 2 + 0.2;
       const r = 17 + (i % 3) * 1.4;
@@ -795,9 +802,7 @@ class VillageEngine {
       const geo = new THREE.BoxGeometry(w, h, w);
       const mesh = new THREE.Mesh(geo, skyMat);
       mesh.position.set(Math.cos(a) * r, h / 2, Math.sin(a) * r);
-      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), skyLine);
-      edges.position.copy(mesh.position);
-      this.scene.add(mesh, edges);
+      this.scene.add(mesh);
     }
 
     for (const house of houses) {
@@ -949,59 +954,68 @@ class VillageEngine {
       return;
     }
     if (this.competition === "fair") {
-      fog.color.set(0x140e1c);
-      this.scene.background = new THREE.Color(0x100c16);
+      fog.color.set(0x8ea4b8);
+      this.scene.background = new THREE.Color(0x8ea4b8);
       this.aimStage(new THREE.Vector3(0, 1.2, 0), new THREE.Vector3(0.4, 5.3, 10.4), 3.6);
       return;
     }
     if (this.competition === "land") {
-      fog.color.set(0x12160f);
-      this.scene.background = new THREE.Color(0x10140f);
+      fog.color.set(0x9aa8b0);
+      this.scene.background = new THREE.Color(0x9aa8b0);
       this.aimStage(new THREE.Vector3(0.8, 1.2, 2.2), new THREE.Vector3(0, 4, 12.2), 4.4);
       return;
     }
     if (this.competition === "haven") {
-      fog.color.set(0x100c14);
-      this.scene.background = new THREE.Color(0x0c0a12);
+      fog.color.set(0x8ea4b8);
+      this.scene.background = new THREE.Color(0x8ea4b8);
       this.aimStage(new THREE.Vector3(0, 1.1, -0.2), new THREE.Vector3(0.2, 3.6, 8.2), 4.4);
       return;
     }
     if (this.competition !== "whistle") {
-      fog.color.set(PALETTE.void);
-      this.scene.background = new THREE.Color(PALETTE.void);
+      fog.color.set(0x8ea4b8);
+      this.scene.background = new THREE.Color(0x8ea4b8);
       this.aimStage(new THREE.Vector3(0, 1.2, 0), new THREE.Vector3(11.2, 6.8, 11.2), 5.2);
       return;
     }
     if (this.whistleOutcome === "exile") {
-      fog.color.set(PALETTE.crimson);
-      this.scene.background = new THREE.Color(0x1a080c);
+      fog.color.set(0x8a6e74);
+      this.scene.background = new THREE.Color(0x8a6e74);
     } else if (this.whistleOutcome === "burn") {
-      fog.color.set(0x2a140c);
-      this.scene.background = new THREE.Color(0x140c08);
+      fog.color.set(0x8a7564);
+      this.scene.background = new THREE.Color(0x8a7564);
     } else if (this.whistleOutcome === "jail") {
-      fog.color.set(0x102818);
-      this.scene.background = new THREE.Color(0x0c1c14);
+      fog.color.set(0x7f9488);
+      this.scene.background = new THREE.Color(0x7f9488);
     } else {
-      fog.color.set(PALETTE.void);
-      this.scene.background = new THREE.Color(PALETTE.void);
+      fog.color.set(0x8ea4b8);
+      this.scene.background = new THREE.Color(0x8ea4b8);
     }
     this.aimStage(new THREE.Vector3(5.2, 1.8, 6), new THREE.Vector3(9, 7, 11), 4.2);
   }
 
   paintParts(parts, color, fillOp = 0.22, lineOp = 0.85) {
-    for (const m of parts.fills) { m.color.copy(color); m.opacity = fillOp; }
-    for (const m of parts.lines) { m.color.copy(color); m.opacity = lineOp; }
+    const solid = fillOp >= 0.2;
+    for (const m of parts.fills) {
+      m.color.copy(color);
+      m.opacity = solid ? 1 : fillOp;
+      m.transparent = !solid;
+      m.depthWrite = solid;
+    }
+    for (const m of parts.lines) {
+      m.color.set(0x1a1c1f);
+      m.opacity = solid ? Math.min(0.35, lineOp) : 0;
+    }
   }
 
   addWBox(group, geos, parts, x, y, z, w, h, d, opts = {}) {
     const geo = new THREE.BoxGeometry(w, h, d);
     const edges = new THREE.EdgesGeometry(geo);
     geos.push(geo, edges);
-    const fillMat = new THREE.MeshBasicMaterial({
-      color: opts.color ?? GOLD, transparent: true,
-      opacity: opts.fill ?? 0.16, depthWrite: opts.depth ?? false,
+    const fillMat = new THREE.MeshStandardMaterial({
+      color: opts.color ?? 0xd5d6d2, roughness: 0.5, metalness: 0.12,
+      transparent: true, opacity: opts.fill ?? 0.9, depthWrite: opts.depth ?? true,
     });
-    const lineMat = new THREE.LineBasicMaterial({ color: opts.color ?? GOLD, transparent: true, opacity: 0.85 });
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x1a1c1f, transparent: true, opacity: 0.3 });
     parts.fills.push(fillMat); parts.lines.push(lineMat);
     const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z);
     const line = new THREE.LineSegments(edges, lineMat); line.position.set(x, y, z);
@@ -1012,11 +1026,11 @@ class VillageEngine {
     const geo = new THREE.CylinderGeometry(r, r, h, seg);
     const edges = new THREE.EdgesGeometry(geo);
     geos.push(geo, edges);
-    const fillMat = new THREE.MeshBasicMaterial({
-      color: opts.color ?? GOLD, transparent: true,
-      opacity: opts.fill ?? 0.16, depthWrite: opts.depth ?? false,
+    const fillMat = new THREE.MeshStandardMaterial({
+      color: opts.color ?? 0xd5d6d2, roughness: 0.5, metalness: 0.12,
+      transparent: true, opacity: opts.fill ?? 0.9, depthWrite: opts.depth ?? true,
     });
-    const lineMat = new THREE.LineBasicMaterial({ color: opts.color ?? GOLD, transparent: true, opacity: 0.85 });
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x1a1c1f, transparent: true, opacity: 0.3 });
     parts.fills.push(fillMat); parts.lines.push(lineMat);
     const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z);
     const line = new THREE.LineSegments(edges, lineMat); line.position.set(x, y, z);
@@ -1025,52 +1039,52 @@ class VillageEngine {
 
   addLady(x, z, scale) {
     const g = new THREE.Group();
-    const mats = [];
-    const homes = [];
-    const put = (geo, color, y, dz = 0) => {
+    const shell = new THREE.MeshStandardMaterial({ color: 0xd5d6d2, roughness: 0.4, metalness: 0.08, transparent: true });
+    const joint = new THREE.MeshStandardMaterial({ color: 0x1a1c1f, roughness: 0.5, metalness: 0.4 });
+    const led = new THREE.MeshStandardMaterial({ color: 0xff8ec0, emissive: 0xff8ec0, emissiveIntensity: 0.45, roughness: 0.3, transparent: true });
+    const put = (geo, material, y) => {
       this.wGeos.push(geo);
-      const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.94, depthWrite: true });
-      mats.push(mat);
-      homes.push(color.clone());
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(0, y, dz);
+      const mesh = new THREE.Mesh(geo, material);
+      mesh.position.y = y;
       g.add(mesh);
     };
-    put(new THREE.ConeGeometry(0.22 * scale, 0.5 * scale, 8), PINK, 0.28 * scale);
-    put(new THREE.BoxGeometry(0.16 * scale, 0.2 * scale, 0.12 * scale), BLUSH, 0.54 * scale);
-    put(new THREE.SphereGeometry(0.09 * scale, 8, 8), SKIN, 0.74 * scale);
-    put(new THREE.SphereGeometry(0.095 * scale, 8, 6), HAIR, 0.8 * scale, -0.02 * scale);
+    put(new THREE.CapsuleGeometry(0.06 * scale, 0.22 * scale, 3, 6), shell, 0.2 * scale);
+    put(new THREE.CapsuleGeometry(0.11 * scale, 0.2 * scale, 4, 8), shell, 0.48 * scale);
+    put(new THREE.SphereGeometry(0.09 * scale, 12, 10), shell, 0.74 * scale);
+    put(new THREE.BoxGeometry(0.12 * scale, 0.03 * scale, 0.02 * scale), led, 0.74 * scale);
+    const visor = g.children[g.children.length - 1];
+    visor.position.z = 0.08 * scale;
+    put(new THREE.SphereGeometry(0.03 * scale, 8, 6), joint, 0.58 * scale);
     g.position.set(x, 0, z);
-    g.userData.mats = mats;
-    g.userData.homeColors = homes;
+    g.userData.mats = [shell, led];
+    g.userData.homeColors = [shell.color.clone(), led.color.clone()];
     this.wGroup.add(g);
     return g;
   }
 
   addWhistleblower(x, z, scale) {
     const g = new THREE.Group();
-    const mats = [];
-    const headGeo = new THREE.SphereGeometry(0.1 * scale, 8, 8);
-    this.wGeos.push(headGeo);
-    const headMat = new THREE.MeshBasicMaterial({ color: FLAG_RED, transparent: true, opacity: 0.95, depthWrite: true });
-    mats.push(headMat);
-    const head = new THREE.Mesh(headGeo, headMat);
-    head.position.y = 0.82 * scale;
-    g.add(head);
-    const bandH = 0.16 * scale;
-    const bands = [FLAG_BLUE, FLAG_YELLOW, FLAG_GREEN];
-    for (let i = 0; i < bands.length; i++) {
-      const geo = new THREE.BoxGeometry(0.24 * scale, bandH, 0.16 * scale);
+    const shell = new THREE.MeshStandardMaterial({ color: 0xd5d6d2, roughness: 0.4, metalness: 0.08, transparent: true });
+    const bands = [FLAG_RED, FLAG_BLUE, FLAG_YELLOW, FLAG_GREEN].map((color) => new THREE.MeshStandardMaterial({ color, roughness: 0.4, metalness: 0.1, emissive: color, emissiveIntensity: 0.15, transparent: true }));
+    const put = (geo, material, y) => {
       this.wGeos.push(geo);
-      const mat = new THREE.MeshBasicMaterial({ color: bands[i], transparent: true, opacity: 0.95, depthWrite: true });
-      mats.push(mat);
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.y = 0.62 * scale - i * bandH;
+      const mesh = new THREE.Mesh(geo, material);
+      mesh.position.y = y;
       g.add(mesh);
-    }
+    };
+    put(new THREE.CapsuleGeometry(0.07 * scale, 0.24 * scale, 3, 6), shell, 0.22 * scale);
+    put(new THREE.CapsuleGeometry(0.12 * scale, 0.22 * scale, 4, 8), shell, 0.52 * scale);
+    put(new THREE.SphereGeometry(0.1 * scale, 12, 10), shell, 0.82 * scale);
+    bands.forEach((mat, i) => {
+      const geo = new THREE.BoxGeometry(0.16 * scale, 0.035 * scale, 0.02 * scale);
+      this.wGeos.push(geo);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(0, (0.48 - i * 0.04) * scale, 0.12 * scale);
+      g.add(mesh);
+    });
     g.position.set(x, 0, z);
-    g.userData.mats = mats;
-    g.userData.flagColors = FLAG_COLORS.map((c) => c.clone());
+    g.userData.mats = [shell, ...bands];
+    g.userData.flagColors = [new THREE.Color(0xd5d6d2), ...FLAG_COLORS.map((c) => c.clone())];
     this.wGroup.add(g);
     return g;
   }
@@ -1319,30 +1333,25 @@ class VillageEngine {
       const selected = this.selectedId === house.id;
       const target = house.renovated || hovered ? 1 : 0;
       v.renovate += (target - v.renovate) * (1 - Math.exp(-7 * dt));
-      v.lineMat.uniforms.uTime.value = t;
-      v.lineMat.uniforms.uRenovate.value = v.renovate;
-      v.lineMat.uniforms.uCleanColor.value.copy(house.renovated ? GREEN : CYAN);
-      HIT.copy(house.renovated ? GREEN : hovered ? CYAN : DECAY);
-      v.fillMat.color.copy(HIT);
-      v.fillMat.opacity = 0.05 + v.renovate * 0.22;
+      const held = new THREE.Color(house.renovated ? 0xc5d2c8 : 0xd5d6d2);
+      v.fillMat.color.set(0x6e6256).lerp(held, v.renovate);
+      if (hovered) v.fillMat.color.lerp(new THREE.Color(0xf7f4ee), 0.4);
       if (hovered || house.renovated) v.sweepT = Math.min(1, v.sweepT + dt * 1.35);
       else v.sweepT = Math.max(0, v.sweepT - dt * 2.2);
       const p = v.sweepT;
-      v.sweep.material.color.copy(house.renovated ? GREEN : CYAN);
+      v.sweep.material.color.set(house.renovated ? 0xc5d2c8 : 0xf4f5f3);
+      v.sweep.material.emissive.set(house.renovated ? 0x3f9a55 : 0xd5d6d2);
       v.sweep.visible = p > 0.02 && p < 0.98;
       v.sweep.position.y = 0.1 + p * v.height;
-      v.sweep.material.opacity = 0.7 * (1 - Math.abs(p - 0.5) * 1.5);
+      v.sweep.material.opacity = 0.55 * (1 - Math.abs(p - 0.5) * 1.5);
       v.node.visible = !house.renovated;
-      v.node.position.y = v.height + 0.35 + Math.sin(t * 2.4 + v.seed) * 0.08;
-      v.node.rotation.y = t * 1.4;
-      v.node.material.opacity = hovered ? 1 : 0.55;
-      v.ring.material.color.copy(house.renovated ? GREEN : CYAN);
-      v.ring.material.opacity = selected ? 0.85 : hovered ? 0.4 : house.renovated ? 0.18 : 0;
-      v.ring.rotation.z = t * 0.6;
-      if (!house.renovated && !this.reduced && v.renovate < 0.75) {
-        const glitch = Math.sin(t * 23 + v.seed) > 0.94;
-        v.group.position.x = house.x + (glitch ? Math.sin(t * 90) * 0.045 : 0);
-      } else v.group.position.x = house.x;
+      v.node.position.y = v.height + 0.28 + Math.sin(t * 2.4 + v.seed) * 0.06;
+      v.node.material.emissive.set(hovered ? 0xd7ecff : 0x7ec8ff);
+      v.node.material.opacity = hovered ? 1 : 0.7;
+      v.ring.material.color.set(house.renovated ? 0x3f9a55 : 0xd5d6d2);
+      v.ring.material.emissive.set(house.renovated ? 0x1a5a28 : 0x9aa8a0);
+      v.ring.material.opacity = selected ? 0.9 : hovered ? 0.45 : house.renovated ? 0.28 : 0;
+      v.group.position.x = house.x;
     }
     this.tickWhistle(dt, t);
     this.haven.tick(dt, t, this.reduced);

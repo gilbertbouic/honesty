@@ -28,8 +28,8 @@ class CropScene {
     this.nozzle = new THREE.Object3D();
     this.puffs = [];
 
-    const hemi = new THREE.HemisphereLight(0xd5e4f2, 0x5a4328, 0.95);
-    const sun = new THREE.DirectionalLight(0xfff3df, 2.2);
+    const hemi = new THREE.HemisphereLight(0xd5e4f2, 0x5a4328, 0.35);
+    const sun = new THREE.DirectionalLight(0xfff3df, 1.15);
     sun.position.set(7.5, 11, 5.5);
     const fill = new THREE.DirectionalLight(0xb7c6de, 0.7);
     fill.position.set(-6, 4, -3);

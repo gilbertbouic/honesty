@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg42";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg55";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg51";
 import { FairScene } from "./fair.js?v=vg53";
@@ -1578,7 +1578,6 @@ function renderBoot() {
   document.getElementById("boot-title").textContent = L("title");
   document.getElementById("boot-goal").textContent = L("goal");
   document.getElementById("enter-btn").textContent = L("enter");
-  document.getElementById("foot-note").textContent = L("foot");
   document.getElementById("boot-stages").innerHTML = ["stage1", "stage2", "stage3", "stage4", "stage5", "stage6"]
     .map((key) => `<li>${L(key)}</li>`)
     .join("");

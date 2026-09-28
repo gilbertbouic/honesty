@@ -1835,13 +1835,9 @@ function renderTender() {
     </div>
     <div class="side-foot">
       ${result ? `
-        <p class="kicker mute">${result.winnerId ? L("awardedGreen") : L("rejectedRed")}</p>
         ${bidRows}
         ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">${L("nextReno")}</button>` : (roundOneCleared(state.results, state.contractorId) ? `<button type="button" class="cta" id="open-whistle" style="margin-top:.75rem;background:var(--amber)">${L("openBrief")}</button>` : `<p style="margin:.5rem 0 0;font-size:.8rem;color:var(--crimson)">${L("noSweep")}</p>`)}
-      ` : `
-        <p class="kicker mute">${L("awardRule")}</p>
-        <p class="green" style="margin:.35rem 0 0;font-size:.8rem">${L("awardBody", { n: TENDERS.length })}</p>
-      `}
+      ` : ""}
     </div>`;
   document.querySelectorAll("[data-house]").forEach((btn) => {
     btn.addEventListener("click", () => {

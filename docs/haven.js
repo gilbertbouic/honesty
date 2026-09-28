@@ -42,6 +42,7 @@ class HavenScene {
     this.core = this.column.userData.core;
     this.buildFlames();
     this.buildStones();
+    this.buildMan();
     this.buildWalker();
     this.ribbon = this.buildRibbon();
     this.beacon = this.buildBeacon();
@@ -116,10 +117,10 @@ class HavenScene {
     const mesh = this.mesh(
       this.group,
       new THREE.PlaneGeometry(0.72, 0.42),
-      this.mat(FLAME, { opacity: 0.34, depthWrite: false, side: THREE.DoubleSide, rough: 0.4, emissive: 0xff6a3c, ei: 0.4 }),
-      QUIET.x,
-      1.52,
-      QUIET.z + 0.92,
+      this.mat(0xd7eef6, { opacity: 0.22, depthWrite: false, side: THREE.DoubleSide, rough: 0.15, metal: 0.05 }),
+      QUIET.x + 0.42,
+      1.78,
+      QUIET.z + 0.98,
     );
     return mesh;
   }
@@ -186,6 +187,71 @@ class HavenScene {
     }
   }
 
+  buildMan() {
+    const root = new THREE.Group();
+    const skin = this.mat(0xc48a62, { rough: 0.62 });
+    const beardMat = this.mat(0x1a120e, { rough: 0.85 });
+    const shirt = this.mat(0x241c18, { rough: 0.75 });
+    const dark = this.mat(0x140c0a, { rough: 0.45 });
+    const put = (parent, geo, material, x, y, z) => this.mesh(parent, geo, material, x, y, z);
+    put(root, new THREE.BoxGeometry(0.42, 0.28, 0.18), shirt, 0, 0.28, 0);
+    const head = new THREE.Group();
+    head.position.set(0, 0.58, 0.02);
+    root.add(head);
+    put(head, new THREE.SphereGeometry(0.16, 14, 12), skin, 0, 0.08, 0);
+    put(head, new THREE.SphereGeometry(0.15, 12, 10), beardMat, 0, -0.02, 0.04);
+    const beard = put(head, new THREE.BoxGeometry(0.16, 0.1, 0.08), beardMat, 0, -0.06, 0.1);
+    beard.scale.y = 1.2;
+    put(head, new THREE.BoxGeometry(0.12, 0.035, 0.04), beardMat, 0, 0.02, 0.14);
+    put(head, new THREE.SphereGeometry(0.028, 8, 6), this.mat(0xf4f1ea, { rough: 0.35 }), -0.055, 0.1, 0.13);
+    put(head, new THREE.SphereGeometry(0.028, 8, 6), this.mat(0xf4f1ea, { rough: 0.35 }), 0.055, 0.1, 0.13);
+    put(head, new THREE.SphereGeometry(0.014, 8, 6), dark, -0.055, 0.1, 0.15);
+    put(head, new THREE.SphereGeometry(0.014, 8, 6), dark, 0.055, 0.1, 0.15);
+    const browL = put(head, new THREE.BoxGeometry(0.09, 0.025, 0.03), dark, -0.055, 0.15, 0.13);
+    const browR = put(head, new THREE.BoxGeometry(0.09, 0.025, 0.03), dark, 0.055, 0.15, 0.13);
+    browL.rotation.z = 0.55;
+    browR.rotation.z = -0.55;
+    const frown = put(head, new THREE.BoxGeometry(0.07, 0.018, 0.02), dark, 0, -0.02, 0.15);
+    frown.rotation.z = Math.PI;
+    const fx = QUIET.x + 0.42;
+    const fy = 1.46;
+    const fz = QUIET.z + 0.96;
+    const frame = this.mat(0x2c241c, { rough: 0.55 });
+    this.mesh(this.group, new THREE.BoxGeometry(0.86, 0.08, 0.1), frame, fx, fy + 0.36, fz);
+    this.mesh(this.group, new THREE.BoxGeometry(0.86, 0.08, 0.1), frame, fx, fy - 0.36, fz);
+    this.mesh(this.group, new THREE.BoxGeometry(0.08, 0.8, 0.1), frame, fx - 0.4, fy, fz);
+    this.mesh(this.group, new THREE.BoxGeometry(0.08, 0.8, 0.1), frame, fx + 0.4, fy, fz);
+    this.mesh(
+      this.group,
+      new THREE.PlaneGeometry(0.72, 0.64),
+      this.mat(0xd5e8ee, { opacity: 0.16, depthWrite: false, side: THREE.DoubleSide, rough: 0.05 }),
+      fx, fy, fz + 0.08,
+    );
+    root.position.set(fx, fy - 0.55, fz + 0.02);
+    root.scale.setScalar(0.95);
+    this.group.add(root);
+    this.man = { root, head };
+  }
+
+  buildChild() {
+    const root = new THREE.Group();
+    const skin = this.mat(0xe0c0a4, { rough: 0.7 });
+    const hairMat = this.mat(0x2a1814, { rough: 0.55 });
+    const cloth = this.mat(0x4a6f8a, { rough: 0.55 });
+    const put = (parent, geo, material, x, y, z) => this.mesh(parent, geo, material, x, y, z);
+    put(root, new THREE.ConeGeometry(0.14, 0.32, 8), cloth, 0, 0.28, 0);
+    put(root, new THREE.BoxGeometry(0.14, 0.16, 0.1), cloth, 0, 0.48, 0);
+    const head = new THREE.Group();
+    head.position.set(0, 0.64, 0);
+    root.add(head);
+    put(head, new THREE.SphereGeometry(0.1, 12, 10), skin, 0, 0.05, 0);
+    put(head, new THREE.SphereGeometry(0.1, 10, 8), hairMat, 0, 0.1, -0.01);
+    put(head, new THREE.SphereGeometry(0.016, 6, 6), this.mat(0x1a1214, { rough: 0.4 }), -0.03, 0.06, 0.08);
+    put(head, new THREE.SphereGeometry(0.016, 6, 6), this.mat(0x1a1214, { rough: 0.4 }), 0.03, 0.06, 0.08);
+    root.scale.setScalar(0.78);
+    return { root, head };
+  }
+
   buildWoman(dressColor, hairColor) {
     const root = new THREE.Group();
     const skin = this.mat(0xd7b39a, { rough: 0.7 });
@@ -226,6 +292,7 @@ class HavenScene {
 
   buildWalker() {
     this.hero = this.buildWoman(0xc45b78, 0x2a1814);
+    this.child = this.buildChild();
     this.friend = this.buildWoman(0x3f6f62, 0x1a1c1f);
     this.friend.root.visible = false;
     this.support = [
@@ -243,7 +310,8 @@ class HavenScene {
     this.heroPos = this.inside.clone();
     this.friendPos = this.inside.clone();
     this.hero.root.position.copy(this.heroPos);
-    this.group.add(this.hero.root, this.friend.root);
+    this.child.root.position.copy(this.heroPos);
+    this.group.add(this.hero.root, this.child.root, this.friend.root);
     for (const woman of this.support) this.group.add(woman.root);
   }
 
@@ -359,6 +427,16 @@ class HavenScene {
     this.hero.spine.rotation.x += (bow - this.hero.spine.rotation.x) * easeWalk;
     const heroYaw = n === 3 ? 0.85 : 0;
     this.hero.root.rotation.y += (heroYaw - this.hero.root.rotation.y) * easeWalk;
+    const childBack = n === 3 ? -0.22 : 0.04;
+    this.child.root.position.set(
+      this.heroPos.x - 0.38,
+      n >= 6 && !reduced ? Math.abs(Math.sin(t * 3 + 0.4)) * 0.035 : 0,
+      this.heroPos.z + childBack,
+    );
+    this.child.root.rotation.y += ((n === 3 ? 0.4 : 0) - this.child.root.rotation.y) * easeWalk;
+    const childHead = n >= 5 ? -0.18 : 0.4;
+    this.child.head.rotation.x += (childHead - this.child.head.rotation.x) * easeWalk;
+    if (!reduced) this.man.head.rotation.y = Math.sin(t * 0.6) * 0.12;
     for (const tear of this.hero.tears) {
       tear.visible = crying;
       if (!crying || reduced) continue;
@@ -396,10 +474,10 @@ class HavenScene {
       reach(this.hero, 1.15, -1.15, -0.35);
       reach(this.friend, 1.15, -1.15, -0.35);
     } else if (n >= 4) {
-      reach(this.hero, 0.12, -0.7, 0);
+      reach(this.hero, -0.55, -0.7, 0);
       reach(this.friend, 0.7, -0.12, 0);
     } else {
-      reach(this.hero, 0.18, -0.18, 0.15);
+      reach(this.hero, -0.5, -0.15, 0.1);
       reach(this.friend, 0.15, -0.15, 0);
     }
     this.support.forEach((woman, i) => {

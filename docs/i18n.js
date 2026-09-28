@@ -3,7 +3,7 @@ var LANG_KEY = "village-grid-lang";
 var UI = {
   en: {
     title: "Integrity Village",
-    goal: "Obtain max scores in all 6 stages to win an integrity cap.",
+    goal: "Obtain max scores in all 7 stages to win an integrity cap.",
     stage1: "Stage 1 \xB7 Public tenders",
     stage2: "Stage 2 \xB7 Whistle-blower",
     dev: "In development",
@@ -11,6 +11,7 @@ var UI = {
     stage4: "Stage 4 \xB7 Land use",
     stage5: "Stage 5 \xB7 Discrimination",
     stage6: "Stage 6 \xB7 Agriculture",
+    stage7: "Stage 7 \xB7 Financial crime",
     choose: "Choose your character",
     enter: "Enter",
     portrait: "Portrait",
@@ -239,11 +240,42 @@ var UI = {
     cropRule: "A pesticide is allowed only on the crop named for it. Do not sell before the waiting days. Do not rinse cans into the canal.",
     rowsHeld: "{n}/{total} rows held",
     openCrop: "Open stage 6",
-    dockCrop: "Stage 6 \xB7 rows"
+    dockCrop: "Stage 6 \xB7 rows",
+    phaseWash: "Stage 7 \xB7 Financial crime",
+    wash: "Stage 7",
+    washScore: "Stage 7 score",
+    washHint: "Stage 7 \xB7 Financial crime",
+    lockWash: "Answer every agriculture question to open stage 7",
+    briefWash: "Stage 7 \xB7 Financial crime",
+    holdsWash: "The floor holds \xB7 +100",
+    missWash: "The floor stains \xB7 +20",
+    scoringWash: "Five or six correct: the pipe runs clear. Two to four: gold still shows. None or one: the tower stays washed.",
+    nextFloor: "Next floor",
+    doneClean: "File complete \xB7 the pipe runs clear",
+    doneWashThin: "File complete \xB7 gold still shows",
+    doneWash: "File complete \xB7 the tower stays washed",
+    cleanTitle: "The pipe runs clear",
+    cleanBody: "The suitcases stay shut. The seal stops. The villa stays dark. A hidden owner is not a client.",
+    washThinTitle: "Gold still shows",
+    washThinBody: "Some floors drained and some did not. A watch is still on the wrist. The file is not finished.",
+    washTitle: "The tower stays washed",
+    washBody: "The file did not hold. The pipe stays dark and the villa lights. Reset the stage and walk the questions again.",
+    scoreWash: "Stage 7 score \xB7 {score}/600",
+    toastLockWash: "Stage 7 is locked. Answer every agriculture question first.",
+    toastClean: "The pipe runs clear. The floors stayed lawful.",
+    toastWashThin: "Gold still shows through the glass.",
+    toastWash: "The tower stays washed.",
+    toastFloor: "Floor held. The sludge drops.",
+    toastSludge: "That answer keeps the floor dark.",
+    boardWash: "Stage 7 \xB7 Financial crime",
+    washRule: "Refuse a company with no trade and a hidden owner. Do not move money you cannot explain. A title, a permit and a nominee name do not clean it.",
+    floorsHeld: "{n}/{total} floors held",
+    openWash: "Open stage 7",
+    dockWash: "Stage 7 \xB7 the wash"
   },
   fr: {
     title: "Village Int\xE9grit\xE9",
-    goal: "Obtiens le score maximum aux six \xE9tapes pour gagner une casquette d'int\xE9grit\xE9.",
+    goal: "Obtiens le score maximum aux sept \xE9tapes pour gagner une casquette d'int\xE9grit\xE9.",
     stage1: "\xC9tape 1 \xB7 March\xE9s publics",
     stage2: "\xC9tape 2 \xB7 Lanceur d'alerte",
     dev: "En d\xE9veloppement",
@@ -251,6 +283,7 @@ var UI = {
     stage4: "\xC9tape 4 \xB7 Utilisation des terres",
     stage5: "\xC9tape 5 \xB7 Discrimination",
     stage6: "\xC9tape 6 \xB7 Agriculture",
+    stage7: "\xC9tape 7 \xB7 Crime financier",
     choose: "Choisis ton personnage",
     enter: "Entrer",
     portrait: "Portrait",
@@ -479,7 +512,38 @@ var UI = {
     cropRule: "Un pesticide n'est permis que sur la culture pour laquelle il est autoris\xE9. Ne vends pas avant la fin du d\xE9lai d'attente. Ne rince pas les bidons dans le canal.",
     rowsHeld: "{n}/{total} rangs justes",
     openCrop: "Ouvrir l'\xE9tape 6",
-    dockCrop: "\xC9tape 6 \xB7 rangs"
+    dockCrop: "\xC9tape 6 \xB7 rangs",
+    phaseWash: "\xC9tape 7 \xB7 Crime financier",
+    wash: "\xC9tape 7",
+    washScore: "Score \xB7 \xE9tape 7",
+    washHint: "\xC9tape 7 \xB7 Crime financier",
+    lockWash: "R\xE9ponds juste \xE0 chaque question d'agriculture pour ouvrir l'\xE9tape 7",
+    briefWash: "\xC9tape 7 \xB7 Crime financier",
+    holdsWash: "Bonne r\xE9ponse \xB7 +100",
+    missWash: "Mauvaise r\xE9ponse \xB7 +20",
+    scoringWash: "Cinq ou six justes : le tuyau redevient clair. Deux \xE0 quatre : l'or se voit encore. Z\xE9ro ou un : la tour reste lav\xE9e.",
+    nextFloor: "\xC9tage suivant",
+    doneClean: "Dossier clos \xB7 le tuyau est clair",
+    doneWashThin: "Dossier clos \xB7 l'or se voit encore",
+    doneWash: "Dossier clos \xB7 la tour reste lav\xE9e",
+    cleanTitle: "Le tuyau redevient clair",
+    cleanBody: "Les valises restent ferm\xE9es. Le sceau s'arr\xEAte. La villa reste sombre. Un propri\xE9taire cach\xE9 n'est pas un client.",
+    washThinTitle: "L'or se voit encore",
+    washThinBody: "Certains \xE9tages se vident, d'autres non. Une montre est encore au poignet. Le dossier n'est pas tenu.",
+    washTitle: "La tour reste lav\xE9e",
+    washBody: "Le dossier ne tient pas. Le tuyau reste noir et la villa s'allume. Recommence l'\xE9tape et reprends les questions.",
+    scoreWash: "Score \xB7 \xE9tape 7 \xB7 {score}/600",
+    toastLockWash: "L'\xE9tape 7 est verrouill\xE9e. R\xE9ponds d'abord juste \xE0 chaque question d'agriculture.",
+    toastClean: "Le tuyau est clair. Les \xE9tages sont rest\xE9s licites.",
+    toastWashThin: "L'or se voit encore derri\xE8re le verre.",
+    toastWash: "La tour reste lav\xE9e.",
+    toastFloor: "Bonne r\xE9ponse. La boue baisse.",
+    toastSludge: "Mauvaise r\xE9ponse. L'\xE9tage reste sombre.",
+    boardWash: "\xC9tape 7 \xB7 Crime financier",
+    washRule: "Refuse une soci\xE9t\xE9 sans activit\xE9 et \xE0 propri\xE9taire cach\xE9. Ne fais pas circuler un argent que tu ne peux pas expliquer. Un titre, un permis et un nom pr\xEAte ne lavent rien.",
+    floorsHeld: "{n}/{total} \xE9tages tenus",
+    openWash: "Ouvrir l'\xE9tape 7",
+    dockWash: "\xC9tape 7 \xB7 le lavage"
   }
 };
 function loadLang() {
@@ -736,7 +800,13 @@ var SHORT_FR = {
   bottle: "Fiole",
   cans: "Bidons",
   mix: "M\xE9lange",
-  stall: "\xC9tal"
+  stall: "\xC9tal",
+  shelf: "\xC9tag\xE8re",
+  desk: "Guichet",
+  deed: "Titre",
+  loop: "Boucle",
+  bid: "Offre",
+  name: "Nom"
 };
 function shortLabel(id, lang, fallback) {
   if (lang === "fr" && SHORT_FR[id]) return SHORT_FR[id];
@@ -1049,6 +1119,78 @@ var CROP_FR = {
     }
   }
 };
+const WASH_FR = {
+  shelf: {
+    title: "L'\xE9tag\xE8re vide",
+    question: "Une soci\xE9t\xE9 de gestion doit cr\xE9er une soci\xE9t\xE9 dans la journ\xE9e. Elle n'a pas de personnel, pas de bureau, pas d'activit\xE9. Les factures citent des marchandises qui n'ont jamais quitt\xE9 le port. Le propri\xE9taire est un agent public d'un autre pays, et les honoraires sont \xE9lev\xE9s si personne ne pose de question. Quelle est l'action licite ?",
+    options: {
+      A: "La constituer. Une soci\xE9t\xE9 sans personnel est normale.",
+      B: "Mettre ton nom comme administrateur pour que le dossier paraisse local.",
+      C: "Une soci\xE9t\xE9 sans activit\xE9 et \xE0 agent public cach\xE9 n'est pas un client. Refuse. D\xE9pose une d\xE9claration de transaction suspecte aupr\xE8s de la FIU. Ne sois pas pr\xEAte-nom.",
+      D: "Change les factures pour qu'elles citent un autre port."
+    }
+  },
+  desk: {
+    title: "Le guichet silencieux",
+    question: "Un banquier priv\xE9 doit recevoir une grosse somme d'une fondation \xE9trang\xE8re, puis l'envoyer le jour m\xEAme \xE0 Duba\xEF et \xE0 un agent immobilier de luxe. Le client ne dit pas d'o\xF9 vient l'argent. Quelle est l'action licite ?",
+    options: {
+      A: "Ex\xE9cuter. La vitesse est un service.",
+      B: "Prendre les honoraires, puis \xE9crire \xE0 la conformit\xE9 demain.",
+      C: "Couper la somme en trois comptes pour qu'aucun transfert ne paraisse gros.",
+      D: "N'ex\xE9cute pas le transfert. Garde les fonds que tu peux. D\xE9pose une d\xE9claration de transaction suspecte. Une entr\xE9e et une sortie le m\xEAme jour, sans origine des fonds, est un lavage."
+    }
+  },
+  deed: {
+    title: "L'acte",
+    question: "Un agent immobilier se voit offrir du liquide pour une villa au nom d'un ami, plus un permis de r\xE9sidence si la vente se fait cette semaine. L'acheteur n'a pas de travail ici et poss\xE8de d\xE9j\xE0 trois maisons vides. Quelle est l'action licite ?",
+    options: {
+      A: "Signer. Un bien est propre d\xE8s qu'il a un titre.",
+      B: "Prendre le liquide mais \xE9crire un prix plus bas sur l'acte.",
+      C: "Un titre ne lave pas l'argent. Refuse la vente en liquide. Signale-la. Un permis de r\xE9sidence n'est pas un lavage.",
+      D: "Louer d'abord la villa \xE0 l'acheteur pour qu'elle paraisse habit\xE9e."
+    }
+  },
+  loop: {
+    title: "La boucle",
+    question: "Un promoteur veut qu'une soci\xE9t\xE9 locale investisse dans son propre groupe au pays. L'argent est sorti l'an dernier comme pr\xEAt vers une coquille ici. Il revient comme investissement \xE9tranger, avec une demande de ne presque pas payer d'imp\xF4t. Quelle est l'action licite ?",
+    options: {
+      A: "Signer le formulaire de trait\xE9. La boucle n'est qu'une structure efficace.",
+      B: "Transformer le pr\xEAt en don pour couper la piste.",
+      C: "L'argent qui sort et revient comme investissement \xE9tranger n'est pas \xE9tranger. Ne certifie pas la demande de trait\xE9. Signale la boucle.",
+      D: "Ajouter deux coquilles pour allonger le chemin."
+    }
+  },
+  bid: {
+    title: "L'offre",
+    question: "Un contrat public de carburant va \xEAtre attribu\xE9 sur une offre non sollicit\xE9e. On demande \xE0 un administrateur local de facturer des honoraires de conseil \xE0 une partie proche de l'attribution, puis d'envoyer les honoraires \xE0 un marchand de montres. Quelle est l'action licite ?",
+    options: {
+      A: "Facturer cela comme du conseil. La commande publique, c'est de la politique.",
+      B: "Attendre la signature du contrat, puis prendre les honoraires.",
+      C: "Payer en liquide pour qu'il n'y ait pas de virement.",
+      D: "Un pot-de-vin habill\xE9 en honoraires de conseil reste un pot-de-vin. Ne facture pas. Signale-le \xE0 la Financial Crimes Commission. L'argent public n'est pas un compte client."
+    }
+  },
+  name: {
+    title: "Le nom",
+    question: "On demande \xE0 un pr\xEAte-nom de si\xE9ger dans cinq soci\xE9t\xE9s. Il ne verra jamais les comptes. On lui dit que le propri\xE9taire est un family office. Une note sur le bureau nomme une personne sous sanctions internationales. Quelle est l'action licite ?",
+    options: {
+      A: "Signer. Un pr\xEAte-nom n'est pas responsable s'il ne lit pas le dossier.",
+      B: "N'en signer que quatre sur cinq.",
+      C: "Un pr\xEAte-nom qui cache un propri\xE9taire sanctionn\xE9 fait partie du lavage. D\xE9missionne. Pr\xE9viens la Financial Services Commission et la Financial Crimes Commission. Ne pr\xEAte pas ton nom.",
+      D: "D\xE9placer les soci\xE9t\xE9s vers un autre cabinet et se taire."
+    }
+  }
+};
+function localizeWash(item, lang) {
+  const fr = lang === "fr" ? WASH_FR[item.id] : void 0;
+  if (!fr) return item;
+  return {
+    ...item,
+    title: fr.title,
+    question: fr.question,
+    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
+  };
+}
 function localizeCrop(item, lang) {
   const fr = lang === "fr" ? CROP_FR[item.id] : void 0;
   if (!fr) return item;
@@ -1066,6 +1208,7 @@ export {
   loadLang,
   localizeCase,
   localizeCrop,
+  localizeWash,
   localizeFair,
   localizeHaven,
   localizeLand,

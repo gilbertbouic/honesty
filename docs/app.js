@@ -1,10 +1,11 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg55";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg56";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg51";
 import { FairScene } from "./fair.js?v=vg53";
 import { CropScene } from "./crop.js?v=vg54";
+import { WashScene } from "./wash.js?v=vg56";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -535,6 +536,73 @@ function cropOutcomeOf(score, answered) {
   if (score >= 280) return "thin";
   return "bare";
 }
+const WASH_CORRECT = 100;
+const WASH_WRONG = 20;
+const WASH_CASES = [
+  { id: "shelf", spec: "WASH-01", title: "The empty shelf", correct: "C",
+    question: "A management company is asked to incorporate a company in a day. It has no staff, no office and no trade. The invoices name goods that never left the port. The owner is a public official from another country, and the fee is large if nobody asks. What is the lawful action?",
+    options: [
+      { id: "A", text: "File it. A company with no staff is normal." },
+      { id: "B", text: "Put your own name as director so the file looks local." },
+      { id: "C", text: "A company with no trade and a hidden public official is not a client. Refuse it. File a suspicious transaction report with the FIU. Do not act as nominee." },
+      { id: "D", text: "Change the invoices so they name a different port." },
+    ] },
+  { id: "desk", spec: "WASH-02", title: "The silent desk", correct: "D",
+    question: "A private banker is told to receive a large sum from a foreign foundation, then send it the same day to Dubai and a luxury estate agent. The customer will not say where the money came from. What is the lawful action?",
+    options: [
+      { id: "A", text: "Process it. Speed is a service." },
+      { id: "B", text: "Take the fee, then send a note to compliance tomorrow." },
+      { id: "C", text: "Split the sum across three accounts so no single transfer looks large." },
+      { id: "D", text: "Do not complete the transfer. Hold the funds you can. File a suspicious transaction report. A same-day in-and-out with no source of funds is a wash." },
+    ] },
+  { id: "deed", spec: "WASH-03", title: "The deed", correct: "C",
+    question: "An estate agent is offered cash for a villa in a friend's name, plus a residence permit if the sale completes this week. The buyer has no work here and already owns three empty houses. What is the lawful action?",
+    options: [
+      { id: "A", text: "Sign. Property is clean once it has a title." },
+      { id: "B", text: "Take the cash but write a smaller price on the deed." },
+      { id: "C", text: "A title does not clean the money. Refuse the cash sale. Report it. A residence permit is not a wash." },
+      { id: "D", text: "Rent the villa to the buyer first so it looks lived in." },
+    ] },
+  { id: "loop", spec: "WASH-04", title: "The loop", correct: "C",
+    question: "A promoter wants a local company to invest in his own group at home. The money left that country last year as a loan to a shell here. Now it comes back as foreign investment, with a claim to pay almost no tax. What is the lawful action?",
+    options: [
+      { id: "A", text: "Sign the treaty form. The loop is just an efficient structure." },
+      { id: "B", text: "Change the loan into a gift so the trail breaks." },
+      { id: "C", text: "Money that leaves and comes home as foreign investment is not foreign. Do not certify the treaty claim. Report the loop." },
+      { id: "D", text: "Use two extra shells so the path is longer." },
+    ] },
+  { id: "bid", spec: "WASH-05", title: "The bid", correct: "D",
+    question: "A state fuel contract is about to be awarded on an unsolicited offer. A local director is asked to invoice advisory fees to a party close to the award, then move the fee to a watch dealer. What is the lawful action?",
+    options: [
+      { id: "A", text: "Invoice it as consultancy. Procurement is politics." },
+      { id: "B", text: "Wait until the contract is signed, then take the fee." },
+      { id: "C", text: "Pay the fee in cash so there is no transfer." },
+      { id: "D", text: "A kickback dressed as an advisory fee is still a kickback. Do not invoice. Report it to the Financial Crimes Commission. Public money is not a client account." },
+    ] },
+  { id: "name", spec: "WASH-06", title: "The name", correct: "C",
+    question: "A nominee is asked to sit on five companies. He will never see the books. He is told the owner is a family office. A note on the desk names a person under international sanctions. What is the lawful action?",
+    options: [
+      { id: "A", text: "Sign. A nominee is not liable if he never reads the file." },
+      { id: "B", text: "Sign only four of the five." },
+      { id: "C", text: "A nominee who hides a sanctioned owner is part of the wash. Resign. Tell the Financial Services Commission and the Financial Crimes Commission. Do not lend your name." },
+      { id: "D", text: "Move the companies to another firm and stay silent." },
+    ] },
+];
+const WASHSHORT = { shelf: "Shelf", desk: "Desk", deed: "Deed", loop: "Loop", bid: "Bid", name: "Name" };
+function roundSixCleared(results) {
+  return results.length >= CROP_CASES.length && results.every((r) => r.correct);
+}
+function washCaseById(id) { return WASH_CASES.find((c) => c.id === id) ?? WASH_CASES[0]; }
+function firstOpenWashId(results) {
+  const done = new Set(results.map((r) => r.caseId));
+  return WASH_CASES.find((c) => !done.has(c.id))?.id ?? WASH_CASES[0].id;
+}
+function washOutcomeOf(score, answered) {
+  if (answered < WASH_CASES.length) return "open";
+  if (score >= 500) return "clean";
+  if (score >= 280) return "thin";
+  return "wash";
+}
 function winnerOf(bids) { return Object.entries(bids).sort((a, b) => b[1] - a[1])[0][0]; }
 function holdingsLabel(name, houses) {
   const owned = houses.filter((h) => h.owner === name);
@@ -820,6 +888,7 @@ class VillageEngine {
     this.land = new LandScene(this.scene);
     this.fair = new FairScene(this.scene);
     this.crop = new CropScene(this.scene);
+    this.wash = new WashScene(this.scene);
     this.havenOutcome = "open";
     this.havenCorrect = 0;
     this.landOutcome = "open";
@@ -852,11 +921,14 @@ class VillageEngine {
     this.fairCorrect = next.fairCorrect || 0;
     this.cropOutcome = next.cropOutcome || "open";
     this.cropCorrect = next.cropCorrect || 0;
+    this.washOutcome = next.washOutcome || "open";
+    this.washCorrect = next.washCorrect || 0;
     this.haven.sync(this.competition, this.havenOutcome, this.havenCorrect);
     this.land.sync(this.competition, this.landOutcome, this.landCorrect);
     this.fair.sync(this.competition, this.fairOutcome, this.fairCorrect);
     this.crop.sync(this.competition, this.cropOutcome, this.cropCorrect);
-    const solo = this.competition === "land" || this.competition === "fair" || this.competition === "crop";
+    this.wash.sync(this.competition, this.washOutcome, this.washCorrect);
+    const solo = this.competition === "land" || this.competition === "fair" || this.competition === "crop" || this.competition === "wash";
     if (this.ground) this.ground.visible = !solo;
     if (this.canal) this.canal.visible = !solo;
     this.plazaRing.visible = !solo;
@@ -947,6 +1019,12 @@ class VillageEngine {
 
   frameCompetition() {
     const fog = this.scene.fog;
+    if (this.competition === "wash") {
+      fog.color.set(0x8ea4b8);
+      this.scene.background = new THREE.Color(0x8ea4b8);
+      this.aimStage(new THREE.Vector3(0, 1.8, 0), new THREE.Vector3(0.3, 3.6, 9.2), 3.4);
+      return;
+    }
     if (this.competition === "crop") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
@@ -1338,8 +1416,8 @@ class VillageEngine {
     for (const house of this.houseState) {
       const v = this.visuals.get(house.id);
       if (!v) continue;
-      v.group.visible = this.competition !== "land" && this.competition !== "fair" && this.competition !== "crop" && this.competition !== "haven";
-      if (this.competition === "land" || this.competition === "fair" || this.competition === "crop") continue;
+      v.group.visible = this.competition !== "land" && this.competition !== "fair" && this.competition !== "crop" && this.competition !== "wash" && this.competition !== "haven";
+      if (this.competition === "land" || this.competition === "fair" || this.competition === "crop" || this.competition === "wash") continue;
       const hovered = this.hoveredId === house.id || this.hoverId === house.id;
       const selected = this.selectedId === house.id;
       const target = house.renovated || hovered ? 1 : 0;
@@ -1369,6 +1447,7 @@ class VillageEngine {
     this.land.tick(dt, t, this.reduced);
     this.fair.tick(dt, t, this.reduced);
     this.crop.tick(dt, t, this.reduced);
+    this.wash.tick(dt, t, this.reduced);
     this.renderer.render(this.scene, this.camera);
   };
 }
@@ -1386,6 +1465,7 @@ function defaultState() {
     landResults: [], activeLandId: LAND_CASES[0].id, landScore: 0, landOutcome: "open",
     fairResults: [], activeFairId: FAIR_CASES[0].id, fairScore: 0, fairOutcome: "open",
     cropResults: [], activeCropId: CROP_CASES[0].id, cropScore: 0, cropOutcome: "open",
+    washResults: [], activeWashId: WASH_CASES[0].id, washScore: 0, washOutcome: "open",
   };
 }
 
@@ -1441,6 +1521,8 @@ function persist(state) {
       fairScore: state.fairScore, fairOutcome: state.fairOutcome,
       cropResults: state.cropResults, activeCropId: state.activeCropId,
       cropScore: state.cropScore, cropOutcome: state.cropOutcome,
+      washResults: state.washResults, activeWashId: state.activeWashId,
+      washScore: state.washScore, washOutcome: state.washOutcome,
     }));
   } catch { /* ignore */ }
 }
@@ -1478,6 +1560,8 @@ function syncPayload() {
     fairCorrect: (state.fairResults || []).filter((r) => r.correct).length,
     cropOutcome: state.cropOutcome,
     cropCorrect: (state.cropResults || []).filter((r) => r.correct).length,
+    washOutcome: state.washOutcome,
+    washCorrect: (state.washResults || []).filter((r) => r.correct).length,
   };
 }
 engine.sync(syncPayload());
@@ -1506,7 +1590,12 @@ function resetStage() {
   state.mobileTab = "tender";
   state.hoveredId = null;
   state.selectedId = null;
-  if (state.competition === "crop") {
+  if (state.competition === "wash") {
+    state.washResults = [];
+    state.activeWashId = WASH_CASES[0].id;
+    state.washScore = 0;
+    state.washOutcome = "open";
+  } else if (state.competition === "crop") {
     state.cropResults = [];
     state.activeCropId = CROP_CASES[0].id;
     state.cropScore = 0;
@@ -1578,7 +1667,7 @@ function renderBoot() {
   document.getElementById("boot-title").textContent = L("title");
   document.getElementById("boot-goal").textContent = L("goal");
   document.getElementById("enter-btn").textContent = L("enter");
-  document.getElementById("boot-stages").innerHTML = ["stage1", "stage2", "stage3", "stage4", "stage5", "stage6"]
+  document.getElementById("boot-stages").innerHTML = ["stage1", "stage2", "stage3", "stage4", "stage5", "stage6", "stage7"]
     .map((key) => `<li>${L(key)}</li>`)
     .join("");
   paintLang(document.getElementById("boot-lang"));
@@ -1612,6 +1701,7 @@ function renderHeader() {
   const land = state.competition === "land";
   const fair = state.competition === "fair";
   const crop = state.competition === "crop";
+  const wash = state.competition === "wash";
   document.getElementById("phase-kicker").textContent = L("projectPhase");
   document.querySelector('#comp-switch [data-comp="tender"]').textContent = L("tenders");
   document.querySelector('#comp-switch [data-comp="whistle"]').textContent = L("whistle");
@@ -1619,21 +1709,23 @@ function renderHeader() {
   document.querySelector('#comp-switch [data-comp="land"]').textContent = L("land");
   document.querySelector('#comp-switch [data-comp="fair"]').textContent = L("fair");
   document.querySelector('#comp-switch [data-comp="crop"]').textContent = L("crop");
-  document.getElementById("phase-title").textContent = crop ? L("phaseCrop") : fair ? L("phaseFair") : land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
-  document.getElementById("stat-label").textContent = crop ? L("cropScore") : fair ? L("fairScore") : land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
+  document.querySelector('#comp-switch [data-comp="wash"]').textContent = L("wash");
+  document.getElementById("phase-title").textContent = wash ? L("phaseWash") : crop ? L("phaseCrop") : fair ? L("phaseFair") : land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
+  document.getElementById("stat-label").textContent = wash ? L("washScore") : crop ? L("cropScore") : fair ? L("fairScore") : land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
   const won = state.results.filter((r) => r.winnerId === "you").length;
   const stat = document.getElementById("stat-won");
-  stat.textContent = crop ? `${state.cropScore}/${CROP_CASES.length * 100}` : fair ? `${state.fairScore}/${FAIR_CASES.length * 100}` : land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
+  stat.textContent = wash ? `${state.washScore}/${WASH_CASES.length * 100}` : crop ? `${state.cropScore}/${CROP_CASES.length * 100}` : fair ? `${state.fairScore}/${FAIR_CASES.length * 100}` : land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
   stat.className = "mono";
-  stat.style.color = crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
+  stat.style.color = wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
   if (haven) stat.className = "mono rose";
   if (whistle) stat.className = "mono amber";
-  if (!crop && !fair && !land && !haven && !whistle) stat.className = "mono green";
+  if (!wash && !crop && !fair && !land && !haven && !whistle) stat.className = "mono green";
   const swept = roundOneCleared(state.results, state.contractorId);
   const lineOpen = roundTwoCleared(state.whistleResults);
   const landOpen = roundThreeCleared(state.havenResults);
   const fairOpen = roundFourCleared(state.landResults);
   const cropOpen = roundFiveCleared(state.fairResults);
+  const washOpen = roundSixCleared(state.cropResults);
   document.querySelectorAll("#comp-switch button").forEach((b) => {
     b.classList.toggle("on", b.dataset.comp === state.competition);
     if (b.dataset.comp === "whistle") {
@@ -1656,9 +1748,15 @@ function renderHeader() {
       b.classList.toggle("locked", !cropOpen);
       b.title = cropOpen ? L("cropHint") : L("lockCrop");
     }
+    if (b.dataset.comp === "wash") {
+      b.classList.toggle("locked", !washOpen);
+      b.title = washOpen ? L("washHint") : L("lockWash");
+    }
   });
   const qcount = document.getElementById("qcount");
-  qcount.textContent = crop
+  qcount.textContent = wash
+    ? `${state.washResults.length}/${WASH_CASES.length}`
+    : crop
     ? `${state.cropResults.length}/${CROP_CASES.length}`
     : fair
       ? `${state.fairResults.length}/${FAIR_CASES.length}`
@@ -1670,8 +1768,8 @@ function renderHeader() {
             ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
             : `${state.results.length}/${TENDERS.length}`;
   qcount.className = haven ? "qcount rose" : whistle ? "qcount amber" : "qcount green";
-  qcount.style.color = crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
-  document.getElementById("tab-case").textContent = crop || fair || land || haven || whistle ? L("case") : L("tender");
+  qcount.style.color = wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
+  document.getElementById("tab-case").textContent = wash || crop || fair || land || haven || whistle ? L("case") : L("tender");
   document.getElementById("tab-round").textContent = state.competition === "tender"
     ? L("whistle")
     : state.competition === "whistle" && lineOpen
@@ -1682,13 +1780,17 @@ function renderHeader() {
           ? L("fair")
           : state.competition === "fair" && cropOpen
             ? L("crop")
-            : L("tenders");
+            : state.competition === "crop" && washOpen
+              ? L("wash")
+              : L("tenders");
   document.querySelectorAll("#mobile-tabs button[data-tab]").forEach((b) => {
     b.classList.toggle("whistle", whistle && b.classList.contains("on"));
     b.classList.toggle("haven", haven && b.classList.contains("on"));
   });
   document.getElementById("contractor-chips").innerHTML = `
-    <span class="kicker mute">${crop
+    <span class="kicker mute">${wash
+      ? L("floorsHeld", { n: state.washResults.filter((r) => r.correct).length, total: WASH_CASES.length })
+      : crop
       ? L("rowsHeld", { n: state.cropResults.filter((r) => r.correct).length, total: CROP_CASES.length })
       : fair
       ? L("gatesHeld", { n: state.fairResults.filter((r) => r.correct).length, total: FAIR_CASES.length })
@@ -2156,7 +2258,87 @@ function answerCrop(picked) {
   renderOutcome();
 }
 
+function renderWash() {
+  const raw = washCaseById(state.activeWashId);
+  const item = localizeWash(raw, lang);
+  const result = state.washResults.find((r) => r.caseId === item.id);
+  const locked = Boolean(result);
+  const remaining = WASH_CASES.some((c) => !state.washResults.some((r) => r.caseId === c.id));
+  const held = Boolean(result?.correct);
+  const panel = document.getElementById("tender-panel");
+  panel.classList.toggle("award", held);
+  panel.classList.toggle("reject", locked && !held);
+  panel.innerHTML = `
+    <div class="side-head">
+      <p class="kicker" style="color:#c9a15a">${L("briefWash")} · ${item.spec}</p>
+      <h2>${item.title}</h2>
+      <p class="mono mute">${state.washResults.length}/${WASH_CASES.length}</p>
+    </div>
+    <div class="spec-nav">
+      ${WASH_CASES.map((c) => {
+        const done = state.washResults.some((r) => r.caseId === c.id);
+        const hit = state.washResults.find((r) => r.caseId === c.id);
+        const on = c.id === item.id;
+        return `<button type="button" data-wash="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, WASHSHORT[c.id])}</button>`;
+      }).join("")}
+    </div>
+    <div class="side-body">
+      <p>${item.question}</p>
+      <div class="opts">
+        ${item.options.map((opt) => {
+          const picked = result?.picked === opt.id;
+          const isCorrect = opt.id === item.correct;
+          const cls = picked && held ? "correct" : picked && locked ? "wrong" : locked && isCorrect ? "correct" : "";
+          return `<button type="button" class="opt ${cls}" data-wopt2="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
+        }).join("")}
+      </div>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsWash") : L("missWash")) : L("scoring")}</p>
+      <p style="font-size:.8rem">${L("scoringWash")}</p>
+      ${result && remaining ? `<button type="button" class="cta" id="next-wash" style="margin-top:.75rem;background:#c9a15a">${L("nextFloor")}</button>` : ""}
+      ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.washOutcome === "clean" ? "var(--green)" : state.washOutcome === "thin" ? "#c9a15a" : "var(--crimson)"}">${
+        state.washOutcome === "clean" ? L("doneClean") : state.washOutcome === "thin" ? L("doneWashThin") : L("doneWash")
+      }</p>` : ""}
+    </div>`;
+  panel.querySelectorAll("[data-wash]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!roundSixCleared(state.cropResults)) {
+        showToast(L("toastLockWash"), "info");
+        return;
+      }
+      state.activeWashId = btn.dataset.wash;
+      state.competition = "wash";
+      persist(state);
+      renderAll();
+    });
+  });
+  panel.querySelectorAll("[data-wopt2]").forEach((btn) => btn.addEventListener("click", () => answerWash(btn.dataset.wopt2)));
+  document.getElementById("next-wash")?.addEventListener("click", () => {
+    if (state.washOutcome !== "open") return;
+    state.activeWashId = firstOpenWashId(state.washResults);
+    persist(state);
+    renderAll();
+  });
+}
+
+function answerWash(picked) {
+  if (!state.contractorId || !roundSixCleared(state.cropResults)) return;
+  const item = washCaseById(state.activeWashId);
+  if (state.washResults.some((r) => r.caseId === item.id)) return;
+  const correct = picked === item.correct;
+  state.washResults.push({ caseId: item.id, picked, correct, playerScore: correct ? WASH_CORRECT : WASH_WRONG });
+  state.washScore += correct ? WASH_CORRECT : WASH_WRONG;
+  state.washOutcome = washOutcomeOf(state.washScore, state.washResults.length);
+  if (state.washOutcome !== "open") {
+    state.showOutcome = true;
+    showToast(state.washOutcome === "clean" ? L("toastClean") : state.washOutcome === "thin" ? L("toastWashThin") : L("toastWash"), state.washOutcome);
+  } else showToast(correct ? L("toastFloor") : L("toastSludge"), correct ? "award" : "reject");
+  persist(state);
+  renderAll();
+  renderOutcome();
+}
+
 function renderCase() {
+  if (state.competition === "wash") return renderWash();
   if (state.competition === "crop") return renderCrop();
   if (state.competition === "fair") return renderFair();
   if (state.competition === "land") return renderLand();
@@ -2284,10 +2466,15 @@ function renderOutcome() {
   const haven = state.competition === "haven";
   const land = state.competition === "land";
   const fair = state.competition === "fair";
+  const wash = state.competition === "wash";
   const crop = state.competition === "crop";
-  const outcome = crop ? state.cropOutcome : fair ? state.fairOutcome : land ? state.landOutcome : haven ? state.havenOutcome : state.whistleOutcome;
+  const outcome = wash ? state.washOutcome : crop ? state.cropOutcome : fair ? state.fairOutcome : land ? state.landOutcome : haven ? state.havenOutcome : state.whistleOutcome;
   if (!state.showOutcome || state.competition === "tender" || outcome === "open") { el.hidden = true; return; }
-  const copy = crop ? {
+  const copy = wash ? {
+    clean: { kicker: L("topScore"), title: L("cleanTitle"), body: L("cleanBody"), cls: "award" },
+    thin: { kicker: L("midScore"), title: L("washThinTitle"), body: L("washThinBody"), cls: "burn" },
+    wash: { kicker: L("lowScore"), title: L("washTitle"), body: L("washBody"), cls: "reject" },
+  }[state.washOutcome] : crop ? {
     grown: { kicker: L("topScore"), title: L("grownTitle"), body: L("grownBody"), cls: "award" },
     thin: { kicker: L("midScore"), title: L("thinTitle"), body: L("thinBody"), cls: "burn" },
     bare: { kicker: L("lowScore"), title: L("bareTitle"), body: L("bareBody"), cls: "reject" },
@@ -2311,7 +2498,9 @@ function renderOutcome() {
   document.getElementById("outcome-kicker").textContent = copy.kicker;
   document.getElementById("outcome-title").textContent = copy.title;
   document.getElementById("outcome-body").textContent = copy.body;
-  document.getElementById("outcome-score").textContent = crop
+  document.getElementById("outcome-score").textContent = wash
+    ? L("scoreWash", { score: state.washScore })
+    : crop
     ? L("scoreCrop", { score: state.cropScore })
     : fair
     ? L("scoreFair", { score: state.fairScore })
@@ -2333,6 +2522,19 @@ function renderBoard() {
     return;
   }
   board.hidden = false;
+  if (state.competition === "wash") {
+    const floors = state.washResults.filter((r) => r.correct).length;
+    board.innerHTML = `
+      <div class="side-head">
+        <p class="kicker" style="color:#c9a15a">${L("boardWash")}</p>
+        <h2>${L("notRanking")}</h2>
+      </div>
+      <div class="side-body">
+        <p style="font-size:.8rem">${L("washRule")}</p>
+        <p class="mono green">${L("floorsHeld", { n: floors, total: WASH_CASES.length })}</p>
+      </div>`;
+    return;
+  }
   if (state.competition === "crop") {
     const rows = state.cropResults.filter((r) => r.correct).length;
     board.innerHTML = `
@@ -2424,6 +2626,11 @@ function renderDock() {
   if (state.competition === "fair") {
     dock.hidden = false;
     dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#b388ff">${L("dockFair")}</p></div>`;
+    return;
+  }
+  if (state.competition === "wash") {
+    dock.hidden = false;
+    dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#c9a15a">${L("dockWash")}</p></div>`;
     return;
   }
   if (state.competition === "crop") {
@@ -2526,6 +2733,16 @@ function sheetState() {
       total: CROP_CASES.length,
       score: state.cropScore,
       perfect: state.cropResults.length >= CROP_CASES.length && state.cropResults.every((r) => r.correct),
+      last: false,
+    };
+  }
+  if (comp === "wash") {
+    return {
+      answered: state.washResults.some((r) => r.caseId === state.activeWashId),
+      n: state.washResults.length,
+      total: WASH_CASES.length,
+      score: state.washScore,
+      perfect: state.washResults.length >= WASH_CASES.length && state.washResults.every((r) => r.correct),
       last: true,
     };
   }
@@ -2576,13 +2793,14 @@ function advanceQuestion() {
   else if (state.competition === "land") state.activeLandId = firstOpenLandId(state.landResults);
   else if (state.competition === "fair") state.activeFairId = firstOpenFairId(state.fairResults);
   else if (state.competition === "crop") state.activeCropId = firstOpenCropId(state.cropResults);
+  else if (state.competition === "wash") state.activeWashId = firstOpenWashId(state.washResults);
   else state.activeHouseId = firstOpenHouseId(state.results);
   state.selectedId = state.activeHouseId;
   persist(state);
   renderAll();
 }
 function goNextStage() {
-  const order = ["tender", "whistle", "haven", "land", "fair", "crop"];
+  const order = ["tender", "whistle", "haven", "land", "fair", "crop", "wash"];
   const next = order[order.indexOf(state.competition) + 1];
   if (!next) return;
   state.competition = next;
@@ -2646,6 +2864,10 @@ document.getElementById("comp-switch").addEventListener("click", (e) => {
     showToast(L("toastLockCrop"), "info");
     return;
   }
+  if (btn.dataset.comp === "wash" && !roundSixCleared(state.cropResults)) {
+    showToast(L("toastLockWash"), "info");
+    return;
+  }
   state.showOutcome = false;
   state.competition = btn.dataset.comp;
   state.mobileTab = "tender";
@@ -2706,6 +2928,7 @@ document.getElementById("tab-round").addEventListener("click", () => {
   else if (state.competition === "haven" && roundThreeCleared(state.havenResults)) next = "land";
   else if (state.competition === "land" && roundFourCleared(state.landResults)) next = "fair";
   else if (state.competition === "fair" && roundFiveCleared(state.fairResults)) next = "crop";
+  else if (state.competition === "crop" && roundSixCleared(state.cropResults)) next = "wash";
   if (next === "whistle" && !roundOneCleared(state.results, state.contractorId)) {
     showToast(L("toastLock"), "info");
     return;
@@ -2726,6 +2949,10 @@ document.getElementById("tab-round").addEventListener("click", () => {
     showToast(L("toastLockCrop"), "info");
     return;
   }
+  if (next === "wash" && !roundSixCleared(state.cropResults)) {
+    showToast(L("toastLockWash"), "info");
+    return;
+  }
   state.competition = next;
   state.showOutcome = false;
   state.mobileTab = "tender";
@@ -2741,6 +2968,7 @@ if ((state.havenResults || []).length < HAVEN_CASES.length) state.havenOutcome =
 if ((state.landResults || []).length < LAND_CASES.length) state.landOutcome = "open";
 if ((state.fairResults || []).length < FAIR_CASES.length) state.fairOutcome = "open";
 if ((state.cropResults || []).length < CROP_CASES.length) state.cropOutcome = "open";
+if ((state.washResults || []).length < WASH_CASES.length) state.washOutcome = "open";
 for (const id of ["market", "clinic", "hall", "bus"]) {
   if (state.results.some((r) => r.houseId === id)) continue;
   const h = state.houses.find((x) => x.id === id);
@@ -2763,6 +2991,9 @@ if (!roundFourCleared(state.landResults) && state.competition === "fair") {
 }
 if (!roundFiveCleared(state.fairResults) && state.competition === "crop") {
   state.competition = roundFourCleared(state.landResults) ? "fair" : "land";
+}
+if (!roundSixCleared(state.cropResults) && state.competition === "wash") {
+  state.competition = roundFiveCleared(state.fairResults) ? "crop" : "fair";
 }
 renderBoot();
 if (state.phase === "play") showPlay();

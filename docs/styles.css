@@ -549,10 +549,10 @@ html[data-orient="portrait"] .mobile-sheet-foot .cta { margin-top: 0; }
   background: transparent;
   color: var(--mute);
   border-radius: 0.55rem;
-  padding: 0 0.7rem;
+  padding: 0 0.42rem;
   font-family: var(--display);
-  font-size: 10px;
-  letter-spacing: 0.14em;
+  font-size: 9px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 .comp-switch button.on.tender,
@@ -567,6 +567,10 @@ html[data-orient="portrait"] .mobile-sheet-foot .cta { margin-top: 0; }
 .comp-switch button[data-comp="haven"].on {
   background: color-mix(in oklab, var(--rose) 18%, transparent);
   color: var(--rose);
+}
+.comp-switch button[data-comp="wash"].on {
+  background: color-mix(in oklab, #c9a15a 18%, transparent);
+  color: #c9a15a;
 }
 .rose, .kicker.rose, .qcount.rose { color: var(--rose); }
 .toast.line { border-color: var(--green); color: var(--green); background: color-mix(in oklab, var(--green) 12%, var(--surface)); }

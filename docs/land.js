@@ -367,6 +367,7 @@ var LandScene = class {
         new THREE.MeshStandardMaterial({ color: 0xd5d6d2, roughness: 0.45, metalness: 0.08, transparent: true, opacity: 0.95 })
       );
       mesh.position.set(x, y, z);
+      mesh.visible = false;
       this.villas.push({ mesh, home: new THREE.Vector3(x, y, z) });
       this.group.add(mesh);
       if (i < 4) {
@@ -377,6 +378,7 @@ var LandScene = class {
         const mark = new THREE.Mesh(line, mat);
         mark.position.set(-0.6 + i * 1.1, 0.05, 3.1);
         mark.rotation.y = i % 2 ? 0.4 : -0.2;
+        mark.visible = false;
         this.group.add(mark);
       }
     });

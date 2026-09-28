@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg56";
 import { HavenScene } from "./haven.js?v=vg48";
-import { LandScene } from "./land.js?v=vg51";
+import { LandScene } from "./land.js?v=vg60";
 import { FairScene } from "./fair.js?v=vg53";
 import { CropScene } from "./crop.js?v=vg54";
 import { WashScene } from "./wash.js?v=vg59";
@@ -830,23 +830,24 @@ class VillageEngine {
     this.scene.add(fill);
 
     this.gridMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uIntegrity: { value: 0.32 } }, vertexShader: GRID_VERT, fragmentShader: GRID_FRAG });
+    this.village = new THREE.Group();
     const ground = new THREE.Mesh(new THREE.CircleGeometry(16, 64), this.gridMat);
     ground.rotation.x = -Math.PI / 2;
     this.ground = ground;
-    this.scene.add(ground);
+    this.village.add(ground);
 
     this.waterMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uTime: { value: 0 } }, vertexShader: GRID_VERT, fragmentShader: WATER_FRAG });
     const canal = new THREE.Mesh(new THREE.PlaneGeometry(22, 1.15), this.waterMat);
     canal.rotation.x = -Math.PI / 2;
     canal.position.set(0, 0.02, 4.7);
     this.canal = canal;
-    this.scene.add(canal);
+    this.village.add(canal);
 
     const plaza = new THREE.Mesh(new THREE.RingGeometry(1.55, 1.78, 48), new THREE.MeshStandardMaterial({ color: 0xd5d6d2, roughness: 0.7, metalness: 0.04 }));
     plaza.rotation.x = -Math.PI / 2;
     plaza.position.y = 0.04;
     this.plazaRing = plaza;
-    this.scene.add(plaza);
+    this.village.add(plaza);
 
     const rainCount = 420;
     this.rainPositions = new Float32Array(rainCount * 3);
@@ -873,14 +874,15 @@ class VillageEngine {
       mesh.position.set(Math.cos(a) * r, h / 2, Math.sin(a) * r);
       this.skyline.add(mesh);
     }
-    this.scene.add(this.skyline);
+    this.village.add(this.skyline);
 
     for (const house of houses) {
       const visual = makeHouse(house);
       this.visuals.set(house.id, visual);
-      this.scene.add(visual.group);
+      this.village.add(visual.group);
       this.hits.push(visual.hit);
     }
+    this.scene.add(this.village);
 
 
     this.competition = "tender";
@@ -930,16 +932,12 @@ class VillageEngine {
     this.fair.sync(this.competition, this.fairOutcome, this.fairCorrect);
     this.crop.sync(this.competition, this.cropOutcome, this.cropCorrect);
     this.wash.sync(this.competition, this.washOutcome, this.washCorrect);
-    const solo = this.competition === "land" || this.competition === "fair" || this.competition === "crop" || this.competition === "wash";
-    const village = this.competition === "tender";
-    if (this.ground) this.ground.visible = village || this.competition === "whistle";
-    if (this.canal) this.canal.visible = village || this.competition === "whistle";
-    this.plazaRing.visible = village || this.competition === "whistle";
-    if (this.skyline) this.skyline.visible = village || this.competition === "whistle";
+    const solo = this.competition !== "tender";
+    if (this.village) this.village.visible = !solo;
     if (this.wGroup) this.wGroup.visible = this.competition === "whistle";
     const mobile = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
     this.controls.autoRotate = !mobile && !this.holdOrbit && !next.reducedMotion && this.competition !== "haven" && !solo && this.whistleOutcome !== "exile";
-    this.rain.visible = !next.reducedMotion && this.competition !== "haven" && !solo;
+    this.rain.visible = !next.reducedMotion && this.competition === "tender";
     if (switched) this.holdOrbit = false;
     if (switched || this.whistleOutcome !== "open" || this.havenOutcome !== "open") this.frameCompetition();
   }
@@ -1092,32 +1090,29 @@ class VillageEngine {
 
   addWBox(group, geos, parts, x, y, z, w, h, d, opts = {}) {
     const geo = new THREE.BoxGeometry(w, h, d);
-    const edges = new THREE.EdgesGeometry(geo);
-    geos.push(geo, edges);
+    geos.push(geo);
     const fillMat = new THREE.MeshStandardMaterial({
       color: opts.color ?? 0xd5d6d2, roughness: 0.5, metalness: 0.12,
       transparent: true, opacity: opts.fill ?? 0.9, depthWrite: opts.depth ?? true,
     });
-    const lineMat = new THREE.LineBasicMaterial({ color: 0x1a1c1f, transparent: true, opacity: 0.3 });
-    parts.fills.push(fillMat); parts.lines.push(lineMat);
+    parts.fills.push(fillMat);
     const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z);
-    const line = new THREE.LineSegments(edges, lineMat); line.position.set(x, y, z);
-    group.add(fill, line);
+    fill.castShadow = true;
+    fill.receiveShadow = true;
+    group.add(fill);
   }
 
   addWCyl(group, geos, parts, x, y, z, r, h, seg = 8, opts = {}) {
     const geo = new THREE.CylinderGeometry(r, r, h, seg);
-    const edges = new THREE.EdgesGeometry(geo);
-    geos.push(geo, edges);
+    geos.push(geo);
     const fillMat = new THREE.MeshStandardMaterial({
       color: opts.color ?? 0xd5d6d2, roughness: 0.5, metalness: 0.12,
       transparent: true, opacity: opts.fill ?? 0.9, depthWrite: opts.depth ?? true,
     });
-    const lineMat = new THREE.LineBasicMaterial({ color: 0x1a1c1f, transparent: true, opacity: 0.3 });
-    parts.fills.push(fillMat); parts.lines.push(lineMat);
+    parts.fills.push(fillMat);
     const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z);
-    const line = new THREE.LineSegments(edges, lineMat); line.position.set(x, y, z);
-    group.add(fill, line);
+    fill.castShadow = true;
+    group.add(fill);
   }
 
   addLady(x, z, scale, dressHex) {

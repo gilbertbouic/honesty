@@ -2,10 +2,10 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg56";
 import { HavenScene } from "./haven.js?v=vg48";
-import { LandScene } from "./land.js?v=vg60";
-import { FairScene } from "./fair.js?v=vg53";
-import { CropScene } from "./crop.js?v=vg54";
-import { WashScene } from "./wash.js?v=vg59";
+import { LandScene } from "./land.js?v=vg61";
+import { FairScene } from "./fair.js?v=vg61";
+import { CropScene } from "./crop.js?v=vg61";
+import { WashScene } from "./wash.js?v=vg61";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -861,20 +861,6 @@ class VillageEngine {
     this.rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0x7ec8d4, size: 0.035, transparent: true, opacity: 0.45, depthWrite: false }));
     this.rain.visible = !this.reduced;
     this.scene.add(this.rain);
-
-    const skyMat = new THREE.MeshStandardMaterial({ color: 0x9aa3ab, roughness: 0.9, metalness: 0.02 });
-    this.skyline = new THREE.Group();
-    for (let i = 0; i < 18; i++) {
-      const a = (i / 18) * Math.PI * 2 + 0.2;
-      const r = 17 + (i % 3) * 1.4;
-      const h = 1.6 + ((i * 17) % 7) * 0.55;
-      const w = 1.1 + (i % 4) * 0.35;
-      const geo = new THREE.BoxGeometry(w, h, w);
-      const mesh = new THREE.Mesh(geo, skyMat);
-      mesh.position.set(Math.cos(a) * r, h / 2, Math.sin(a) * r);
-      this.skyline.add(mesh);
-    }
-    this.village.add(this.skyline);
 
     for (const house of houses) {
       const visual = makeHouse(house);

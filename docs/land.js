@@ -49,7 +49,6 @@ var LandScene = class {
   outcome = "open";
   correct = 0;
   constructor(scene) {
-    this.buildVillage();
     this.buildGround();
     this.rope = this.buildPath();
     this.ropeMat = this.rope.material;

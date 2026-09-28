@@ -65,7 +65,6 @@ class CropScene {
     this.tree(-5.6, 0.55, 0.85);
     this.tree(-1.55, -2.35, 1.25);
     this.tree(5.35, -1.55, 0.9);
-    this.shed();
     this.plots = [
       this.lettuce(-4.2, 1.15),
       this.tomato(-2.45, -0.7),

@@ -26,7 +26,6 @@ class FairScene {
     this.group.add(hemi, sun);
 
     this.buildPlaza();
-    this.buildTown();
     this.buildGates();
     this.core = this.buildCore();
     this.coreMat = this.core.material;

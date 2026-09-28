@@ -52,7 +52,6 @@ class WashScene {
     this.buildSea();
     this.buildPipe();
     this.buildGarden();
-    this.buildTown();
     this.buildTower();
     this.buildSign();
     this.walker = this.buildWalker();
@@ -448,8 +447,6 @@ class WashScene {
         palm.rotation.z = (i === 1 ? -0.1 : 0.06) + Math.sin(t * 0.7 + i) * 0.03;
       });
     }
-    const glow = washed ? 0.85 : clean ? 0.08 : 0.16;
-    this.townWin.emissiveIntensity += (glow - this.townWin.emissiveIntensity) * ease;
   }
 
   dispose() {

@@ -1037,27 +1037,36 @@ class VillageEngine {
     group.add(fill, line);
   }
 
-  addLady(x, z, scale) {
+  addLady(x, z, scale, dressHex) {
     const g = new THREE.Group();
-    const shell = new THREE.MeshStandardMaterial({ color: 0xd5d6d2, roughness: 0.4, metalness: 0.08, transparent: true });
-    const joint = new THREE.MeshStandardMaterial({ color: 0x1a1c1f, roughness: 0.5, metalness: 0.4 });
-    const led = new THREE.MeshStandardMaterial({ color: 0xff8ec0, emissive: 0xff8ec0, emissiveIntensity: 0.45, roughness: 0.3, transparent: true });
-    const put = (geo, material, y) => {
+    const skin = new THREE.MeshStandardMaterial({ color: 0xd7b39a, roughness: 0.72, transparent: true, opacity: 1 });
+    const hair = new THREE.MeshStandardMaterial({ color: dressHex === 0xc9a24a ? 0x3a2418 : 0x1a1214, roughness: 0.55, transparent: true, opacity: 1 });
+    const dress = new THREE.MeshStandardMaterial({ color: dressHex, roughness: 0.42, metalness: 0.06, transparent: true, opacity: 1 });
+    const heel = new THREE.MeshStandardMaterial({ color: 0x1a1c1f, roughness: 0.35, metalness: 0.2, transparent: true, opacity: 1 });
+    const put = (geo, material, px, y, pz) => {
       this.wGeos.push(geo);
       const mesh = new THREE.Mesh(geo, material);
-      mesh.position.y = y;
+      mesh.position.set(px, y, pz);
+      mesh.castShadow = true;
       g.add(mesh);
+      return mesh;
     };
-    put(new THREE.CapsuleGeometry(0.06 * scale, 0.22 * scale, 3, 6), shell, 0.2 * scale);
-    put(new THREE.CapsuleGeometry(0.11 * scale, 0.2 * scale, 4, 8), shell, 0.48 * scale);
-    put(new THREE.SphereGeometry(0.09 * scale, 12, 10), shell, 0.74 * scale);
-    put(new THREE.BoxGeometry(0.12 * scale, 0.03 * scale, 0.02 * scale), led, 0.74 * scale);
-    const visor = g.children[g.children.length - 1];
-    visor.position.z = 0.08 * scale;
-    put(new THREE.SphereGeometry(0.03 * scale, 8, 6), joint, 0.58 * scale);
+    const s = scale;
+    put(new THREE.BoxGeometry(0.07 * s, 0.08 * s, 0.11 * s), heel, -0.07 * s, 0.04 * s, 0.01 * s);
+    put(new THREE.BoxGeometry(0.07 * s, 0.08 * s, 0.11 * s), heel, 0.07 * s, 0.04 * s, 0.01 * s);
+    const skirt = put(new THREE.ConeGeometry(0.22 * s, 0.48 * s, 12), dress, 0, 0.32 * s, 0);
+    skirt.geometry.rotateX(0);
+    put(new THREE.BoxGeometry(0.16 * s, 0.22 * s, 0.12 * s), dress, 0, 0.58 * s, 0);
+    put(new THREE.CapsuleGeometry(0.035 * s, 0.16 * s, 3, 6), skin, -0.12 * s, 0.58 * s, 0);
+    put(new THREE.CapsuleGeometry(0.035 * s, 0.16 * s, 3, 6), skin, 0.12 * s, 0.58 * s, 0);
+    put(new THREE.SphereGeometry(0.09 * s, 12, 10), skin, 0, 0.78 * s, 0);
+    put(new THREE.SphereGeometry(0.1 * s, 12, 8), hair, 0, 0.84 * s, -0.02 * s);
+    put(new THREE.BoxGeometry(0.08 * s, 0.1 * s, 0.06 * s), hair, 0.02 * s, 0.7 * s, -0.06 * s);
+    put(new THREE.TorusGeometry(0.045 * s, 0.008 * s, 6, 10), dress, 0, 0.7 * s, 0.07 * s);
     g.position.set(x, 0, z);
-    g.userData.mats = [shell, led];
-    g.userData.homeColors = [shell.color.clone(), led.color.clone()];
+    g.rotation.y = 0.5;
+    g.userData.mats = [dress, skin, hair, heel];
+    g.userData.homeColors = [dress.color.clone(), skin.color.clone(), hair.color.clone(), heel.color.clone()];
     this.wGroup.add(g);
     return g;
   }
@@ -1145,23 +1154,27 @@ class VillageEngine {
     for (let i = 0; i < 6; i++) {
       const step = { fills: [], lines: [] };
       this.lodgeSteps.push(step);
-      this.addWBox(this.wGroup, this.wGeos, step, lx, 0.28 + i * 0.36, lz, 2.28, 0.34, 1.9, { fill: 0.04, depth: true, color: GREEN });
+      this.addWBox(this.wGroup, this.wGeos, step, lx - 0.42, 0.28 + i * 0.36, lz, 1.05, 0.28, 1.15, { fill: 0.04, depth: true, color: GREEN });
     }
     const glassGeo = new THREE.BoxGeometry(0.04, 1.08, 0.96);
     this.wGeos.push(glassGeo);
-    this.glass = new THREE.Mesh(glassGeo, new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.2, depthWrite: false }));
+    this.glass = new THREE.Mesh(glassGeo, new THREE.MeshBasicMaterial({ color: 0xd7eef6, transparent: true, opacity: 0.18, depthWrite: false }));
     this.glass.position.set(lx + 1.02, 1.28, lz);
+    this.glass.renderOrder = 6;
     this.wGroup.add(this.glass);
-    this.watcher = this.addWhistleblower(lx + 0.72, lz, 1.28);
-    this.watcher.position.y = 0.62;
+    this.watcher = this.addWhistleblower(lx + 0.8, lz, 1.02);
+    this.watcher.position.y = 0.74;
+    this.watcher.rotation.y = Math.PI / 2;
+    this.watcher.renderOrder = 4;
+    this.watcher.traverse((obj) => { obj.renderOrder = 4; });
     this.watcherHome = this.watcher.position.clone();
     const spots = [
-      [x - 0.9, z + 3.15, 1.45],
-      [x + 0.15, z + 3.35, 1.62],
-      [x + 1.15, z + 3.05, 1.38],
+      [x - 0.9, z + 3.15, 1.45, 0xe24b8a],
+      [x + 0.15, z + 3.35, 1.62, 0xc9a24a],
+      [x + 1.15, z + 3.05, 1.38, 0x7a3e8a],
     ];
-    for (const [fx, fz, fs] of spots) {
-      const fig = this.addLady(fx, fz, fs);
+    for (const [fx, fz, fs, dress] of spots) {
+      const fig = this.addLady(fx, fz, fs, dress);
       this.figures.push(fig);
       this.figureHome.push(new THREE.Vector3(fx, 0, fz));
     }
@@ -1248,23 +1261,21 @@ class VillageEngine {
       } else {
         const homes = fig.userData.homeColors;
         mats.forEach((m, mi) => { m.color.copy(homes?.[mi] ?? PINK); m.opacity = 0.94; });
-        fig.position.x = home.x + Math.sin(t * 0.8 + i) * 0.1;
-        fig.position.z = home.z + Math.cos(t * 0.55 + i) * 0.06;
+        fig.position.x = home.x + Math.sin(t * 0.8 + i) * 0.08;
+        fig.position.z = home.z + Math.cos(t * 0.55 + i) * 0.05;
+        fig.rotation.z = Math.sin(t * 1.3 + i) * 0.04;
       }
     }
     this.watcher.visible = whistle;
-    const wMats = this.watcher.userData.mats;
-    if (outcome === "burn") {
-      for (const m of wMats) { m.color.copy(CHAR); m.opacity = 0.45; }
-    } else if (outcome === "exile") {
-      for (const m of wMats) { m.color.copy(CRIMSON); m.opacity = 0.9; }
-    } else {
-      const home = this.watcher.userData.flagColors;
-      wMats.forEach((m, i) => { m.color.copy(home[i] ?? FLAG_RED); m.opacity = 0.98; });
-    }
-    this.watcher.position.x = this.watcherHome.x + Math.sin(t * 1.1) * 0.03;
+    const kept = this.watcher.userData.flagColors;
+    this.watcher.userData.mats.forEach((m, i) => {
+      m.color.copy(kept[i] ?? FLAG_RED);
+      m.opacity = 1;
+    });
+    this.watcher.position.x = this.watcherHome.x;
     this.watcher.position.z = this.watcherHome.z;
-    this.watcher.position.y = this.watcherHome.y + Math.sin(t * 1.4) * 0.02;
+    this.watcher.position.y = this.watcherHome.y + Math.sin(t * 1.4) * 0.012;
+    this.watcher.rotation.y = Math.PI / 2;
   }
 
   resize = () => {

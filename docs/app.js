@@ -1187,7 +1187,9 @@ class VillageEngine {
 
   buildBus() {
     const root = new THREE.Group();
-    const band = (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.48, metalness: 0.08 });
+    const shell = new THREE.MeshStandardMaterial({ color: 0xf4f5f3, roughness: 0.32, metalness: 0.22 });
+    const joint = new THREE.MeshStandardMaterial({ color: 0x1a1c1f, roughness: 0.45, metalness: 0.4 });
+    const glass = new THREE.MeshStandardMaterial({ color: 0x14181c, roughness: 0.12, metalness: 0.55, emissive: 0x1a2830, emissiveIntensity: 0.2 });
     const put = (geo, material, x, y, z) => {
       const mesh = new THREE.Mesh(geo, material);
       mesh.position.set(x, y, z);
@@ -1195,23 +1197,32 @@ class VillageEngine {
       root.add(mesh);
       return mesh;
     };
-    const colors = [0xea2839, 0x1a206d, 0xffd500, 0x00a551];
-    colors.forEach((color, i) => {
-      put(new THREE.BoxGeometry(1.05, 1.05, 0.62), band(color), 0, 0.82, -0.95 + i * 0.64);
+    put(new THREE.BoxGeometry(0.52, 0.28, 1.35), shell, 0, 0.36, 0);
+    put(new THREE.BoxGeometry(0.5, 0.22, 0.72), shell, 0, 0.58, -0.18);
+    put(new THREE.BoxGeometry(0.46, 0.16, 0.28), glass, 0, 0.56, 0.52);
+    put(new THREE.BoxGeometry(0.5, 0.1, 0.7), glass, 0, 0.6, -0.18);
+    put(new THREE.BoxGeometry(0.54, 0.03, 1.42), joint, 0, 0.7, 0);
+    put(new THREE.BoxGeometry(0.48, 0.04, 1.28), joint, 0, 0.24, 0);
+    const stripe = [0xea2839, 0x1a206d, 0xffd500, 0x00a551];
+    stripe.forEach((color, i) => {
+      const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.4, metalness: 0.15 });
+      put(new THREE.BoxGeometry(0.02, 0.035, 0.28), mat, 0.27, 0.4, -0.48 + i * 0.3);
+      put(new THREE.BoxGeometry(0.02, 0.035, 0.28), mat, -0.27, 0.4, -0.48 + i * 0.3);
     });
-    put(new THREE.BoxGeometry(1.05, 0.62, 0.58), band(0xea2839), 0, 0.95, 1.22);
-    put(new THREE.BoxGeometry(1.12, 0.08, 2.85), band(0x1a1c1f), 0, 1.38, 0.05);
-    put(new THREE.BoxGeometry(0.98, 0.32, 2.15), new THREE.MeshStandardMaterial({ color: 0x142028, roughness: 0.25, metalness: 0.35, emissive: 0x1c3040, emissiveIntensity: 0.25 }), 0, 1.08, -0.05);
     const wheels = [];
-    [-0.85, 0.95].forEach((z) => {
-      [-0.52, 0.52].forEach((x) => {
-        const wheel = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.28, 0.28, 0.14, 10),
-          new THREE.MeshStandardMaterial({ color: 0x1a1c1f, roughness: 0.7 })
-        );
+    [-0.42, 0.46].forEach((z) => {
+      [-0.26, 0.26].forEach((x) => {
+        const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.07, 12), joint);
         wheel.rotation.z = Math.PI / 2;
-        wheel.position.set(x, 0.28, z);
+        wheel.position.set(x, 0.14, z);
         root.add(wheel);
+        const hub = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.05, 0.05, 0.08, 8),
+          new THREE.MeshStandardMaterial({ color: 0xd5d6d2, roughness: 0.3, metalness: 0.6 })
+        );
+        hub.rotation.z = Math.PI / 2;
+        hub.position.set(x, 0.14, z);
+        root.add(hub);
         wheels.push(wheel);
       });
     });

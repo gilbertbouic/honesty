@@ -31,9 +31,10 @@ class StampScene {
     this.buildVan();
     this.buildCounter();
     this.buildFolders();
-    this.buildStamp();
     this.buildShutter();
-    this.walker = this.buildWalker();
+    this.buildOfficial();
+    this.buildStamp();
+    this.buildQueue();
     this.group.visible = false;
     scene.add(this.group);
   }
@@ -161,41 +162,90 @@ class StampScene {
 
   buildStamp() {
     this.stamp = new THREE.Group();
-    this.mesh(this.stamp, new THREE.CylinderGeometry(0.045, 0.05, 0.28, 10), this.joint, 0, 0.2, 0);
-    this.mesh(this.stamp, new THREE.BoxGeometry(0.16, 0.05, 0.16), this.shell, 0, 0.04, 0);
-    this.pad = this.mesh(this.stamp, new THREE.BoxGeometry(0.12, 0.02, 0.12), this.padMat, 0, 0.01, 0);
-    this.stamp.position.set(-1.15, 1.35, 1.22);
-    this.group.add(this.stamp);
+    this.mesh(this.stamp, new THREE.CylinderGeometry(0.04, 0.045, 0.22, 10), this.joint, 0, 0.12, 0);
+    this.mesh(this.stamp, new THREE.BoxGeometry(0.14, 0.045, 0.14), this.shell, 0, 0.0, 0);
+    this.pad = this.mesh(this.stamp, new THREE.BoxGeometry(0.1, 0.02, 0.1), this.padMat, 0, -0.03, 0);
+    this.stamp.position.set(0, -0.12, 0.02);
+    this.hand.add(this.stamp);
   }
 
   buildShutter() {
     this.shutter = this.mesh(this.group, new THREE.BoxGeometry(3.15, 0.72, 0.04), this.shell, 0.1, 1.85, 0.74);
   }
 
-  buildWalker() {
+  buildPerson(opts) {
     const g = new THREE.Group();
-    const pearl = this.shell;
-    const skin = this.mat(0xd7b39a, { rough: 0.65 });
-    const shoe = this.joint;
-    const leg = (x) => {
+    const s = opts.scale ?? 1;
+    const skin = this.mat(opts.skin, { rough: 0.62 });
+    const cloth = this.mat(opts.cloth, { rough: 0.55 });
+    const hair = this.mat(opts.hair, { rough: 0.5 });
+    const legs = [];
+    [-1, 1].forEach((side) => {
       const hip = new THREE.Group();
-      hip.position.set(x, 0.42, 0);
-      this.mesh(hip, new THREE.CapsuleGeometry(0.05, 0.2, 3, 6), pearl, 0, -0.14, 0);
-      this.mesh(hip, new THREE.BoxGeometry(0.09, 0.05, 0.14), shoe, 0, -0.28, 0.03);
+      hip.position.set(side * 0.08 * s, 0.4 * s, 0);
+      this.mesh(hip, new THREE.CapsuleGeometry(0.045 * s, 0.16 * s, 3, 6), opts.skirt ? skin : cloth, 0, -0.12 * s, 0);
+      this.mesh(hip, new THREE.BoxGeometry(0.08 * s, 0.04 * s, 0.12 * s), this.joint, 0, -0.24 * s, 0.02 * s);
       g.add(hip);
-      return hip;
-    };
-    this.legL = leg(-0.08);
-    this.legR = leg(0.08);
-    this.mesh(g, new THREE.BoxGeometry(0.28, 0.32, 0.16), pearl, 0, 0.58, 0);
-    FLAG.forEach((color, i) => {
-      this.mesh(g, new THREE.BoxGeometry(0.05, 0.03, 0.02), this.mat(color, { rough: 0.4 }), -0.08 + i * 0.05, 0.62, 0.09);
+      legs.push(hip);
     });
-    this.mesh(g, new THREE.SphereGeometry(0.1, 10, 8), skin, 0, 0.86, 0);
-    this.mesh(g, new THREE.BoxGeometry(0.12, 0.03, 0.02), this.glass, 0, 0.87, 0.09);
-    g.position.set(-2.2, 0, 1.85);
+    if (opts.skirt) this.mesh(g, new THREE.ConeGeometry(0.16 * s, 0.26 * s, 8), cloth, 0, 0.4 * s, 0);
+    this.mesh(g, new THREE.BoxGeometry(0.26 * s, 0.28 * s, 0.14 * s), cloth, 0, 0.6 * s, 0);
+    this.mesh(g, new THREE.SphereGeometry(0.09 * s, 10, 8), skin, 0, 0.84 * s, 0);
+    this.mesh(g, new THREE.SphereGeometry(0.096 * s, 8, 6), hair, 0, 0.9 * s, -0.015 * s);
+    this.mesh(g, new THREE.BoxGeometry(0.12 * s, 0.08 * s, 0.02 * s), cloth, 0, 0.58 * s, 0.08 * s);
+    const paper = this.mesh(g, new THREE.BoxGeometry(0.1 * s, 0.012 * s, 0.14 * s), this.mat(0xf7f4ee, { rough: 0.7 }), 0.12 * s, 0.48 * s, 0.08 * s);
+    paper.rotation.z = -0.4;
+    g.position.set(opts.x, 0, opts.z);
+    g.rotation.y = opts.rot ?? Math.PI;
+    g.userData.legs = legs;
     this.group.add(g);
     return g;
+  }
+
+  buildOfficial() {
+    const g = new THREE.Group();
+    const s = 1.22;
+    const skin = this.mat(0xc4865a, { rough: 0.58 });
+    const suit = this.mat(0x1a2744, { rough: 0.42, metal: 0.12 });
+    const shirt = this.mat(0xf7f4ee, { rough: 0.5 });
+    [-1, 1].forEach((side) => {
+      this.mesh(g, new THREE.CapsuleGeometry(0.05 * s, 0.2 * s, 3, 6), suit, side * 0.08 * s, 0.28 * s, 0);
+      this.mesh(g, new THREE.BoxGeometry(0.09 * s, 0.045 * s, 0.14 * s), this.joint, side * 0.08 * s, 0.06 * s, 0.03 * s);
+    });
+    this.mesh(g, new THREE.BoxGeometry(0.34 * s, 0.36 * s, 0.16 * s), suit, 0, 0.64 * s, 0);
+    this.mesh(g, new THREE.BoxGeometry(0.07 * s, 0.18 * s, 0.02 * s), shirt, 0, 0.66 * s, 0.09 * s);
+    this.mesh(g, new THREE.BoxGeometry(0.03 * s, 0.14 * s, 0.015 * s), this.ink, 0, 0.62 * s, 0.105 * s);
+    this.mesh(g, new THREE.SphereGeometry(0.1 * s, 12, 8), skin, 0, 0.94 * s, 0);
+    this.mesh(g, new THREE.BoxGeometry(0.16 * s, 0.05 * s, 0.12 * s), this.mat(0x14120e, { rough: 0.45 }), 0, 1.02 * s, -0.01 * s);
+    this.hand = new THREE.Group();
+    this.hand.position.set(0.2 * s, 0.9 * s, 0.28 * s);
+    g.add(this.hand);
+    this.mesh(this.hand, new THREE.SphereGeometry(0.045 * s, 8, 6), skin, 0, 0, 0);
+    this.mesh(g, new THREE.CapsuleGeometry(0.04 * s, 0.16 * s, 3, 5), suit, 0.16 * s, 0.72 * s, 0.1 * s);
+    g.position.set(1.15, 0, 1.48);
+    g.rotation.y = 0;
+    this.group.add(g);
+    this.official = g;
+  }
+
+  buildQueue() {
+    const people = [
+      { skin: 0xf3d2b5, cloth: 0x2a6f7f, hair: 0x2a1810 },
+      { skin: 0x8d5524, cloth: 0xf4f1ea, hair: 0x111111, skirt: true },
+      { skin: 0x5c3317, cloth: 0xc45c26, hair: 0x1a120c },
+      { skin: 0xd7b39a, cloth: 0x1a206d, hair: 0x6b4423, skirt: true },
+      { skin: 0x3d2314, cloth: 0x00a551, hair: 0x0e0c0a },
+      { skin: 0xf0c7a0, cloth: 0xea2839, hair: 0x3a2418 },
+      { skin: 0xa86b45, cloth: 0xe07030, hair: 0x1c140f, skirt: true },
+      { skin: 0xc48a62, cloth: 0x245c8a, hair: 0x2a1810 },
+    ];
+    this.queue = people.map((person, i) => this.buildPerson({
+      ...person,
+      x: 2.15 + (i % 2) * 0.32,
+      z: 2.05 + i * 0.42,
+      rot: Math.PI,
+      scale: 0.98 + (i % 3) * 0.08,
+    }));
   }
 
   sync(competition, outcome, correct) {
@@ -231,29 +281,30 @@ class StampScene {
     const drawerZ = shut ? 1.15 : 0.85;
     this.drawer.position.z += (drawerZ - this.drawer.position.z) * ease;
     const slot = Math.min(5, Math.max(0, this.correct - 1));
-    const homeX = shut ? 1.15 : -1.0 + slot * 0.46;
-    const homeY = shut ? 0.78 : heldLift(this.correct);
-    const homeZ = shut ? 1.05 : 1.22;
-    this.stamp.position.x += (homeX - this.stamp.position.x) * ease;
-    this.stamp.position.y += (homeY - this.stamp.position.y) * ease;
-    this.stamp.position.z += (homeZ - this.stamp.position.z) * ease;
-    if (!reduced && !shut) this.stamp.position.y += Math.sin(t * 3.2) * 0.012;
+    const lean = shut ? 0.42 : this.correct > 0 ? -0.15 + slot * 0.06 : 0.22;
+    const handY = shut ? 0.36 : this.correct > 0 ? 0.52 : 0.98;
+    const handZ = shut ? 0.06 : this.correct > 0 ? 0.58 : 0.3;
+    this.hand.position.x += (lean - this.hand.position.x) * ease;
+    this.hand.position.y += (handY - this.hand.position.y) * ease;
+    this.hand.position.z += (handZ - this.hand.position.z) * ease;
+    if (!reduced && !shut && this.correct === 0) this.hand.position.y += Math.sin(t * 2.4) * 0.012;
     this.padMat.color.set(this.correct > 0 && !shut ? INK : 0x3a2428);
     const glassOn = click || this.correct > 0;
     this.visor.material.emissive.set(glassOn ? 0x1a2838 : 0x050608);
     this.visor.material.emissiveIntensity = shut ? 0.02 : glassOn ? 0.35 : 0.12;
+    if (!reduced) {
+      this.queue.forEach((person, i) => {
+        const step = t * 2.2 + i;
+        const shift = click ? Math.sin(step) * 0.04 : Math.sin(t * 1.3 + i) * 0.015;
+        person.position.x = 2.15 + (i % 2) * 0.32 + shift;
+        person.userData.legs[0].rotation.x = Math.sin(step) * (click ? 0.35 : 0.08);
+        person.userData.legs[1].rotation.x = Math.sin(step + Math.PI) * (click ? 0.35 : 0.08);
+      });
+    }
     if (!reduced && click) {
       this.wheels.forEach((wheel) => {
-        wheel.rotation.x += dt * 0.4;
+        wheel.rotation.x += dt * 0.35;
       });
-      const step = t * 5.2;
-      this.legL.rotation.x = Math.sin(step) * 0.5;
-      this.legR.rotation.x = Math.sin(step + Math.PI) * 0.5;
-      const trip = (t * 0.18) % 2;
-      const leg = trip < 1 ? trip : 2 - trip;
-      this.walker.position.x = -2.1 + leg * 4.2;
-      this.walker.position.z = 1.9;
-      this.walker.rotation.y = trip < 1 ? Math.PI / 2 : -Math.PI / 2;
     }
   }
 
@@ -262,10 +313,6 @@ class StampScene {
     for (const g of this.geos) g.dispose();
     for (const m of this.mats) m.dispose();
   }
-}
-
-function heldLift(correct) {
-  return correct > 0 ? 1.08 : 1.48;
 }
 
 export { StampScene };

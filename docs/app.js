@@ -5,7 +5,7 @@ import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg51";
 import { FairScene } from "./fair.js?v=vg53";
 import { CropScene } from "./crop.js?v=vg54";
-import { WashScene } from "./wash.js?v=vg57";
+import { WashScene } from "./wash.js?v=vg58";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -1022,7 +1022,7 @@ class VillageEngine {
     if (this.competition === "wash") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      this.aimStage(new THREE.Vector3(0, 2.15, 0.2), new THREE.Vector3(0.2, 4.2, 10.4), 3.8);
+      this.aimStage(new THREE.Vector3(0, 1.45, 1.1), new THREE.Vector3(0.4, 5.6, 13.2), 5.2);
       return;
     }
     if (this.competition === "crop") {

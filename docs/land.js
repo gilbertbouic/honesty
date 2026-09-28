@@ -60,6 +60,7 @@ var LandScene = class {
     this.buildCrew();
     this.buildShoreWalk();
     this.buildField();
+    this.buildGreenery();
     const hemi = new THREE.HemisphereLight(0xd5e4f2, 0x5a4328, 0.4);
     const sun = new THREE.DirectionalLight(0xfff3df, 1);
     sun.position.set(6, 11, 5);
@@ -193,6 +194,12 @@ var LandScene = class {
       walker.armR.rotation.x = step * 0.6;
       walker.root.position.y = reduced ? 0 : Math.abs(Math.sin(t * 4.2 + walker.phase)) * 0.03;
     });
+    if (!reduced) {
+      this.crowns?.forEach((crown, i) => {
+        crown.rotation.z = Math.sin(t * 0.8 + i) * 0.03;
+        crown.rotation.x = Math.cos(t * 0.6 + i) * 0.02;
+      });
+    }
     this.seaMat.uniforms.uTime.value = reduced ? 0.4 : t;
   }
   dispose() {
@@ -567,6 +574,74 @@ var LandScene = class {
       walker.phase = spot.phase;
       return walker;
     });
+  }
+  buildGreenery() {
+    this.crowns = [];
+    const leaf = [0x2f6b34, 0x3d7a3c, 0x1f4d2c, 0x4e8a45];
+    const put = (parent, geo, material, x, y, z) => {
+      this.geos.push(geo);
+      const mesh = new THREE.Mesh(geo, material);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      parent.add(mesh);
+      return mesh;
+    };
+    const tree = (x, z, h, kind) => {
+      const g = new THREE.Group();
+      const trunk = this.folkMat(0x5c4030);
+      const crownMat = this.folkMat(leaf[kind % leaf.length]);
+      put(g, new THREE.CylinderGeometry(0.08 * h, 0.12 * h, h * 0.55, 6), trunk, 0, h * 0.28, 0);
+      const crown = new THREE.Group();
+      crown.position.y = h * 0.62;
+      g.add(crown);
+      if (kind % 2 === 0) {
+        put(crown, new THREE.ConeGeometry(0.55 * h, h * 0.72, 7), crownMat, 0, 0.1, 0);
+        put(crown, new THREE.ConeGeometry(0.38 * h, h * 0.48, 7), this.folkMat(leaf[(kind + 1) % leaf.length]), 0, h * 0.28, 0);
+      } else {
+        put(crown, new THREE.SphereGeometry(0.42 * h, 10, 8), crownMat, 0, 0.05, 0);
+        put(crown, new THREE.SphereGeometry(0.28 * h, 8, 6), this.folkMat(leaf[(kind + 2) % leaf.length]), 0.22 * h, -0.05, 0.1);
+        put(crown, new THREE.SphereGeometry(0.22 * h, 8, 6), this.folkMat(leaf[(kind + 1) % leaf.length]), -0.18 * h, 0.02, -0.08);
+      }
+      g.position.set(x, 0, z);
+      this.group.add(g);
+      this.crowns.push(crown);
+    };
+    const bush = (x, z, s) => {
+      const g = new THREE.Group();
+      const mat = this.folkMat(leaf[(Math.abs(Math.round(x * 3 + z)) ) % leaf.length]);
+      put(g, new THREE.SphereGeometry(0.28 * s, 8, 6), mat, 0, 0.22 * s, 0);
+      put(g, new THREE.SphereGeometry(0.2 * s, 8, 6), this.folkMat(0x245c30), 0.18 * s, 0.16 * s, 0.06 * s);
+      put(g, new THREE.SphereGeometry(0.16 * s, 7, 6), this.folkMat(0x3f7a3a), -0.16 * s, 0.14 * s, -0.04 * s);
+      g.position.set(x, 0, z);
+      this.group.add(g);
+    };
+    [
+      [-7.5, -0.6, 2.4, 0],
+      [-6.4, 3.1, 1.9, 1],
+      [-6.8, -4.6, 2.6, 2],
+      [-2.4, -7.4, 2.2, 1],
+      [1.6, -8.2, 2.7, 0],
+      [5.2, -6.4, 2.3, 3],
+      [7.2, -1.4, 2.5, 1],
+      [7.0, 2.4, 1.8, 0],
+      [-7.6, -7.2, 2.1, 2],
+      [3.6, -4.8, 1.7, 3],
+    ].forEach(([x, z, h, kind]) => tree(x, z, h, kind));
+    [
+      [-6.6, 0.4, 1.3],
+      [-2.8, -1.8, 1.1],
+      [-1.2, 3.5, 0.9],
+      [1.5, 3.7, 1.15],
+      [5.8, 1.15, 1.05],
+      [2.6, 4.15, 0.85],
+      [-0.2, -3.6, 1.2],
+      [1.6, -3.5, 0.95],
+      [-5.4, 2.2, 1.0],
+      [6.2, 3.6, 1.1],
+      [-3.6, 3.3, 0.8],
+      [4.8, -3.2, 1.25],
+    ].forEach(([x, z, s]) => bush(x, z, s));
   }
   buildField() {
     [-0.18, 0.08].forEach((x) => {

@@ -1171,7 +1171,7 @@ class VillageEngine {
 
   buildRoad() {
     const road = new THREE.Mesh(
-      new THREE.BoxGeometry(16.5, 0.04, 1.35),
+      new THREE.BoxGeometry(16.5, 0.04, 1.8),
       new THREE.MeshStandardMaterial({ color: 0x3a3d42, roughness: 0.92 })
     );
     road.position.set(0, 0.03, 4.05);
@@ -1197,20 +1197,20 @@ class VillageEngine {
     };
     const colors = [0xea2839, 0x1a206d, 0xffd500, 0x00a551];
     colors.forEach((color, i) => {
-      put(new THREE.BoxGeometry(0.55, 0.72, 1.15), band(color), 0, 0.62, -1.7 + i * 1.15);
+      put(new THREE.BoxGeometry(1.05, 1.05, 0.62), band(color), 0, 0.82, -0.95 + i * 0.64);
     });
-    put(new THREE.BoxGeometry(1.15, 0.42, 1.15), band(0xea2839), 0, 0.95, 1.72);
-    put(new THREE.BoxGeometry(1.05, 0.08, 4.7), band(0x1a1c1f), 0, 1.18, 0);
-    put(new THREE.BoxGeometry(0.92, 0.28, 3.3), new THREE.MeshStandardMaterial({ color: 0x142028, roughness: 0.25, metalness: 0.35, emissive: 0x1c3040, emissiveIntensity: 0.25 }), 0, 0.95, -0.15);
+    put(new THREE.BoxGeometry(1.05, 0.62, 0.58), band(0xea2839), 0, 0.95, 1.22);
+    put(new THREE.BoxGeometry(1.12, 0.08, 2.85), band(0x1a1c1f), 0, 1.38, 0.05);
+    put(new THREE.BoxGeometry(0.98, 0.32, 2.15), new THREE.MeshStandardMaterial({ color: 0x142028, roughness: 0.25, metalness: 0.35, emissive: 0x1c3040, emissiveIntensity: 0.25 }), 0, 1.08, -0.05);
     const wheels = [];
-    [-1.55, 1.45].forEach((z) => {
-      [-0.48, 0.48].forEach((x) => {
+    [-0.85, 0.95].forEach((z) => {
+      [-0.52, 0.52].forEach((x) => {
         const wheel = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.22, 0.22, 0.12, 10),
+          new THREE.CylinderGeometry(0.28, 0.28, 0.14, 10),
           new THREE.MeshStandardMaterial({ color: 0x1a1c1f, roughness: 0.7 })
         );
         wheel.rotation.z = Math.PI / 2;
-        wheel.position.set(x, 0.22, z);
+        wheel.position.set(x, 0.28, z);
         root.add(wheel);
         wheels.push(wheel);
       });

@@ -186,25 +186,65 @@ class HavenScene {
     }
   }
 
+  buildWoman(dressColor, hairColor) {
+    const root = new THREE.Group();
+    const skin = this.mat(0xd7b39a, { rough: 0.7 });
+    const hairMat = this.mat(hairColor, { rough: 0.55 });
+    const dress = this.mat(dressColor, { rough: 0.48 });
+    const eye = this.mat(0x1a1214, { rough: 0.4 });
+    const tearMat = this.mat(0xb7e4f2, { opacity: 0.95, depthWrite: false, emissive: 0x7ec8e8, ei: 0.35, rough: 0.2 });
+    const spine = new THREE.Group();
+    root.add(spine);
+    const put = (parent, geo, material, x, y, z) => this.mesh(parent, geo, material, x, y, z);
+    put(spine, new THREE.ConeGeometry(0.2, 0.52, 10), dress, 0, 0.46, 0);
+    put(spine, new THREE.BoxGeometry(0.18, 0.28, 0.12), dress, 0, 0.78, 0);
+    const head = new THREE.Group();
+    head.position.set(0, 1.05, 0);
+    spine.add(head);
+    put(head, new THREE.SphereGeometry(0.12, 14, 12), skin, 0, 0.08, 0);
+    put(head, new THREE.SphereGeometry(0.125, 12, 10), hairMat, 0, 0.14, -0.02);
+    put(head, new THREE.CapsuleGeometry(0.045, 0.28, 3, 6), hairMat, 0, -0.08, -0.06);
+    put(head, new THREE.SphereGeometry(0.02, 8, 6), eye, -0.04, 0.09, 0.1);
+    put(head, new THREE.SphereGeometry(0.02, 8, 6), eye, 0.04, 0.09, 0.1);
+    const tears = [];
+    for (const x of [-0.04, 0.04]) {
+      const tear = put(head, new THREE.CapsuleGeometry(0.012, 0.07, 2, 6), tearMat, x, 0.02, 0.11);
+      tear.visible = false;
+      tears.push(tear);
+    }
+    const arm = (side) => {
+      const pivot = new THREE.Group();
+      pivot.position.set(side * 0.16, 0.9, 0);
+      spine.add(pivot);
+      put(pivot, new THREE.CapsuleGeometry(0.035, 0.28, 3, 6), dress, 0, -0.2, 0);
+      put(pivot, new THREE.SphereGeometry(0.04, 8, 6), skin, 0, -0.38, 0);
+      return pivot;
+    };
+    root.scale.setScalar(0.92);
+    return { root, spine, head, tears, armL: arm(-1), armR: arm(1) };
+  }
+
   buildWalker() {
-    const g = new THREE.Group();
-    const shell = this.mat(SHELL, { rough: 0.4, metal: 0.08 });
-    const joint = this.mat(JOINT, { rough: 0.5, metal: 0.4 });
-    const visor = this.mat(VISOR, { rough: 0.15, metal: 0.6, emissive: 0x102030, ei: 0.45 });
-    const put = (geo, material, x, y, z) => this.mesh(g, geo, material, x, y, z);
-    put(new THREE.CapsuleGeometry(0.05, 0.16, 3, 6), shell, -0.07, 0.16, 0);
-    put(new THREE.CapsuleGeometry(0.05, 0.16, 3, 6), shell, 0.07, 0.16, 0);
-    put(new THREE.CapsuleGeometry(0.1, 0.16, 4, 8), shell, 0, 0.42, 0);
-    put(new THREE.SphereGeometry(0.09, 12, 10), shell, 0, 0.66, 0);
-    put(new THREE.BoxGeometry(0.12, 0.035, 0.02), visor, 0, 0.66, 0.08);
-    put(new THREE.SphereGeometry(0.025, 6, 6), joint, 0, 0.52, 0.09);
-    g.scale.setScalar(0.32);
-    this.walkStops = [this.porch.clone(), ...this.stonePos.map((p) => p.clone())];
-    this.walkerPos = this.porch.clone();
-    g.position.copy(this.walkerPos);
-    this.group.add(g);
-    this.walker = g;
-    this.walkerVisor = visor;
+    this.hero = this.buildWoman(0xc45b78, 0x2a1814);
+    this.friend = this.buildWoman(0x3f6f62, 0x1a1c1f);
+    this.friend.root.visible = false;
+    this.support = [
+      [0xd4a017, 0x3a2418],
+      [0x7a3e8a, 0x1a1214],
+      [0x3a6fd8, 0x24180f],
+      [0xc47a4a, 0x3a241c],
+    ].map(([dress, hair]) => {
+      const woman = this.buildWoman(dress, hair);
+      woman.root.visible = false;
+      return woman;
+    });
+    this.inside = new THREE.Vector3(QUIET.x + 0.02, 0, QUIET.z + 0.98);
+    this.path = [this.inside, ...this.stonePos];
+    this.heroPos = this.inside.clone();
+    this.friendPos = this.inside.clone();
+    this.hero.root.position.copy(this.heroPos);
+    this.group.add(this.hero.root, this.friend.root);
+    for (const woman of this.support) this.group.add(woman.root);
   }
 
   buildRibbon() {
@@ -260,13 +300,14 @@ class HavenScene {
     this.group.visible = on;
     if (!on) return;
     const outcome = this.outcome;
-    const n = outcome === "line" ? 6 : outcome === "fog" ? 0 : Math.min(6, this.correct);
+    let n = Math.min(6, this.correct);
+    if (outcome === "line") n = 6;
     const lit = Math.min(6, n);
     const ease = reduced ? 1 : 1 - Math.exp(-3.2 * dt);
     const stain = outcome === "fog" ? 1 : outcome === "line" ? 0 : 0.25;
     this.shell.color.set(SHELL).lerp(BLOOD, stain);
 
-    const doorTarget = outcome === "line" ? -1.2 : 0;
+    const doorTarget = n >= 1 ? -1.2 : 0;
     this.door.rotation.y += (doorTarget - this.door.rotation.y) * ease;
 
     const curtainMat = this.curtain.material;
@@ -307,25 +348,78 @@ class HavenScene {
       this.stones[i].position.y = onStone && !reduced ? 0.08 + Math.sin(t * 2 + i) * 0.02 : 0.05;
     }
 
-    const step = Math.max(0, Math.min(this.walkStops.length - 1, n));
-    const goal = this.walkStops[step];
-    const easeWalk = reduced ? 1 : 1 - Math.exp(-3.6 * dt);
-    this.walkerPos.lerp(goal, easeWalk);
-    const grow = 0.55 + (n / 6) * 0.7;
-    const s = this.walker.scale.x + (grow - this.walker.scale.x) * easeWalk;
-    this.walker.scale.setScalar(Math.max(0.55, s));
-    this.walker.position.set(this.walkerPos.x, 0.02, this.walkerPos.z);
-    const ahead = this.walkStops[Math.min(step + 1, this.walkStops.length - 1)];
-    this.look.copy(ahead);
-    const faceX = ahead.x - this.walkerPos.x;
-    const faceZ = ahead.z - this.walkerPos.z;
-    if (faceX * faceX + faceZ * faceZ > 4e-4) {
-      const yaw = Math.atan2(faceX, faceZ);
-      this.walker.rotation.y += (yaw - this.walker.rotation.y) * easeWalk;
+    const easeWalk = reduced ? 1 : 1 - Math.exp(-3.2 * dt);
+    const goal = this.path[Math.min(n, this.path.length - 1)];
+    this.heroPos.lerp(goal, easeWalk);
+    this.hero.root.position.set(this.heroPos.x, n >= 6 && !reduced ? Math.abs(Math.sin(t * 3)) * 0.05 : 0, this.heroPos.z);
+    const crying = n >= 1 && n <= 3;
+    const headDown = n <= 0 ? 0.7 : n === 1 ? 0.9 : n === 2 ? 0.42 : n === 3 ? 0.5 : n === 4 ? 0.06 : -0.38;
+    const bow = n <= 1 ? 0.32 : n === 2 ? 0.14 : 0;
+    this.hero.head.rotation.x += (headDown - this.hero.head.rotation.x) * easeWalk;
+    this.hero.spine.rotation.x += (bow - this.hero.spine.rotation.x) * easeWalk;
+    const heroYaw = n === 3 ? 0.85 : 0;
+    this.hero.root.rotation.y += (heroYaw - this.hero.root.rotation.y) * easeWalk;
+    for (const tear of this.hero.tears) {
+      tear.visible = crying;
+      if (!crying || reduced) continue;
+      tear.position.y -= dt * 0.28;
+      if (tear.position.y < -0.08) tear.position.y = 0.04;
     }
-    const led = outcome === "line" ? 0x3dff86 : outcome === "fog" ? 0xff2a2a : 0x7ec8ff;
-    this.walkerVisor.emissive.set(led);
-    this.walkerVisor.emissiveIntensity = outcome === "line" ? 0.8 : 0.45;
+    const hug = n === 3;
+    const paired = n >= 3;
+    this.friend.root.visible = paired;
+    if (paired) {
+      const beside = hug ? 0.32 : 0.5;
+      this.friendPos.lerp(new THREE.Vector3(goal.x + beside, 0, goal.z + (hug ? 0.02 : 0)), easeWalk);
+      this.friend.root.position.set(
+        this.friendPos.x,
+        n >= 6 && !reduced ? Math.abs(Math.sin(t * 3 + 0.8)) * 0.05 : 0,
+        this.friendPos.z,
+      );
+      const face = hug ? Math.PI - 0.4 : 0;
+      this.friend.root.rotation.y += (face - this.friend.root.rotation.y) * easeWalk;
+      const fHead = n >= 5 ? -0.2 : hug ? 0.25 : 0.05;
+      this.friend.head.rotation.x += (fHead - this.friend.head.rotation.x) * easeWalk;
+      this.friend.spine.rotation.x += (0 - this.friend.spine.rotation.x) * easeWalk;
+    }
+    const reach = (fig, left, right, lift) => {
+      fig.armL.rotation.z += (left - fig.armL.rotation.z) * easeWalk;
+      fig.armR.rotation.z += (right - fig.armR.rotation.z) * easeWalk;
+      fig.armL.rotation.x += (lift - fig.armL.rotation.x) * easeWalk;
+      fig.armR.rotation.x += (lift - fig.armR.rotation.x) * easeWalk;
+    };
+    if (n >= 6) {
+      const lift = reduced ? -1.4 : -1.5 + Math.sin(t * 4) * 0.35;
+      reach(this.hero, -0.2, 0.2, lift);
+      reach(this.friend, 0.2, -0.2, reduced ? -1.4 : -1.5 + Math.sin(t * 4 + 1) * 0.35);
+    } else if (hug) {
+      reach(this.hero, 1.15, -1.15, -0.35);
+      reach(this.friend, 1.15, -1.15, -0.35);
+    } else if (n >= 4) {
+      reach(this.hero, 0.12, -0.7, 0);
+      reach(this.friend, 0.7, -0.12, 0);
+    } else {
+      reach(this.hero, 0.18, -0.18, 0.15);
+      reach(this.friend, 0.15, -0.15, 0);
+    }
+    this.support.forEach((woman, i) => {
+      const onDance = n >= 6;
+      woman.root.visible = onDance;
+      if (!onDance) return;
+      const ang = (reduced ? i : t * 0.7) + (i / this.support.length) * Math.PI * 2;
+      woman.root.position.set(
+        goal.x + Math.cos(ang) * 1.15,
+        reduced ? 0 : Math.abs(Math.sin(t * 3.2 + i)) * 0.07,
+        goal.z + Math.sin(ang) * 1.15,
+      );
+      woman.root.rotation.y = -ang + Math.PI / 2;
+      const lift = reduced ? -1.3 : -1.6 + Math.sin(t * 4 + i) * 0.4;
+      woman.armL.rotation.x = lift;
+      woman.armR.rotation.x = lift;
+      woman.armL.rotation.z = -0.35;
+      woman.armR.rotation.z = 0.35;
+      woman.head.rotation.x = -0.2;
+    });
 
     const ribbonMat = this.ribbon.material;
     if (lit <= 0) this.ribbon.visible = false;

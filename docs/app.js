@@ -3,7 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg56";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg61";
-import { FairScene } from "./fair.js?v=vg61";
+import { FairScene } from "./fair.js?v=vg62";
 import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg61";
 
@@ -913,9 +913,10 @@ class VillageEngine {
     this.cropCorrect = next.cropCorrect || 0;
     this.washOutcome = next.washOutcome || "open";
     this.washCorrect = next.washCorrect || 0;
+    this.fairHeld = next.fairHeld || [];
     this.haven.sync(this.competition, this.havenOutcome, this.havenCorrect);
     this.land.sync(this.competition, this.landOutcome, this.landCorrect);
-    this.fair.sync(this.competition, this.fairOutcome, this.fairCorrect);
+    this.fair.sync(this.competition, this.fairOutcome, this.fairCorrect, this.fairHeld);
     this.crop.sync(this.competition, this.cropOutcome, this.cropCorrect);
     this.wash.sync(this.competition, this.washOutcome, this.washCorrect);
     const solo = this.competition !== "tender";
@@ -1544,6 +1545,7 @@ function syncPayload() {
     landCorrect: (state.landResults || []).filter((r) => r.correct).length,
     fairOutcome: state.fairOutcome,
     fairCorrect: (state.fairResults || []).filter((r) => r.correct).length,
+    fairHeld: (state.fairResults || []).filter((r) => r.correct).map((r) => r.caseId),
     cropOutcome: state.cropOutcome,
     cropCorrect: (state.cropResults || []).filter((r) => r.correct).length,
     washOutcome: state.washOutcome,

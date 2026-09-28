@@ -18,7 +18,7 @@ class FairScene {
     this.barMats = [];
     this.competition = "tender";
     this.outcome = "open";
-    this.correct = 0;
+    this.held = [];
 
     const hemi = new THREE.HemisphereLight(0xd5e4f2, 0x5a4328, 0.4);
     const sun = new THREE.DirectionalLight(0xfff3df, 1.05);
@@ -74,8 +74,16 @@ class FairScene {
   }
 
   buildGates() {
-    const kinds = ["black", "pride", "pregnant", "veil", "rabbi", "elder"];
-    for (let i = 0; i < 6; i++) {
+    const gates = [
+      { id: "race", kind: "veil" },
+      { id: "creed", kind: "rabbi" },
+      { id: "sex", kind: "pregnant" },
+      { id: "age", kind: "elder" },
+      { id: "colour", kind: "black" },
+      { id: "notice", kind: "pride" },
+    ];
+    this.gates = [];
+    gates.forEach((spec, i) => {
       const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
       const gate = new THREE.Group();
       gate.position.set(Math.cos(a) * 3.15, 0, Math.sin(a) * 3.15);
@@ -92,12 +100,11 @@ class FairScene {
       const bar = new THREE.Mesh(geo, mat);
       bar.position.set(0, 1.05, 0);
       bar.castShadow = true;
-      this.bars.push(bar);
-      this.barMats.push(mat);
       gate.add(bar);
       this.addBox(0, 0.04, 0, 0.85, 0.05, 0.7, color, 1, gate, { rough: 0.8 });
-      this.placePerson(gate, kinds[i]);
-    }
+      const person = this.placePerson(gate, spec.kind);
+      this.gates.push({ id: spec.id, bar, mat, person });
+    });
   }
 
   put(parent, x, y, z, w, h, d, color, opts = {}) {
@@ -194,6 +201,7 @@ class FairScene {
     if (kind === "elder") {
       add(new THREE.CylinderGeometry(0.016, 0.016, 0.62, 6), this.mat(0x6d5a40, { rough: 0.75 }), 0.22, 0.34, 0.06);
     }
+    return g;
   }
 
   buildTown() {
@@ -281,10 +289,11 @@ class FairScene {
     return core;
   }
 
-  sync(competition, outcome, correct) {
+  sync(competition, outcome, correct, held) {
     this.competition = competition;
     this.outcome = outcome;
     this.correct = correct;
+    this.held = held || [];
   }
 
   tick(dt, t, reduced) {
@@ -293,17 +302,21 @@ class FairScene {
     if (!on) return;
     const fair = this.outcome === "fair";
     const barred = this.outcome === "barred";
-    const lit = fair ? 6 : barred ? 0 : this.correct;
     const ease = reduced ? 1 : 1 - Math.exp(-3 * dt);
-    this.bars.forEach((bar, i) => {
-      const open = i < lit;
+    const held = new Set(this.held);
+    let openCount = 0;
+    this.gates.forEach((gate) => {
+      const open = fair || (!barred && held.has(gate.id));
+      if (open) openCount += 1;
       const target = open ? 2.15 : 1.05;
-      bar.position.y += (target - bar.position.y) * ease;
-      const mat = this.barMats[i];
-      mat.color.set(open ? 0x3f9a55 : barred ? 0xc4312e : GATE_COLORS[i]);
-      mat.emissive.copy(mat.color);
-      mat.emissiveIntensity = open ? 0.45 : barred ? 0.35 : 0.12;
+      gate.bar.position.y += (target - gate.bar.position.y) * ease;
+      gate.mat.color.set(open ? 0x3f9a55 : barred ? 0xc4312e : GATE_COLORS[this.gates.indexOf(gate)]);
+      gate.mat.emissive.copy(gate.mat.color);
+      gate.mat.emissiveIntensity = open ? 0.45 : barred ? 0.35 : 0.12;
+      const step = open ? -0.9 : 0.42;
+      gate.person.position.z += (step - gate.person.position.z) * ease;
     });
+    const lit = openCount;
     this.coreMat.color.copy(fair ? GREEN : barred ? CRIMSON : IRIS);
     this.coreMat.emissive.copy(this.coreMat.color);
     this.coreMat.emissiveIntensity = fair ? 0.9 : 0.35 + (reduced ? 0 : Math.sin(t * 2) * 0.12);

@@ -451,76 +451,68 @@ class CropScene {
 
   buildUnit(role) {
     const root = new THREE.Group();
-    const shell = this.std(SHELL, { rough: 0.38, metal: 0.08 });
-    const joint = this.std(JOINT, { rough: 0.5, metal: 0.45 });
-    const visor = this.std(VISOR, { rough: 0.12, metal: 0.72, emissive: 0x102030, ei: 0.45 });
-    const led = this.std(0x7ec8ff, { emissive: 0x7ec8ff, ei: 0.8, rough: 0.3, metal: 0.2 });
+    const khaki = this.std(0xc3a36b, { rough: 0.72, metal: 0.02 });
+    const pants = this.std(0xb08a52, { rough: 0.78, metal: 0.02 });
+    const skin = this.std(0xd7b39a, { rough: 0.7 });
+    const boot = this.std(0x3a2a1c, { rough: 0.8 });
+    const hat = this.std(0xd4b483, { rough: 0.65 });
+    const visor = this.std(0x6d5a34, { rough: 0.5, emissive: 0x3a3018, ei: 0.2 });
+    const led = this.std(0x7ec8ff, { emissive: 0x7ec8ff, ei: 0.35, rough: 0.4 });
 
     const add = (geo, mat, x, y, z, parent = root) =>
       this.mesh(parent, geo, mat, x, y, z, true);
 
     const leg = (side) => {
-      add(this.geo(new THREE.BoxGeometry(0.18, 0.08, 0.3)), joint, side * 0.12, 0.05, 0.03);
-      add(this.geo(new THREE.CapsuleGeometry(0.07, 0.28, 4, 8)), shell, side * 0.12, 0.28, 0);
-      add(this.geo(new THREE.SphereGeometry(0.075, 10, 8)), joint, side * 0.12, 0.48, 0);
-      add(this.geo(new THREE.CapsuleGeometry(0.08, 0.3, 4, 8)), shell, side * 0.12, 0.7, 0);
+      add(this.geo(new THREE.BoxGeometry(0.12, 0.08, 0.2)), boot, side * 0.11, 0.05, 0.04);
+      add(this.geo(new THREE.CapsuleGeometry(0.07, 0.32, 4, 8)), pants, side * 0.11, 0.28, 0);
+      add(this.geo(new THREE.CapsuleGeometry(0.075, 0.28, 4, 8)), pants, side * 0.11, 0.62, 0);
     };
     leg(-1);
     leg(1);
 
-    add(this.geo(new THREE.BoxGeometry(0.42, 0.16, 0.22)), shell, 0, 0.92, 0);
-    add(this.geo(new THREE.SphereGeometry(0.09, 10, 8)), joint, 0, 0.92, 0);
-    const torso = add(this.geo(new THREE.CapsuleGeometry(0.2, 0.34, 6, 12)), shell, 0, 1.24, 0);
-    torso.scale.set(1.05, 1, 0.78);
-    add(this.geo(new THREE.BoxGeometry(0.22, 0.015, 0.02)), joint, 0, 1.22, 0.16);
-    add(this.geo(new THREE.SphereGeometry(0.035, 8, 6)), led, 0, 1.08, 0.16);
-
-    add(this.geo(new THREE.CylinderGeometry(0.055, 0.06, 0.08, 10)), joint, 0, 1.52, 0);
-    const head = add(this.geo(new THREE.SphereGeometry(0.16, 18, 14)), shell, 0, 1.72, 0);
-    head.scale.set(1.12, 1.02, 0.86);
-    const face = add(this.geo(new THREE.BoxGeometry(0.22, 0.09, 0.03)), visor, 0, 1.7, 0.12);
-    face.castShadow = false;
-    const brow = add(this.geo(new THREE.BoxGeometry(0.2, 0.02, 0.04)), joint, 0, 1.76, 0.12);
-    brow.castShadow = false;
+    add(this.geo(new THREE.BoxGeometry(0.38, 0.42, 0.2)), khaki, 0, 1.05, 0);
+    add(this.geo(new THREE.BoxGeometry(0.1, 0.08, 0.02)), led, 0.1, 1.02, 0.11);
 
     const arm = (side) => {
       const pivot = new THREE.Group();
-      pivot.position.set(side * 0.28, 1.42, 0);
+      pivot.position.set(side * 0.24, 1.22, 0);
       root.add(pivot);
-      add(this.geo(new THREE.SphereGeometry(0.07, 10, 8)), joint, 0, 0, 0, pivot);
-      add(this.geo(new THREE.CapsuleGeometry(0.055, 0.22, 4, 8)), shell, 0, -0.18, 0, pivot);
-      add(this.geo(new THREE.SphereGeometry(0.055, 8, 8)), joint, 0, -0.34, 0, pivot);
-      add(this.geo(new THREE.CapsuleGeometry(0.045, 0.2, 4, 8)), shell, 0, -0.5, 0, pivot);
-      const hand = add(this.geo(new THREE.BoxGeometry(0.08, 0.1, 0.05)), joint, 0, -0.66, 0.01, pivot);
-      for (let f = 0; f < 3; f++) {
-        add(this.geo(new THREE.BoxGeometry(0.016, 0.05, 0.016)), joint, (f - 1) * 0.022, -0.73, 0.02, pivot);
-      }
-      hand.castShadow = true;
+      add(this.geo(new THREE.CapsuleGeometry(0.05, 0.26, 3, 6)), khaki, 0, -0.16, 0, pivot);
+      add(this.geo(new THREE.CapsuleGeometry(0.04, 0.2, 3, 6)), skin, 0, -0.42, 0, pivot);
+      add(this.geo(new THREE.SphereGeometry(0.045, 8, 6)), skin, 0, -0.58, 0, pivot);
       return pivot;
     };
-
     const armL = arm(-1);
     const armR = arm(1);
     armL.rotation.x = -0.25;
     armR.rotation.x = role === "spray" ? -1.05 : -0.55;
 
+    add(this.geo(new THREE.SphereGeometry(0.14, 14, 12)), skin, 0, 1.42, 0);
+    add(this.geo(new THREE.SphereGeometry(0.018, 6, 6)), boot, -0.045, 1.44, 0.11);
+    add(this.geo(new THREE.SphereGeometry(0.018, 6, 6)), boot, 0.045, 1.44, 0.11);
+    const brim = add(this.geo(new THREE.CylinderGeometry(0.32, 0.32, 0.025, 16)), hat, 0, 1.54, 0);
+    brim.castShadow = true;
+    add(this.geo(new THREE.CylinderGeometry(0.13, 0.15, 0.16, 12)), hat, 0, 1.63, 0);
+    const band = add(this.geo(new THREE.CylinderGeometry(0.152, 0.152, 0.035, 12)), visor, 0, 1.56, 0);
+    band.castShadow = false;
+
     let can;
     let cap;
     if (role === "spray") {
-      const tank = add(this.geo(new THREE.CapsuleGeometry(0.11, 0.28, 4, 10)), shell, 0, 1.22, -0.18);
+      const tank = add(this.geo(new THREE.CapsuleGeometry(0.11, 0.28, 4, 10)), khaki, 0, 1.08, -0.16);
       tank.scale.set(0.85, 1, 0.7);
-      add(this.geo(new THREE.CylinderGeometry(0.02, 0.02, 0.35, 6)), joint, 0.16, 1.05, -0.05);
-      const wand = add(this.geo(new THREE.CylinderGeometry(0.015, 0.015, 0.42, 6)), joint, 0, -0.78, 0.12, armR);
+      add(this.geo(new THREE.CylinderGeometry(0.02, 0.02, 0.35, 6)), boot, 0.16, 0.95, -0.05);
+      const wand = add(this.geo(new THREE.CylinderGeometry(0.015, 0.015, 0.42, 6)), boot, 0, -0.7, 0.12, armR);
       wand.rotation.x = Math.PI / 2.4;
     } else {
-      const canMat = this.std(0xd4a017, { rough: 0.35, metal: 0.25 });
+      const canMat = this.std(0xc45a2a, { rough: 0.45, metal: 0.15 });
       const group = new THREE.Group();
-      group.position.set(0.02, -0.78, 0.08);
+      group.position.set(0.02, -0.7, 0.08);
       armR.add(group);
       this.mesh(group, this.geo(new THREE.CylinderGeometry(0.09, 0.09, 0.28, 12)), canMat, 0, 0, 0, true);
-      const band = this.std(0xf4f5f3, { rough: 0.5 });
-      this.mesh(group, this.geo(new THREE.CylinderGeometry(0.072, 0.072, 0.05, 12)), band, 0, 0.02, 0);
-      cap = this.mesh(group, this.geo(new THREE.CylinderGeometry(0.05, 0.05, 0.04, 10)), joint, 0, 0.13, 0);
+      const bandMat = this.std(0xf4f5f3, { rough: 0.5 });
+      this.mesh(group, this.geo(new THREE.CylinderGeometry(0.072, 0.072, 0.05, 12)), bandMat, 0, 0.02, 0);
+      cap = this.mesh(group, this.geo(new THREE.CylinderGeometry(0.05, 0.05, 0.04, 10)), boot, 0, 0.13, 0);
       can = group;
     }
 

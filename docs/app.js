@@ -4,7 +4,7 @@ import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, loc
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg51";
 import { FairScene } from "./fair.js?v=vg53";
-import { CropScene } from "./crop.js?v=vg44";
+import { CropScene } from "./crop.js?v=vg54";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);

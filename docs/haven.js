@@ -10,7 +10,7 @@ const BLOOD = new THREE.Color(0x5c2a28);
 const EMBER = new THREE.Color(0xff6a3c);
 const FLAME = new THREE.Color(0xffb15a);
 const VOID = new THREE.Color(0x14120f);
-const STAGE = [0x3f9a55, 0x2f6b34, 0xffb15a, 0x7ec8ff, 0xe0a030, 0x3f9a55];
+const STAGE = [0x14120f, 0x9a9590, 0x00a551, 0xffd100, 0x1a206d, 0xea2839];
 
 class HavenScene {
   constructor(scene) {
@@ -395,7 +395,7 @@ class HavenScene {
       const litStage = i < n;
       mat.color.set(litStage ? STAGE[i] : 0x2a2824);
       mat.emissive.set(litStage ? STAGE[i] : 0x000000);
-      mat.emissiveIntensity = litStage ? 0.55 : 0;
+      mat.emissiveIntensity = litStage ? (i < 2 ? 0.08 : 0.35) : 0;
     });
 
     this.flames.forEach((mesh, i) => {

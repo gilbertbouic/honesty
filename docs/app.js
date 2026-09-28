@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg42";
-import { HavenScene } from "./haven.js?v=vg47";
+import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg44";
 import { FairScene } from "./fair.js?v=vg44";
 import { CropScene } from "./crop.js?v=vg44";

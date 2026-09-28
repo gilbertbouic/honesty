@@ -4,7 +4,7 @@ import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, loc
 import { HavenScene } from "./haven.js?v=vg42";
 import { LandScene } from "./land.js?v=vg42";
 import { FairScene } from "./fair.js?v=vg42";
-import { CropScene } from "./crop.js?v=vg42";
+import { CropScene } from "./crop.js?v=vg43";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -943,8 +943,8 @@ class VillageEngine {
   frameCompetition() {
     const fog = this.scene.fog;
     if (this.competition === "crop") {
-      fog.color.set(0x12160e);
-      this.scene.background = new THREE.Color(0x10140c);
+      fog.color.set(0x8ea4b8);
+      this.scene.background = new THREE.Color(0x8ea4b8);
       this.aimStage(new THREE.Vector3(0, 0.8, 0), new THREE.Vector3(0.4, 4.6, 11), 2.2);
       return;
     }

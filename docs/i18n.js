@@ -3,7 +3,7 @@ var LANG_KEY = "village-grid-lang";
 var UI = {
   en: {
     title: "Integrity Village",
-    goal: "Obtain max scores in all 7 stages to win an integrity cap.",
+    goal: "Obtain max scores in all 8 stages to win an integrity cap.",
     stage1: "Stage 1 \xB7 Public tenders",
     stage2: "Stage 2 \xB7 Whistle-blower",
     dev: "In development",
@@ -271,11 +271,43 @@ var UI = {
     washRule: "Refuse a company with no trade and a hidden owner. Do not move money you cannot explain. A title, a permit and a nominee name do not clean it.",
     floorsHeld: "{n}/{total} floors held",
     openWash: "Open stage 7",
-    dockWash: "Stage 7 \xB7 the wash"
+    dockWash: "Stage 7 \xB7 the wash",
+    stage8: "Stage 8 \xB7 The stamp",
+    phaseStamp: "Stage 8 \xB7 The stamp",
+    stamp: "Stage 8",
+    stampScore: "Stage 8 score",
+    stampHint: "Stage 8 \xB7 The stamp",
+    lockStamp: "Answer every financial-crime question to open stage 8",
+    briefStamp: "Stage 8 \xB7 The stamp",
+    holdsStamp: "The file holds \xB7 +100",
+    missStamp: "The file slips \xB7 +20",
+    scoringStamp: "Five or six correct: the stamp clicks and the queue moves. Two to four: ink smears; one folder still waits under the desk. None or one: the window shuts; the stamp stays in the drawer.",
+    nextFile: "Next file",
+    doneClick: "File complete \xB7 the stamp clicks",
+    doneSmear: "File complete \xB7 the ink smears",
+    doneShut: "File complete \xB7 the window shuts",
+    clickTitle: "The stamp clicks",
+    clickBody: "The six files land square. The fee on the wall is the only fee. The queue moves.",
+    smearTitle: "The ink smears",
+    smearBody: "Some files are stamped and some are not. One folder still waits under the desk. The file is not finished.",
+    shutTitle: "The window shuts",
+    shutBody: "The file did not hold. The shutter comes down and the stamp stays in the drawer. Reset the stage and walk the questions again.",
+    scoreStamp: "Stage 8 score \xB7 {score}/600",
+    toastLockStamp: "Stage 8 is locked. Answer every financial-crime question first.",
+    toastClick: "The stamp clicks. The queue moves.",
+    toastSmear: "The ink smears. One folder is still under the desk.",
+    toastShut: "The window shuts. The stamp stays in the drawer.",
+    toastFile: "File held. The stamp lands.",
+    toastSlipFile: "That answer lets the file slip.",
+    boardStamp: "Stage 8 \xB7 The stamp",
+    stampRule: "A fee on the wall is the only fee. A cousin at the window is still a member of the public. A missing paper is a no, not a price.",
+    filesHeld: "{n}/{total} files held",
+    openStamp: "Open stage 8",
+    dockStamp: "Stage 8 \xB7 the counter"
   },
   fr: {
     title: "Village Int\xE9grit\xE9",
-    goal: "Obtiens le score maximum aux sept \xE9tapes pour gagner une casquette d'int\xE9grit\xE9.",
+    goal: "Obtiens le score maximum aux huit \xE9tapes pour gagner une casquette d'int\xE9grit\xE9.",
     stage1: "\xC9tape 1 \xB7 March\xE9s publics",
     stage2: "\xC9tape 2 \xB7 Lanceur d'alerte",
     dev: "En d\xE9veloppement",
@@ -543,7 +575,39 @@ var UI = {
     washRule: "Refuse une soci\xE9t\xE9 sans activit\xE9 et \xE0 propri\xE9taire cach\xE9. Ne fais pas circuler un argent que tu ne peux pas expliquer. Un titre, un permis et un nom pr\xEAte ne lavent rien.",
     floorsHeld: "{n}/{total} \xE9tages tenus",
     openWash: "Ouvrir l'\xE9tape 7",
-    dockWash: "\xC9tape 7 \xB7 le lavage"
+    dockWash: "\xC9tape 7 \xB7 le lavage",
+    stage8: "\xC9tape 8 \xB7 Le tampon",
+    phaseStamp: "\xC9tape 8 \xB7 Le tampon",
+    stamp: "\xC9tape 8",
+    stampScore: "Score \xB7 \xE9tape 8",
+    stampHint: "\xC9tape 8 \xB7 Le tampon",
+    lockStamp: "R\xE9ponds juste \xE0 chaque question de crime financier pour ouvrir l'\xE9tape 8",
+    briefStamp: "\xC9tape 8 \xB7 Le tampon",
+    holdsStamp: "Bonne r\xE9ponse \xB7 +100",
+    missStamp: "Mauvaise r\xE9ponse \xB7 +20",
+    scoringStamp: "Cinq ou six justes : le tampon clique et la file avance. Deux \xE0 quatre : l'encre bave ; un dossier attend encore sous le bureau. Z\xE9ro ou un : le guichet se ferme ; le tampon reste dans le tiroir.",
+    nextFile: "Dossier suivant",
+    doneClick: "Dossier clos \xB7 le tampon clique",
+    doneSmear: "Dossier clos \xB7 l'encre bave",
+    doneShut: "Dossier clos \xB7 le guichet se ferme",
+    clickTitle: "Le tampon clique",
+    clickBody: "Les six dossiers tombent droit. Le tarif au mur est le seul tarif. La file avance.",
+    smearTitle: "L'encre bave",
+    smearBody: "Certains dossiers sont tamponn\xE9s, d'autres non. Un dossier attend encore sous le bureau. Le dossier n'est pas tenu.",
+    shutTitle: "Le guichet se ferme",
+    shutBody: "Le dossier ne tient pas. Le volet descend et le tampon reste dans le tiroir. Recommence l'\xE9tape et reprends les questions.",
+    scoreStamp: "Score \xB7 \xE9tape 8 \xB7 {score}/600",
+    toastLockStamp: "L'\xE9tape 8 est verrouill\xE9e. R\xE9ponds d'abord juste \xE0 chaque question de crime financier.",
+    toastClick: "Le tampon clique. La file avance.",
+    toastSmear: "L'encre bave. Un dossier est encore sous le bureau.",
+    toastShut: "Le guichet se ferme. Le tampon reste dans le tiroir.",
+    toastFile: "Bonne r\xE9ponse. Le tampon tombe.",
+    toastSlipFile: "Mauvaise r\xE9ponse. Le dossier glisse.",
+    boardStamp: "\xC9tape 8 \xB7 Le tampon",
+    stampRule: "Le tarif au mur est le seul tarif. Un cousin au guichet reste un membre du public. Un papier manquant est un non, pas un prix.",
+    filesHeld: "{n}/{total} dossiers tenus",
+    openStamp: "Ouvrir l'\xE9tape 8",
+    dockStamp: "\xC9tape 8 \xB7 le guichet"
   }
 };
 function loadLang() {
@@ -1181,6 +1245,79 @@ const WASH_FR = {
     }
   }
 };
+
+const STAMP_FR = {
+  envelope: {
+    title: "L'enveloppe",
+    question: "Un homme glisse une enveloppe sous la vitre avec son dossier de licence commerciale. Il dit que le tarif affich\xE9 est pour ceux qui aiment attendre, et que le guichet marche ainsi apr\xE8s le d\xE9jeuner. Quelle est l'action licite ?",
+    options: {
+      A: "Prendre l'enveloppe. Le tarif affich\xE9 est pour ceux qui peuvent attendre.",
+      B: "En prendre la moiti\xE9, noter le dossier, et tamponner aujourd'hui.",
+      C: "Refuse l'enveloppe. Remets-la de son c\xF4t\xE9 de la vitre. Une licence commerciale n'est d\xE9livr\xE9e que si le dossier est complet et que le tarif au mur est pay\xE9 \xE0 la caisse. Une enveloppe sous le comptoir n'est pas un tarif. Signale-la.",
+      D: "Tamponner d'abord, puis l'envoyer \xE0 la caisse plus tard si quelqu'un demande."
+    }
+  },
+  kin: {
+    title: "La cousine",
+    question: "Ta cousine est au guichet. Deux papiers manquent au dossier de licence commerciale. Elle dit que tu connais la boutique, que tu connais la famille, et qu'une famille ne doit pas \xEAtre trait\xE9e comme une \xE9trang\xE8re. Quelle est l'action licite ?",
+    options: {
+      A: "Tamponner. Une cousine n'est pas un membre du public.",
+      B: "Ne tamponne pas. Une cousine au guichet reste un membre du public. Un papier manquant est un non. Dis-lui quels papiers manquent et prends la personne suivante.",
+      C: "Tamponner pour trois mois, le temps qu'elle apporte les papiers.",
+      D: "Passer le dossier au bureau derri\xE8re toi et faire comme si tu n'avais rien vu."
+    }
+  },
+  plate: {
+    title: "La plaque",
+    question: "Un chauffeur veut le tampon d'un v\xE9hicule de service public. Le certificat de visite est expir\xE9. Il dit que la camionnette est la m\xEAme que l'an dernier, que l'inspecteur est un ami, et que la tourn\xE9e scolaire commence \xE0 l'aube. Quelle est l'action licite ?",
+    options: {
+      A: "Tamponner. La camionnette de l'an dernier est celle de cette ann\xE9e.",
+      B: "Tamponner et lui dire de faire la visite la semaine prochaine.",
+      C: "Appeler l'inspecteur et lui demander de signer de chez lui.",
+      D: "Ne tamponne pas. Un certificat expir\xE9 n'est pas un certificat. Une plaque de service public ne se d\xE9livre pas sur une promesse. Envoie-le \xE0 la visite licite. La tourn\xE9e scolaire ne r\xE9\xE9crit pas le dossier."
+    }
+  },
+  slab: {
+    title: "La dalle",
+    question: "Un entrepreneur veut le permis de construire et d'usage des terres tamponn\xE9 aujourd'hui. Le dossier n'a pas de plan approuv\xE9 ni d'avis aux voisins. Il dit que la dalle est d\xE9j\xE0 coul\xE9e, que les ouvriers sont sur le site, et qu'arr\xEAter maintenant lui co\xFBte. Quelle est l'action licite ?",
+    options: {
+      A: "Tamponner. Une dalle coul\xE9e veut dire que le permis n'est que du papier.",
+      B: "Lui dire de couler le reste apr\xE8s la nuit pour que le dossier rattrape.",
+      C: "Ne tamponne pas. Des travaux avant un Building and Land Use Permit ne cr\xE9ent pas un droit au permis. Un plan manquant et un avis manquant restent manquants. Note les travaux non autoris\xE9s et ne les r\xE9gularise pas au guichet.",
+      D: "Tamponner un b\xE2timent plus petit que celui du site pour que le dossier paraisse modeste."
+    }
+  },
+  calendar: {
+    title: "Le calendrier",
+    question: "Une licence de local alimentaire a expir\xE9 le mois dernier. La visite n'est pas prise. Le marchand dit de tamponner le renouvellement maintenant et de mettre la visite au calendrier du mois prochain, parce que le bazar ne peut pas attendre. Quelle est l'action licite ?",
+    options: {
+      A: "Tamponner le renouvellement. Une visite peut suivre une semaine charg\xE9e.",
+      B: "Ne tamponne pas. Un renouvellement n'est pas un autocollant neuf sur une vieille date. Pas de visite, pas de licence. Prends la visite. L'\xE9tal reste ferm\xE9 tant que le dossier n'est pas entier.",
+      C: "Tamponner et \xE9crire visite en attente au crayon.",
+      D: "Le laisser vendre au fond du bazar, loin de l'all\xE9e principale."
+    }
+  },
+  listing: {
+    title: "L'annonce",
+    question: "Une villa est d\xE9j\xE0 sur un site de r\xE9servation. Les h\xF4tes arrivent ce soir. Le dossier n'a pas de Tourist Enterprise Licence ni de Building and Land Use Permit au nom du demandeur. Le titulaire dit que les chambres ont toujours \xE9t\xE9 \xE0 la famille, et qu'une somme priv\xE9e fera passer l'ancienne carte au nom d'un neveu, sous la vitre. Quelle est l'action licite ?",
+    options: {
+      A: "Tamponner l'ancienne carte au nom du neveu. Une villa de famille est d\xE9j\xE0 une maison d'h\xF4tes.",
+      B: "Tamponner pour ce week-end seulement, pour ne pas renvoyer les h\xF4tes.",
+      C: "Ne tamponne pas. Une annonce et une nuit r\xE9serv\xE9e ne cr\xE9ent pas une Tourist Enterprise Licence. La Tourism Authority d\xE9livre cette licence sur un dossier complet, pas sur une somme priv\xE9e au guichet. Le neveu demande en son nom. Des h\xF4tes d\xE9j\xE0 en route ne font pas bouger le tampon.",
+      D: "Ne changer que le pr\xE9nom sur l'ancienne carte et laisser le num\xE9ro de maison."
+    }
+  }
+};
+function localizeStamp(item, lang) {
+  const fr = lang === "fr" ? STAMP_FR[item.id] : void 0;
+  if (!fr) return item;
+  return {
+    ...item,
+    title: fr.title,
+    question: fr.question,
+    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
+  };
+}
 function localizeWash(item, lang) {
   const fr = lang === "fr" ? WASH_FR[item.id] : void 0;
   if (!fr) return item;
@@ -1208,6 +1345,7 @@ export {
   loadLang,
   localizeCase,
   localizeCrop,
+  localizeStamp,
   localizeWash,
   localizeFair,
   localizeHaven,

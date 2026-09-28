@@ -1,11 +1,12 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg56";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg67";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg61";
 import { FairScene } from "./fair.js?v=vg62";
 import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg61";
+import { StampScene } from "./stamp.js?v=vg67";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -603,6 +604,74 @@ function washOutcomeOf(score, answered) {
   if (score >= 280) return "thin";
   return "wash";
 }
+
+const STAMP_CORRECT = 100;
+const STAMP_WRONG = 20;
+const STAMP_CASES = [
+  { id: "envelope", spec: "STAMP-01", title: "The envelope", correct: "C",
+    question: "A man slides an envelope under the glass with his trade-licence file. He says the posted fee is only for people who like to wait, and that this is how the counter works after lunch. What is the lawful action?",
+    options: [
+      { id: "A", text: "Take the envelope. The posted fee is for people who can wait." },
+      { id: "B", text: "Take half, put a note in the file, and stamp it today." },
+      { id: "C", text: "Refuse the envelope. Put it back on his side of the glass. A trade licence is issued only when the file is complete and the fee on the wall is paid at the cashier. An envelope under the counter is not a fee. Report it." },
+      { id: "D", text: "Stamp first, then send him to the cashier later if anyone asks." },
+    ] },
+  { id: "kin", spec: "STAMP-02", title: "The cousin", correct: "B",
+    question: "Your cousin is at the window. Two papers are missing from the trade-licence file. She says you know the shop, you know the family, and a family should not be treated like a stranger. What is the lawful action?",
+    options: [
+      { id: "A", text: "Stamp it. A cousin is not a member of the public." },
+      { id: "B", text: "Do not stamp it. A cousin at the window is still a member of the public. A missing paper is a no. Tell her which papers are missing and take the next person in the queue." },
+      { id: "C", text: "Stamp it for three months so she can bring the papers later." },
+      { id: "D", text: "Pass the file to the desk behind you and pretend you never saw it." },
+    ] },
+  { id: "plate", spec: "STAMP-03", title: "The plate", correct: "D",
+    question: "A driver wants a public-service vehicle stamp. The fitness certificate is expired. He says the van is the same van as last year, the inspector is a friend, and the school run starts at dawn. What is the lawful action?",
+    options: [
+      { id: "A", text: "Stamp it. Last year's van is this year's van." },
+      { id: "B", text: "Stamp it and tell him to do the fitness next week." },
+      { id: "C", text: "Call the inspector and ask him to sign from home." },
+      { id: "D", text: "Do not stamp it. An expired fitness certificate is not a fitness certificate. A public-service plate is not issued on a promise. Send him to the lawful inspection. The school run does not rewrite the file." },
+    ] },
+  { id: "slab", spec: "STAMP-04", title: "The slab", correct: "C",
+    question: "A builder wants the Building and Land Use Permit stamped today. The file has no approved plan and no neighbour notice. He says the slab is already poured, the workers are on site, and stopping now will cost him. What is the lawful action?",
+    options: [
+      { id: "A", text: "Stamp it. A poured slab means the permit is only paperwork." },
+      { id: "B", text: "Ask him to pour the rest after dark so the file can catch up." },
+      { id: "C", text: "Do not stamp it. Works before a Building and Land Use Permit do not create a right to the permit. A missing plan and a missing notice stay missing. Record the unauthorised works and do not regularise them at the window." },
+      { id: "D", text: "Stamp a smaller building than the one on site so the file looks modest." },
+    ] },
+  { id: "calendar", spec: "STAMP-05", title: "The calendar", correct: "B",
+    question: "A food-premises licence expired last month. The inspection is not booked. The stallholder says stamp the renewal now and put the inspection on next month's calendar, because the bazaar cannot wait. What is the lawful action?",
+    options: [
+      { id: "A", text: "Stamp the renewal. An inspection can follow a busy week." },
+      { id: "B", text: "Do not stamp it. A renewal is not a fresh sticker on an old date. No inspection, no licence. Book the inspection. Keep the stall closed until the file is whole." },
+      { id: "C", text: "Stamp it and write inspection pending in pencil." },
+      { id: "D", text: "Let him trade at the back of the bazaar, away from the main aisle." },
+    ] },
+  { id: "listing", spec: "STAMP-06", title: "The listing", correct: "C",
+    question: "A villa is already on a booking site. Guests arrive tonight. The file has no Tourist Enterprise Licence and no Building and Land Use Permit in the applicant's name. The holder says the rooms have always been the family's, and that a private sum will move the old card into a nephew's name under the glass. What is the lawful action?",
+    options: [
+      { id: "A", text: "Stamp the old card into the nephew's name. A family villa is already a guesthouse." },
+      { id: "B", text: "Stamp it for this weekend only, so the guests are not turned away." },
+      { id: "C", text: "Do not stamp it. A listing and a booked night do not create a Tourist Enterprise Licence. The Tourism Authority issues that licence on a complete file, not on a private sum at the window. The nephew applies in his own name. Guests already on the road do not move the stamp." },
+      { id: "D", text: "Change only the first name on the old card and leave the house number as it is." },
+    ] },
+];
+const STAMPSHORT = { envelope: "Envelope", kin: "Kin", plate: "Plate", slab: "Slab", calendar: "Date", listing: "Listing" };
+function roundSevenCleared(results) {
+  return results.length >= WASH_CASES.length && results.every((r) => r.correct);
+}
+function stampCaseById(id) { return STAMP_CASES.find((c) => c.id === id) ?? STAMP_CASES[0]; }
+function firstOpenStampId(results) {
+  const done = new Set(results.map((r) => r.caseId));
+  return STAMP_CASES.find((c) => !done.has(c.id))?.id ?? STAMP_CASES[0].id;
+}
+function stampOutcomeOf(score, answered) {
+  if (answered < STAMP_CASES.length) return "open";
+  if (score >= 500) return "click";
+  if (score >= 280) return "smear";
+  return "shut";
+}
 function winnerOf(bids) { return Object.entries(bids).sort((a, b) => b[1] - a[1])[0][0]; }
 function holdingsLabel(name, houses) {
   const owned = houses.filter((h) => h.owner === name);
@@ -885,6 +954,7 @@ class VillageEngine {
     this.fair = new FairScene(this.scene);
     this.crop = new CropScene(this.scene);
     this.wash = new WashScene(this.scene);
+    this.stamp = new StampScene(this.scene);
     this.havenOutcome = "open";
     this.havenCorrect = 0;
     this.landOutcome = "open";
@@ -919,12 +989,15 @@ class VillageEngine {
     this.cropCorrect = next.cropCorrect || 0;
     this.washOutcome = next.washOutcome || "open";
     this.washCorrect = next.washCorrect || 0;
+    this.stampOutcome = next.stampOutcome || "open";
+    this.stampCorrect = next.stampCorrect || 0;
     this.fairHeld = next.fairHeld || [];
     this.haven.sync(this.competition, this.havenOutcome, this.havenCorrect);
     this.land.sync(this.competition, this.landOutcome, this.landCorrect);
     this.fair.sync(this.competition, this.fairOutcome, this.fairCorrect, this.fairHeld);
     this.crop.sync(this.competition, this.cropOutcome, this.cropCorrect);
     this.wash.sync(this.competition, this.washOutcome, this.washCorrect);
+    this.stamp.sync(this.competition, this.stampOutcome, this.stampCorrect);
     const solo = this.competition !== "tender";
     if (this.village) this.village.visible = !solo;
     if (this.wGroup) this.wGroup.visible = this.competition === "whistle";
@@ -1015,6 +1088,12 @@ class VillageEngine {
 
   frameCompetition() {
     const fog = this.scene.fog;
+    if (this.competition === "stamp") {
+      fog.color.set(0x8ea4b8);
+      this.scene.background = new THREE.Color(0x8ea4b8);
+      this.aimStage(new THREE.Vector3(0.1, 1.05, 0.7), new THREE.Vector3(0.2, 3.4, 8.4), 4.6);
+      return;
+    }
     if (this.competition === "wash") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
@@ -1545,6 +1624,7 @@ class VillageEngine {
     this.fair.tick(dt, t, this.reduced);
     this.crop.tick(dt, t, this.reduced);
     this.wash.tick(dt, t, this.reduced);
+    this.stamp.tick(dt, t, this.reduced);
     this.tickBus(t);
     this.renderer.render(this.scene, this.camera);
   };
@@ -1564,6 +1644,7 @@ function defaultState() {
     fairResults: [], activeFairId: FAIR_CASES[0].id, fairScore: 0, fairOutcome: "open",
     cropResults: [], activeCropId: CROP_CASES[0].id, cropScore: 0, cropOutcome: "open",
     washResults: [], activeWashId: WASH_CASES[0].id, washScore: 0, washOutcome: "open",
+    stampResults: [], activeStampId: STAMP_CASES[0].id, stampScore: 0, stampOutcome: "open",
   };
 }
 
@@ -1621,6 +1702,8 @@ function persist(state) {
       cropScore: state.cropScore, cropOutcome: state.cropOutcome,
       washResults: state.washResults, activeWashId: state.activeWashId,
       washScore: state.washScore, washOutcome: state.washOutcome,
+      stampResults: state.stampResults, activeStampId: state.activeStampId,
+      stampScore: state.stampScore, stampOutcome: state.stampOutcome,
     }));
   } catch { /* ignore */ }
 }
@@ -1661,6 +1744,8 @@ function syncPayload() {
     cropCorrect: (state.cropResults || []).filter((r) => r.correct).length,
     washOutcome: state.washOutcome,
     washCorrect: (state.washResults || []).filter((r) => r.correct).length,
+    stampOutcome: state.stampOutcome,
+    stampCorrect: (state.stampResults || []).filter((r) => r.correct).length,
   };
 }
 engine.sync(syncPayload());
@@ -1689,7 +1774,12 @@ function resetStage() {
   state.mobileTab = "tender";
   state.hoveredId = null;
   state.selectedId = null;
-  if (state.competition === "wash") {
+  if (state.competition === "stamp") {
+    state.stampResults = [];
+    state.activeStampId = STAMP_CASES[0].id;
+    state.stampScore = 0;
+    state.stampOutcome = "open";
+  } else if (state.competition === "wash") {
     state.washResults = [];
     state.activeWashId = WASH_CASES[0].id;
     state.washScore = 0;
@@ -1766,7 +1856,7 @@ function renderBoot() {
   document.getElementById("boot-title").textContent = L("title");
   document.getElementById("boot-goal").textContent = L("goal");
   document.getElementById("enter-btn").textContent = L("enter");
-  document.getElementById("boot-stages").innerHTML = ["stage1", "stage2", "stage3", "stage4", "stage5", "stage6", "stage7"]
+  document.getElementById("boot-stages").innerHTML = ["stage1", "stage2", "stage3", "stage4", "stage5", "stage6", "stage7", "stage8"]
     .map((key) => `<li>${L(key)}</li>`)
     .join("");
   paintLang(document.getElementById("boot-lang"));
@@ -1801,6 +1891,7 @@ function renderHeader() {
   const fair = state.competition === "fair";
   const crop = state.competition === "crop";
   const wash = state.competition === "wash";
+  const stamp = state.competition === "stamp";
   document.getElementById("phase-kicker").textContent = L("projectPhase");
   document.querySelector('#comp-switch [data-comp="tender"]').textContent = L("tenders");
   document.querySelector('#comp-switch [data-comp="whistle"]').textContent = L("whistle");
@@ -1809,22 +1900,24 @@ function renderHeader() {
   document.querySelector('#comp-switch [data-comp="fair"]').textContent = L("fair");
   document.querySelector('#comp-switch [data-comp="crop"]').textContent = L("crop");
   document.querySelector('#comp-switch [data-comp="wash"]').textContent = L("wash");
-  document.getElementById("phase-title").textContent = wash ? L("phaseWash") : crop ? L("phaseCrop") : fair ? L("phaseFair") : land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
-  document.getElementById("stat-label").textContent = wash ? L("washScore") : crop ? L("cropScore") : fair ? L("fairScore") : land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
+  document.querySelector('#comp-switch [data-comp="stamp"]').textContent = L("stamp");
+  document.getElementById("phase-title").textContent = stamp ? L("phaseStamp") : wash ? L("phaseWash") : crop ? L("phaseCrop") : fair ? L("phaseFair") : land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
+  document.getElementById("stat-label").textContent = stamp ? L("stampScore") : wash ? L("washScore") : crop ? L("cropScore") : fair ? L("fairScore") : land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
   const won = state.results.filter((r) => r.winnerId === "you").length;
   const stat = document.getElementById("stat-won");
-  stat.textContent = wash ? `${state.washScore}/${WASH_CASES.length * 100}` : crop ? `${state.cropScore}/${CROP_CASES.length * 100}` : fair ? `${state.fairScore}/${FAIR_CASES.length * 100}` : land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
+  stat.textContent = stamp ? `${state.stampScore}/${STAMP_CASES.length * 100}` : wash ? `${state.washScore}/${WASH_CASES.length * 100}` : crop ? `${state.cropScore}/${CROP_CASES.length * 100}` : fair ? `${state.fairScore}/${FAIR_CASES.length * 100}` : land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
   stat.className = "mono";
-  stat.style.color = wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
+  stat.style.color = stamp ? "#ea2839" : wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
   if (haven) stat.className = "mono rose";
   if (whistle) stat.className = "mono amber";
-  if (!wash && !crop && !fair && !land && !haven && !whistle) stat.className = "mono green";
+  if (!stamp && !wash && !crop && !fair && !land && !haven && !whistle) stat.className = "mono green";
   const swept = roundOneCleared(state.results, state.contractorId);
   const lineOpen = roundTwoCleared(state.whistleResults);
   const landOpen = roundThreeCleared(state.havenResults);
   const fairOpen = roundFourCleared(state.landResults);
   const cropOpen = roundFiveCleared(state.fairResults);
   const washOpen = roundSixCleared(state.cropResults);
+  const stampOpen = roundSevenCleared(state.washResults);
   document.querySelectorAll("#comp-switch button").forEach((b) => {
     b.classList.toggle("on", b.dataset.comp === state.competition);
     if (b.dataset.comp === "whistle") {
@@ -1851,9 +1944,15 @@ function renderHeader() {
       b.classList.toggle("locked", !washOpen);
       b.title = washOpen ? L("washHint") : L("lockWash");
     }
+    if (b.dataset.comp === "stamp") {
+      b.classList.toggle("locked", !stampOpen);
+      b.title = stampOpen ? L("stampHint") : L("lockStamp");
+    }
   });
   const qcount = document.getElementById("qcount");
-  qcount.textContent = wash
+  qcount.textContent = stamp
+    ? `${state.stampResults.length}/${STAMP_CASES.length}`
+    : wash
     ? `${state.washResults.length}/${WASH_CASES.length}`
     : crop
     ? `${state.cropResults.length}/${CROP_CASES.length}`
@@ -1867,8 +1966,8 @@ function renderHeader() {
             ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
             : `${state.results.length}/${TENDERS.length}`;
   qcount.className = haven ? "qcount rose" : whistle ? "qcount amber" : "qcount green";
-  qcount.style.color = wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
-  document.getElementById("tab-case").textContent = wash || crop || fair || land || haven || whistle ? L("case") : L("tender");
+  qcount.style.color = stamp ? "#ea2839" : wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
+  document.getElementById("tab-case").textContent = stamp || wash || crop || fair || land || haven || whistle ? L("case") : L("tender");
   document.getElementById("tab-round").textContent = state.competition === "tender"
     ? L("whistle")
     : state.competition === "whistle" && lineOpen
@@ -1881,13 +1980,17 @@ function renderHeader() {
             ? L("crop")
             : state.competition === "crop" && washOpen
               ? L("wash")
-              : L("tenders");
+              : state.competition === "wash" && stampOpen
+                ? L("stamp")
+                : L("tenders");
   document.querySelectorAll("#mobile-tabs button[data-tab]").forEach((b) => {
     b.classList.toggle("whistle", whistle && b.classList.contains("on"));
     b.classList.toggle("haven", haven && b.classList.contains("on"));
   });
   document.getElementById("contractor-chips").innerHTML = `
-    <span class="kicker mute">${wash
+    <span class="kicker mute">${stamp
+      ? L("filesHeld", { n: state.stampResults.filter((r) => r.correct).length, total: STAMP_CASES.length })
+      : wash
       ? L("floorsHeld", { n: state.washResults.filter((r) => r.correct).length, total: WASH_CASES.length })
       : crop
       ? L("rowsHeld", { n: state.cropResults.filter((r) => r.correct).length, total: CROP_CASES.length })
@@ -2432,7 +2535,89 @@ function answerWash(picked) {
   renderOutcome();
 }
 
+
+function renderStamp() {
+  const raw = stampCaseById(state.activeStampId);
+  const item = localizeStamp(raw, lang);
+  const result = state.stampResults.find((r) => r.caseId === item.id);
+  const locked = Boolean(result);
+  const remaining = STAMP_CASES.some((c) => !state.stampResults.some((r) => r.caseId === c.id));
+  const held = Boolean(result?.correct);
+  const panel = document.getElementById("tender-panel");
+  panel.classList.toggle("award", held);
+  panel.classList.toggle("reject", locked && !held);
+  panel.innerHTML = `
+    <div class="side-head">
+      <p class="kicker" style="color:#ea2839">${L("briefStamp")} · ${item.spec}</p>
+      <h2>${item.title}</h2>
+      <p class="mono mute">${state.stampResults.length}/${STAMP_CASES.length}</p>
+    </div>
+    <div class="spec-nav">
+      ${STAMP_CASES.map((c) => {
+        const done = state.stampResults.some((r) => r.caseId === c.id);
+        const hit = state.stampResults.find((r) => r.caseId === c.id);
+        const on = c.id === item.id;
+        return `<button type="button" data-stamp="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, STAMPSHORT[c.id])}</button>`;
+      }).join("")}
+    </div>
+    <div class="side-body">
+      <p>${item.question}</p>
+      <div class="opts">
+        ${item.options.map((opt) => {
+          const picked = result?.picked === opt.id;
+          const isCorrect = opt.id === item.correct;
+          const cls = picked && held ? "correct" : picked && locked ? "wrong" : locked && isCorrect ? "correct" : "";
+          return `<button type="button" class="opt ${cls}" data-sopt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
+        }).join("")}
+      </div>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsStamp") : L("missStamp")) : L("scoring")}</p>
+      <p style="font-size:.8rem">${L("scoringStamp")}</p>
+      <p style="font-size:.8rem">${L("stampRule")}</p>
+      ${result && remaining ? `<button type="button" class="cta" id="next-stamp" style="margin-top:.75rem;background:#ea2839">${L("nextFile")}</button>` : ""}
+      ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.stampOutcome === "click" ? "var(--green)" : state.stampOutcome === "smear" ? "#ea2839" : "var(--crimson)"}">${
+        state.stampOutcome === "click" ? L("doneClick") : state.stampOutcome === "smear" ? L("doneSmear") : L("doneShut")
+      }</p>` : ""}
+    </div>`;
+  panel.querySelectorAll("[data-stamp]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!roundSevenCleared(state.washResults)) {
+        showToast(L("toastLockStamp"), "info");
+        return;
+      }
+      state.activeStampId = btn.dataset.stamp;
+      state.competition = "stamp";
+      persist(state);
+      renderAll();
+    });
+  });
+  panel.querySelectorAll("[data-sopt]").forEach((btn) => btn.addEventListener("click", () => answerStamp(btn.dataset.sopt)));
+  document.getElementById("next-stamp")?.addEventListener("click", () => {
+    if (state.stampOutcome !== "open") return;
+    state.activeStampId = firstOpenStampId(state.stampResults);
+    persist(state);
+    renderAll();
+  });
+}
+
+function answerStamp(picked) {
+  if (!state.contractorId || !roundSevenCleared(state.washResults)) return;
+  const item = stampCaseById(state.activeStampId);
+  if (state.stampResults.some((r) => r.caseId === item.id)) return;
+  const correct = picked === item.correct;
+  state.stampResults.push({ caseId: item.id, picked, correct, playerScore: correct ? STAMP_CORRECT : STAMP_WRONG });
+  state.stampScore += correct ? STAMP_CORRECT : STAMP_WRONG;
+  state.stampOutcome = stampOutcomeOf(state.stampScore, state.stampResults.length);
+  if (state.stampOutcome !== "open") {
+    state.showOutcome = true;
+    showToast(state.stampOutcome === "click" ? L("toastClick") : state.stampOutcome === "smear" ? L("toastSmear") : L("toastShut"), state.stampOutcome);
+  } else showToast(correct ? L("toastFile") : L("toastSlipFile"), correct ? "award" : "reject");
+  persist(state);
+  renderAll();
+  renderOutcome();
+}
+
 function renderCase() {
+  if (state.competition === "stamp") return renderStamp();
   if (state.competition === "wash") return renderWash();
   if (state.competition === "crop") return renderCrop();
   if (state.competition === "fair") return renderFair();
@@ -2563,9 +2748,14 @@ function renderOutcome() {
   const fair = state.competition === "fair";
   const wash = state.competition === "wash";
   const crop = state.competition === "crop";
-  const outcome = wash ? state.washOutcome : crop ? state.cropOutcome : fair ? state.fairOutcome : land ? state.landOutcome : haven ? state.havenOutcome : state.whistleOutcome;
+  const stamp = state.competition === "stamp";
+  const outcome = stamp ? state.stampOutcome : wash ? state.washOutcome : crop ? state.cropOutcome : fair ? state.fairOutcome : land ? state.landOutcome : haven ? state.havenOutcome : state.whistleOutcome;
   if (!state.showOutcome || state.competition === "tender" || outcome === "open") { el.hidden = true; return; }
-  const copy = wash ? {
+  const copy = stamp ? {
+    click: { kicker: L("topScore"), title: L("clickTitle"), body: L("clickBody"), cls: "award" },
+    smear: { kicker: L("midScore"), title: L("smearTitle"), body: L("smearBody"), cls: "burn" },
+    shut: { kicker: L("lowScore"), title: L("shutTitle"), body: L("shutBody"), cls: "reject" },
+  }[state.stampOutcome] : wash ? {
     clean: { kicker: L("topScore"), title: L("cleanTitle"), body: L("cleanBody"), cls: "award" },
     thin: { kicker: L("midScore"), title: L("washThinTitle"), body: L("washThinBody"), cls: "burn" },
     wash: { kicker: L("lowScore"), title: L("washTitle"), body: L("washBody"), cls: "reject" },
@@ -2593,7 +2783,9 @@ function renderOutcome() {
   document.getElementById("outcome-kicker").textContent = copy.kicker;
   document.getElementById("outcome-title").textContent = copy.title;
   document.getElementById("outcome-body").textContent = copy.body;
-  document.getElementById("outcome-score").textContent = wash
+  document.getElementById("outcome-score").textContent = stamp
+    ? L("scoreStamp", { score: state.stampScore })
+    : wash
     ? L("scoreWash", { score: state.washScore })
     : crop
     ? L("scoreCrop", { score: state.cropScore })
@@ -2617,6 +2809,19 @@ function renderBoard() {
     return;
   }
   board.hidden = false;
+  if (state.competition === "stamp") {
+    const files = state.stampResults.filter((r) => r.correct).length;
+    board.innerHTML = `
+      <div class="side-head">
+        <p class="kicker" style="color:#ea2839">${L("boardStamp")}</p>
+        <h2>${L("notRanking")}</h2>
+      </div>
+      <div class="side-body">
+        <p style="font-size:.8rem">${L("stampRule")}</p>
+        <p class="mono green">${L("filesHeld", { n: files, total: STAMP_CASES.length })}</p>
+      </div>`;
+    return;
+  }
   if (state.competition === "wash") {
     const floors = state.washResults.filter((r) => r.correct).length;
     board.innerHTML = `
@@ -2721,6 +2926,11 @@ function renderDock() {
   if (state.competition === "fair") {
     dock.hidden = false;
     dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#b388ff">${L("dockFair")}</p></div>`;
+    return;
+  }
+  if (state.competition === "stamp") {
+    dock.hidden = false;
+    dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#ea2839">${L("dockStamp")}</p></div>`;
     return;
   }
   if (state.competition === "wash") {
@@ -2838,6 +3048,16 @@ function sheetState() {
       total: WASH_CASES.length,
       score: state.washScore,
       perfect: state.washResults.length >= WASH_CASES.length && state.washResults.every((r) => r.correct),
+      last: false,
+    };
+  }
+  if (comp === "stamp") {
+    return {
+      answered: state.stampResults.some((r) => r.caseId === state.activeStampId),
+      n: state.stampResults.length,
+      total: STAMP_CASES.length,
+      score: state.stampScore,
+      perfect: state.stampResults.length >= STAMP_CASES.length && state.stampResults.every((r) => r.correct),
       last: true,
     };
   }
@@ -2889,13 +3109,14 @@ function advanceQuestion() {
   else if (state.competition === "fair") state.activeFairId = firstOpenFairId(state.fairResults);
   else if (state.competition === "crop") state.activeCropId = firstOpenCropId(state.cropResults);
   else if (state.competition === "wash") state.activeWashId = firstOpenWashId(state.washResults);
+  else if (state.competition === "stamp") state.activeStampId = firstOpenStampId(state.stampResults);
   else state.activeHouseId = firstOpenHouseId(state.results);
   state.selectedId = state.activeHouseId;
   persist(state);
   renderAll();
 }
 function goNextStage() {
-  const order = ["tender", "whistle", "haven", "land", "fair", "crop", "wash"];
+  const order = ["tender", "whistle", "haven", "land", "fair", "crop", "wash", "stamp"];
   const next = order[order.indexOf(state.competition) + 1];
   if (!next) return;
   state.competition = next;
@@ -2963,6 +3184,10 @@ document.getElementById("comp-switch").addEventListener("click", (e) => {
     showToast(L("toastLockWash"), "info");
     return;
   }
+  if (btn.dataset.comp === "stamp" && !roundSevenCleared(state.washResults)) {
+    showToast(L("toastLockStamp"), "info");
+    return;
+  }
   state.showOutcome = false;
   state.competition = btn.dataset.comp;
   state.mobileTab = "tender";
@@ -3024,6 +3249,7 @@ document.getElementById("tab-round").addEventListener("click", () => {
   else if (state.competition === "land" && roundFourCleared(state.landResults)) next = "fair";
   else if (state.competition === "fair" && roundFiveCleared(state.fairResults)) next = "crop";
   else if (state.competition === "crop" && roundSixCleared(state.cropResults)) next = "wash";
+  else if (state.competition === "wash" && roundSevenCleared(state.washResults)) next = "stamp";
   if (next === "whistle" && !roundOneCleared(state.results, state.contractorId)) {
     showToast(L("toastLock"), "info");
     return;
@@ -3048,6 +3274,10 @@ document.getElementById("tab-round").addEventListener("click", () => {
     showToast(L("toastLockWash"), "info");
     return;
   }
+  if (next === "stamp" && !roundSevenCleared(state.washResults)) {
+    showToast(L("toastLockStamp"), "info");
+    return;
+  }
   state.competition = next;
   state.showOutcome = false;
   state.mobileTab = "tender";
@@ -3064,6 +3294,7 @@ if ((state.landResults || []).length < LAND_CASES.length) state.landOutcome = "o
 if ((state.fairResults || []).length < FAIR_CASES.length) state.fairOutcome = "open";
 if ((state.cropResults || []).length < CROP_CASES.length) state.cropOutcome = "open";
 if ((state.washResults || []).length < WASH_CASES.length) state.washOutcome = "open";
+if ((state.stampResults || []).length < STAMP_CASES.length) state.stampOutcome = "open";
 for (const id of ["market", "clinic", "hall", "bus"]) {
   if (state.results.some((r) => r.houseId === id)) continue;
   const h = state.houses.find((x) => x.id === id);
@@ -3089,6 +3320,9 @@ if (!roundFiveCleared(state.fairResults) && state.competition === "crop") {
 }
 if (!roundSixCleared(state.cropResults) && state.competition === "wash") {
   state.competition = roundFiveCleared(state.fairResults) ? "crop" : "fair";
+}
+if (!roundSevenCleared(state.washResults) && state.competition === "stamp") {
+  state.competition = roundSixCleared(state.cropResults) ? "wash" : "crop";
 }
 renderBoot();
 if (state.phase === "play") showPlay();

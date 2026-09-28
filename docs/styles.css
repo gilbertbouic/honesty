@@ -572,6 +572,10 @@ html[data-orient="portrait"] .mobile-sheet-foot .cta { margin-top: 0; }
   background: color-mix(in oklab, #c9a15a 18%, transparent);
   color: #c9a15a;
 }
+.comp-switch button[data-comp="stamp"].on {
+  background: color-mix(in oklab, #ea2839 16%, transparent);
+  color: #ea2839;
+}
 .rose, .kicker.rose, .qcount.rose { color: var(--rose); }
 .toast.line { border-color: var(--green); color: var(--green); background: color-mix(in oklab, var(--green) 12%, var(--surface)); }
 .toast.lamp { border-color: var(--amber); color: var(--amber); background: color-mix(in oklab, var(--amber) 12%, var(--surface)); }

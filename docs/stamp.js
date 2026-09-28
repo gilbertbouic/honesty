@@ -1,3 +1,4 @@
+// Stage 8. The stamp. Clerk walks the counter and stamps each file that holds.
 import * as THREE from "three";
 
 const PEARL = 0xf4f5f3;
@@ -15,6 +16,9 @@ class StampScene {
     this.competition = "tender";
     this.outcome = "open";
     this.correct = 0;
+    this.stampClock = 1.4;
+    this.seenCorrect = 0;
+    this.clerkLegs = [];
 
     const hemi = new THREE.HemisphereLight(0xd5e4f2, 0x3a3428, 0.55);
     const sun = new THREE.DirectionalLight(0xfff3df, 1.05);
@@ -166,7 +170,9 @@ class StampScene {
     this.mesh(this.stamp, new THREE.BoxGeometry(0.14, 0.045, 0.14), this.shell, 0, 0.0, 0);
     this.pad = this.mesh(this.stamp, new THREE.BoxGeometry(0.1, 0.02, 0.1), this.padMat, 0, -0.03, 0);
     this.stamp.position.set(0, -0.12, 0.02);
-    this.hand.add(this.stamp);
+    this.group.add(this.stamp);
+    this.handWorld = new THREE.Vector3();
+    this.paperWorld = new THREE.Vector3();
   }
 
   buildShutter() {
@@ -208,9 +214,14 @@ class StampScene {
     const skin = this.mat(0xc4865a, { rough: 0.58 });
     const suit = this.mat(0x1a2744, { rough: 0.42, metal: 0.12 });
     const shirt = this.mat(0xf7f4ee, { rough: 0.5 });
+    this.clerkLegs = [];
     [-1, 1].forEach((side) => {
-      this.mesh(g, new THREE.CapsuleGeometry(0.05 * s, 0.2 * s, 3, 6), suit, side * 0.08 * s, 0.28 * s, 0);
-      this.mesh(g, new THREE.BoxGeometry(0.09 * s, 0.045 * s, 0.14 * s), this.joint, side * 0.08 * s, 0.06 * s, 0.03 * s);
+      const hip = new THREE.Group();
+      hip.position.set(side * 0.08 * s, 0.42 * s, 0);
+      this.mesh(hip, new THREE.CapsuleGeometry(0.05 * s, 0.18 * s, 3, 6), suit, 0, -0.12 * s, 0);
+      this.mesh(hip, new THREE.BoxGeometry(0.09 * s, 0.045 * s, 0.14 * s), this.joint, 0, -0.26 * s, 0.03 * s);
+      g.add(hip);
+      this.clerkLegs.push(hip);
     });
     this.mesh(g, new THREE.BoxGeometry(0.34 * s, 0.36 * s, 0.16 * s), suit, 0, 0.64 * s, 0);
     this.mesh(g, new THREE.BoxGeometry(0.07 * s, 0.18 * s, 0.02 * s), shirt, 0, 0.66 * s, 0.09 * s);
@@ -222,8 +233,8 @@ class StampScene {
     g.add(this.hand);
     this.mesh(this.hand, new THREE.SphereGeometry(0.045 * s, 8, 6), skin, 0, 0, 0);
     this.mesh(g, new THREE.CapsuleGeometry(0.04 * s, 0.16 * s, 3, 5), suit, 0.16 * s, 0.72 * s, 0.1 * s);
-    g.position.set(1.15, 0, 1.48);
-    g.rotation.y = 0;
+    g.position.set(-0.42, 0, 1.52);
+    g.rotation.y = -Math.PI / 2;
     this.group.add(g);
     this.official = g;
   }
@@ -251,6 +262,9 @@ class StampScene {
   sync(competition, outcome, correct) {
     this.competition = competition;
     this.outcome = outcome;
+    if (correct > this.seenCorrect) this.stampClock = 0;
+    if (correct < this.seenCorrect) this.stampClock = 1.4;
+    this.seenCorrect = correct;
     this.correct = correct;
   }
 
@@ -258,13 +272,33 @@ class StampScene {
     const on = this.competition === "stamp";
     this.group.visible = on;
     if (!on) return;
-    const ease = reduced ? 1 : 1 - Math.exp(-3 * dt);
+    const ease = reduced ? 1 : 1 - Math.exp(-3.4 * dt);
     const click = this.outcome === "click";
     const smear = this.outcome === "smear";
     const shut = this.outcome === "shut";
+    const slot = this.correct > 0 ? Math.min(5, this.correct - 1) : 0;
+    const folderX = -1 + slot * 0.46;
+    const goalX = shut ? 1.35 : folderX + 0.58;
+    const goalZ = shut ? 2.15 : 1.52;
+    const dx = goalX - this.official.position.x;
+    this.official.position.x += dx * ease;
+    this.official.position.z += (goalZ - this.official.position.z) * ease;
+    const moving = Math.abs(dx) > 0.06;
+    if (!moving) this.stampClock = Math.min(1.6, this.stampClock + dt);
+    const yaw = moving ? (dx > 0 ? Math.PI / 2 : -Math.PI / 2) : -Math.PI / 2;
+    let dyaw = yaw - this.official.rotation.y;
+    while (dyaw > Math.PI) dyaw -= Math.PI * 2;
+    while (dyaw < -Math.PI) dyaw += Math.PI * 2;
+    this.official.rotation.y += dyaw * ease;
+    const u = Math.min(1, this.stampClock / 1.15);
+    const dip = !shut && !moving && this.correct > 0 && u < 1
+      ? (u < 0.28 ? u / 0.28 : u < 0.72 ? 1 : 1 - (u - 0.72) / 0.28)
+      : 0;
+    this.official.rotation.x = dip * 0.22;
     this.folders.forEach((folder, i) => {
       const held = i < this.correct;
-      const markScale = held ? 1 : 0.001;
+      const landed = i < this.correct - 1 || (i === slot && this.correct > 0 && (dip > 0.85 || this.stampClock >= 1.15 || reduced));
+      const markScale = held && landed ? 1.7 : 0.001;
       folder.mark.scale.x += (markScale - folder.mark.scale.x) * ease;
       folder.mark.scale.y += (markScale - folder.mark.scale.y) * ease;
       folder.mark.scale.z += (markScale - folder.mark.scale.z) * ease;
@@ -280,30 +314,32 @@ class StampScene {
     this.shutter.position.y += (shutterY - this.shutter.position.y) * ease;
     const drawerZ = shut ? 1.15 : 0.85;
     this.drawer.position.z += (drawerZ - this.drawer.position.z) * ease;
-    const slot = Math.min(5, Math.max(0, this.correct - 1));
-    const lean = shut ? 0.42 : this.correct > 0 ? -0.15 + slot * 0.06 : 0.22;
-    const handY = shut ? 0.36 : this.correct > 0 ? 0.52 : 0.98;
-    const handZ = shut ? 0.06 : this.correct > 0 ? 0.58 : 0.3;
-    this.hand.position.x += (lean - this.hand.position.x) * ease;
+    const handX = 0.02;
+    const handY = shut ? 0.42 : 1.42 - dip * 0.34;
+    const handZ = shut ? 0.06 : 0.22 + dip * 0.42;
+    this.hand.position.x += (handX - this.hand.position.x) * ease;
     this.hand.position.y += (handY - this.hand.position.y) * ease;
     this.hand.position.z += (handZ - this.hand.position.z) * ease;
-    if (!reduced && !shut && this.correct === 0) this.hand.position.y += Math.sin(t * 2.4) * 0.012;
-    this.padMat.color.set(this.correct > 0 && !shut ? INK : 0x3a2428);
+    if (!reduced && !shut && dip === 0) this.hand.position.y += Math.sin(t * 2.2) * 0.01;
+    this.hand.getWorldPosition(this.handWorld);
+    this.folders[slot].group.getWorldPosition(this.paperWorld);
+    this.paperWorld.y += 0.1;
+    this.stamp.position.lerpVectors(this.handWorld, this.paperWorld, shut ? 0 : dip);
+    this.stamp.position.y += 0.05;
+    this.padMat.color.set(dip > 0.45 && !shut ? INK : 0x3a2428);
     const glassOn = click || this.correct > 0;
     this.visor.material.emissive.set(glassOn ? 0x1a2838 : 0x050608);
     this.visor.material.emissiveIntensity = shut ? 0.02 : glassOn ? 0.35 : 0.12;
+    const step = moving ? Math.sin(t * 9) * 0.7 : Math.sin(t * 1.6) * 0.04;
+    this.clerkLegs[0].rotation.x = step;
+    this.clerkLegs[1].rotation.x = -step;
     if (!reduced) {
       this.queue.forEach((person, i) => {
-        const step = t * 2.2 + i;
-        const shift = click ? Math.sin(step) * 0.04 : Math.sin(t * 1.3 + i) * 0.015;
+        const sway = t * 1.4 + i;
+        const shift = Math.sin(sway) * 0.012;
         person.position.x = 2.15 + (i % 2) * 0.32 + shift;
-        person.userData.legs[0].rotation.x = Math.sin(step) * (click ? 0.35 : 0.08);
-        person.userData.legs[1].rotation.x = Math.sin(step + Math.PI) * (click ? 0.35 : 0.08);
-      });
-    }
-    if (!reduced && click) {
-      this.wheels.forEach((wheel) => {
-        wheel.rotation.x += dt * 0.35;
+        person.userData.legs[0].rotation.x = Math.sin(sway) * 0.06;
+        person.userData.legs[1].rotation.x = Math.sin(sway + Math.PI) * 0.06;
       });
     }
   }

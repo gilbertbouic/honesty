@@ -178,7 +178,7 @@ var LandScene = class {
       const signing = !clean && !lost;
       const swing = signing && !reduced ? Math.sin(t * 3.1) * 0.2 : 0;
       const aim = (signing ? -1.05 : -0.35) + swing;
-      this.clerk.arm.rotation.x += (aim - this.clerk.arm.rotation.x) * ease;
+      this.clerk.armR.rotation.x += (aim - this.clerk.armR.rotation.x) * ease;
     }
     this.strollers.forEach((walker) => {
       const trip = reduced ? walker.phase : t * 0.28 + walker.phase;

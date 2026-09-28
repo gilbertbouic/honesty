@@ -51,6 +51,7 @@ class WashScene {
     this.buildPlaza();
     this.buildPipe();
     this.buildTower();
+    this.buildSign();
     this.buildVilla();
     this.walker = this.buildWalker();
     this.group.visible = false;
@@ -106,17 +107,37 @@ class WashScene {
     return visor;
   }
 
+  labelMat(draw) {
+    const m = new THREE.MeshBasicMaterial({ color: 0xf7f4ee });
+    this.mats.push(m);
+    if (typeof document === "undefined") return m;
+    const canvas = document.createElement("canvas");
+    canvas.width = 512;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d");
+    draw(ctx, canvas);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = 4;
+    this.geos.push(tex);
+    m.map = tex;
+    m.needsUpdate = true;
+    return m;
+  }
+
   buildTower() {
+    const marks = ["$", "€", "¥", "£", "₹", "₣"];
     const props = ["case", "paper", "seal", "villa", "card", "watch"];
     props.forEach((kind, i) => {
       const y = 0.55 + i * 0.62;
       const floor = new THREE.Group();
       floor.position.y = y;
       this.group.add(floor);
-      this.mesh(floor, new THREE.BoxGeometry(1.7, 0.56, 1.15), this.glass, 0, 0, 0);
+      const glass = this.mat(0xd7e4ea, { rough: 0.08, metal: 0.15, opacity: 0.62 });
+      this.mesh(floor, new THREE.BoxGeometry(1.7, 0.56, 1.15), glass, 0, 0, 0);
       this.mesh(floor, new THREE.BoxGeometry(1.78, 0.04, 1.22), this.joint, 0, 0.28, 0);
       const sludge = this.mat(0x1a1612, { rough: 0.7, opacity: 0.82 });
-      const pool = this.mesh(floor, new THREE.BoxGeometry(1.4, 0.08, 0.7), sludge, 0, -0.18, 0);
+      this.mesh(floor, new THREE.BoxGeometry(1.4, 0.08, 0.7), sludge, 0, -0.18, 0);
       const visor = this.clerk(floor, 0.55, -0.22, 0.15, 0.55);
       if (kind === "case") {
         this.mesh(floor, new THREE.BoxGeometry(0.34, 0.16, 0.22), this.mat(0x6d5a40, { rough: 0.7 }), -0.35, -0.12, 0);
@@ -136,8 +157,49 @@ class WashScene {
       } else {
         this.mesh(floor, new THREE.TorusGeometry(0.07, 0.02, 6, 12), this.mat(0xf0c84a, { metal: 0.7, rough: 0.25 }), -0.28, -0.04, 0);
       }
-      this.floors.push({ sludge, pool, visor });
+      const symbol = marks[i];
+      const pane = this.labelMat((ctx) => {
+        ctx.fillStyle = "#f7f4ee";
+        ctx.fillRect(0, 0, 512, 256);
+        ctx.fillStyle = "#1a1614";
+        ctx.font = "700 168px Georgia, 'Times New Roman', serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(symbol, 256, 138);
+      });
+      const win = new THREE.Group();
+      win.position.set(-0.15, 0.02, 0.6);
+      win.scale.setScalar(0.001);
+      this.mesh(win, new THREE.BoxGeometry(0.46, 0.32, 0.03), this.joint, 0, 0, -0.01);
+      this.mesh(win, new THREE.PlaneGeometry(0.38, 0.24), pane, 0, 0, 0.02);
+      floor.add(win);
+      this.floors.push({ sludge, glass, visor, win });
     });
+  }
+
+  buildSign() {
+    const board = new THREE.Group();
+    board.position.set(0, 4.55, 0.15);
+    this.mesh(board, new THREE.BoxGeometry(2.7, 0.62, 0.08), this.mat(0xf4f1ea, { rough: 0.6 }), 0, 0, 0);
+    this.mesh(board, new THREE.BoxGeometry(2.78, 0.08, 0.1), this.mat(0xb7522d, { rough: 0.5 }), 0, 0.3, 0);
+    const face = this.labelMat((ctx, canvas) => {
+      ctx.fillStyle = "#f4f1ea";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#1a1614";
+      ctx.font = "700 78px Georgia, 'Times New Roman', serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText("Mkweli AML", 210, 132);
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 28, 18, 150, 220);
+        face.map.needsUpdate = true;
+      };
+      img.src = new URL("./brand/mkweli-mark.png", import.meta.url).href;
+    });
+    const plate = this.mesh(board, new THREE.PlaneGeometry(2.5, 0.5), face, 0, 0, 0.05);
+    plate.castShadow = false;
+    this.group.add(board);
   }
 
   buildVilla() {
@@ -153,14 +215,30 @@ class WashScene {
   buildWalker() {
     const g = new THREE.Group();
     g.position.set(2.1, 0, 1.5);
-    const visor = this.mat(0x0c1016, { rough: 0.2, metal: 0.4, emissive: 0x102030, ei: 0.4 });
-    this.mesh(g, new THREE.CapsuleGeometry(0.07, 0.28, 3, 6), this.shell, -0.09, 0.24, 0);
-    this.mesh(g, new THREE.CapsuleGeometry(0.07, 0.28, 3, 6), this.shell, 0.09, 0.24, 0);
-    this.mesh(g, new THREE.CapsuleGeometry(0.14, 0.26, 4, 8), this.shell, 0, 0.62, 0);
-    this.mesh(g, new THREE.SphereGeometry(0.13, 12, 10), this.shell, 0, 0.98, 0);
-    this.mesh(g, new THREE.BoxGeometry(0.16, 0.035, 0.02), visor, 0, 0.99, 0.11);
-    this.mesh(g, new THREE.TorusGeometry(0.05, 0.014, 6, 10), this.mat(0xf0c84a, { metal: 0.7, rough: 0.25, emissive: 0x8a6a10, ei: 0.3 }), 0.16, 0.7, 0.08);
-    this.walkerVisor = visor;
+    const suit = this.mat(0xf7f4ee, { rough: 0.55 });
+    const skin = this.mat(0xd7b39a, { rough: 0.65 });
+    const shoe = this.mat(0xf0c030, { rough: 0.4 });
+    const tie = this.mat(0xc4302b, { rough: 0.45 });
+    const belt = this.mat(0x1a3a8a, { rough: 0.4 });
+    const brief = this.mat(0x1f7a3a, { rough: 0.55 });
+    this.mesh(g, new THREE.BoxGeometry(0.12, 0.07, 0.2), shoe, -0.09, 0.05, 0.03);
+    this.mesh(g, new THREE.BoxGeometry(0.12, 0.07, 0.2), shoe, 0.09, 0.05, 0.03);
+    this.mesh(g, new THREE.CapsuleGeometry(0.07, 0.28, 3, 6), suit, -0.09, 0.26, 0);
+    this.mesh(g, new THREE.CapsuleGeometry(0.07, 0.28, 3, 6), suit, 0.09, 0.26, 0);
+    this.mesh(g, new THREE.BoxGeometry(0.28, 0.04, 0.16), belt, 0, 0.46, 0.02);
+    this.mesh(g, new THREE.BoxGeometry(0.32, 0.38, 0.18), suit, 0, 0.68, 0);
+    this.mesh(g, new THREE.BoxGeometry(0.05, 0.2, 0.02), tie, 0, 0.7, 0.1);
+    this.mesh(g, new THREE.SphereGeometry(0.12, 12, 10), skin, 0, 1.02, 0);
+    const hair = this.mesh(g, new THREE.SphereGeometry(0.1, 10, 8), this.mat(0x2a211c, { rough: 0.8 }), 0, 1.1, -0.02);
+    hair.scale.set(1.05, 0.55, 0.9);
+    const arm = new THREE.Group();
+    arm.position.set(-0.2, 0.82, 0.02);
+    arm.rotation.x = 0.35;
+    g.add(arm);
+    this.mesh(arm, new THREE.CapsuleGeometry(0.045, 0.22, 3, 6), suit, 0, -0.16, 0);
+    this.mesh(arm, new THREE.BoxGeometry(0.16, 0.22, 0.06), brief, 0, -0.36, 0.04);
+    this.mesh(arm, new THREE.BoxGeometry(0.1, 0.04, 0.04), this.joint, 0, -0.24, 0.06);
+    this.walkerVisor = skin;
     this.group.add(g);
     return g;
   }
@@ -184,6 +262,12 @@ class WashScene {
       const target = gone ? 0.02 : washed ? 0.92 : 0.75;
       floor.sludge.opacity += (target - floor.sludge.opacity) * ease;
       floor.sludge.color.set(washed && !gone ? 0x6a5420 : 0x1a1612);
+      const clearOp = gone ? 0.06 : 0.62;
+      floor.glass.opacity += (clearOp - floor.glass.opacity) * ease;
+      const winScale = gone ? 1 : 0.001;
+      floor.win.scale.x += (winScale - floor.win.scale.x) * ease;
+      floor.win.scale.y += (winScale - floor.win.scale.y) * ease;
+      floor.win.scale.z += (winScale - floor.win.scale.z) * ease;
       const face = gone || clean;
       floor.visor.color.set(face ? 0xd7b39a : 0x0c1016);
       floor.visor.emissive.set(face ? 0x000000 : 0x102030);
@@ -196,9 +280,6 @@ class WashScene {
     if (this.seal) this.seal.rotation.z = reduced ? 0.4 : t * 0.9;
     const walkX = washed ? 4.4 : 2.1;
     this.walker.position.x += (walkX - this.walker.position.x) * ease;
-    const face = clean;
-    this.walkerVisor.color.set(face ? 0xd7b39a : 0x0c1016);
-    this.walkerVisor.emissive.set(washed ? 0x8a6a10 : 0x102030);
     const glow = washed ? 0.85 : clean ? 0.02 : 0.18;
     this.villaWin.emissiveIntensity += (glow - this.villaWin.emissiveIntensity) * ease;
   }

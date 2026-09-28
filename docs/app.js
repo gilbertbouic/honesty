@@ -5,7 +5,7 @@ import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg51";
 import { FairScene } from "./fair.js?v=vg53";
 import { CropScene } from "./crop.js?v=vg54";
-import { WashScene } from "./wash.js?v=vg58";
+import { WashScene } from "./wash.js?v=vg59";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -862,6 +862,7 @@ class VillageEngine {
     this.scene.add(this.rain);
 
     const skyMat = new THREE.MeshStandardMaterial({ color: 0x9aa3ab, roughness: 0.9, metalness: 0.02 });
+    this.skyline = new THREE.Group();
     for (let i = 0; i < 18; i++) {
       const a = (i / 18) * Math.PI * 2 + 0.2;
       const r = 17 + (i % 3) * 1.4;
@@ -870,8 +871,9 @@ class VillageEngine {
       const geo = new THREE.BoxGeometry(w, h, w);
       const mesh = new THREE.Mesh(geo, skyMat);
       mesh.position.set(Math.cos(a) * r, h / 2, Math.sin(a) * r);
-      this.scene.add(mesh);
+      this.skyline.add(mesh);
     }
+    this.scene.add(this.skyline);
 
     for (const house of houses) {
       const visual = makeHouse(house);
@@ -929,9 +931,12 @@ class VillageEngine {
     this.crop.sync(this.competition, this.cropOutcome, this.cropCorrect);
     this.wash.sync(this.competition, this.washOutcome, this.washCorrect);
     const solo = this.competition === "land" || this.competition === "fair" || this.competition === "crop" || this.competition === "wash";
-    if (this.ground) this.ground.visible = !solo;
-    if (this.canal) this.canal.visible = !solo;
-    this.plazaRing.visible = !solo;
+    const village = this.competition === "tender";
+    if (this.ground) this.ground.visible = village || this.competition === "whistle";
+    if (this.canal) this.canal.visible = village || this.competition === "whistle";
+    this.plazaRing.visible = village || this.competition === "whistle";
+    if (this.skyline) this.skyline.visible = village || this.competition === "whistle";
+    if (this.wGroup) this.wGroup.visible = this.competition === "whistle";
     const mobile = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
     this.controls.autoRotate = !mobile && !this.holdOrbit && !next.reducedMotion && this.competition !== "haven" && !solo && this.whistleOutcome !== "exile";
     this.rain.visible = !next.reducedMotion && this.competition !== "haven" && !solo;
@@ -1413,11 +1418,11 @@ class VillageEngine {
       }
       this.rain.geometry.getAttribute("position").needsUpdate = true;
     }
+    const showHouse = this.competition === "tender";
+    for (const v of this.visuals.values()) v.group.visible = showHouse;
     for (const house of this.houseState) {
       const v = this.visuals.get(house.id);
-      if (!v) continue;
-      v.group.visible = this.competition !== "land" && this.competition !== "fair" && this.competition !== "crop" && this.competition !== "wash" && this.competition !== "haven";
-      if (this.competition === "land" || this.competition === "fair" || this.competition === "crop" || this.competition === "wash") continue;
+      if (!v || !showHouse) continue;
       const hovered = this.hoveredId === house.id || this.hoverId === house.id;
       const selected = this.selectedId === house.id;
       const target = house.renovated || hovered ? 1 : 0;

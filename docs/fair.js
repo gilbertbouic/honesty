@@ -105,51 +105,49 @@ class FairScene {
   }
 
   placePerson(gate, kind) {
-    const person = new THREE.Group();
-    person.position.set(0, 0, 0.42);
-    gate.add(person);
-    const cloth = 0x2c3338;
-    const skin = kind === "black" ? 0x5a3828 : kind === "elder" ? 0xc4a48a : 0xd7b39a;
-    const hair = kind === "elder" ? 0xb7b2aa : 0x1a1c1f;
+    const g = new THREE.Group();
+    g.position.set(0, 0, 0.42);
+    if (kind === "elder") g.scale.setScalar(0.86);
+    gate.add(g);
+    const shell = this.mat(kind === "black" ? 0xc4a07a : SHELL, { rough: 0.4, metal: 0.14 });
+    const joint = this.mat(JOINT, { rough: 0.45, metal: 0.5 });
+    const visorHex = { woman: 0xff8ec0, veil: 0xe7d7c4, elder: 0xc5ccd4, star: 0x7ec8ff, pride: 0xe6c84a, black: 0xffb15a }[kind] ?? 0x9fd7ff;
+    const visor = this.mat(visorHex, { rough: 0.22, metal: 0.4, emissive: visorHex, ei: 0.5 });
+    const add = (geo, material, x, y, z) => {
+      this.geos.push(geo);
+      const mesh = new THREE.Mesh(geo, material);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      g.add(mesh);
+      return mesh;
+    };
+    add(new THREE.CapsuleGeometry(0.055, 0.26, 4, 8), shell, -0.09, 0.22, 0);
+    add(new THREE.CapsuleGeometry(0.055, 0.26, 4, 8), shell, 0.09, 0.22, 0);
+    add(new THREE.SphereGeometry(0.042, 8, 6), joint, -0.09, 0.4, 0);
+    add(new THREE.SphereGeometry(0.042, 8, 6), joint, 0.09, 0.4, 0);
+    add(new THREE.CapsuleGeometry(0.12, 0.24, 4, 10), shell, 0, 0.58, 0);
+    add(new THREE.SphereGeometry(0.04, 8, 6), joint, -0.17, 0.72, 0);
+    add(new THREE.SphereGeometry(0.04, 8, 6), joint, 0.17, 0.72, 0);
+    add(new THREE.CapsuleGeometry(0.038, 0.22, 3, 6), shell, -0.2, 0.54, 0);
+    add(new THREE.CapsuleGeometry(0.038, 0.22, 3, 6), shell, 0.2, 0.54, 0);
+    add(new THREE.SphereGeometry(0.035, 8, 6), joint, 0, 0.76, 0);
+    add(new THREE.SphereGeometry(0.105, 14, 12), shell, 0, 0.92, 0);
+    add(new THREE.BoxGeometry(0.14, 0.032, 0.02), visor, 0, 0.93, 0.09);
+    add(new THREE.BoxGeometry(0.04, 0.02, 0.02), visor, 0, 0.6, 0.12);
     if (kind === "woman") {
-      this.put(person, 0, 0.28, 0, 0.42, 0.46, 0.26, 0xc47a8a, { rough: 0.6 });
-      this.put(person, 0, 0.62, 0, 0.28, 0.28, 0.16, 0xc47a8a, { rough: 0.6 });
-      this.put(person, 0, 0.92, 0.02, 0.16, 0.16, 0.14, skin, { rough: 0.7 });
-      this.put(person, 0, 1.0, -0.04, 0.18, 0.16, 0.16, hair);
-      this.put(person, 0, 0.7, -0.08, 0.1, 0.42, 0.08, hair);
+      add(new THREE.ConeGeometry(0.18, 0.26, 8), shell, 0, 0.36, 0);
     } else if (kind === "veil") {
-      this.put(person, 0, 0.32, 0, 0.4, 0.55, 0.26, 0x3a3148, { rough: 0.7 });
-      this.put(person, 0, 0.78, 0, 0.32, 0.32, 0.2, 0x3a3148, { rough: 0.7 });
-      this.put(person, 0, 1.08, 0, 0.22, 0.2, 0.2, 0x2a2436, { rough: 0.65 });
-      this.put(person, 0, 0.96, 0.1, 0.1, 0.08, 0.04, skin, { rough: 0.6 });
+      const cowl = this.mat(0x2a2436, { rough: 0.55 });
+      add(new THREE.SphereGeometry(0.13, 10, 8), cowl, 0, 0.98, -0.03);
+      add(new THREE.BoxGeometry(0.16, 0.22, 0.06), cowl, 0, 0.78, -0.08);
     } else if (kind === "elder") {
-      person.scale.setScalar(0.88);
-      this.put(person, -0.07, 0.26, 0, 0.1, 0.42, 0.1, cloth);
-      this.put(person, 0.07, 0.26, 0, 0.1, 0.42, 0.1, cloth);
-      this.put(person, 0, 0.66, 0, 0.3, 0.38, 0.16, 0x4a5560);
-      this.put(person, 0, 1.0, 0.02, 0.16, 0.16, 0.14, skin, { rough: 0.75 });
-      this.put(person, 0, 1.1, -0.02, 0.18, 0.08, 0.16, hair);
-      this.put(person, 0.16, 0.42, 0.06, 0.03, 0.55, 0.03, 0x6d5a40, { rough: 0.8 });
+      add(new THREE.CylinderGeometry(0.016, 0.016, 0.62, 6), this.mat(0x6d5a40, { rough: 0.7 }), 0.24, 0.36, 0.05);
     } else if (kind === "star") {
-      this.put(person, -0.07, 0.28, 0, 0.1, 0.46, 0.1, cloth);
-      this.put(person, 0.07, 0.28, 0, 0.1, 0.46, 0.1, cloth);
-      this.put(person, 0, 0.7, 0, 0.3, 0.4, 0.16, 0x243038);
-      this.put(person, 0, 1.05, 0.02, 0.16, 0.16, 0.14, skin, { rough: 0.7 });
-      this.put(person, 0, 1.14, -0.02, 0.18, 0.07, 0.16, hair);
-      this.put(person, 0, 0.74, 0.1, 0.1, 0.1, 0.02, 0xd4a017, { metal: 0.45, rough: 0.3, emissive: 0x8a6a10, ei: 0.3 });
+      add(new THREE.OctahedronGeometry(0.055, 0), this.mat(0xd4a017, { metal: 0.55, rough: 0.28, emissive: 0x8a6a10, ei: 0.45 }), 0, 0.64, 0.12);
     } else if (kind === "pride") {
-      this.put(person, -0.07, 0.28, 0, 0.1, 0.46, 0.1, cloth);
-      this.put(person, 0.07, 0.28, 0, 0.1, 0.46, 0.1, cloth);
-      const bands = [0xe24b4b, 0xe07a2f, 0xe6c84a, 0x3f9a55, 0x3a6fd8, 0x7a4ea3];
-      bands.forEach((color, s) => this.put(person, 0, 0.52 + s * 0.07, 0, 0.3, 0.07, 0.16, color, { rough: 0.45 }));
-      this.put(person, 0, 1.05, 0.02, 0.16, 0.16, 0.14, skin, { rough: 0.7 });
-      this.put(person, 0, 1.14, -0.02, 0.18, 0.08, 0.16, 0x5a4030);
-    } else {
-      this.put(person, -0.07, 0.28, 0, 0.1, 0.46, 0.1, cloth);
-      this.put(person, 0.07, 0.28, 0, 0.1, 0.46, 0.1, cloth);
-      this.put(person, 0, 0.7, 0, 0.3, 0.4, 0.16, 0x1c2428);
-      this.put(person, 0, 1.05, 0.02, 0.16, 0.16, 0.14, skin, { rough: 0.7 });
-      this.put(person, 0, 1.14, -0.02, 0.18, 0.08, 0.16, hair);
+      [0xe24b4b, 0xe07a2f, 0xe6c84a, 0x3f9a55, 0x3a6fd8, 0x7a4ea3].forEach((color, s) => {
+        add(new THREE.BoxGeometry(0.2, 0.026, 0.018), this.mat(color, { rough: 0.4, emissive: color, ei: 0.25 }), 0, 0.5 + s * 0.032, 0.12);
+      });
     }
   }
 

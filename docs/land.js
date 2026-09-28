@@ -57,6 +57,8 @@ var LandScene = class {
     this.buildVillas();
     this.buildWetland();
     this.buildPermit();
+    this.buildCrew();
+    this.buildShoreWalk();
     this.buildField();
     const hemi = new THREE.HemisphereLight(0xd5e4f2, 0x5a4328, 0.4);
     const sun = new THREE.DirectionalLight(0xfff3df, 1);
@@ -172,6 +174,25 @@ var LandScene = class {
       mat.color.copy(warm ? WINDOW : lost ? VOID : WINDOW);
       mat.opacity = warm ? 0.95 : lost ? 0.06 : 0.26;
     });
+    if (this.clerk) {
+      const signing = !clean && !lost;
+      const swing = signing && !reduced ? Math.sin(t * 3.1) * 0.2 : 0;
+      const aim = (signing ? -1.05 : -0.35) + swing;
+      this.clerk.arm.rotation.x += (aim - this.clerk.arm.rotation.x) * ease;
+    }
+    this.strollers.forEach((walker) => {
+      const trip = reduced ? walker.phase : t * 0.28 + walker.phase;
+      const dir = Math.sin(trip) >= 0 ? 1 : -1;
+      walker.root.position.x = walker.homeX + Math.sin(trip) * 1.7;
+      walker.root.position.z = walker.homeZ;
+      walker.root.rotation.y = dir > 0 ? Math.PI / 2 : -Math.PI / 2;
+      const step = reduced ? 0 : Math.sin(t * 4.2 + walker.phase) * 0.7;
+      walker.legL.rotation.x = step;
+      walker.legR.rotation.x = -step;
+      walker.armL.rotation.x = -step * 0.6;
+      walker.armR.rotation.x = step * 0.6;
+      walker.root.position.y = reduced ? 0 : Math.abs(Math.sin(t * 4.2 + walker.phase)) * 0.03;
+    });
     this.seaMat.uniforms.uTime.value = reduced ? 0.4 : t;
   }
   dispose() {
@@ -190,6 +211,7 @@ var LandScene = class {
       this.stamp.material
     ];
     for (const m of mats) m.dispose();
+    for (const m of this.folkMats ?? []) m.dispose();
     for (const mesh of [...this.boardHalves, ...this.fills, ...this.signBits, ...this.slabHalves, ...this.crops, ...this.villas.map((v) => v.mesh)]) {
       mesh.material.dispose();
     }
@@ -200,7 +222,8 @@ var LandScene = class {
     spots.forEach((x, i) => {
       const h = 0.7 + i % 3 * 0.28;
       const z = -13.5 - i % 2 * 1.2;
-      box(this.group, this.geos, parts, x, h / 2, z, 1.15, h, 0.9, HOUSE, 0.35);
+      box(this.group, this.geos, parts, x, h / 2, z, 1.15, h, 0.9, 0xd5d6d2, 0.94);
+      box(this.group, this.geos, parts, x, h + 0.05, z, 1.28, 0.08, 1.02, 0x1a1c1f, 0.96);
       const win = new THREE.Mesh(
         new THREE.PlaneGeometry(0.28, 0.22),
         new THREE.MeshStandardMaterial({ color: WINDOW, roughness: 0.35, metalness: 0.05, emissive: WINDOW, emissiveIntensity: 0.15, transparent: true, opacity: 0.9, side: THREE.DoubleSide })
@@ -227,21 +250,28 @@ var LandScene = class {
       vertexShader: `
         uniform float uTime;
         varying float vH;
+        varying float vShore;
         void main() {
           vec3 p = position;
-          float w = sin(p.x * 0.62 + uTime * 1.25) * 0.09 + sin(p.y * 1.05 + uTime * 0.85) * 0.05;
-          p.z += w;
-          vH = w;
+          float roll = sin(p.y * 1.7 - uTime * 1.45);
+          float cross = sin(p.x * 0.4 + p.y * 2.3 - uTime * 1.85);
+          float wave = roll * 0.045 + cross * 0.026;
+          p.z += wave;
+          vH = wave;
+          vShore = p.y;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
         }
       `,
       fragmentShader: `
         uniform vec3 uColor;
         varying float vH;
+        varying float vShore;
         void main() {
-          float crest = smoothstep(-0.01, 0.09, vH);
-          vec3 col = mix(uColor, vec3(0.78, 0.95, 1.0), crest * 0.7);
-          gl_FragColor = vec4(col, 0.46 + crest * 0.28);
+          float shore = smoothstep(1.15, 3.35, vShore);
+          float crest = smoothstep(0.0, 0.045, vH);
+          vec3 foam = vec3(0.82, 0.93, 0.96);
+          vec3 col = mix(uColor, foam, crest * 0.72 + shore * 0.55);
+          gl_FragColor = vec4(col, 0.5 + crest * 0.22 + shore * 0.28);
         }
       `
     });
@@ -345,59 +375,197 @@ var LandScene = class {
     });
   }
   buildWetland() {
-    const geo = new THREE.CircleGeometry(1.7, 24);
-    this.geos.push(geo);
-    this.wetMat = new THREE.MeshStandardMaterial({ color: WET, roughness: 0.25, metalness: 0.05, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
-    const wet = new THREE.Mesh(geo, this.wetMat);
-    wet.rotation.x = -Math.PI / 2;
-    wet.position.set(-3.5, 0.03, 0.8);
-    this.group.add(wet);
-    [-0.55, 0.1, 0.7].forEach((x, i) => {
-      const g = new THREE.BoxGeometry(0.62, 0.26, 0.5);
+    const cx = -4.2;
+    const cz = 0.45;
+    const addPool = (x, z, r) => {
+      const geo = new THREE.CircleGeometry(r, 28);
+      this.geos.push(geo);
+      if (!this.wetMat) {
+        this.wetMat = new THREE.MeshStandardMaterial({ color: WET, roughness: 0.25, metalness: 0.05, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
+      }
+      const wet = new THREE.Mesh(geo, this.wetMat);
+      wet.rotation.x = -Math.PI / 2;
+      wet.position.set(x, 0.03, z);
+      this.group.add(wet);
+    };
+    addPool(cx, cz, 3.05);
+    addPool(cx + 1.7, cz + 1.35, 1.7);
+    const reedMat = new THREE.MeshStandardMaterial({ color: 0x2f6b34, roughness: 0.7 });
+    (this.folkMats ??= []).push(reedMat);
+    for (let i = 0; i < 10; i++) {
+      const a = (i / 10) * Math.PI * 2;
+      const geo = new THREE.ConeGeometry(0.05, 0.38, 4);
+      this.geos.push(geo);
+      const reed = new THREE.Mesh(geo, reedMat);
+      reed.position.set(cx + Math.cos(a) * 2.7, 0.18, cz + Math.sin(a) * 2.2);
+      this.group.add(reed);
+    }
+    [-0.7, 0.15, 0.95].forEach((x, i) => {
+      const g = new THREE.BoxGeometry(0.85, 0.32, 0.7);
       this.geos.push(g);
       const mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: FILL, roughness: 0.9, transparent: true, opacity: 0.9 }));
-      mesh.position.set(-3.5 + x, 0.16, 0.7 + i * 0.12);
+      mesh.position.set(cx + x, 0.16, cz + 0.15 + i * 0.16);
       this.fills.push(mesh);
       this.group.add(mesh);
     });
-    const floodGeo = new THREE.BoxGeometry(0.55, 0.03, 4.2);
+    const floodGeo = new THREE.BoxGeometry(0.7, 0.03, 4.6);
     this.geos.push(floodGeo);
     this.floodMat = new THREE.MeshStandardMaterial({ color: FILL, roughness: 0.3, transparent: true, opacity: 0.55 });
     this.flood = new THREE.Mesh(floodGeo, this.floodMat);
-    this.flood.position.set(-3.5, 0.05, -2.2);
+    this.flood.position.set(cx, 0.05, cz - 3.3);
     this.group.add(this.flood);
   }
   buildPermit() {
-    const geo = new THREE.BoxGeometry(0.58, 0.74, 0.04);
-    const edges = new THREE.EdgesGeometry(geo);
-    this.geos.push(geo, edges);
+    const dx = 4.35;
+    const dz = 2.35;
+    const desk = { fills: [], lines: [] };
+    box(this.group, this.geos, desk, dx, 0.72, dz, 1.15, 0.07, 0.62, 0x6a5344, 0.96);
+    box(this.group, this.geos, desk, dx - 0.46, 0.34, dz - 0.2, 0.07, 0.68, 0.07, 0x4a382c, 0.96);
+    box(this.group, this.geos, desk, dx + 0.46, 0.34, dz - 0.2, 0.07, 0.68, 0.07, 0x4a382c, 0.96);
+    box(this.group, this.geos, desk, dx - 0.46, 0.34, dz + 0.2, 0.07, 0.68, 0.07, 0x4a382c, 0.96);
+    box(this.group, this.geos, desk, dx + 0.46, 0.34, dz + 0.2, 0.07, 0.68, 0.07, 0x4a382c, 0.96);
+    const geo = new THREE.BoxGeometry(0.46, 0.012, 0.32);
+    this.geos.push(geo);
     this.pageMat = new THREE.MeshStandardMaterial({ color: PAPER, roughness: 0.8 });
     const page = new THREE.Mesh(geo, this.pageMat);
-    page.position.set(5.55, 0.82, 2.55);
-    const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x1a1c1f, transparent: true, opacity: 0.45 }));
-    frame.position.copy(page.position);
-    this.group.add(page, frame);
+    page.position.set(dx + 0.08, 0.77, dz);
+    this.group.add(page);
     const strokes = [
-      { x: -0.12, y: 0.08, w: 0.22, h: 0.03, rot: 0.4 },
-      { x: 0.02, y: 0, w: 0.26, h: 0.03, rot: -0.22 },
-      { x: 0.13, y: 0.07, w: 0.16, h: 0.03, rot: 0.55 },
-      { x: 0, y: -0.1, w: 0.32, h: 0.028, rot: 0.06 },
-      { x: -0.11, y: -0.16, w: 0.14, h: 0.028, rot: -0.45 },
-      { x: 0.1, y: -0.16, w: 0.12, h: 0.028, rot: 0.3 }
+      { x: -0.08, z: 0.06, w: 0.16, d: 0.02, rot: 0.4 },
+      { x: 0.04, z: 0.01, w: 0.18, d: 0.02, rot: -0.2 },
+      { x: 0.1, z: -0.04, w: 0.12, d: 0.02, rot: 0.5 },
+      { x: 0, z: -0.08, w: 0.22, d: 0.018, rot: 0.05 }
     ];
     strokes.forEach((stroke, i) => {
-      const mark = new THREE.BoxGeometry(stroke.w, stroke.h, 0.03);
+      const mark = new THREE.BoxGeometry(stroke.w, 0.02, stroke.d);
       this.geos.push(mark);
-      const bit = new THREE.Mesh(
-        mark,
-        new THREE.MeshStandardMaterial({ color: CRIMSON, roughness: 0.5, transparent: true, opacity: 1 })
-      );
-      bit.position.set(page.position.x + stroke.x, page.position.y + stroke.y, page.position.z + 0.04);
-      bit.rotation.z = stroke.rot;
+      const bit = new THREE.Mesh(mark, new THREE.MeshStandardMaterial({ color: CRIMSON, roughness: 0.5, transparent: true, opacity: 1 }));
+      bit.position.set(page.position.x + stroke.x, 0.79, page.position.z + stroke.z);
+      bit.rotation.y = stroke.rot;
       bit.userData.home = bit.position.clone();
-      bit.userData.fly = new THREE.Vector3((i - 2.5) * 0.18, 0.42, 0.12);
+      bit.userData.fly = new THREE.Vector3((i - 1.5) * 0.16, 0.46, 0.1);
       this.signBits.push(bit);
       this.group.add(bit);
+    });
+    box(this.group, this.geos, desk, dx, 0.42, dz - 0.48, 0.42, 0.06, 0.4, 0x4a382c, 0.96);
+    box(this.group, this.geos, desk, dx, 0.72, dz - 0.66, 0.42, 0.36, 0.06, 0x4a382c, 0.96);
+    this.clerk = this.figure({
+      x: dx - 0.02,
+      y: 0.36,
+      z: dz - 0.48,
+      yaw: 0,
+      skin: 0xc48a62,
+      shirt: 0x243044,
+      pants: 0x1c2430,
+      beard: true,
+      shades: true,
+      scale: 0.92
+    });
+    const penGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.16, 6);
+    this.geos.push(penGeo);
+    const pen = new THREE.Mesh(penGeo, this.folkMat(0x1a1c1f));
+    pen.position.set(0.02, -0.42, 0.04);
+    pen.rotation.x = 1.2;
+    this.clerk.armR.add(pen);
+  }
+  folkMat(color) {
+    const m = new THREE.MeshStandardMaterial({ color, roughness: 0.62, metalness: 0.04 });
+    (this.folkMats ??= []).push(m);
+    return m;
+  }
+  figure(opts) {
+    const g = new THREE.Group();
+    const skin = this.folkMat(opts.skin ?? 0xd7b39a);
+    const shirt = this.folkMat(opts.shirt);
+    const pants = this.folkMat(opts.pants);
+    const put = (parent, geo, material, x, y, z) => {
+      this.geos.push(geo);
+      const mesh = new THREE.Mesh(geo, material);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      parent.add(mesh);
+      return mesh;
+    };
+    const legL = new THREE.Group();
+    const legR = new THREE.Group();
+    legL.position.set(-0.09, 0.46, 0);
+    legR.position.set(0.09, 0.46, 0);
+    g.add(legL, legR);
+    put(legL, new THREE.CapsuleGeometry(0.055, 0.28, 3, 6), pants, 0, -0.2, 0);
+    put(legR, new THREE.CapsuleGeometry(0.055, 0.28, 3, 6), pants, 0, -0.2, 0);
+    put(g, new THREE.BoxGeometry(0.32, 0.38, 0.16), shirt, 0, 0.78, 0);
+    if (opts.vest) put(g, new THREE.BoxGeometry(0.36, 0.26, 0.18), this.folkMat(opts.vest), 0, 0.82, 0.02);
+    const armL = new THREE.Group();
+    const armR = new THREE.Group();
+    armL.position.set(-0.22, 0.92, 0);
+    armR.position.set(0.22, 0.92, 0);
+    g.add(armL, armR);
+    put(armL, new THREE.CapsuleGeometry(0.045, 0.26, 3, 6), shirt, 0, -0.18, 0);
+    put(armR, new THREE.CapsuleGeometry(0.045, 0.26, 3, 6), skin, 0, -0.18, 0);
+    const head = new THREE.Group();
+    head.position.set(0, 1.12, 0);
+    g.add(head);
+    put(head, new THREE.SphereGeometry(0.13, 12, 10), skin, 0, 0.06, 0);
+    if (opts.hair) put(head, new THREE.SphereGeometry(0.135, 10, 8), this.folkMat(opts.hair), 0, 0.12, -0.02);
+    if (opts.beard) put(head, new THREE.SphereGeometry(0.09, 8, 6), this.folkMat(0x1a120e), 0, -0.02, 0.05);
+    if (opts.shades) put(head, new THREE.BoxGeometry(0.18, 0.045, 0.03), this.folkMat(0x14181c), 0, 0.08, 0.11);
+    if (opts.hat) {
+      const brim = put(head, new THREE.CylinderGeometry(0.16, 0.16, 0.04, 10), this.folkMat(opts.hat), 0, 0.14, 0);
+      brim.scale.y = 1;
+      const crown = put(head, new THREE.SphereGeometry(0.12, 10, 8), this.folkMat(opts.hat), 0, 0.2, 0);
+      crown.scale.y = 0.55;
+    }
+    g.position.set(opts.x, opts.y ?? 0, opts.z);
+    g.rotation.y = opts.yaw ?? 0;
+    if (opts.scale) g.scale.setScalar(opts.scale);
+    this.group.add(g);
+    return { root: g, legL, legR, armL, armR, head };
+  }
+  buildCrew() {
+    this.crew = [];
+    const spots = [
+      [0.05, 2.55, 0.4],
+      [-0.85, 1.85, 0.9],
+      [-1.75, 1.25, 1.3]
+    ];
+    const hats = [0xf0c400, 0xf08a1a, 0xf4f5f3];
+    spots.forEach(([x, z, yaw], i) => {
+      const worker = this.figure({
+        x, z, yaw,
+        shirt: 0x2a3444,
+        pants: 0x3a332c,
+        vest: i === 1 ? 0xf08a1a : 0xf0c400,
+        hat: hats[i],
+        scale: 1.05
+      });
+      this.crew.push(worker);
+    });
+    const deck = { fills: [], lines: [] };
+    for (let i = 0; i < 5; i++) {
+      const t = i / 4;
+      box(this.group, this.geos, deck, 0.15 + ( -1.9 - 0.15) * t, 0.05, 2.7 + (1.05 - 2.7) * t, 0.55, 0.04, 0.42, 0x8a6a42, 0.95);
+    }
+  }
+  buildShoreWalk() {
+    this.strollers = [
+      { x: -3.4, z: 4.55, shirt: 0x3a6fd8, pants: 0x243044, hair: 0x2a1814, phase: 0.2 },
+      { x: -0.8, z: 4.75, shirt: 0xc45b78, pants: 0x2a2428, hair: 0x1a1214, phase: 1.4 },
+      { x: 1.8, z: 4.5, shirt: 0x3f6f62, pants: 0x2c241c, hair: 0x3a2418, phase: 2.5 },
+      { x: 4.1, z: 4.85, shirt: 0xd4a017, pants: 0x1c2430, hair: 0x24180f, phase: 3.6 }
+    ].map((spot) => {
+      const walker = this.figure({
+        x: spot.x,
+        z: spot.z,
+        yaw: Math.PI / 2,
+        shirt: spot.shirt,
+        pants: spot.pants,
+        hair: spot.hair,
+        scale: 0.98
+      });
+      walker.homeX = spot.x;
+      walker.homeZ = spot.z;
+      walker.phase = spot.phase;
+      return walker;
     });
   }
   buildField() {

@@ -239,8 +239,9 @@ class StampScene {
     ];
     extras.forEach((person, i) => {
       const fig = this.figure(person);
-      fig.position.set(-4.45, 0, 3.15 + i * 0.42);
-      fig.rotation.y = Math.PI / 2;
+      fig.position.set(-4.25, 0, 5.05 + i * 0.36);
+      fig.rotation.y = 0;
+      fig.userData.through = 0;
       this.group.add(fig);
       this.entrants.push(fig);
     });
@@ -302,7 +303,7 @@ class StampScene {
     this.mesh(this.group, new THREE.BoxGeometry(0.1, 0.08, 1.04), this.joint, x, h - 0.04, doorZ);
     const hinge = new THREE.Group();
     hinge.position.set(x, 0, doorZ - 0.42);
-    hinge.rotation.y = -0.7;
+    hinge.rotation.y = -1.2;
     this.mesh(hinge, new THREE.BoxGeometry(0.045, 1.72, 0.8), wood, 0, 0.9, 0.4);
     this.group.add(hinge);
     this.mesh(this.group, new THREE.BoxGeometry(0.08, h, 0.85), this.shell, x, h / 2, 4.45);
@@ -498,8 +499,9 @@ class StampScene {
         person.rotation.y = -Math.PI / 2;
       });
       this.entrants.forEach((person, i) => {
-        person.position.set(-4.45, 0, 3.15 + i * 0.42);
-        person.rotation.y = Math.PI / 2;
+        person.userData.through = 0;
+        person.position.set(-4.25, 0, 5.05 + i * 0.36);
+        person.rotation.y = 0;
       });
     } else {
       const freshMiss = next.findIndex((d, i) => d === "miss" && this.deskState[i] !== "miss");
@@ -619,20 +621,26 @@ class StampScene {
     const freedNow = this.stamped > 0 && this.clocks[this.stamped - 1] >= 0.75;
     const leftNow = freedNow ? this.stamped : Math.max(0, this.stamped - 1);
     this.entrants.forEach((person, j) => {
-      const joined = j < leftNow;
+      const prevIn = j === 0 || this.entrants[j - 1].userData.through === 2;
+      const joined = j < leftNow && prevIn;
       const slot = 10 - leftNow + j;
-      let gx = -4.45;
-      let gz = 3.15 + j * 0.42;
-      let yaw = Math.PI / 2;
-      if (joined && person.position.x < -3.78) {
-        gx = -3.5;
-        gz = 3.5;
-      } else if (joined) {
-        gx = -3.15;
-        gz = 0.15 + slot * 0.46;
-        yaw = -Math.PI / 2;
+      const lineZ = 0.15 + slot * 0.46;
+      if (person.userData.through === 2) {
+        this.stepPerson(person, -3.15, lineZ, -Math.PI / 2, ease, t, reduced, j + 3);
+        return;
       }
-      this.stepPerson(person, gx, gz, yaw, ease, t, reduced, j + 3);
+      if (!joined) {
+        person.userData.through = 0;
+        this.stepPerson(person, -4.25, 5.05 + j * 0.36, 0, ease, t, reduced, j + 3);
+        return;
+      }
+      if (!person.userData.through) {
+        this.stepPerson(person, -4.12, 3.5, 0, ease, t, reduced, j + 3);
+        if (Math.hypot(person.position.x + 4.12, person.position.z - 3.5) < 0.18) person.userData.through = 1;
+      } else if (person.userData.through === 1) {
+        this.stepPerson(person, -3.32, 3.5, Math.PI / 2, ease, t, reduced, j + 3);
+        if (person.position.x > -3.48) person.userData.through = 2;
+      }
     });
     const ticket = Math.min(6, this.stamped + 1);
     this.paintCounter(this.tvCounter, ticket);

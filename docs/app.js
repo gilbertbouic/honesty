@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg67";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg73";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg61";
 import { FairScene } from "./fair.js?v=vg71";
@@ -2046,7 +2046,7 @@ function renderTender() {
     <div class="side-foot">
       ${result ? `
         ${bidRows}
-        ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">${L("nextReno")}</button>` : (roundOneCleared(state.results, state.contractorId) ? `<button type="button" class="cta" id="open-whistle" style="margin-top:.75rem;background:var(--amber)">${L("openBrief")}</button>` : `<p style="margin:.5rem 0 0;font-size:.8rem;color:var(--crimson)">${L("noSweep")}</p>`)}
+        ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">${L("nextReno")}</button>` : (roundOneCleared(state.results, state.contractorId) ? `<button type="button" class="cta open-next" id="open-whistle">${L("openBrief")}</button>` : `<p style="margin:.5rem 0 0;font-size:.8rem;color:var(--crimson)">${L("noSweep")}</p>`)}
       ` : ""}
     </div>`;
   document.querySelectorAll("[data-house]").forEach((btn) => {
@@ -2125,7 +2125,7 @@ function renderHaven() {
       ${result && remaining ? `<button type="button" class="cta" id="next-haven" style="margin-top:.75rem">${L("nextSignal")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker ${state.havenOutcome === "line" ? "green" : state.havenOutcome === "lamp" ? "amber" : "crimson"}" style="margin:.5rem 0 0">${
         state.havenOutcome === "line" ? L("doneLine") : state.havenOutcome === "lamp" ? L("doneLamp") : L("doneFog")
-      }</p>${roundThreeCleared(state.havenResults) ? `<button type="button" class="cta" id="open-land" style="margin-top:.75rem;background:#e6c36a">${L("openLand")}</button>` : ""}` : ""}
+      }</p>${roundThreeCleared(state.havenResults) ? `<button type="button" class="cta open-next" id="open-land">${L("openLand")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-haven]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2225,7 +2225,7 @@ function renderLand() {
       ${result && remaining ? `<button type="button" class="cta" id="next-land" style="margin-top:.75rem;background:#e6c36a">${L("nextPlot")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.landOutcome === "held" ? "var(--green)" : state.landOutcome === "shift" ? "#e6c36a" : "var(--crimson)"}">${
         state.landOutcome === "held" ? L("doneHeld") : state.landOutcome === "shift" ? L("doneShift") : L("doneLost")
-      }</p>${roundFourCleared(state.landResults) ? `<button type="button" class="cta" id="open-fair" style="margin-top:.75rem;background:#b388ff">${L("openFair")}</button>` : ""}` : ""}
+      }</p>${roundFourCleared(state.landResults) ? `<button type="button" class="cta open-next" id="open-fair">${L("openFair")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-land]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2323,7 +2323,7 @@ function renderFair() {
       ${result && remaining ? `<button type="button" class="cta" id="next-fair" style="margin-top:.75rem;background:#b388ff">${L("nextGate")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.fairOutcome === "fair" ? "var(--green)" : state.fairOutcome === "half" ? "#b388ff" : "var(--crimson)"}">${
         state.fairOutcome === "fair" ? L("doneFair") : state.fairOutcome === "half" ? L("doneHalf") : L("doneBarred")
-      }</p>${roundFiveCleared(state.fairResults) ? `<button type="button" class="cta" id="open-crop" style="margin-top:.75rem;background:#6fbf73">${L("openCrop")}</button>` : ""}` : ""}
+      }</p>${roundFiveCleared(state.fairResults) ? `<button type="button" class="cta open-next" id="open-crop">${L("openCrop")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-fair]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2412,7 +2412,7 @@ function renderCrop() {
       ${result && remaining ? `<button type="button" class="cta" id="next-crop" style="margin-top:.75rem;background:#6fbf73">${L("nextRow")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.cropOutcome === "grown" ? "var(--green)" : state.cropOutcome === "thin" ? "#6fbf73" : "var(--crimson)"}">${
         state.cropOutcome === "grown" ? L("doneGrown") : state.cropOutcome === "thin" ? L("doneThin") : L("doneBare")
-      }</p>` : ""}
+      }</p>${roundSixCleared(state.cropResults) ? `<button type="button" class="cta open-next" id="open-wash">${L("openWash")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-crop]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2430,6 +2430,16 @@ function renderCrop() {
   document.getElementById("next-crop")?.addEventListener("click", () => {
     if (state.cropOutcome !== "open") return;
     state.activeCropId = firstOpenCropId(state.cropResults);
+    persist(state);
+    renderAll();
+  });
+  document.getElementById("open-wash")?.addEventListener("click", () => {
+    if (!roundSixCleared(state.cropResults)) return;
+    state.competition = "wash";
+    state.mobileTab = "tender";
+    state.showOutcome = false;
+    play.classList.add("show-tender");
+    play.classList.remove("show-board");
     persist(state);
     renderAll();
   });
@@ -2491,7 +2501,7 @@ function renderWash() {
       ${result && remaining ? `<button type="button" class="cta" id="next-wash" style="margin-top:.75rem;background:#c9a15a">${L("nextFloor")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.washOutcome === "clean" ? "var(--green)" : state.washOutcome === "thin" ? "#c9a15a" : "var(--crimson)"}">${
         state.washOutcome === "clean" ? L("doneClean") : state.washOutcome === "thin" ? L("doneWashThin") : L("doneWash")
-      }</p>` : ""}
+      }</p>${roundSevenCleared(state.washResults) ? `<button type="button" class="cta open-next" id="open-stamp">${L("openStamp")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-wash]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2509,6 +2519,16 @@ function renderWash() {
   document.getElementById("next-wash")?.addEventListener("click", () => {
     if (state.washOutcome !== "open") return;
     state.activeWashId = firstOpenWashId(state.washResults);
+    persist(state);
+    renderAll();
+  });
+  document.getElementById("open-stamp")?.addEventListener("click", () => {
+    if (!roundSevenCleared(state.washResults)) return;
+    state.competition = "stamp";
+    state.mobileTab = "tender";
+    state.showOutcome = false;
+    play.classList.add("show-tender");
+    play.classList.remove("show-board");
     persist(state);
     renderAll();
   });
@@ -2673,7 +2693,7 @@ function renderCase() {
               state.whistleOutcome === "jail" ? L("doneJail")
               : state.whistleOutcome === "burn" ? L("doneBurn")
               : L("doneExile")
-            }</p>${roundTwoCleared(state.whistleResults) ? `<button type="button" class="cta" id="open-haven" style="margin-top:.75rem;background:var(--rose)">${L("openLine")}</button>` : ""}`}
+            }</p>${roundTwoCleared(state.whistleResults) ? `<button type="button" class="cta open-next" id="open-haven">${L("openLine")}</button>` : ""}`}
       ` : `
         <p class="kicker mute">${L("scoring")}</p>
         <p style="margin:.35rem 0 0;font-size:.8rem">${L("scoringBody", { name: "Ravi" })}</p>
@@ -3077,7 +3097,8 @@ function renderMobileFoot() {
   meta.textContent = L("sheetMeta", { n: foot.n, total: foot.total, score: foot.score });
   go.hidden = !mode;
   go.dataset.mode = mode;
-  go.textContent = mode === "continue" ? L("continue") : mode === "next" ? L("nextStage") : L("resetStage");
+  const openKey = { tender: "openBrief", whistle: "openLine", haven: "openLand", land: "openFair", fair: "openCrop", crop: "openWash", wash: "openStamp" }[state.competition];
+  go.textContent = mode === "continue" ? L("continue") : mode === "next" ? L(openKey || "nextStage") : L("resetStage");
   go.style.background = mode === "reset" ? "var(--crimson)" : mode === "next" ? "var(--green)" : "var(--cyan)";
   go.style.color = mode === "reset" ? "var(--paper)" : "var(--void)";
   if (!resetArmed) {

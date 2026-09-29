@@ -14,6 +14,7 @@ class StampScene {
     this.mats = [];
     this.desks = [];
     this.queue = [];
+    this.seated = [];
     this.competition = "tender";
     this.outcome = "open";
     this.correct = 0;
@@ -38,6 +39,7 @@ class StampScene {
     this.buildHall();
     this.buildDesks();
     this.buildQueue();
+    this.buildSeats();
     this.customer = this.buildCustomer();
     this.group.visible = false;
     scene.add(this.group);
@@ -72,8 +74,9 @@ class StampScene {
   }
 
   buildHall() {
-    const floor = this.mesh(this.group, new THREE.CircleGeometry(8, 48), this.mat(0xd4cbb8, { rough: 1 }), 0, -0.02, 0.6);
+    const floor = this.mesh(this.group, new THREE.PlaneGeometry(14, 12), this.tileMat(), 0, -0.02, 1.1);
     floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
     this.mesh(this.group, new THREE.BoxGeometry(8.6, 2.15, 0.1), this.shell, 0, 1.25, -1.4);
     const sign = this.mesh(this.group, new THREE.PlaneGeometry(5.1, 1.45), this.officeSign(), 0, 1.52, -1.33);
     sign.castShadow = false;
@@ -81,32 +84,30 @@ class StampScene {
     this.flag(3.55, -1);
   }
 
-  officeSign() {
+  tileMat() {
     const canvas = document.createElement("canvas");
-    canvas.width = 1280;
-    canvas.height = 360;
+    canvas.width = 256;
+    canvas.height = 256;
     const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#f4f5f3";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#1a1c1f";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = "700 64px Georgia, 'Times New Roman', serif";
-    ctx.fillText("CIVIL SERVICES", 640, 78);
-    ctx.fillStyle = "#8a847c";
-    ctx.fillRect(390, 118, 500, 3);
-    ctx.fillStyle = "#1a2744";
-    ctx.font = "600 34px Georgia, 'Times New Roman', serif";
-    [
-      "No envelope under the glass.",
-      "The posted fee is the only fee.",
-      "A public stamp is not for sale.",
-    ].forEach((line, i) => ctx.fillText(line, 640, 175 + i * 52));
+    const cells = 4;
+    const size = 256 / cells;
+    for (let y = 0; y < cells; y++) {
+      for (let x = 0; x < cells; x++) {
+        ctx.fillStyle = (x + y) % 2 === 0 ? "#e7dfd0" : "#d3c6b2";
+        ctx.fillRect(x * size, y * size, size, size);
+        ctx.strokeStyle = "#b7aa96";
+        ctx.lineWidth = 6;
+        ctx.strokeRect(x * size + 3, y * size + 3, size - 6, size - 6);
+      }
+    }
     const tex = new THREE.CanvasTexture(canvas);
     tex.colorSpace = THREE.SRGBColorSpace;
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(7, 6);
     tex.anisotropy = 4;
     this.geos.push(tex);
-    const mat = new THREE.MeshBasicMaterial({ map: tex });
+    const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92, metalness: 0.02 });
     this.mats.push(mat);
     return mat;
   }
@@ -224,6 +225,68 @@ class StampScene {
       this.group.add(fig);
       this.queue.push(fig);
     });
+  }
+
+  buildSeats() {
+    const people = [
+      { skin: 0xf3d2b5, cloth: 0x8d3a2f, pants: 0x2c3138, hair: 0x3a2418, skirt: true },
+      { skin: 0x5c3317, cloth: 0x1a2744, pants: 0x1a1c22, hair: 0x14120e, beard: true },
+      { skin: 0xd7b39a, cloth: 0xc47a8a, pants: 0xc47a8a, hair: 0x6b4423, hijab: true, skirt: true },
+      { skin: 0x8d5524, cloth: 0x2a6f7f, pants: 0x243044, hair: 0x1a120c, cap: this.mat(0xf4f1ea, { rough: 0.5 }) },
+      { skin: 0xe8c4a8, cloth: 0x4a5560, pants: 0x3a4048, hair: 0xd5d3cc, scale: 0.9 },
+      { skin: 0x3d2314, cloth: 0xd4a017, pants: 0x1c242c, hair: 0x0e0c0a, wrap: true },
+      { skin: 0xa86b45, cloth: 0xf4f1ea, pants: 0xf4f1ea, hair: 0x2a1810, skirt: true },
+      { skin: 0x6b3a22, cloth: 0x245c8a, pants: 0x1a2744, hair: 0x140e0c, beard: true },
+    ];
+    const wood = this.mat(0x6d4c32, { rough: 0.75 });
+    people.forEach((person, i) => {
+      const x = -4.2;
+      const z = 0.2 + i * 0.55;
+      const chair = new THREE.Group();
+      chair.position.set(x, 0, z);
+      this.mesh(chair, new THREE.BoxGeometry(0.42, 0.05, 0.42), this.shell, 0, 0.42, 0);
+      this.mesh(chair, new THREE.BoxGeometry(0.4, 0.42, 0.04), wood, -0.18, 0.68, 0);
+      [[-0.16, -0.16], [0.16, -0.16], [-0.16, 0.16], [0.16, 0.16]].forEach(([lx, lz]) => {
+        this.mesh(chair, new THREE.BoxGeometry(0.04, 0.4, 0.04), wood, lx, 0.2, lz);
+      });
+      this.group.add(chair);
+      const fig = this.figure(person);
+      fig.position.set(x + 0.02, 0.06, z);
+      fig.rotation.y = -Math.PI / 2;
+      fig.userData.legs.forEach((hip) => { hip.rotation.x = 1.2; });
+      this.group.add(fig);
+      this.seated.push(fig);
+    });
+  }
+
+  officeSign() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1280;
+    canvas.height = 360;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f4f5f3";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#1a1c1f";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "700 64px Georgia, 'Times New Roman', serif";
+    ctx.fillText("CIVIL SERVICES", 640, 78);
+    ctx.fillStyle = "#8a847c";
+    ctx.fillRect(390, 118, 500, 3);
+    ctx.fillStyle = "#1a2744";
+    ctx.font = "600 34px Georgia, 'Times New Roman', serif";
+    [
+      "No envelope under the glass.",
+      "The posted fee is the only fee.",
+      "A public stamp is not for sale.",
+    ].forEach((line, i) => ctx.fillText(line, 640, 175 + i * 52));
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = 4;
+    this.geos.push(tex);
+    const mat = new THREE.MeshBasicMaterial({ map: tex });
+    this.mats.push(mat);
+    return mat;
   }
 
   buildCustomer() {
@@ -350,6 +413,9 @@ class StampScene {
         const sway = Math.sin(t * 1.3 + i) * 0.03;
         person.userData.body.rotation.z = sway;
         person.position.x = -3.15 + Math.sin(t * 0.8 + i) * 0.02;
+      });
+      this.seated.forEach((person, i) => {
+        person.userData.body.rotation.z = Math.sin(t * 1.1 + i) * 0.02;
       });
     }
   }

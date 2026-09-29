@@ -6,7 +6,7 @@ import { LandScene } from "./land.js?v=vg61";
 import { FairScene } from "./fair.js?v=vg71";
 import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg61";
-import { StampScene } from "./stamp.js?v=vg79";
+import { StampScene } from "./stamp.js?v=vg80";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);

@@ -40,6 +40,7 @@ class StampScene {
     this.buildDesks();
     this.buildQueue();
     this.buildSeats();
+    this.buildScreen();
     this.customer = this.buildCustomer();
     this.group.visible = false;
     scene.add(this.group);
@@ -272,6 +273,73 @@ class StampScene {
     });
   }
 
+  buildScreen() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 640;
+    canvas.height = 360;
+    this.matchCanvas = canvas;
+    this.matchCtx = canvas.getContext("2d");
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    this.geos.push(tex);
+    this.matchTex = tex;
+    const screenMat = new THREE.MeshBasicMaterial({ map: tex });
+    this.mats.push(screenMat);
+    const tv = new THREE.Group();
+    tv.position.set(-3.62, 0, 2.12);
+    tv.rotation.y = -0.9;
+    this.mesh(tv, new THREE.BoxGeometry(2.05, 1.24, 0.08), this.joint, 0, 1.22, 0);
+    this.mesh(tv, new THREE.PlaneGeometry(1.9, 1.08), screenMat, 0, 1.22, 0.05);
+    this.mesh(tv, new THREE.BoxGeometry(0.1, 0.62, 0.1), this.joint, 0, 0.31, 0);
+    this.mesh(tv, new THREE.BoxGeometry(0.72, 0.06, 0.36), this.joint, 0, 0.04, 0);
+    this.group.add(tv);
+    this.paintMatch(0);
+  }
+
+  paintMatch(t) {
+    const ctx = this.matchCtx;
+    if (!ctx) return;
+    const w = 640;
+    const h = 360;
+    for (let i = 0; i < 8; i++) {
+      ctx.fillStyle = i % 2 ? "#1a6b32" : "#22843f";
+      ctx.fillRect(i * 80, 0, 80, h);
+    }
+    ctx.strokeStyle = "#f4f5f3";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(16, 16, w - 32, h - 32);
+    ctx.beginPath();
+    ctx.moveTo(w / 2, 16);
+    ctx.lineTo(w / 2, h - 16);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(w / 2, h / 2, 46, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeRect(16, h / 2 - 44, 26, 88);
+    ctx.strokeRect(w - 42, h / 2 - 44, 26, 88);
+    const drawTeam = (spots, color, phase) => {
+      spots.forEach(([px, py], i) => {
+        const x = px * w + Math.sin(t * 1.5 + i + phase) * 16;
+        const y = py * h + Math.cos(t * 1.2 + i) * 10;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 10, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    };
+    drawTeam([[0.18, 0.5], [0.3, 0.28], [0.3, 0.72], [0.46, 0.4], [0.46, 0.62]], "#ea2839", 0);
+    drawTeam([[0.82, 0.5], [0.7, 0.3], [0.7, 0.72], [0.56, 0.38], [0.56, 0.64]], "#1a206d", 2);
+    ctx.fillStyle = "#f7f4ee";
+    ctx.beginPath();
+    ctx.arc(w * (0.5 + Math.sin(t * 0.85) * 0.3), h * (0.5 + Math.sin(t * 1.35) * 0.2), 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#111111";
+    ctx.font = "700 28px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("1  -  0", w / 2, 42);
+    this.matchTex.needsUpdate = true;
+  }
+
   officeSign() {
     const canvas = document.createElement("canvas");
     canvas.width = 1280;
@@ -456,6 +524,7 @@ class StampScene {
         person.userData.body.rotation.z = Math.sin(t * 1.1 + i) * 0.02;
       });
     }
+    this.paintMatch(reduced ? 0 : t);
   }
 
   dispose() {

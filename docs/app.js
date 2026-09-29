@@ -1893,14 +1893,16 @@ function renderHeader() {
   const wash = state.competition === "wash";
   const stamp = state.competition === "stamp";
   document.getElementById("phase-kicker").textContent = L("projectPhase");
-  document.querySelector('#comp-switch [data-comp="tender"]').textContent = L("tenders");
-  document.querySelector('#comp-switch [data-comp="whistle"]').textContent = L("whistle");
-  document.querySelector('#comp-switch [data-comp="haven"]').textContent = L("haven");
-  document.querySelector('#comp-switch [data-comp="land"]').textContent = L("land");
-  document.querySelector('#comp-switch [data-comp="fair"]').textContent = L("fair");
-  document.querySelector('#comp-switch [data-comp="crop"]').textContent = L("crop");
-  document.querySelector('#comp-switch [data-comp="wash"]').textContent = L("wash");
-  document.querySelector('#comp-switch [data-comp="stamp"]').textContent = L("stamp");
+  document.querySelectorAll(".comp-switch").forEach((bar) => {
+    bar.querySelector('[data-comp="tender"]').textContent = L("tenders");
+    bar.querySelector('[data-comp="whistle"]').textContent = L("whistle");
+    bar.querySelector('[data-comp="haven"]').textContent = L("haven");
+    bar.querySelector('[data-comp="land"]').textContent = L("land");
+    bar.querySelector('[data-comp="fair"]').textContent = L("fair");
+    bar.querySelector('[data-comp="crop"]').textContent = L("crop");
+    bar.querySelector('[data-comp="wash"]').textContent = L("wash");
+    bar.querySelector('[data-comp="stamp"]').textContent = L("stamp");
+  });
   document.getElementById("phase-title").textContent = stamp ? L("phaseStamp") : wash ? L("phaseWash") : crop ? L("phaseCrop") : fair ? L("phaseFair") : land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
   document.getElementById("stat-label").textContent = stamp ? L("stampScore") : wash ? L("washScore") : crop ? L("cropScore") : fair ? L("fairScore") : land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
   const won = state.results.filter((r) => r.winnerId === "you").length;
@@ -1918,7 +1920,7 @@ function renderHeader() {
   const cropOpen = roundFiveCleared(state.fairResults);
   const washOpen = roundSixCleared(state.cropResults);
   const stampOpen = roundSevenCleared(state.washResults);
-  document.querySelectorAll("#comp-switch button").forEach((b) => {
+  document.querySelectorAll(".comp-switch button").forEach((b) => {
     b.classList.toggle("on", b.dataset.comp === state.competition);
     if (b.dataset.comp === "whistle") {
       b.classList.toggle("locked", !swept);
@@ -3157,7 +3159,7 @@ function answer(picked) {
   renderAll();
 }
 
-document.getElementById("comp-switch").addEventListener("click", (e) => {
+document.querySelectorAll(".comp-switch").forEach((bar) => bar.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-comp]");
   if (!btn) return;
   if (btn.dataset.comp === "whistle" && !roundOneCleared(state.results, state.contractorId)) {
@@ -3195,7 +3197,7 @@ document.getElementById("comp-switch").addEventListener("click", (e) => {
   play.classList.remove("show-board");
   persist(state);
   renderAll();
-});
+}));
 document.getElementById("outcome-dismiss").addEventListener("click", () => {
   state.showOutcome = false;
   document.getElementById("outcome").hidden = true;

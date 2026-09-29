@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg89";
 import { HavenScene } from "./haven.js?v=vg48";
-import { LandScene } from "./land.js?v=vg86";
+import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
 import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg61";
@@ -1135,7 +1135,7 @@ class VillageEngine {
     this.oathCorrect = next.oathCorrect || 0;
     this.fairHeld = next.fairHeld || [];
     this.haven.sync(this.competition, this.havenOutcome, this.havenCorrect);
-    this.land.sync(this.competition, this.landOutcome, this.landCorrect, next.landHeld);
+    this.land.sync(this.competition, this.landOutcome, this.landCorrect, next.landHeld, next.landActive, next.landSeen);
     this.fair.sync(this.competition, this.fairOutcome, this.fairCorrect, this.fairHeld);
     this.crop.sync(this.competition, this.cropOutcome, this.cropCorrect);
     this.wash.sync(this.competition, this.washOutcome, this.washCorrect);
@@ -1898,6 +1898,8 @@ function syncPayload() {
     landOutcome: state.landOutcome,
     landCorrect: (state.landResults || []).filter((r) => r.correct).length,
     landHeld: (state.landResults || []).filter((r) => r.correct).map((r) => r.caseId),
+    landActive: state.activeLandId,
+    landSeen: (state.landResults || []).map((r) => r.caseId),
     fairOutcome: state.fairOutcome,
     fairCorrect: (state.fairResults || []).filter((r) => r.correct).length,
     fairHeld: (state.fairResults || []).filter((r) => r.correct).map((r) => r.caseId),

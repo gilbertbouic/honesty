@@ -49,10 +49,13 @@ var LandScene = class {
   fieldMats = [];
   seaMat;
   pageMat;
+  signedMat;
   competition = "tender";
   outcome = "open";
   correct = 0;
   held = [];
+  active = "shore";
+  seen = [];
   constructor(scene) {
     this.buildGround();
     this.rope = this.buildPath();
@@ -77,11 +80,26 @@ var LandScene = class {
     this.group.visible = false;
     scene.add(this.group);
   }
-  sync(competition, outcome, correct, held) {
+  sync(competition, outcome, correct, held, active, seen) {
     this.competition = competition;
     this.outcome = outcome;
     this.correct = correct;
     this.held = Array.isArray(held) ? held : [];
+    this.active = active || "shore";
+    this.seen = Array.isArray(seen) ? seen : [];
+  }
+  tossSheet(sheet, scraps, torn, ease) {
+    const u = (sheet.userData.toss || 0) + ((torn ? 1 : 0) - (sheet.userData.toss || 0)) * ease;
+    sheet.userData.toss = u;
+    sheet.scale.setScalar(u < 0.42 ? 1 : 0.001);
+    scraps.forEach((bit) => {
+      const fly = Math.min(1, Math.max(0, (u - 0.12) / 0.88));
+      bit.scale.setScalar(u < 0.08 ? 0.001 : fly > 0.92 ? 0.2 : 1);
+      bit.position.lerpVectors(bit.userData.home, bit.userData.bin, fly);
+      bit.position.y += Math.sin(fly * Math.PI) * 0.7;
+      bit.rotation.z += ((torn ? bit.userData.spin : 0) - bit.rotation.z) * ease;
+      bit.rotation.x += ((torn ? 0.8 : 0) - bit.rotation.x) * ease;
+    });
   }
   tick(dt, t, reduced) {
     const on = this.competition === "land";
@@ -165,18 +183,15 @@ var LandScene = class {
     this.flood.scale.z += (floodScale - this.flood.scale.z) * ease;
     this.floodMat.color.copy(lost ? CRIMSON : restored ? SEA : FILL);
     this.floodMat.opacity = restored ? 0.08 : lost ? 0.62 : 0.38;
-    const clean = n >= 5 && !lost;
-    this.pageMat.color.copy(clean ? PAPER : lost ? CRIMSON : PAPER);
-    this.pageMat.opacity = clean ? 0.96 : lost ? 0.7 : 0.9;
-    this.signBits.forEach((bit) => {
-      const home = bit.userData.home;
-      const fly = bit.userData.fly;
-      const goal = clean ? home.clone().add(fly) : home;
-      bit.position.lerp(goal, ease);
-      const mat = bit.material;
-      mat.color.copy(CRIMSON);
-      mat.opacity = clean ? 0 : lost ? 0.85 + Math.sin(t * 5) * 0.15 : 1;
-    });
+    this.tossSheet(this.plan, this.planScraps, this.held.includes("split"), ease);
+    const signOn = this.active === "sign" || (this.seen || []).includes("sign");
+    const signHeld = this.held.includes("sign");
+    if (!signOn) {
+      this.signed.scale.setScalar(0.001);
+      this.signScraps.forEach((bit) => bit.scale.setScalar(0.001));
+    } else {
+      this.tossSheet(this.signed, this.signScraps, signHeld, ease);
+    }
     const farmed = n >= 6 && !lost;
     const showWork = farmed ? 0 : 0.95;
     this.bricks.forEach((mesh) => {
@@ -203,7 +218,7 @@ var LandScene = class {
       mat.opacity = warm ? 0.95 : lost ? 0.06 : 0.26;
     });
     if (this.clerk) {
-      const signing = !clean && !lost;
+      const signing = this.active === "sign" && !this.held.includes("sign") && !lost;
       const swing = signing && !reduced ? Math.sin(t * 3.1) * 0.2 : 0;
       const aim = (signing ? -1.05 : -0.35) + swing;
       this.clerk.armR.rotation.x += (aim - this.clerk.armR.rotation.x) * ease;
@@ -242,6 +257,7 @@ var LandScene = class {
       this.floodMat,
       this.seaMat,
       this.pageMat,
+      this.signedMat,
       this.stamp.material
     ];
     for (const m of mats) m.dispose();
@@ -528,29 +544,25 @@ var LandScene = class {
     box(this.group, this.geos, desk, dx + 0.46, 0.34, dz - 0.2, 0.07, 0.68, 0.07, 0x4a382c, 0.96);
     box(this.group, this.geos, desk, dx - 0.46, 0.34, dz + 0.2, 0.07, 0.68, 0.07, 0x4a382c, 0.96);
     box(this.group, this.geos, desk, dx + 0.46, 0.34, dz + 0.2, 0.07, 0.68, 0.07, 0x4a382c, 0.96);
-    const geo = new THREE.BoxGeometry(0.46, 0.012, 0.32);
-    this.geos.push(geo);
-    this.pageMat = new THREE.MeshStandardMaterial({ color: PAPER, roughness: 0.8 });
-    const page = new THREE.Mesh(geo, this.pageMat);
-    page.position.set(dx + 0.08, 0.77, dz);
-    this.group.add(page);
-    const strokes = [
-      { x: -0.08, z: 0.06, w: 0.16, d: 0.02, rot: 0.4 },
-      { x: 0.04, z: 0.01, w: 0.18, d: 0.02, rot: -0.2 },
-      { x: 0.1, z: -0.04, w: 0.12, d: 0.02, rot: 0.5 },
-      { x: 0, z: -0.08, w: 0.22, d: 0.018, rot: 0.05 }
-    ];
-    strokes.forEach((stroke, i) => {
-      const mark = new THREE.BoxGeometry(stroke.w, 0.02, stroke.d);
-      this.geos.push(mark);
-      const bit = new THREE.Mesh(mark, new THREE.MeshStandardMaterial({ color: CRIMSON, roughness: 0.5, transparent: true, opacity: 1 }));
-      bit.position.set(page.position.x + stroke.x, 0.79, page.position.z + stroke.z);
-      bit.rotation.y = stroke.rot;
-      bit.userData.home = bit.position.clone();
-      bit.userData.fly = new THREE.Vector3((i - 1.5) * 0.16, 0.46, 0.1);
-      this.signBits.push(bit);
-      this.group.add(bit);
-    });
+    const planGeo = new THREE.BoxGeometry(1.08, 0.012, 0.56);
+    this.geos.push(planGeo);
+    this.pageMat = new THREE.MeshStandardMaterial({ color: PAPER, roughness: 0.78, map: this.parcelMap() });
+    this.plan = new THREE.Mesh(planGeo, this.pageMat);
+    this.plan.position.set(dx, 0.775, dz);
+    this.plan.userData.toss = 0;
+    this.group.add(this.plan);
+    this.binAt = new THREE.Vector3(dx + 0.86, 0.42, dz + 0.18);
+    this.buildBin(this.binAt.x, this.binAt.z);
+    this.planScraps = this.tornBits(this.plan.position, 8, 0xf4efe4);
+    const signedGeo = new THREE.BoxGeometry(0.96, 0.012, 0.5);
+    this.geos.push(signedGeo);
+    this.signedMat = new THREE.MeshStandardMaterial({ color: PAPER, roughness: 0.78, map: this.signatureMap() });
+    this.signed = new THREE.Mesh(signedGeo, this.signedMat);
+    this.signed.position.set(dx, 0.8, dz);
+    this.signed.userData.toss = 0;
+    this.signed.scale.setScalar(0.001);
+    this.group.add(this.signed);
+    this.signScraps = this.tornBits(this.signed.position, 6, 0xf7f1e4);
     box(this.group, this.geos, desk, dx, 0.42, dz - 0.48, 0.42, 0.06, 0.4, 0x4a382c, 0.96);
     box(this.group, this.geos, desk, dx, 0.72, dz - 0.66, 0.42, 0.36, 0.06, 0x4a382c, 0.96);
     this.clerk = this.figure({
@@ -571,6 +583,103 @@ var LandScene = class {
     pen.position.set(0.02, -0.42, 0.04);
     pen.rotation.x = 1.2;
     this.clerk.armR.add(pen);
+  }
+  parcelMap() {
+    const c = document.createElement("canvas");
+    c.width = 640;
+    c.height = 360;
+    const g = c.getContext("2d");
+    g.fillStyle = "#f4efe4";
+    g.fillRect(0, 0, 640, 360);
+    const cols = 5;
+    const rows = 4;
+    const pad = 18;
+    const cw = (640 - pad * 2) / cols;
+    const ch = (360 - pad * 2) / rows;
+    g.strokeStyle = "#1c2a44";
+    g.lineWidth = 3;
+    g.font = "28px Georgia";
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    let n = 1;
+    for (let r = 0; r < rows; r++) {
+      for (let col = 0; col < cols; col++) {
+        const x = pad + col * cw;
+        const y = pad + r * ch;
+        g.fillStyle = (r + col) % 2 ? "#e7efe4" : "#f7f4ee";
+        g.fillRect(x + 2, y + 2, cw - 4, ch - 4);
+        g.strokeRect(x, y, cw, ch);
+        g.fillStyle = "#1c2a44";
+        g.fillText(String(n), x + cw / 2, y + ch / 2);
+        n += 1;
+      }
+    }
+    g.strokeStyle = "#1c2a44";
+    g.lineWidth = 8;
+    g.strokeRect(6, 6, 628, 348);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    this.geos.push(tex);
+    return tex;
+  }
+  signatureMap() {
+    const c = document.createElement("canvas");
+    c.width = 640;
+    c.height = 360;
+    const g = c.getContext("2d");
+    g.fillStyle = "#f7f1e4";
+    g.fillRect(0, 0, 640, 360);
+    g.strokeStyle = "#c8bfb0";
+    g.lineWidth = 2;
+    for (let i = 0; i < 6; i++) {
+      const y = 48 + i * 42;
+      g.beginPath();
+      g.moveTo(36, y);
+      g.lineTo(604, y);
+      g.stroke();
+    }
+    g.strokeStyle = "#1a2744";
+    g.lineWidth = 5;
+    g.lineCap = "round";
+    g.beginPath();
+    g.moveTo(90, 250);
+    g.bezierCurveTo(160, 140, 210, 300, 280, 190);
+    g.bezierCurveTo(340, 100, 390, 280, 470, 170);
+    g.bezierCurveTo(510, 130, 540, 210, 575, 160);
+    g.stroke();
+    g.font = "22px Georgia";
+    g.fillStyle = "#6a6258";
+    g.fillText("signed", 48, 40);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    this.geos.push(tex);
+    return tex;
+  }
+  buildBin(x, z) {
+    const parts = { fills: [] };
+    box(this.group, this.geos, parts, x, 0.28, z, 0.34, 0.42, 0.34, 0x2a3038, 0.98);
+    box(this.group, this.geos, parts, x, 0.5, z, 0.38, 0.04, 0.38, 0x1a1e24, 0.98);
+    box(this.group, this.geos, parts, x, 0.46, z, 0.26, 0.02, 0.26, 0x0e1114, 0.98);
+  }
+  tornBits(origin, count, color) {
+    const bits = [];
+    for (let i = 0; i < count; i++) {
+      const w = 0.16 + (i % 3) * 0.05;
+      const d = 0.1 + (i % 2) * 0.04;
+      const geo = new THREE.BoxGeometry(w, 0.012, d);
+      this.geos.push(geo);
+      const bit = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, roughness: 0.85 }));
+      const ox = ((i % 4) - 1.5) * 0.18;
+      const oz = (Math.floor(i / 4) - 0.5) * 0.16;
+      bit.position.set(origin.x + ox, origin.y + 0.02, origin.z + oz);
+      bit.userData.home = bit.position.clone();
+      bit.userData.bin = this.binAt.clone().add(new THREE.Vector3((i % 3 - 1) * 0.04, 0.08, (i % 2) * 0.04));
+      bit.userData.spin = (i % 2 ? 1 : -1) * (1.2 + i * 0.15);
+      bit.scale.setScalar(0.001);
+      this.group.add(bit);
+      bits.push(bit);
+    }
+    return bits;
   }
   folkMat(color) {
     const m = new THREE.MeshStandardMaterial({ color, roughness: 0.62, metalness: 0.04 });

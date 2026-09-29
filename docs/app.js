@@ -3,7 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg67";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg61";
-import { FairScene } from "./fair.js?v=vg62";
+import { FairScene } from "./fair.js?v=vg71";
 import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg61";
 import { StampScene } from "./stamp.js?v=vg67";
@@ -1110,7 +1110,7 @@ class VillageEngine {
     if (this.competition === "fair") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      this.aimStage(new THREE.Vector3(0, 1.15, 0.15), view, 2.6);
+      this.aimStage(new THREE.Vector3(0.05, 1.15, 0.35), view, 1.7);
       return;
     }
     if (this.competition === "land") {

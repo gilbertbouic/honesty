@@ -27,7 +27,7 @@ class FairScene {
 
     this.buildPlaza();
     this.buildGates();
-    this.core = this.buildCore();
+    this.core = this.buildShop();
     this.coreMat = this.core.material;
     this.group.visible = false;
     scene.add(this.group);
@@ -261,32 +261,107 @@ class FairScene {
     });
   }
 
-  buildCore() {
-    const g = new THREE.Group();
-    const post = this.addBox(0, 0.7, 0, 0.22, 1.4, 0.22, SHELL, 1, g, { rough: 0.4, metal: 0.08 });
-    const geo = new THREE.BoxGeometry(0.12, 0.42, 0.04);
-    this.geos.push(geo);
-    const mat = this.mat(IRIS, { rough: 0.2, metal: 0.4, emissive: IRIS, ei: 0.45 });
-    const core = new THREE.Mesh(geo, mat);
-    core.position.set(0, 1.15, 0.12);
-    g.add(core);
-    const scales = new THREE.Group();
-    scales.position.y = 1.42;
-    const beam = new THREE.Group();
-    this.group.add(scales);
-    scales.add(beam);
-    this.addBox(0, 0.28, 0, 0.06, 0.36, 0.06, JOINT, 1, scales, { metal: 0.4 });
-    this.addBox(0, 0.46, 0, 0.9, 0.05, 0.05, JOINT, 1, beam, { metal: 0.45 });
-    [-0.4, 0.4].forEach((x) => {
-      this.addBox(x, 0.28, 0, 0.015, 0.32, 0.015, JOINT, 1, beam, { metal: 0.3 });
-      this.addBox(x, 0.1, 0, 0.16, 0.03, 0.16, SHELL, 1, beam, { metal: 0.2, rough: 0.35 });
+  buildShop() {
+    const shop = new THREE.Group();
+    const wood = 0x6d4c32;
+    const wall = 0xe7e0d4;
+    this.addBox(0, 0.03, 0.1, 2.35, 0.05, 2.05, 0xc4b39a, 1, shop, { rough: 0.92 });
+    this.addBox(0, 1.25, -0.78, 2.2, 2.35, 0.08, wall, 1, shop, { rough: 0.62 });
+    this.addBox(-1.08, 1.15, -0.05, 0.08, 2.15, 1.45, wall, 1, shop, { rough: 0.62 });
+    this.addBox(1.08, 1.15, -0.05, 0.08, 2.15, 1.45, wall, 1, shop, { rough: 0.62 });
+    this.addBox(0, 2.28, -0.15, 2.35, 0.08, 1.7, 0xb7522d, 1, shop, { rough: 0.55 });
+    this.addBox(0, 0.28, 0.18, 1.85, 0.48, 0.58, wood, 1, shop, { rough: 0.72 });
+    this.addBox(0, 0.55, 0.18, 1.98, 0.07, 0.7, 0xf4f1ea, 1, shop, { rough: 0.4 });
+
+    this.addBox(0, 1.72, -0.66, 1.7, 0.045, 0.28, wood, 1, shop, { rough: 0.6 });
+    [0xf7f4ee, 0xc4312e, 0xe6c36a, 0x1a1c1f, 0xf4f1ea, 0x8d3a2f].forEach((color, i) => {
+      this.addBox(-0.7 + i * 0.26, 1.84, -0.66, 0.16, 0.2, 0.08, color, 1, shop, { rough: 0.48 });
+      this.addBox(-0.7 + i * 0.26, 1.84, -0.66, 0.16, 0.035, 0.082, 0xd4a017, 1, shop, { metal: 0.35, rough: 0.35 });
     });
-    this.scaleBeam = beam;
-    g.position.y = 0;
-    this.group.add(g);
-    this.coreRig = g;
-    this.post = post;
-    return core;
+
+    this.addBox(0, 1.18, -0.66, 1.7, 0.045, 0.32, wood, 1, shop, { rough: 0.6 });
+    [0xc47a2a, 0x1f6b45, 0x7a2430, 0xe6c36a, 0x2a5c4a, 0x8a3038].forEach((color, i) => {
+      const bottle = new THREE.Group();
+      bottle.position.set(-0.68 + i * 0.26, 1.32, -0.66);
+      shop.add(bottle);
+      const glass = this.mat(color, { rough: 0.18, metal: 0.08, opacity: 0.92 });
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.05, 0.2, 8), glass);
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.02, 0.07, 8), glass);
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.03, 8), this.mat(0x1a1c1f, { metal: 0.5, rough: 0.35 }));
+      this.geos.push(body.geometry, neck.geometry, cap.geometry);
+      neck.position.y = 0.12;
+      cap.position.y = 0.165;
+      bottle.add(body, neck, cap);
+    });
+
+    this.elder = new THREE.Group();
+    this.elder.position.set(-0.08, 0, -0.22);
+    shop.add(this.elder);
+    this.addBox(0, 0.42, 0, 0.38, 0.06, 0.34, 0x3a2c22, 1, this.elder, { rough: 0.8 });
+    this.addBox(0, 0.2, 0, 0.08, 0.38, 0.08, 0x2a2118, 1, this.elder, { rough: 0.8 });
+    this.elderLean = new THREE.Group();
+    this.elderLean.position.set(0, 0.46, 0.04);
+    this.elderLean.rotation.x = 0.22;
+    this.elder.add(this.elderLean);
+    const shirt = this.mat(0x3a4550, { rough: 0.6 });
+    const skin = this.mat(0xd8c4ae, { rough: 0.7 });
+    const hair = this.mat(0xd5d3cc, { rough: 0.55 });
+    const pants = this.mat(0x2c3138, { rough: 0.65 });
+    this.addBox(0, 0.22, 0, 0.38, 0.3, 0.18, shirt.color.getHex(), 1, this.elderLean, { rough: 0.6 });
+    this.addBox(-0.16, 0.08, 0.12, 0.08, 0.06, 0.22, skin.color.getHex(), 1, this.elderLean, { rough: 0.7 });
+    this.addBox(0.16, 0.08, 0.12, 0.08, 0.06, 0.22, skin.color.getHex(), 1, this.elderLean, { rough: 0.7 });
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 10), skin);
+    head.position.set(0, 0.48, 0.02);
+    this.geos.push(head.geometry);
+    this.elderLean.add(head);
+    const crown = new THREE.Mesh(new THREE.SphereGeometry(0.115, 10, 8), hair);
+    crown.position.set(0, 0.54, -0.01);
+    crown.scale.y = 0.55;
+    this.geos.push(crown.geometry);
+    this.elderLean.add(crown);
+    const beard = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), hair);
+    beard.position.set(0, 0.4, 0.07);
+    beard.scale.set(0.85, 0.7, 0.6);
+    this.geos.push(beard.geometry);
+    this.elderLean.add(beard);
+    this.addBox(-0.07, 0.02, 0.08, 0.07, 0.16, 0.08, pants.color.getHex(), 1, this.elder, { rough: 0.65 });
+    this.addBox(0.07, 0.02, 0.08, 0.07, 0.16, 0.08, pants.color.getHex(), 1, this.elder, { rough: 0.65 });
+
+    this.assistant = new THREE.Group();
+    this.assistant.position.set(0.42, 0, 1.02);
+    this.assistant.rotation.y = Math.PI;
+    shop.add(this.assistant);
+    const apron = this.mat(0xf4f1ea, { rough: 0.55 });
+    const cloth = this.mat(0x245c8a, { rough: 0.55 });
+    const aSkin = this.mat(0xc48a62, { rough: 0.65 });
+    const aHair = this.mat(0x2a1810, { rough: 0.5 });
+    this.addBox(0, 0.28, 0, 0.1, 0.42, 0.1, 0x1c2430, 1, this.assistant, { rough: 0.6 });
+    this.addBox(-0.1, 0.28, 0, 0.1, 0.42, 0.1, 0x1c2430, 1, this.assistant, { rough: 0.6 });
+    this.addBox(0, 0.66, 0, 0.32, 0.34, 0.16, cloth.color.getHex(), 1, this.assistant, { rough: 0.55 });
+    this.addBox(0, 0.58, 0.06, 0.22, 0.28, 0.04, apron.color.getHex(), 1, this.assistant, { rough: 0.5 });
+    const aHead = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 10), aSkin);
+    aHead.position.set(0, 0.98, 0);
+    this.geos.push(aHead.geometry);
+    this.assistant.add(aHead);
+    const aCrown = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 6), aHair);
+    aCrown.position.set(0, 1.05, -0.02);
+    aCrown.scale.y = 0.6;
+    this.geos.push(aCrown.geometry);
+    this.assistant.add(aCrown);
+
+    const lamp = new THREE.Group();
+    lamp.position.set(0.72, 0.64, 0.22);
+    const bulb = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.06, 0.04),
+      this.mat(IRIS, { rough: 0.2, metal: 0.35, emissive: IRIS, ei: 0.55 }),
+    );
+    this.geos.push(bulb.geometry);
+    lamp.add(bulb);
+    shop.add(lamp);
+    this.coreRig = lamp;
+    this.scaleBeam = null;
+    this.group.add(shop);
+    return bulb;
   }
 
   sync(competition, outcome, correct, held) {
@@ -322,7 +397,8 @@ class FairScene {
     this.coreMat.emissiveIntensity = fair ? 0.9 : 0.35 + (reduced ? 0 : Math.sin(t * 2) * 0.12);
     const tilt = fair ? 0 : barred ? 0.42 : (3 - lit) * 0.04;
     if (this.scaleBeam) this.scaleBeam.rotation.z += (tilt - this.scaleBeam.rotation.z) * ease;
-    this.coreRig.rotation.y = reduced ? 0.4 : t * 0.15;
+    if (!reduced && this.assistant) this.assistant.rotation.y = Math.PI + Math.sin(t * 0.8) * 0.06;
+    if (this.elderLean) this.elderLean.rotation.x = 0.22 + (reduced ? 0 : Math.sin(t * 0.6) * 0.03);
   }
 
   dispose() {

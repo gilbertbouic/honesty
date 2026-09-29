@@ -251,9 +251,22 @@ class StampScene {
       });
       this.group.add(chair);
       const fig = this.figure(person);
-      fig.position.set(x + 0.02, 0.06, z);
+      fig.position.set(x + 0.04, 0.1, z);
       fig.rotation.y = -Math.PI / 2;
-      fig.userData.legs.forEach((hip) => { hip.rotation.x = 1.2; });
+      const s = person.scale ?? 1;
+      fig.userData.legs.forEach((hip) => {
+        hip.rotation.x = -Math.PI / 2;
+        hip.children.forEach((child) => {
+          if (child.geometry && child.geometry.type === "BoxGeometry") child.visible = false;
+        });
+        const shin = new THREE.Group();
+        shin.position.set(0, -0.2 * s, 0);
+        shin.rotation.x = Math.PI / 2;
+        const cloth = hip.children[0].material;
+        this.mesh(shin, new THREE.CapsuleGeometry(0.04 * s, 0.18 * s, 3, 5), cloth, 0, -0.14 * s, 0);
+        this.mesh(shin, new THREE.BoxGeometry(0.08 * s, 0.035 * s, 0.12 * s), this.joint, 0, -0.28 * s, 0.03 * s);
+        hip.add(shin);
+      });
       this.group.add(fig);
       this.seated.push(fig);
     });

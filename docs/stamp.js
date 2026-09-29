@@ -40,6 +40,7 @@ class StampScene {
     this.buildDesks();
     this.buildQueue();
     this.buildSeats();
+    this.buildDivider();
     this.buildScreen();
     this.customer = this.buildCustomer();
     this.group.visible = false;
@@ -83,6 +84,7 @@ class StampScene {
     sign.castShadow = false;
     this.flag(-3.55, 1);
     this.flag(3.55, -1);
+    this.clerkCounter = this.numberBox(0, 2.18, -1.3, 0);
   }
 
   tileMat() {
@@ -273,6 +275,54 @@ class StampScene {
     });
   }
 
+  buildDivider() {
+    const x = -3.68;
+    const h = 2.05;
+    const wood = this.mat(0x6d4c32, { rough: 0.7 });
+    this.mesh(this.group, new THREE.BoxGeometry(0.08, h, 3.15), this.shell, x, h / 2, 1.05);
+    const doorZ = 3.5;
+    this.mesh(this.group, new THREE.BoxGeometry(0.1, h, 0.08), this.joint, x, h / 2, doorZ - 0.48);
+    this.mesh(this.group, new THREE.BoxGeometry(0.1, h, 0.08), this.joint, x, h / 2, doorZ + 0.48);
+    this.mesh(this.group, new THREE.BoxGeometry(0.1, 0.08, 1.04), this.joint, x, h - 0.04, doorZ);
+    const hinge = new THREE.Group();
+    hinge.position.set(x, 0, doorZ - 0.42);
+    hinge.rotation.y = -0.7;
+    this.mesh(hinge, new THREE.BoxGeometry(0.045, 1.72, 0.8), wood, 0, 0.9, 0.4);
+    this.group.add(hinge);
+    this.mesh(this.group, new THREE.BoxGeometry(0.08, h, 0.85), this.shell, x, h / 2, 4.45);
+  }
+
+  numberBox(x, y, z, rotY) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 96;
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    this.geos.push(tex);
+    const mat = new THREE.MeshBasicMaterial({ map: tex });
+    this.mats.push(mat);
+    const box = new THREE.Group();
+    box.position.set(x, y, z);
+    box.rotation.y = rotY;
+    this.mesh(box, new THREE.BoxGeometry(0.72, 0.32, 0.06), this.joint, 0, 0, 0);
+    this.mesh(box, new THREE.PlaneGeometry(0.62, 0.22), mat, 0, 0, 0.04);
+    this.group.add(box);
+    return { canvas, ctx: canvas.getContext("2d"), tex };
+  }
+
+  paintCounter(counter, n) {
+    if (!counter) return;
+    const ctx = counter.ctx;
+    ctx.fillStyle = "#0c0e12";
+    ctx.fillRect(0, 0, 256, 96);
+    ctx.fillStyle = "#ff3b30";
+    ctx.font = "700 72px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(String(n).padStart(3, "0"), 128, 50);
+    counter.tex.needsUpdate = true;
+  }
+
   buildScreen() {
     const canvas = document.createElement("canvas");
     canvas.width = 640;
@@ -286,13 +336,14 @@ class StampScene {
     const screenMat = new THREE.MeshBasicMaterial({ map: tex });
     this.mats.push(screenMat);
     const tv = new THREE.Group();
-    tv.position.set(-3.62, 0, 2.12);
-    tv.rotation.y = -0.9;
+    tv.position.set(-5.65, 0, 2.12);
+    tv.rotation.y = Math.PI / 2;
     this.mesh(tv, new THREE.BoxGeometry(2.05, 1.24, 0.08), this.joint, 0, 1.22, 0);
     this.mesh(tv, new THREE.PlaneGeometry(1.9, 1.08), screenMat, 0, 1.22, 0.05);
     this.mesh(tv, new THREE.BoxGeometry(0.1, 0.62, 0.1), this.joint, 0, 0.31, 0);
     this.mesh(tv, new THREE.BoxGeometry(0.72, 0.06, 0.36), this.joint, 0, 0.04, 0);
     this.group.add(tv);
+    this.tvCounter = this.numberBox(-5.65, 2.15, 2.12, Math.PI / 2);
     this.paintMatch(0);
   }
 
@@ -426,6 +477,10 @@ class StampScene {
         this.customer.position.set(this.deskX(0), 0, 0.95);
         this.customer.rotation.y = Math.PI;
       }
+      this.queue.forEach((person, i) => {
+        person.position.set(-3.15, 0, 0.15 + i * 0.46);
+        person.rotation.y = -Math.PI / 2;
+      });
     } else {
       const freshMiss = next.findIndex((d, i) => d === "miss" && this.deskState[i] !== "miss");
       if (freshMiss >= 0) {
@@ -515,15 +570,30 @@ class StampScene {
       item.screen.material.emissive.set(held ? 0x143024 : 0x1a2830);
     });
     if (!reduced) {
-      this.queue.forEach((person, i) => {
-        const sway = Math.sin(t * 1.3 + i) * 0.03;
-        person.userData.body.rotation.z = sway;
-        person.position.x = -3.15 + Math.sin(t * 0.8 + i) * 0.02;
-      });
       this.seated.forEach((person, i) => {
         person.userData.body.rotation.z = Math.sin(t * 1.1 + i) * 0.02;
       });
     }
+    this.queue.forEach((person, i) => {
+      const freed = this.stamped > 0 && this.clocks[this.stamped - 1] >= 0.75;
+      const called = i < this.stamped - 1 || (i === this.stamped - 1 && freed);
+      const slot = called ? i : i - this.stamped;
+      const gx = called ? this.deskX(i) : -3.15;
+      const gz = called ? 0.95 : 0.15 + slot * 0.46;
+      const mx = gx - person.position.x;
+      const mz = gz - person.position.z;
+      const walking = Math.hypot(mx, mz) > 0.05;
+      person.position.x += mx * ease;
+      person.position.z += mz * ease;
+      this.face(person, called ? Math.PI : -Math.PI / 2, ease);
+      const pace = walking && !reduced ? Math.sin(t * 9 + i) * 0.65 : reduced ? 0 : Math.sin(t * 1.3 + i) * 0.04;
+      person.userData.legs[0].rotation.x = pace;
+      person.userData.legs[1].rotation.x = -pace;
+      if (!walking && !reduced) person.userData.body.rotation.z = Math.sin(t * 1.3 + i) * 0.03;
+    });
+    const ticket = Math.min(6, this.stamped + 1);
+    this.paintCounter(this.tvCounter, ticket);
+    this.paintCounter(this.clerkCounter, ticket);
     this.paintMatch(reduced ? 0 : t);
   }
 

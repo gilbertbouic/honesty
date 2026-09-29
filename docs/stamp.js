@@ -559,7 +559,7 @@ class StampScene {
     let goalZ = 0.95;
     if (perfect && !stamping) {
       goalX = 0;
-      goalZ = 1.35;
+      goalZ = 3.6;
     } else if (this.rejecting) {
       goalX = this.rear.x;
       goalZ = this.rear.z;

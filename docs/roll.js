@@ -24,15 +24,15 @@ class RollScene {
     this.ink = this.mat(RED, { rough: 0.4 });
     this.wood = this.mat(0x6d4c32, { rough: 0.72 });
     this.buildHall();
-    this.officer = this.person({ skin: 0xd7b39a, cloth: 0x1a2744, pants: 0x1a1c22, hair: 0x2a1810, tie: true }, -0.55, -1.02, 0);
-    this.escort = this.person({ skin: 0x8d5524, cloth: 0x1a2744, pants: 0x1c242c, hair: 0x1a120c, tie: true }, 0.95, -0.72, 0);
-    this.neighbour = this.person({ skin: 0xc48a62, cloth: 0xc45c26, pants: 0x1c242c, hair: 0x1a120c, cap: this.mat(0xf0c030, { rough: 0.5 }), beard: true }, -1.55, 1.28, Math.PI);
-    this.cousin = this.person({ skin: 0xf0c7a0, cloth: 0x245c8a, pants: 0x1c2430, hair: 0x3a2418, skirt: true }, -0.72, 1.48, Math.PI);
-    this.payer = this.person({ skin: 0x5c3317, cloth: 0x3a3148, pants: 0x1a1c22, hair: 0x14120e, beard: true }, -1.85, 1.72, Math.PI);
-    this.voter = this.person({ skin: 0xe8c4a8, cloth: 0x3f6f62, pants: 0x2c241c, hair: 0x6b4423 }, 0.15, 1.62, Math.PI);
-    this.driver = this.person({ skin: 0x3d2314, cloth: 0x1a1c22, pants: 0x243044, hair: 0x0e0c0a, cap: this.mat(0x14161c, { rough: 0.45 }) }, -1.95, 1.22, 0.9);
-    this.boothVoter = this.person({ skin: 0xa86b45, cloth: 0xc45b78, pants: 0xc45b78, hair: 0x2a1810, skirt: true }, 1.88, 0.02, Math.PI);
-    this.helper = this.person({ skin: 0xc48a62, cloth: 0x4a5560, pants: 0x2c3138, hair: 0xd5d3cc, scale: 0.96 }, 1.22, 0.88, -2.4);
+    this.officer = this.person({ skin: 0xd7b39a, cloth: 0x1a2744, pants: 0x1a1c22, hair: 0x2a1810, tie: true }, -0.4, -0.82, 0);
+    this.escort = this.person({ skin: 0x8d5524, cloth: 0x1a2744, pants: 0x1c242c, hair: 0x1a120c, tie: true }, 0.62, -0.42, 0);
+    this.neighbour = this.person({ skin: 0xc48a62, cloth: 0xc45c26, pants: 0x1c242c, hair: 0x1a120c, cap: this.mat(0xf0c030, { rough: 0.5 }), beard: true }, -1.12, 0.88, Math.PI);
+    this.cousin = this.person({ skin: 0xf0c7a0, cloth: 0x245c8a, pants: 0x1c2430, hair: 0x3a2418, skirt: true }, -0.4, 0.96, Math.PI);
+    this.payer = this.person({ skin: 0x5c3317, cloth: 0x3a3148, pants: 0x1a1c22, hair: 0x14120e, beard: true }, -1.32, 1.0, Math.PI);
+    this.voter = this.person({ skin: 0xe8c4a8, cloth: 0x3f6f62, pants: 0x2c241c, hair: 0x6b4423 }, 0.18, 0.96, Math.PI);
+    this.driver = this.person({ skin: 0x3d2314, cloth: 0x1a1c22, pants: 0x243044, hair: 0x0e0c0a, cap: this.mat(0x14161c, { rough: 0.45 }) }, -1.22, 0.52, 0.9);
+    this.boothVoter = this.person({ skin: 0xa86b45, cloth: 0xc45b78, pants: 0xc45b78, hair: 0x2a1810, skirt: true }, 1.12, 0.0, Math.PI);
+    this.helper = this.person({ skin: 0xc48a62, cloth: 0x4a5560, pants: 0x2c3138, hair: 0xd5d3cc, scale: 0.96 }, 0.88, 0.52, -2.4);
     this.buildQueue();
     this.pencil = this.prop(0.018, 0.18, 0.018, 0xf0c030);
     this.sheetA = this.prop(0.18, 0.01, 0.24, 0xf7f4ee);
@@ -47,7 +47,7 @@ class RollScene {
     this.photoCard = this.prop(0.1, 0.07, 0.008, 0xfff6df);
     this.photoCard.scale.setScalar(0.01);
     this.flash = new THREE.PointLight(0xfff1c9, 0, 2.6);
-    this.flash.position.set(1.9, 1.35, 0.2);
+    this.flash.position.set(1.15, 1.2, 0.12);
     this.group.add(this.flash);
     this.group.visible = false;
     scene.add(this.group);
@@ -146,25 +146,25 @@ class RollScene {
   }
 
   buildHall() {
-    const floor = this.mesh(this.group, new THREE.PlaneGeometry(8.4, 6.8), this.tile(), 0, -0.02, 0.45);
+    const floor = this.mesh(this.group, new THREE.PlaneGeometry(5.2, 4.0), this.tile(), 0, -0.02, 0.08);
     floor.rotation.x = -Math.PI / 2;
-    this.mesh(this.group, new THREE.BoxGeometry(7.4, 2.2, 0.1), this.shell, 0, 1.2, -1.5);
-    this.mesh(this.group, new THREE.PlaneGeometry(4.4, 0.95), this.sign("POLLING STATION", "One roll. One vote."), 0, 1.72, -1.43);
-    this.flag(-3.05);
-    this.flag(3.05);
-    this.mesh(this.group, new THREE.BoxGeometry(1.55, 0.08, 0.72), this.wood, -0.5, 0.76, -0.72);
-    this.book = this.mesh(this.group, new THREE.BoxGeometry(0.48, 0.07, 0.32), this.mat(0x1a2744, { rough: 0.5 }), -0.42, 0.86, -0.7);
-    this.mesh(this.book, new THREE.BoxGeometry(0.5, 0.02, 0.06), this.ink, 0, 0.04, 0.1);
-    this.mesh(this.group, new THREE.BoxGeometry(0.42, 0.62, 0.42), this.joint, 0.48, 0.34, -0.22);
-    this.box = this.mesh(this.group, new THREE.BoxGeometry(0.4, 0.28, 0.4), this.mat(0xf4f1ea, { rough: 0.45 }), 0.48, 0.78, -0.22);
-    this.seal = this.mesh(this.box, new THREE.BoxGeometry(0.16, 0.035, 0.16), this.ink, 0, 0.16, 0);
-    this.mesh(this.group, new THREE.BoxGeometry(0.08, 1.55, 0.08), this.shell, 1.42, 0.82, -0.48);
-    this.mesh(this.group, new THREE.BoxGeometry(0.08, 1.55, 0.9), this.shell, 1.42, 0.82, 0.02);
-    this.mesh(this.group, new THREE.BoxGeometry(0.08, 1.55, 0.9), this.mat(0x1a206d, { rough: 0.55 }), 2.32, 0.82, 0.02);
-    this.mesh(this.group, new THREE.BoxGeometry(0.08, 0.08, 0.98), this.shell, 1.87, 1.56, 0.02);
-    this.post(-1.65, 0.95);
-    this.post(0.85, 0.95);
-    this.mesh(this.group, new THREE.BoxGeometry(2.5, 0.025, 0.025), this.ink, -0.4, 0.72, 0.95);
+    this.mesh(this.group, new THREE.BoxGeometry(4.9, 2.05, 0.1), this.shell, 0, 1.1, -1.12);
+    this.mesh(this.group, new THREE.PlaneGeometry(3.1, 0.72), this.sign("POLLING STATION", "One roll. One vote."), 0, 1.5, -1.05);
+    this.flag(-1.85);
+    this.flag(1.85);
+    this.mesh(this.group, new THREE.BoxGeometry(1.25, 0.07, 0.58), this.wood, -0.38, 0.7, -0.55);
+    this.book = this.mesh(this.group, new THREE.BoxGeometry(0.42, 0.06, 0.28), this.mat(0x1a2744, { rough: 0.5 }), -0.32, 0.78, -0.52);
+    this.mesh(this.book, new THREE.BoxGeometry(0.44, 0.018, 0.05), this.ink, 0, 0.035, 0.08);
+    this.mesh(this.group, new THREE.BoxGeometry(0.36, 0.52, 0.36), this.joint, 0.32, 0.28, -0.08);
+    this.box = this.mesh(this.group, new THREE.BoxGeometry(0.34, 0.24, 0.34), this.mat(0xf4f1ea, { rough: 0.45 }), 0.32, 0.66, -0.08);
+    this.seal = this.mesh(this.box, new THREE.BoxGeometry(0.14, 0.03, 0.14), this.ink, 0, 0.14, 0);
+    this.mesh(this.group, new THREE.BoxGeometry(0.07, 1.4, 0.07), this.shell, 0.82, 0.74, -0.32);
+    this.mesh(this.group, new THREE.BoxGeometry(0.07, 1.4, 0.7), this.shell, 0.82, 0.74, 0.05);
+    this.mesh(this.group, new THREE.BoxGeometry(0.07, 1.4, 0.7), this.mat(0x1a206d, { rough: 0.55 }), 1.48, 0.74, 0.05);
+    this.mesh(this.group, new THREE.BoxGeometry(0.07, 0.07, 0.74), this.shell, 1.15, 1.4, 0.05);
+    this.post(-1.0, 0.62);
+    this.post(0.42, 0.62);
+    this.mesh(this.group, new THREE.BoxGeometry(1.42, 0.02, 0.02), this.ink, -0.29, 0.68, 0.62);
     this.buildDoor();
     this.buildVan();
   }
@@ -174,13 +174,13 @@ class RollScene {
   }
 
   buildDoor() {
-    this.mesh(this.group, new THREE.BoxGeometry(0.08, 2.05, 1.15), this.shell, -3.15, 1.05, 0.15);
-    this.mesh(this.group, new THREE.BoxGeometry(0.1, 2.05, 0.08), this.joint, -3.15, 1.05, 1.35);
-    this.mesh(this.group, new THREE.BoxGeometry(0.1, 2.05, 0.08), this.joint, -3.15, 1.05, 2.25);
-    this.mesh(this.group, new THREE.BoxGeometry(0.1, 0.08, 0.98), this.joint, -3.15, 2.02, 1.8);
+    this.mesh(this.group, new THREE.BoxGeometry(0.07, 1.9, 0.7), this.shell, -1.95, 0.98, -0.15);
+    this.mesh(this.group, new THREE.BoxGeometry(0.08, 1.9, 0.07), this.joint, -1.95, 0.98, 0.55);
+    this.mesh(this.group, new THREE.BoxGeometry(0.08, 1.9, 0.07), this.joint, -1.95, 0.98, 1.22);
+    this.mesh(this.group, new THREE.BoxGeometry(0.08, 0.07, 0.74), this.joint, -1.95, 1.9, 0.88);
     this.hinge = new THREE.Group();
-    this.hinge.position.set(-3.15, 0, 1.42);
-    this.mesh(this.hinge, new THREE.BoxGeometry(0.04, 1.7, 0.78), this.wood, 0, 0.9, 0.38);
+    this.hinge.position.set(-1.95, 0, 0.58);
+    this.mesh(this.hinge, new THREE.BoxGeometry(0.04, 1.55, 0.62), this.wood, 0, 0.82, 0.3);
     this.group.add(this.hinge);
   }
 
@@ -188,16 +188,16 @@ class RollScene {
     this.van = new THREE.Group();
     const body = this.mat(0xd8dde2, { rough: 0.4, metal: 0.28 });
     const glass = this.mat(0x9ec4de, { rough: 0.15, metal: 0.25 });
-    this.mesh(this.van, new THREE.BoxGeometry(1.45, 0.72, 0.72), body, 0, 0.58, 0);
-    this.mesh(this.van, new THREE.BoxGeometry(0.48, 0.42, 0.66), glass, 0.42, 0.78, 0);
-    this.mesh(this.van, new THREE.BoxGeometry(0.04, 0.5, 0.66), this.ink, -0.7, 0.62, 0);
-    [-0.42, 0.42].forEach((x) => {
-      [-0.28, 0.28].forEach((z) => {
-        const wheel = this.mesh(this.van, new THREE.CylinderGeometry(0.14, 0.14, 0.08, 8), this.joint, x, 0.16, z);
+    this.mesh(this.van, new THREE.BoxGeometry(1.05, 0.58, 0.55), body, 0, 0.48, 0);
+    this.mesh(this.van, new THREE.BoxGeometry(0.36, 0.32, 0.5), glass, 0.3, 0.64, 0);
+    this.mesh(this.van, new THREE.BoxGeometry(0.03, 0.4, 0.5), this.ink, -0.5, 0.5, 0);
+    [-0.3, 0.3].forEach((x) => {
+      [-0.22, 0.22].forEach((z) => {
+        const wheel = this.mesh(this.van, new THREE.CylinderGeometry(0.11, 0.11, 0.06, 8), this.joint, x, 0.12, z);
         wheel.rotation.x = Math.PI / 2;
       });
     });
-    this.van.position.set(-2.25, 0, 1.48);
+    this.van.position.set(-1.38, 0, 0.58);
     this.group.add(this.van);
   }
 
@@ -228,7 +228,7 @@ class RollScene {
     [[0, 0xea2839], [1, 0x1a206d], [2, 0xffd500], [3, 0x00a551]].forEach(([i, color]) => {
       this.mesh(g, new THREE.BoxGeometry(0.46, 0.08, 0.02), this.mat(color, { rough: 0.45 }), 0.24, 1.48 - i * 0.08, 0);
     });
-    g.position.set(x, 0, -1.4);
+    g.position.set(x, 0, -1.02);
     this.group.add(g);
   }
 
@@ -240,7 +240,7 @@ class RollScene {
       { skin: 0x3d2314, cloth: 0xf4f1ea, pants: 0x1c242c, hair: 0x0e0c0a },
     ];
     people.forEach((person, i) => {
-      this.queue.push(this.person(person, -0.15 + (i % 2) * 0.7, 1.22 + Math.floor(i / 2) * 0.48, Math.PI));
+      this.queue.push(this.person(person, -0.32 + (i % 2) * 0.52, 0.78 + Math.floor(i / 2) * 0.36, Math.PI));
     });
   }
 
@@ -309,17 +309,17 @@ class RollScene {
     const lift = this.mode("lift");
     const act = this.active;
 
-    this.step(this.neighbour, after === "live" || after === "miss" ? -0.15 : -1.55, after === "live" ? 0.18 : after === "miss" ? 0.32 : 1.28, after === "held" ? 0.2 : Math.PI, ease, t, reduced);
-    this.step(this.cousin, twice === "miss" ? 1.28 : twice === "live" ? -0.72 : -0.55, twice === "miss" ? 0.62 : twice === "live" ? 0.22 : 1.48, twice === "miss" ? 0.4 : Math.PI, ease, t, reduced);
-    this.step(this.payer, cash === "live" ? -0.05 : cash === "held" ? -2.55 : cash === "miss" ? -1.15 : -1.85, cash === "live" ? 0.38 : cash === "held" ? 1.85 : cash === "miss" ? 0.72 : 1.72, cash === "held" ? -0.6 : Math.PI, ease, t, reduced);
-    this.step(this.voter, ride === "live" || ride === "miss" ? -1.62 : 0.35, ride === "live" || ride === "miss" ? 1.22 : 1.55, ride === "held" ? Math.PI : 0.7, ease, t, reduced);
-    this.step(this.driver, ride === "held" ? -2.85 : -1.95, ride === "held" ? 1.72 : 1.22, ride === "held" ? -1.2 : 0.8, ease, t, reduced);
-    this.step(this.boothVoter, 1.88, 0.02, Math.PI, ease, t, reduced);
-    this.step(this.helper, lift === "miss" ? -1.55 : lift === "live" ? 0.62 : 1.28, lift === "miss" ? 0.95 : lift === "live" ? 0.15 : 1.05, lift === "miss" ? -1.1 : -2.2, ease, t, reduced);
+    this.step(this.neighbour, after === "live" || after === "miss" ? -0.12 : -1.12, after === "live" ? 0.08 : after === "miss" ? 0.18 : 0.88, after === "held" ? 0.2 : Math.PI, ease, t, reduced);
+    this.step(this.cousin, twice === "miss" ? 0.78 : twice === "live" ? -0.48 : -0.38, twice === "miss" ? 0.38 : twice === "live" ? 0.12 : 0.96, twice === "miss" ? 0.35 : Math.PI, ease, t, reduced);
+    this.step(this.payer, cash === "live" ? 0.02 : cash === "held" ? -1.62 : cash === "miss" ? -0.85 : -1.32, cash === "live" ? 0.22 : cash === "held" ? 0.92 : cash === "miss" ? 0.48 : 1.0, cash === "held" ? -0.5 : Math.PI, ease, t, reduced);
+    this.step(this.voter, ride === "live" || ride === "miss" ? -1.05 : 0.22, ride === "live" || ride === "miss" ? 0.58 : 0.96, ride === "held" ? Math.PI : 0.6, ease, t, reduced);
+    this.step(this.driver, ride === "held" ? -1.62 : -1.22, ride === "held" ? 0.72 : 0.52, ride === "held" ? -1.1 : 0.7, ease, t, reduced);
+    this.step(this.boothVoter, 1.12, 0.0, Math.PI, ease, t, reduced);
+    this.step(this.helper, lift === "miss" ? -1.02 : lift === "live" ? 0.42 : 0.88, lift === "miss" ? 0.48 : lift === "live" ? 0.08 : 0.55, lift === "miss" ? -1.0 : -2.1, ease, t, reduced);
     const officerAtBooth = act === "photo" || (photo === "held" && act !== "lift" && act !== "after" && act !== "envelope" && act !== "twice" && act !== "ride");
     const officerAtBox = act === "lift" || (lift === "held" && act !== "photo");
-    this.step(this.officer, officerAtBooth ? 1.42 : officerAtBox ? 0.08 : -0.55, officerAtBooth ? 0.58 : officerAtBox ? 0.18 : -1.02, officerAtBooth ? 0.5 : officerAtBox ? 0.4 : 0, ease, t, reduced);
-    this.step(this.escort, lift === "miss" ? 0.85 : lift === "live" || lift === "held" ? 0.88 : 0.95, lift === "miss" ? 0.15 : lift === "held" || lift === "live" ? 0.22 : -0.55, lift === "held" ? -0.8 : 0.2, ease, t, reduced);
+    this.step(this.officer, officerAtBooth ? 0.78 : officerAtBox ? 0.02 : -0.4, officerAtBooth ? 0.38 : officerAtBox ? 0.12 : -0.82, officerAtBooth ? 0.45 : officerAtBox ? 0.35 : 0, ease, t, reduced);
+    this.step(this.escort, lift === "miss" ? 0.55 : lift === "live" || lift === "held" ? 0.58 : 0.62, lift === "miss" ? 0.08 : lift === "held" || lift === "live" ? 0.12 : -0.42, lift === "held" ? -0.7 : 0.15, ease, t, reduced);
 
     const block = (act === "after" && after === "held") || (act === "envelope" && cash === "held") || (act === "lift" && lift === "held") || (act === "photo" && photo === "held");
     this.arm(this.officer, block ? -1.25 : act === "photo" && photo !== "held" ? -0.7 : -0.25, ease);
@@ -340,26 +340,26 @@ class RollScene {
     const bh = this.hand(this.boothVoter);
     const hh = this.hand(this.helper);
     const vh = this.hand(this.voter);
-    this.put(this.pencil, after === "miss" ? -0.4 : nh.x, after === "miss" ? 0.94 : nh.y, after === "miss" ? -0.62 : nh.z, ease);
+    this.put(this.pencil, after === "miss" ? -0.3 : nh.x, after === "miss" ? 0.86 : nh.y, after === "miss" ? -0.46 : nh.z, ease);
     this.put(this.sheetA, twice === "held" ? oh.x : ch.x, twice === "held" ? oh.y : ch.y, twice === "held" ? oh.z : ch.z, ease);
     const drop = twice === "held";
     this.sheetB.scale.setScalar(drop ? 0.15 : 1);
-    this.put(this.sheetB, drop ? -0.85 : ch.x + 0.1, drop ? 0.08 : ch.y + 0.02, drop ? 0.55 : ch.z + 0.04, ease);
+    this.put(this.sheetB, drop ? -0.55 : ch.x + 0.08, drop ? 0.06 : ch.y + 0.02, drop ? 0.35 : ch.z + 0.04, ease);
     this.put(this.envelope, cash === "miss" ? oh.x : ph.x, cash === "miss" ? oh.y : ph.y, cash === "miss" ? oh.z : ph.z, ease);
     this.put(this.phone, bh.x, photo === "held" || photo === "home" ? bh.y - 0.16 : bh.y + 0.16, bh.z + 0.02, ease);
     const showMark = ride === "miss";
-    this.put(this.ballot, showMark ? -1.95 : ride === "live" ? vh.x : vh.x, showMark ? 1.22 : ride === "held" || ride === "home" ? vh.y - 0.2 : vh.y + 0.08, showMark ? 1.42 : vh.z, ease);
+    this.put(this.ballot, showMark ? -1.15 : vh.x, showMark ? 0.95 : ride === "held" || ride === "home" ? vh.y - 0.2 : vh.y + 0.08, showMark ? 0.62 : vh.z, ease);
     const boxFollow = this.outcome === "van" || lift === "miss";
-    this.put(this.box, boxFollow ? (lift === "miss" && this.outcome !== "van" ? hh.x : -1.85) : 0.48, boxFollow ? (lift === "miss" && this.outcome !== "van" ? 0.7 : 0.72) : 0.78, boxFollow ? (lift === "miss" && this.outcome !== "van" ? hh.z : 1.35) : -0.22, ease);
+    this.put(this.box, boxFollow ? (lift === "miss" && this.outcome !== "van" ? hh.x : -1.15) : 0.32, boxFollow ? (lift === "miss" && this.outcome !== "van" ? 0.62 : 0.58) : 0.66, boxFollow ? (lift === "miss" && this.outcome !== "van" ? hh.z : 0.55) : -0.08, ease);
     this.mark.scale.setScalar(after === "miss" ? 1 : 0.01);
-    this.put(this.mark, -0.4, 0.94, -0.66, ease);
+    this.put(this.mark, -0.3, 0.84, -0.5, ease);
     this.slip.scale.setScalar(this.outcome === "sheet" ? 1 : 0.01);
-    this.put(this.slip, 0.15, 0.84, -0.55, ease);
+    this.put(this.slip, 0.08, 0.78, -0.42, ease);
     this.photoCard.scale.setScalar(photo === "miss" ? 1 : 0.01);
-    this.put(this.photoCard, 1.55, 1.15, 0.45, ease);
+    this.put(this.photoCard, 1.12, 1.05, 0.32, ease);
     this.flash.intensity = photo === "miss" && !reduced ? 1.6 + Math.sin(t * 8) * 1.3 : photo === "live" ? 0.35 : 0;
-    const vanX = ride === "held" ? -3.15 : this.outcome === "van" ? -1.7 : -2.25;
-    const vanZ = ride === "held" ? 2.05 : this.outcome === "van" ? 1.15 : 1.48;
+    const vanX = ride === "held" ? -1.72 : this.outcome === "van" ? -1.15 : -1.38;
+    const vanZ = ride === "held" ? 0.82 : this.outcome === "van" ? 0.48 : 0.58;
     this.van.position.x += (vanX - this.van.position.x) * ease;
     this.van.position.z += (vanZ - this.van.position.z) * ease;
     const doorOpen = cash === "held" || this.outcome === "list";
@@ -368,8 +368,8 @@ class RollScene {
     const watch = act === "photo" ? this.boothVoter.position : act === "ride" ? this.van.position : act === "lift" ? this.box.position : act === "envelope" ? this.payer.position : act === "twice" ? this.cousin.position : this.book.position;
     this.queue.forEach((person, i) => {
       const called = this.outcome === "list" && Math.floor(t * 0.45) % 4 === i;
-      const gx = called ? -0.85 : -0.2 + (i % 2) * 0.72;
-      const gz = called ? 0.42 : 1.28 + Math.floor(i / 2) * 0.5;
+      const gx = called ? -0.48 : -0.35 + (i % 2) * 0.52;
+      const gz = called ? 0.28 : 0.8 + Math.floor(i / 2) * 0.36;
       const yaw = called ? Math.PI : Math.atan2(watch.x - person.position.x, watch.z - person.position.z);
       this.step(person, gx, gz, yaw, ease, t, reduced);
     });

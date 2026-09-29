@@ -1,14 +1,14 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg88";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg89";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg86";
 import { FairScene } from "./fair.js?v=vg71";
 import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg61";
 import { StampScene } from "./stamp.js?v=vg84";
-import { RollScene } from "./roll.js?v=vg88";
-import { OathScene } from "./oath.js?v=vg88";
+import { RollScene } from "./roll.js?v=vg89";
+import { OathScene } from "./oath.js?v=vg89";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -1229,13 +1229,15 @@ class VillageEngine {
     if (this.competition === "oath") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      this.aimStage(new THREE.Vector3(0, 1.05, 0.2), view, 3.05);
+      const phone = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
+      this.aimStage(new THREE.Vector3(0, phone ? 1.18 : 1.08, phone ? -0.08 : -0.02), phone ? new THREE.Vector3(0.15, 6.4, 8.2) : view, phone ? 2.05 : 2.32);
       return;
     }
     if (this.competition === "roll") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      this.aimStage(new THREE.Vector3(0, 1.05, 0.45), view, 3.25);
+      const phone = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
+      this.aimStage(new THREE.Vector3(0, phone ? 1.15 : 1.02, phone ? 0.02 : 0.08), phone ? new THREE.Vector3(0.2, 5.8, 8.6) : view, phone ? 2.18 : 2.42);
       return;
     }
     if (this.competition === "stamp") {

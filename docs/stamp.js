@@ -14,6 +14,7 @@ class StampScene {
     this.mats = [];
     this.desks = [];
     this.queue = [];
+    this.entrants = [];
     this.seated = [];
     this.competition = "tender";
     this.outcome = "open";
@@ -227,6 +228,21 @@ class StampScene {
       fig.rotation.y = -Math.PI / 2;
       this.group.add(fig);
       this.queue.push(fig);
+    });
+    const extras = [
+      { skin: 0xf0c7a0, cloth: 0x8d3a2f, pants: 0x2c3138, hair: 0x3a2418 },
+      { skin: 0x5c3317, cloth: 0xf4f1ea, pants: 0x1a2744, hair: 0x14120e, skirt: true },
+      { skin: 0xd7b39a, cloth: 0x1a206d, pants: 0x1c2430, hair: 0x6b4423, cap: this.mat(0xf0c030, { rough: 0.5 }) },
+      { skin: 0x3d2314, cloth: 0xc45c26, pants: 0x1a1c22, hair: 0x0e0c0a, beard: true },
+      { skin: 0xa86b45, cloth: 0x2a6f7f, pants: 0x243044, hair: 0x2a1810, hijab: true, skirt: true },
+      { skin: 0xe8c4a8, cloth: 0x7a3e8a, pants: 0x2a2428, hair: 0x3a2418, skirt: true },
+    ];
+    extras.forEach((person, i) => {
+      const fig = this.figure(person);
+      fig.position.set(-4.45, 0, 3.15 + i * 0.42);
+      fig.rotation.y = Math.PI / 2;
+      this.group.add(fig);
+      this.entrants.push(fig);
     });
   }
 
@@ -481,6 +497,10 @@ class StampScene {
         person.position.set(-3.15, 0, 0.15 + i * 0.46);
         person.rotation.y = -Math.PI / 2;
       });
+      this.entrants.forEach((person, i) => {
+        person.position.set(-4.45, 0, 3.15 + i * 0.42);
+        person.rotation.y = Math.PI / 2;
+      });
     } else {
       const freshMiss = next.findIndex((d, i) => d === "miss" && this.deskState[i] !== "miss");
       if (freshMiss >= 0) {
@@ -493,6 +513,19 @@ class StampScene {
     }
     this.deskState = next.slice();
     this.active = Number.isFinite(active) ? active : 0;
+  }
+
+  stepPerson(person, gx, gz, yaw, ease, t, reduced, seed) {
+    const mx = gx - person.position.x;
+    const mz = gz - person.position.z;
+    const walking = Math.hypot(mx, mz) > 0.06;
+    person.position.x += mx * ease;
+    person.position.z += mz * ease;
+    this.face(person, walking ? Math.atan2(mx, mz) : yaw, ease);
+    const pace = walking && !reduced ? Math.sin(t * 9 + seed) * 0.65 : reduced ? 0 : Math.sin(t * 1.3 + seed) * 0.04;
+    person.userData.legs[0].rotation.x = pace;
+    person.userData.legs[1].rotation.x = -pace;
+    if (!walking && !reduced) person.userData.body.rotation.z = Math.sin(t * 1.3 + seed) * 0.03;
   }
 
   face(root, yaw, ease) {
@@ -576,20 +609,30 @@ class StampScene {
     }
     this.queue.forEach((person, i) => {
       const freed = this.stamped > 0 && this.clocks[this.stamped - 1] >= 0.75;
-      const called = i < this.stamped - 1 || (i === this.stamped - 1 && freed);
-      const slot = called ? i : i - this.stamped;
+      const left = freed ? this.stamped : Math.max(0, this.stamped - 1);
+      const called = i < left;
+      const slot = called ? i : i - left;
       const gx = called ? this.deskX(i) : -3.15;
       const gz = called ? 0.95 : 0.15 + slot * 0.46;
-      const mx = gx - person.position.x;
-      const mz = gz - person.position.z;
-      const walking = Math.hypot(mx, mz) > 0.05;
-      person.position.x += mx * ease;
-      person.position.z += mz * ease;
-      this.face(person, called ? Math.PI : -Math.PI / 2, ease);
-      const pace = walking && !reduced ? Math.sin(t * 9 + i) * 0.65 : reduced ? 0 : Math.sin(t * 1.3 + i) * 0.04;
-      person.userData.legs[0].rotation.x = pace;
-      person.userData.legs[1].rotation.x = -pace;
-      if (!walking && !reduced) person.userData.body.rotation.z = Math.sin(t * 1.3 + i) * 0.03;
+      this.stepPerson(person, gx, gz, called ? Math.PI : -Math.PI / 2, ease, t, reduced, i);
+    });
+    const freedNow = this.stamped > 0 && this.clocks[this.stamped - 1] >= 0.75;
+    const leftNow = freedNow ? this.stamped : Math.max(0, this.stamped - 1);
+    this.entrants.forEach((person, j) => {
+      const joined = j < leftNow;
+      const slot = 10 - leftNow + j;
+      let gx = -4.45;
+      let gz = 3.15 + j * 0.42;
+      let yaw = Math.PI / 2;
+      if (joined && person.position.x < -3.78) {
+        gx = -3.5;
+        gz = 3.5;
+      } else if (joined) {
+        gx = -3.15;
+        gz = 0.15 + slot * 0.46;
+        yaw = -Math.PI / 2;
+      }
+      this.stepPerson(person, gx, gz, yaw, ease, t, reduced, j + 3);
     });
     const ticket = Math.min(6, this.stamped + 1);
     this.paintCounter(this.tvCounter, ticket);

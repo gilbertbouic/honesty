@@ -74,10 +74,52 @@ class StampScene {
   buildHall() {
     const floor = this.mesh(this.group, new THREE.CircleGeometry(8, 48), this.mat(0xd4cbb8, { rough: 1 }), 0, -0.02, 0.6);
     floor.rotation.x = -Math.PI / 2;
-    this.mesh(this.group, new THREE.BoxGeometry(8.4, 1.7, 0.08), this.shell, 0, 1.15, -1.35);
+    this.mesh(this.group, new THREE.BoxGeometry(8.6, 2.15, 0.1), this.shell, 0, 1.25, -1.4);
+    const sign = this.mesh(this.group, new THREE.PlaneGeometry(5.1, 1.45), this.officeSign(), 0, 1.52, -1.33);
+    sign.castShadow = false;
+    this.flag(-3.55, 1);
+    this.flag(3.55, -1);
+  }
+
+  officeSign() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1280;
+    canvas.height = 360;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f4f5f3";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#1a1c1f";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "700 64px Georgia, 'Times New Roman', serif";
+    ctx.fillText("CIVIL SERVICES", 640, 78);
+    ctx.fillStyle = "#8a847c";
+    ctx.fillRect(390, 118, 500, 3);
+    ctx.fillStyle = "#1a2744";
+    ctx.font = "600 34px Georgia, 'Times New Roman', serif";
+    [
+      "No envelope under the glass.",
+      "The posted fee is the only fee.",
+      "A public stamp is not for sale.",
+    ].forEach((line, i) => ctx.fillText(line, 640, 175 + i * 52));
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = 4;
+    this.geos.push(tex);
+    const mat = new THREE.MeshBasicMaterial({ map: tex });
+    this.mats.push(mat);
+    return mat;
+  }
+
+  flag(x, dir) {
+    const g = new THREE.Group();
+    g.position.set(x, 0, -1.22);
+    this.mesh(g, new THREE.CylinderGeometry(0.035, 0.04, 2.15, 8), this.joint, 0, 1.05, 0);
+    this.mesh(g, new THREE.SphereGeometry(0.055, 8, 6), this.mat(0xd4a017, { metal: 0.6, rough: 0.3 }), 0, 2.14, 0);
     FLAG.forEach((color, i) => {
-      this.mesh(this.group, new THREE.BoxGeometry(8.4, 0.045, 0.02), this.mat(color, { rough: 0.4 }), 0, 0.18 + i * 0.05, -1.3);
+      this.mesh(g, new THREE.BoxGeometry(0.72, 0.16, 0.02), this.mat(color, { rough: 0.45 }), dir * 0.4, 1.82 - i * 0.16, 0);
     });
+    this.group.add(g);
   }
 
   figure(opts) {

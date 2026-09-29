@@ -315,6 +315,29 @@ class StampScene {
     const form = this.mesh(fig.userData.hand, new THREE.BoxGeometry(0.16, 0.012, 0.11), this.paper, 0, -0.02, 0.06);
     form.rotation.x = -0.6;
     fig.userData.form = form;
+    const body = fig.userData.body;
+    const hips = new THREE.Group();
+    const chest = new THREE.Group();
+    hips.position.y = 0.42;
+    chest.position.y = 0.55;
+    body.add(hips);
+    body.add(chest);
+    fig.userData.legs.forEach((leg) => {
+      hips.add(leg);
+      leg.position.y -= 0.42;
+    });
+    [...body.children].forEach((child) => {
+      if (child === hips || child === chest) return;
+      chest.add(child);
+      child.position.y -= 0.55;
+    });
+    [...fig.children].forEach((child) => {
+      if (child === body) return;
+      chest.add(child);
+      child.position.y -= 0.55;
+    });
+    fig.userData.hips = hips;
+    fig.userData.chest = chest;
     this.group.add(fig);
     return fig;
   }
@@ -398,10 +421,12 @@ class StampScene {
     const step = moving ? Math.sin(t * 9) * 0.65 : 0;
     customer.userData.legs[0].rotation.x = step;
     customer.userData.legs[1].rotation.x = -step;
-    const dance = perfect && !moving && !reduced;
-    customer.userData.body.rotation.z = dance ? Math.sin(t * 8) * 0.28 : 0;
-    customer.userData.body.rotation.x = dance ? Math.abs(Math.sin(t * 8)) * 0.08 : 0;
-    customer.userData.body.position.y = dance ? Math.abs(Math.sin(t * 8)) * 0.05 : 0;
+    const posed = perfect && !moving;
+    customer.userData.body.rotation.set(0, 0, 0);
+    customer.userData.body.position.y = 0;
+    customer.userData.chest.rotation.set(posed ? 1.05 : 0, 0, 0);
+    const swing = posed && !reduced ? Math.sin(t * 8) : 0;
+    customer.userData.hips.rotation.set(0, swing * 0.55, swing * 0.2);
     const showCarry = !perfect && (moving || this.rejecting || !arrived);
     customer.userData.form.visible = showCarry;
     this.desks.forEach((item, i) => {

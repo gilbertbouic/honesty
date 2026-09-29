@@ -6,7 +6,7 @@ import { LandScene } from "./land.js?v=vg86";
 import { FairScene } from "./fair.js?v=vg71";
 import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg61";
-import { StampScene } from "./stamp.js?v=vg84";
+import { StampScene } from "./stamp.js?v=vg90";
 import { RollScene } from "./roll.js?v=vg89";
 import { OathScene } from "./oath.js?v=vg89";
 

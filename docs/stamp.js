@@ -81,7 +81,7 @@ class StampScene {
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     this.mesh(this.group, new THREE.BoxGeometry(8.6, 2.15, 0.1), this.shell, 0, 1.25, -1.4);
-    const sign = this.mesh(this.group, new THREE.PlaneGeometry(5.1, 1.45), this.officeSign(), 0, 1.52, -1.33);
+    const sign = this.mesh(this.group, new THREE.PlaneGeometry(5.1, 1.62), this.officeSign(), 0, 1.42, -1.33);
     sign.castShadow = false;
     this.flag(-3.55, 1);
     this.flag(3.55, -1);
@@ -411,24 +411,27 @@ class StampScene {
   officeSign() {
     const canvas = document.createElement("canvas");
     canvas.width = 1280;
-    canvas.height = 360;
+    canvas.height = 420;
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "#f4f5f3";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#1a1c1f";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = "700 64px Georgia, 'Times New Roman', serif";
-    ctx.fillText("CIVIL SERVICES", 640, 78);
-    ctx.fillStyle = "#8a847c";
-    ctx.fillRect(390, 118, 500, 3);
+    ctx.font = "700 58px Georgia, 'Times New Roman', serif";
+    ctx.fillText("CIVIL SERVICES", 640, 58);
+    ctx.fillStyle = "#1a206d";
+    ctx.fillRect(250, 96, 780, 64);
+    ctx.fillStyle = "#f4f5f3";
+    ctx.font = "700 40px Georgia, 'Times New Roman', serif";
+    ctx.fillText("All stamps — Rs100", 640, 128);
     ctx.fillStyle = "#1a2744";
-    ctx.font = "600 34px Georgia, 'Times New Roman', serif";
+    ctx.font = "600 32px Georgia, 'Times New Roman', serif";
     [
       "No envelope under the glass.",
       "The posted fee is the only fee.",
       "A public stamp is not for sale.",
-    ].forEach((line, i) => ctx.fillText(line, 640, 175 + i * 52));
+    ].forEach((line, i) => ctx.fillText(line, 640, 210 + i * 58));
     const tex = new THREE.CanvasTexture(canvas);
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = 4;

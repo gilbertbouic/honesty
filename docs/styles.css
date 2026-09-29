@@ -562,6 +562,7 @@ html[data-orient="portrait"] .mobile-sheet-foot .cta { margin-top: 0; }
   background: var(--raised);
   border-radius: 0.75rem;
   padding: 0.15rem;
+  overflow-x: auto;
 }
 .comp-switch button {
   min-height: 2.25rem;
@@ -606,6 +607,14 @@ html[data-orient="portrait"] .mobile-sheet-foot .cta { margin-top: 0; }
 .comp-switch button[data-comp="stamp"].on {
   background: color-mix(in oklab, #ea2839 24%, transparent);
   color: #ea2839;
+}
+.comp-switch button[data-comp="roll"].on {
+  background: color-mix(in oklab, #2a6f8f 24%, transparent);
+  color: #2a6f8f;
+}
+.comp-switch button[data-comp="oath"].on {
+  background: color-mix(in oklab, #1a206d 22%, transparent);
+  color: #1a206d;
 }
 .rose, .kicker.rose, .qcount.rose { color: var(--rose); }
 .toast.line { border-color: var(--green); color: var(--green); background: color-mix(in oklab, var(--green) 12%, var(--surface)); }

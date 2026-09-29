@@ -1,12 +1,14 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg73";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg88";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg86";
 import { FairScene } from "./fair.js?v=vg71";
 import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg61";
 import { StampScene } from "./stamp.js?v=vg84";
+import { RollScene } from "./roll.js?v=vg88";
+import { OathScene } from "./oath.js?v=vg88";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -672,6 +674,140 @@ function stampOutcomeOf(score, answered) {
   if (score >= 280) return "smear";
   return "shut";
 }
+const ROLL_CORRECT = 100;
+const ROLL_WRONG = 20;
+const ROLL_CASES = [
+  { id: "after", spec: "ROLL-01", title: "After the close", correct: "C",
+    question: "A neighbour comes after the register has closed. His name is not on it. He says you know the house, the street, and that one line in pencil will not hurt the count. What is the lawful action?",
+    options: [
+      { id: "A", text: "Add the name. A neighbour is already an elector." },
+      { id: "B", text: "Add him on a second sheet and keep that sheet in the drawer." },
+      { id: "C", text: "Do not add him. The register closed. A line after the close is not an elector. Tell him the lawful way to be entered, and take the next person. A pencil does not reopen the roll." },
+      { id: "D", text: "Let him vote if he promises to register tomorrow." },
+    ] },
+  { id: "twice", spec: "ROLL-02", title: "Two lists", correct: "B",
+    question: "A cousin is on the roll here and on the roll in another place. She says she will vote only once, and that you should pick the shorter queue for her. What is the lawful action?",
+    options: [
+      { id: "A", text: "Cross her off one list yourself and let her choose the queue." },
+      { id: "B", text: "One person, one roll, one vote. Do not choose a queue for her. Mark the double entry and report it to the officer in charge of the register. She does not vote twice, and she does not vote until the roll is one list." },
+      { id: "C", text: "Let her vote here. The other list is another station's problem." },
+      { id: "D", text: "Tear the page out so the double name never existed." },
+    ] },
+  { id: "envelope", spec: "ROLL-03", title: "The envelope", correct: "D",
+    question: "A man puts an envelope in your hand outside the station. He says it is for the people who vote the right way, and that you only have to point them to the right mark. What is the lawful action?",
+    options: [
+      { id: "A", text: "Hold the envelope until the count, then return what is left." },
+      { id: "B", text: "Point, but do not touch the money." },
+      { id: "C", text: "Share it with the staff so no one person is to blame." },
+      { id: "D", text: "Do not take it. Money for a mark is not a campaign. Put the envelope back in his hand. Tell the presiding officer. A vote is not a wage." },
+    ] },
+  { id: "ride", spec: "ROLL-04", title: "The ride", correct: "C",
+    question: "A van is at the gate. The driver says the ride is free if the passenger shows him the marked paper before going in. The passenger is tired and the hill is steep. What is the lawful action?",
+    options: [
+      { id: "A", text: "Let the van stay. A tired voter is still a voter." },
+      { id: "B", text: "Let them show the paper, then fold it again." },
+      { id: "C", text: "Stop it. A ride paid by a shown ballot is a purchase. The ballot is secret. No one sees the mark. The van does not trade at the gate. Tell the presiding officer." },
+      { id: "D", text: "Send the van around the back, where the queue cannot see the bargain." },
+    ] },
+  { id: "photo", spec: "ROLL-05", title: "The photo", correct: "A",
+    question: "Inside the booth, a voter lifts a phone over the paper. She says her brother must see the mark before he pays the fare home. What is the lawful action?",
+    options: [
+      { id: "A", text: "Stop the photo. The ballot is secret. A picture is a second copy of a vote that has only one. She puts the phone away. The paper is not shown to the brother, and it is not a ticket for a fare. Call the presiding officer." },
+      { id: "B", text: "Let her take one photo if she deletes it after the fare is paid." },
+      { id: "C", text: "Look away. The booth is private, so the phone is private too." },
+      { id: "D", text: "Take the photo yourself, so the family can be sure." },
+    ] },
+  { id: "lift", spec: "ROLL-06", title: "The lift", correct: "B",
+    question: "The box is sealed. A helper says his van is closer than the official car, the rain is starting, and the box only needs a lift to the count. What is the lawful action?",
+    options: [
+      { id: "A", text: "Let him take it. A sealed box is safe in any van." },
+      { id: "B", text: "Do not hand it over. A sealed box moves only with the officers and the log. The seal and the count stay together. Rain is not a reason to break the chain. A private lift is not the count." },
+      { id: "C", text: "Break the seal, count it here, and send him with the totals." },
+      { id: "D", text: "Send the box with him and keep the seal in your pocket." },
+    ] },
+];
+const ROLLSHORT = { after: "Close", twice: "Lists", envelope: "Cash", ride: "Ride", photo: "Photo", lift: "Lift" };
+function roundEightCleared(results) {
+  return results.length >= STAMP_CASES.length && results.every((r) => r.correct);
+}
+function rollCaseById(id) { return ROLL_CASES.find((c) => c.id === id) ?? ROLL_CASES[0]; }
+function firstOpenRollId(results) {
+  const done = new Set(results.map((r) => r.caseId));
+  return ROLL_CASES.find((c) => !done.has(c.id))?.id ?? ROLL_CASES[0].id;
+}
+function rollOutcomeOf(score, answered) {
+  if (answered < ROLL_CASES.length) return "open";
+  if (score >= 500) return "list";
+  if (score >= 280) return "sheet";
+  return "van";
+}
+const OATH_CORRECT = 100;
+const OATH_WRONG = 20;
+const OATH_CASES = [
+  { id: "cousin", spec: "OATH-01", title: "The cousin", correct: "C",
+    question: "You hold the chair. The next item awards a contract to a firm your cousin runs. Someone says you may stay if you do not speak. What is the lawful action?",
+    options: [
+      { id: "A", text: "Stay, and vote. The chair is above the family." },
+      { id: "B", text: "Stay silent. Not speaking is the same as leaving." },
+      { id: "C", text: "Say the interest before the vote. Leave the decision. Do not remain “only to listen.” A cousin in the award is not a neutral chair. The minute records that you stepped out." },
+      { id: "D", text: "Ask your cousin to use another name on the paper, then stay." },
+    ] },
+  { id: "minute", spec: "OATH-02", title: "After the room", correct: "B",
+    question: "The vote is over and the room is empty. An officer asks you to add one line to the minute: that the award was unanimous. It was not. What is the lawful action?",
+    options: [
+      { id: "A", text: "Add it. A tidy minute is a kinder minute." },
+      { id: "B", text: "Do not add it. The minute is what was said, not what the file needs later. A line after the room has emptied is a false record. The vote stands as it was taken." },
+      { id: "C", text: "Add it in pencil, so it can be rubbed out." },
+      { id: "D", text: "Initial the new line and keep the old page in your drawer." },
+    ] },
+  { id: "gift", spec: "OATH-03", title: "The gift", correct: "D",
+    question: "The award is signed. That evening a hamper arrives at your door. The card says it is only a thank-you from the village, and that the decision is already done. What is the lawful action?",
+    options: [
+      { id: "A", text: "Keep it. A thank-you after the signature is not a bribe." },
+      { id: "B", text: "Keep the food and return the card." },
+      { id: "C", text: "Give it to the office kitchen so it becomes public." },
+      { id: "D", text: "Do not keep it. A gift after an award is still a gift for the award. Return it. Record it. The decision being finished does not wash the hamper." },
+    ] },
+  { id: "silence", spec: "OATH-04", title: "The silence", correct: "A",
+    question: "You learn before the vote that another member will gain from the item. He has not said so. He asks you to leave it, because the room is tired and the matter is small. What is the lawful action?",
+    options: [
+      { id: "A", text: "Say it in the room, before the vote. A conflict known and unspoken is a vote already bent. He declares it or he steps out. Silence is not neutrality, and tiredness is not a reason to hide it." },
+      { id: "B", text: "Tell him privately after the vote, so the minute stays clean." },
+      { id: "C", text: "Abstain yourself and let his vote stand." },
+      { id: "D", text: "Mention it only if his side loses." },
+    ] },
+  { id: "unread", spec: "OATH-05", title: "The unread page", correct: "C",
+    question: "A page is put in front of you at the end of the meeting. You have not read it. The clerk says the bus is waiting, the date is today, and a chair who delays is a chair who fails. What is the lawful action?",
+    options: [
+      { id: "A", text: "Sign it. The bus is a deadline." },
+      { id: "B", text: "Sign it and read it in the morning." },
+      { id: "C", text: "Do not sign it. A signature is your word on that page. What you have not read is not yet true. Send it back. A waiting bus does not make an unread page yours." },
+      { id: "D", text: "Sign the last page only. The rest can be assumed." },
+    ] },
+  { id: "key", spec: "OATH-06", title: "The key", correct: "B",
+    question: "A friend asks for the key you were told to log and return. He says he only needs the room on Sunday, and that an empty drawer will not be noticed until Monday. What is the lawful action?",
+    options: [
+      { id: "A", text: "Lend it. Sunday is not a working day." },
+      { id: "B", text: "Do not lend it. The key is the office, not a favour. It is logged and returned. A copy for a friend is a second office. An empty drawer on Monday is a missing trust." },
+      { id: "C", text: "Lend it if he promises not to open the cabinet." },
+      { id: "D", text: "Leave it under the mat and say you lost it." },
+    ] },
+];
+const OATHSHORT = { cousin: "Cousin", minute: "Minute", gift: "Gift", silence: "Silence", unread: "Page", key: "Key" };
+function roundNineCleared(results) {
+  return results.length >= ROLL_CASES.length && results.every((r) => r.correct);
+}
+function oathCaseById(id) { return OATH_CASES.find((c) => c.id === id) ?? OATH_CASES[0]; }
+function firstOpenOathId(results) {
+  const done = new Set(results.map((r) => r.caseId));
+  return OATH_CASES.find((c) => !done.has(c.id))?.id ?? OATH_CASES[0].id;
+}
+function oathOutcomeOf(score, answered) {
+  if (answered < OATH_CASES.length) return "open";
+  if (score >= 500) return "whole";
+  if (score >= 280) return "page";
+  return "lost";
+}
 function winnerOf(bids) { return Object.entries(bids).sort((a, b) => b[1] - a[1])[0][0]; }
 function holdingsLabel(name, houses) {
   const owned = houses.filter((h) => h.owner === name);
@@ -955,6 +1091,8 @@ class VillageEngine {
     this.crop = new CropScene(this.scene);
     this.wash = new WashScene(this.scene);
     this.stamp = new StampScene(this.scene);
+    this.roll = new RollScene(this.scene);
+    this.oath = new OathScene(this.scene);
     this.havenOutcome = "open";
     this.havenCorrect = 0;
     this.landOutcome = "open";
@@ -991,6 +1129,10 @@ class VillageEngine {
     this.washCorrect = next.washCorrect || 0;
     this.stampOutcome = next.stampOutcome || "open";
     this.stampCorrect = next.stampCorrect || 0;
+    this.rollOutcome = next.rollOutcome || "open";
+    this.rollCorrect = next.rollCorrect || 0;
+    this.oathOutcome = next.oathOutcome || "open";
+    this.oathCorrect = next.oathCorrect || 0;
     this.fairHeld = next.fairHeld || [];
     this.haven.sync(this.competition, this.havenOutcome, this.havenCorrect);
     this.land.sync(this.competition, this.landOutcome, this.landCorrect, next.landHeld);
@@ -998,6 +1140,8 @@ class VillageEngine {
     this.crop.sync(this.competition, this.cropOutcome, this.cropCorrect);
     this.wash.sync(this.competition, this.washOutcome, this.washCorrect);
     this.stamp.sync(this.competition, this.stampOutcome, this.stampCorrect, next.stampDesks, next.stampActive);
+    this.roll.sync(this.competition, this.rollOutcome, this.rollCorrect, next.rollMarks, next.rollActive);
+    this.oath.sync(this.competition, this.oathOutcome, this.oathCorrect, next.oathMarks, next.oathActive);
     const solo = this.competition !== "tender";
     if (this.village) this.village.visible = !solo;
     if (this.wGroup) this.wGroup.visible = this.competition === "whistle";
@@ -1082,6 +1226,18 @@ class VillageEngine {
   frameCompetition() {
     const fog = this.scene.fog;
     const view = new THREE.Vector3(0.4, 4.6, 11);
+    if (this.competition === "oath") {
+      fog.color.set(0x8ea4b8);
+      this.scene.background = new THREE.Color(0x8ea4b8);
+      this.aimStage(new THREE.Vector3(0, 1.05, 0.2), view, 3.05);
+      return;
+    }
+    if (this.competition === "roll") {
+      fog.color.set(0x8ea4b8);
+      this.scene.background = new THREE.Color(0x8ea4b8);
+      this.aimStage(new THREE.Vector3(0, 1.05, 0.45), view, 3.25);
+      return;
+    }
     if (this.competition === "stamp") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
@@ -1619,6 +1775,8 @@ class VillageEngine {
     this.crop.tick(dt, t, this.reduced);
     this.wash.tick(dt, t, this.reduced);
     this.stamp.tick(dt, t, this.reduced);
+    this.roll.tick(dt, t, this.reduced);
+    this.oath.tick(dt, t, this.reduced);
     this.tickBus(t);
     this.renderer.render(this.scene, this.camera);
   };
@@ -1639,6 +1797,8 @@ function defaultState() {
     cropResults: [], activeCropId: CROP_CASES[0].id, cropScore: 0, cropOutcome: "open",
     washResults: [], activeWashId: WASH_CASES[0].id, washScore: 0, washOutcome: "open",
     stampResults: [], activeStampId: STAMP_CASES[0].id, stampScore: 0, stampOutcome: "open",
+    rollResults: [], activeRollId: ROLL_CASES[0].id, rollScore: 0, rollOutcome: "open",
+    oathResults: [], activeOathId: OATH_CASES[0].id, oathScore: 0, oathOutcome: "open",
   };
 }
 
@@ -1698,6 +1858,10 @@ function persist(state) {
       washScore: state.washScore, washOutcome: state.washOutcome,
       stampResults: state.stampResults, activeStampId: state.activeStampId,
       stampScore: state.stampScore, stampOutcome: state.stampOutcome,
+      rollResults: state.rollResults, activeRollId: state.activeRollId,
+      rollScore: state.rollScore, rollOutcome: state.rollOutcome,
+      oathResults: state.oathResults, activeOathId: state.activeOathId,
+      oathScore: state.oathScore, oathOutcome: state.oathOutcome,
     }));
   } catch { /* ignore */ }
 }
@@ -1747,6 +1911,20 @@ function syncPayload() {
       return hit.correct ? "held" : "miss";
     }),
     stampActive: Math.max(0, STAMP_CASES.findIndex((c) => c.id === state.activeStampId)),
+    rollOutcome: state.rollOutcome,
+    rollCorrect: (state.rollResults || []).filter((r) => r.correct).length,
+    rollMarks: Object.fromEntries(ROLL_CASES.map((c) => {
+      const hit = (state.rollResults || []).find((r) => r.caseId === c.id);
+      return [c.id, hit ? (hit.correct ? "held" : "miss") : "open"];
+    })),
+    rollActive: state.activeRollId,
+    oathOutcome: state.oathOutcome,
+    oathCorrect: (state.oathResults || []).filter((r) => r.correct).length,
+    oathMarks: Object.fromEntries(OATH_CASES.map((c) => {
+      const hit = (state.oathResults || []).find((r) => r.caseId === c.id);
+      return [c.id, hit ? (hit.correct ? "held" : "miss") : "open"];
+    })),
+    oathActive: state.activeOathId,
   };
 }
 engine.sync(syncPayload());
@@ -1775,7 +1953,17 @@ function resetStage() {
   state.mobileTab = "tender";
   state.hoveredId = null;
   state.selectedId = null;
-  if (state.competition === "stamp") {
+  if (state.competition === "oath") {
+    state.oathResults = [];
+    state.activeOathId = OATH_CASES[0].id;
+    state.oathScore = 0;
+    state.oathOutcome = "open";
+  } else if (state.competition === "roll") {
+    state.rollResults = [];
+    state.activeRollId = ROLL_CASES[0].id;
+    state.rollScore = 0;
+    state.rollOutcome = "open";
+  } else if (state.competition === "stamp") {
     state.stampResults = [];
     state.activeStampId = STAMP_CASES[0].id;
     state.stampScore = 0;
@@ -1857,7 +2045,7 @@ function renderBoot() {
   document.getElementById("boot-title").textContent = L("title");
   document.getElementById("boot-goal").textContent = L("goal");
   document.getElementById("enter-btn").textContent = L("enter");
-  document.getElementById("boot-stages").innerHTML = ["stage1", "stage2", "stage3", "stage4", "stage5", "stage6", "stage7", "stage8"]
+  document.getElementById("boot-stages").innerHTML = ["stage1", "stage2", "stage3", "stage4", "stage5", "stage6", "stage7", "stage8", "stage9", "stage10"]
     .map((key) => `<li>${L(key)}</li>`)
     .join("");
   paintLang(document.getElementById("boot-lang"));
@@ -1893,6 +2081,8 @@ function renderHeader() {
   const crop = state.competition === "crop";
   const wash = state.competition === "wash";
   const stamp = state.competition === "stamp";
+  const roll = state.competition === "roll";
+  const oath = state.competition === "oath";
   document.getElementById("phase-kicker").textContent = L("projectPhase");
   document.querySelectorAll(".comp-switch").forEach((bar) => {
     bar.querySelector('[data-comp="tender"]').textContent = L("tenders");
@@ -1903,17 +2093,19 @@ function renderHeader() {
     bar.querySelector('[data-comp="crop"]').textContent = L("crop");
     bar.querySelector('[data-comp="wash"]').textContent = L("wash");
     bar.querySelector('[data-comp="stamp"]').textContent = L("stamp");
+    bar.querySelector('[data-comp="roll"]').textContent = L("roll");
+    bar.querySelector('[data-comp="oath"]').textContent = L("oath");
   });
-  document.getElementById("phase-title").textContent = stamp ? L("phaseStamp") : wash ? L("phaseWash") : crop ? L("phaseCrop") : fair ? L("phaseFair") : land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
-  document.getElementById("stat-label").textContent = stamp ? L("stampScore") : wash ? L("washScore") : crop ? L("cropScore") : fair ? L("fairScore") : land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
+  document.getElementById("phase-title").textContent = oath ? L("phaseOath") : roll ? L("phaseRoll") : stamp ? L("phaseStamp") : wash ? L("phaseWash") : crop ? L("phaseCrop") : fair ? L("phaseFair") : land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
+  document.getElementById("stat-label").textContent = oath ? L("oathScore") : roll ? L("rollScore") : stamp ? L("stampScore") : wash ? L("washScore") : crop ? L("cropScore") : fair ? L("fairScore") : land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
   const won = state.results.filter((r) => r.winnerId === "you").length;
   const stat = document.getElementById("stat-won");
-  stat.textContent = stamp ? `${state.stampScore}/${STAMP_CASES.length * 100}` : wash ? `${state.washScore}/${WASH_CASES.length * 100}` : crop ? `${state.cropScore}/${CROP_CASES.length * 100}` : fair ? `${state.fairScore}/${FAIR_CASES.length * 100}` : land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
+  stat.textContent = oath ? `${state.oathScore}/${OATH_CASES.length * 100}` : roll ? `${state.rollScore}/${ROLL_CASES.length * 100}` : stamp ? `${state.stampScore}/${STAMP_CASES.length * 100}` : wash ? `${state.washScore}/${WASH_CASES.length * 100}` : crop ? `${state.cropScore}/${CROP_CASES.length * 100}` : fair ? `${state.fairScore}/${FAIR_CASES.length * 100}` : land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
   stat.className = "mono";
-  stat.style.color = stamp ? "#ea2839" : wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
+  stat.style.color = oath ? "#1a206d" : roll ? "#2a6f8f" : stamp ? "#ea2839" : wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
   if (haven) stat.className = "mono rose";
   if (whistle) stat.className = "mono amber";
-  if (!stamp && !wash && !crop && !fair && !land && !haven && !whistle) stat.className = "mono green";
+  if (!oath && !roll && !stamp && !wash && !crop && !fair && !land && !haven && !whistle) stat.className = "mono green";
   const swept = roundOneCleared(state.results, state.contractorId);
   const lineOpen = roundTwoCleared(state.whistleResults);
   const landOpen = roundThreeCleared(state.havenResults);
@@ -1921,6 +2113,8 @@ function renderHeader() {
   const cropOpen = roundFiveCleared(state.fairResults);
   const washOpen = roundSixCleared(state.cropResults);
   const stampOpen = roundSevenCleared(state.washResults);
+  const rollOpen = roundEightCleared(state.stampResults);
+  const oathOpen = roundNineCleared(state.rollResults);
   document.querySelectorAll(".comp-switch button").forEach((b) => {
     b.classList.toggle("on", b.dataset.comp === state.competition);
     if (b.dataset.comp === "whistle") {
@@ -1951,9 +2145,21 @@ function renderHeader() {
       b.classList.toggle("locked", !stampOpen);
       b.title = stampOpen ? L("stampHint") : L("lockStamp");
     }
+    if (b.dataset.comp === "roll") {
+      b.classList.toggle("locked", !rollOpen);
+      b.title = rollOpen ? L("rollHint") : L("lockRoll");
+    }
+    if (b.dataset.comp === "oath") {
+      b.classList.toggle("locked", !oathOpen);
+      b.title = oathOpen ? L("oathHint") : L("lockOath");
+    }
   });
   const qcount = document.getElementById("qcount");
-  qcount.textContent = stamp
+  qcount.textContent = oath
+    ? `${state.oathResults.length}/${OATH_CASES.length}`
+    : roll
+    ? `${state.rollResults.length}/${ROLL_CASES.length}`
+    : stamp
     ? `${state.stampResults.length}/${STAMP_CASES.length}`
     : wash
     ? `${state.washResults.length}/${WASH_CASES.length}`
@@ -1969,8 +2175,8 @@ function renderHeader() {
             ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
             : `${state.results.length}/${TENDERS.length}`;
   qcount.className = haven ? "qcount rose" : whistle ? "qcount amber" : "qcount green";
-  qcount.style.color = stamp ? "#ea2839" : wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
-  document.getElementById("tab-case").textContent = stamp || wash || crop || fair || land || haven || whistle ? L("case") : L("tender");
+  qcount.style.color = oath ? "#1a206d" : roll ? "#2a6f8f" : stamp ? "#ea2839" : wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
+  document.getElementById("tab-case").textContent = oath || roll || stamp || wash || crop || fair || land || haven || whistle ? L("case") : L("tender");
   document.getElementById("tab-round").textContent = state.competition === "tender"
     ? L("whistle")
     : state.competition === "whistle" && lineOpen
@@ -1985,13 +2191,21 @@ function renderHeader() {
               ? L("wash")
               : state.competition === "wash" && stampOpen
                 ? L("stamp")
-                : L("tenders");
+                : state.competition === "stamp" && rollOpen
+                  ? L("roll")
+                  : state.competition === "roll" && oathOpen
+                    ? L("oath")
+                    : L("tenders");
   document.querySelectorAll("#mobile-tabs button[data-tab]").forEach((b) => {
     b.classList.toggle("whistle", whistle && b.classList.contains("on"));
     b.classList.toggle("haven", haven && b.classList.contains("on"));
   });
   document.getElementById("contractor-chips").innerHTML = `
-    <span class="kicker mute">${stamp
+    <span class="kicker mute">${oath
+      ? L("seatsHeld", { n: state.oathResults.filter((r) => r.correct).length, total: OATH_CASES.length })
+      : roll
+      ? L("namesHeld", { n: state.rollResults.filter((r) => r.correct).length, total: ROLL_CASES.length })
+      : stamp
       ? L("filesHeld", { n: state.stampResults.filter((r) => r.correct).length, total: STAMP_CASES.length })
       : wash
       ? L("floorsHeld", { n: state.washResults.filter((r) => r.correct).length, total: WASH_CASES.length })
@@ -2599,7 +2813,7 @@ function renderStamp() {
       ${result && remaining ? `<button type="button" class="cta" id="next-stamp" style="margin-top:.75rem;background:#ea2839">${L("nextFile")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.stampOutcome === "click" ? "var(--green)" : state.stampOutcome === "smear" ? "#ea2839" : "var(--crimson)"}">${
         state.stampOutcome === "click" ? L("doneClick") : state.stampOutcome === "smear" ? L("doneSmear") : L("doneShut")
-      }</p>` : ""}
+      }</p>${roundEightCleared(state.stampResults) ? `<button type="button" class="cta open-next" id="open-roll">${L("openRoll")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-stamp]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2617,6 +2831,16 @@ function renderStamp() {
   document.getElementById("next-stamp")?.addEventListener("click", () => {
     if (state.stampOutcome !== "open") return;
     state.activeStampId = firstOpenStampId(state.stampResults);
+    persist(state);
+    renderAll();
+  });
+  document.getElementById("open-roll")?.addEventListener("click", () => {
+    if (!roundEightCleared(state.stampResults)) return;
+    state.competition = "roll";
+    state.mobileTab = "tender";
+    state.showOutcome = false;
+    play.classList.add("show-tender");
+    play.classList.remove("show-board");
     persist(state);
     renderAll();
   });
@@ -2639,7 +2863,179 @@ function answerStamp(picked) {
   renderOutcome();
 }
 
+function renderRoll() {
+  const raw = rollCaseById(state.activeRollId);
+  const item = localizeRoll(raw, lang);
+  const result = state.rollResults.find((r) => r.caseId === item.id);
+  const locked = Boolean(result);
+  const remaining = ROLL_CASES.some((c) => !state.rollResults.some((r) => r.caseId === c.id));
+  const held = Boolean(result?.correct);
+  const panel = document.getElementById("tender-panel");
+  panel.classList.toggle("award", held);
+  panel.classList.toggle("reject", locked && !held);
+  panel.innerHTML = `
+    <div class="side-head">
+      <p class="kicker" style="color:#2a6f8f">${L("briefRoll")} · ${item.spec}</p>
+      <h2>${item.title}</h2>
+      <p class="mono mute">${state.rollResults.length}/${ROLL_CASES.length}</p>
+    </div>
+    <div class="spec-nav">
+      ${ROLL_CASES.map((c) => {
+        const done = state.rollResults.some((r) => r.caseId === c.id);
+        const hit = state.rollResults.find((r) => r.caseId === c.id);
+        const on = c.id === item.id;
+        return `<button type="button" data-roll="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, ROLLSHORT[c.id])}</button>`;
+      }).join("")}
+    </div>
+    <div class="side-body">
+      <p>${item.question}</p>
+      <div class="opts">
+        ${item.options.map((opt) => {
+          const picked = result?.picked === opt.id;
+          const isCorrect = opt.id === item.correct;
+          const cls = picked && held ? "correct" : picked && locked ? "wrong" : locked && isCorrect ? "correct" : "";
+          return `<button type="button" class="opt ${cls}" data-ropt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
+        }).join("")}
+      </div>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsRoll") : L("missRoll")) : L("scoring")}</p>
+      <p style="font-size:.8rem">${L("scoringRoll")}</p>
+      <p style="font-size:.8rem">${L("rollRule")}</p>
+      ${result && remaining ? `<button type="button" class="cta" id="next-roll" style="margin-top:.75rem;background:#2a6f8f">${L("nextName")}</button>` : ""}
+      ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.rollOutcome === "list" ? "var(--green)" : state.rollOutcome === "sheet" ? "#2a6f8f" : "var(--crimson)"}">${
+        state.rollOutcome === "list" ? L("doneList") : state.rollOutcome === "sheet" ? L("doneSheet") : L("doneVan")
+      }</p>${roundNineCleared(state.rollResults) ? `<button type="button" class="cta open-next" id="open-oath">${L("openOath")}</button>` : ""}` : ""}
+    </div>`;
+  panel.querySelectorAll("[data-roll]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!roundEightCleared(state.stampResults)) {
+        showToast(L("toastLockRoll"), "info");
+        return;
+      }
+      state.activeRollId = btn.dataset.roll;
+      state.competition = "roll";
+      persist(state);
+      renderAll();
+    });
+  });
+  panel.querySelectorAll("[data-ropt]").forEach((btn) => btn.addEventListener("click", () => answerRoll(btn.dataset.ropt)));
+  document.getElementById("next-roll")?.addEventListener("click", () => {
+    if (state.rollOutcome !== "open") return;
+    state.activeRollId = firstOpenRollId(state.rollResults);
+    persist(state);
+    renderAll();
+  });
+  document.getElementById("open-oath")?.addEventListener("click", () => {
+    if (!roundNineCleared(state.rollResults)) return;
+    state.competition = "oath";
+    state.mobileTab = "tender";
+    state.showOutcome = false;
+    play.classList.add("show-tender");
+    play.classList.remove("show-board");
+    persist(state);
+    renderAll();
+  });
+}
+
+function answerRoll(picked) {
+  if (!state.contractorId || !roundEightCleared(state.stampResults)) return;
+  const item = rollCaseById(state.activeRollId);
+  if (state.rollResults.some((r) => r.caseId === item.id)) return;
+  const correct = picked === item.correct;
+  state.rollResults.push({ caseId: item.id, picked, correct, playerScore: correct ? ROLL_CORRECT : ROLL_WRONG });
+  state.rollScore += correct ? ROLL_CORRECT : ROLL_WRONG;
+  state.rollOutcome = rollOutcomeOf(state.rollScore, state.rollResults.length);
+  if (state.rollOutcome !== "open") {
+    state.showOutcome = true;
+    showToast(state.rollOutcome === "list" ? L("toastList") : state.rollOutcome === "sheet" ? L("toastSheet") : L("toastVan"), state.rollOutcome);
+  } else showToast(correct ? L("toastName") : L("toastSlipName"), correct ? "award" : "reject");
+  persist(state);
+  renderAll();
+  renderOutcome();
+}
+
+function renderOath() {
+  const raw = oathCaseById(state.activeOathId);
+  const item = localizeOath(raw, lang);
+  const result = state.oathResults.find((r) => r.caseId === item.id);
+  const locked = Boolean(result);
+  const remaining = OATH_CASES.some((c) => !state.oathResults.some((r) => r.caseId === c.id));
+  const held = Boolean(result?.correct);
+  const panel = document.getElementById("tender-panel");
+  panel.classList.toggle("award", held);
+  panel.classList.toggle("reject", locked && !held);
+  panel.innerHTML = `
+    <div class="side-head">
+      <p class="kicker" style="color:#1a206d">${L("briefOath")} · ${item.spec}</p>
+      <h2>${item.title}</h2>
+      <p class="mono mute">${state.oathResults.length}/${OATH_CASES.length}</p>
+    </div>
+    <div class="spec-nav">
+      ${OATH_CASES.map((c) => {
+        const done = state.oathResults.some((r) => r.caseId === c.id);
+        const hit = state.oathResults.find((r) => r.caseId === c.id);
+        const on = c.id === item.id;
+        return `<button type="button" data-oath="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, OATHSHORT[c.id])}</button>`;
+      }).join("")}
+    </div>
+    <div class="side-body">
+      <p>${item.question}</p>
+      <div class="opts">
+        ${item.options.map((opt) => {
+          const picked = result?.picked === opt.id;
+          const isCorrect = opt.id === item.correct;
+          const cls = picked && held ? "correct" : picked && locked ? "wrong" : locked && isCorrect ? "correct" : "";
+          return `<button type="button" class="opt ${cls}" data-oopt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
+        }).join("")}
+      </div>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsOath") : L("missOath")) : L("scoring")}</p>
+      <p style="font-size:.8rem">${L("scoringOath")}</p>
+      <p style="font-size:.8rem">${L("oathRule")}</p>
+      ${result && remaining ? `<button type="button" class="cta" id="next-oath" style="margin-top:.75rem;background:#1a206d">${L("nextSeat")}</button>` : ""}
+      ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.oathOutcome === "whole" ? "var(--green)" : state.oathOutcome === "page" ? "#1a206d" : "var(--crimson)"}">${
+        state.oathOutcome === "whole" ? L("doneWhole") : state.oathOutcome === "page" ? L("donePage") : L("doneKey")
+      }</p>` : ""}
+    </div>`;
+  panel.querySelectorAll("[data-oath]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!roundNineCleared(state.rollResults)) {
+        showToast(L("toastLockOath"), "info");
+        return;
+      }
+      state.activeOathId = btn.dataset.oath;
+      state.competition = "oath";
+      persist(state);
+      renderAll();
+    });
+  });
+  panel.querySelectorAll("[data-oopt]").forEach((btn) => btn.addEventListener("click", () => answerOath(btn.dataset.oopt)));
+  document.getElementById("next-oath")?.addEventListener("click", () => {
+    if (state.oathOutcome !== "open") return;
+    state.activeOathId = firstOpenOathId(state.oathResults);
+    persist(state);
+    renderAll();
+  });
+}
+
+function answerOath(picked) {
+  if (!state.contractorId || !roundNineCleared(state.rollResults)) return;
+  const item = oathCaseById(state.activeOathId);
+  if (state.oathResults.some((r) => r.caseId === item.id)) return;
+  const correct = picked === item.correct;
+  state.oathResults.push({ caseId: item.id, picked, correct, playerScore: correct ? OATH_CORRECT : OATH_WRONG });
+  state.oathScore += correct ? OATH_CORRECT : OATH_WRONG;
+  state.oathOutcome = oathOutcomeOf(state.oathScore, state.oathResults.length);
+  if (state.oathOutcome !== "open") {
+    state.showOutcome = true;
+    showToast(state.oathOutcome === "whole" ? L("toastWhole") : state.oathOutcome === "page" ? L("toastPage") : L("toastKey"), state.oathOutcome);
+  } else showToast(correct ? L("toastSeat") : L("toastSlipSeat"), correct ? "award" : "reject");
+  persist(state);
+  renderAll();
+  renderOutcome();
+}
+
 function renderCase() {
+  if (state.competition === "oath") return renderOath();
+  if (state.competition === "roll") return renderRoll();
   if (state.competition === "stamp") return renderStamp();
   if (state.competition === "wash") return renderWash();
   if (state.competition === "crop") return renderCrop();
@@ -2772,9 +3168,19 @@ function renderOutcome() {
   const wash = state.competition === "wash";
   const crop = state.competition === "crop";
   const stamp = state.competition === "stamp";
-  const outcome = stamp ? state.stampOutcome : wash ? state.washOutcome : crop ? state.cropOutcome : fair ? state.fairOutcome : land ? state.landOutcome : haven ? state.havenOutcome : state.whistleOutcome;
+  const roll = state.competition === "roll";
+  const oath = state.competition === "oath";
+  const outcome = oath ? state.oathOutcome : roll ? state.rollOutcome : stamp ? state.stampOutcome : wash ? state.washOutcome : crop ? state.cropOutcome : fair ? state.fairOutcome : land ? state.landOutcome : haven ? state.havenOutcome : state.whistleOutcome;
   if (!state.showOutcome || state.competition === "tender" || outcome === "open") { el.hidden = true; return; }
-  const copy = stamp ? {
+  const copy = oath ? {
+    whole: { kicker: L("topScore"), title: L("wholeTitle"), body: L("wholeBody"), cls: "award" },
+    page: { kicker: L("midScore"), title: L("pageTitle"), body: L("pageBody"), cls: "burn" },
+    lost: { kicker: L("lowScore"), title: L("keyTitle"), body: L("keyBody"), cls: "reject" },
+  }[state.oathOutcome] : roll ? {
+    list: { kicker: L("topScore"), title: L("listTitle"), body: L("listBody"), cls: "award" },
+    sheet: { kicker: L("midScore"), title: L("sheetTitle"), body: L("sheetBody"), cls: "burn" },
+    van: { kicker: L("lowScore"), title: L("vanTitle"), body: L("vanBody"), cls: "reject" },
+  }[state.rollOutcome] : stamp ? {
     click: { kicker: L("topScore"), title: L("clickTitle"), body: L("clickBody"), cls: "award" },
     smear: { kicker: L("midScore"), title: L("smearTitle"), body: L("smearBody"), cls: "burn" },
     shut: { kicker: L("lowScore"), title: L("shutTitle"), body: L("shutBody"), cls: "reject" },
@@ -2806,7 +3212,11 @@ function renderOutcome() {
   document.getElementById("outcome-kicker").textContent = copy.kicker;
   document.getElementById("outcome-title").textContent = copy.title;
   document.getElementById("outcome-body").textContent = copy.body;
-  document.getElementById("outcome-score").textContent = stamp
+  document.getElementById("outcome-score").textContent = oath
+    ? L("scoreOath", { score: state.oathScore })
+    : roll
+    ? L("scoreRoll", { score: state.rollScore })
+    : stamp
     ? L("scoreStamp", { score: state.stampScore })
     : wash
     ? L("scoreWash", { score: state.washScore })
@@ -2832,6 +3242,32 @@ function renderBoard() {
     return;
   }
   board.hidden = false;
+  if (state.competition === "oath") {
+    const seats = state.oathResults.filter((r) => r.correct).length;
+    board.innerHTML = `
+      <div class="side-head">
+        <p class="kicker" style="color:#1a206d">${L("boardOath")}</p>
+        <h2>${L("notRanking")}</h2>
+      </div>
+      <div class="side-body">
+        <p style="font-size:.8rem">${L("oathRule")}</p>
+        <p class="mono green">${L("seatsHeld", { n: seats, total: OATH_CASES.length })}</p>
+      </div>`;
+    return;
+  }
+  if (state.competition === "roll") {
+    const names = state.rollResults.filter((r) => r.correct).length;
+    board.innerHTML = `
+      <div class="side-head">
+        <p class="kicker" style="color:#2a6f8f">${L("boardRoll")}</p>
+        <h2>${L("notRanking")}</h2>
+      </div>
+      <div class="side-body">
+        <p style="font-size:.8rem">${L("rollRule")}</p>
+        <p class="mono green">${L("namesHeld", { n: names, total: ROLL_CASES.length })}</p>
+      </div>`;
+    return;
+  }
   if (state.competition === "stamp") {
     const files = state.stampResults.filter((r) => r.correct).length;
     board.innerHTML = `
@@ -2949,6 +3385,16 @@ function renderDock() {
   if (state.competition === "fair") {
     dock.hidden = false;
     dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#b388ff">${L("dockFair")}</p></div>`;
+    return;
+  }
+  if (state.competition === "oath") {
+    dock.hidden = false;
+    dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#1a206d">${L("dockOath")}</p></div>`;
+    return;
+  }
+  if (state.competition === "roll") {
+    dock.hidden = false;
+    dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#2a6f8f">${L("dockRoll")}</p></div>`;
     return;
   }
   if (state.competition === "stamp") {
@@ -3081,6 +3527,26 @@ function sheetState() {
       total: STAMP_CASES.length,
       score: state.stampScore,
       perfect: state.stampResults.length >= STAMP_CASES.length && state.stampResults.every((r) => r.correct),
+      last: false,
+    };
+  }
+  if (comp === "roll") {
+    return {
+      answered: state.rollResults.some((r) => r.caseId === state.activeRollId),
+      n: state.rollResults.length,
+      total: ROLL_CASES.length,
+      score: state.rollScore,
+      perfect: state.rollResults.length >= ROLL_CASES.length && state.rollResults.every((r) => r.correct),
+      last: false,
+    };
+  }
+  if (comp === "oath") {
+    return {
+      answered: state.oathResults.some((r) => r.caseId === state.activeOathId),
+      n: state.oathResults.length,
+      total: OATH_CASES.length,
+      score: state.oathScore,
+      perfect: state.oathResults.length >= OATH_CASES.length && state.oathResults.every((r) => r.correct),
       last: true,
     };
   }
@@ -3104,7 +3570,7 @@ function renderMobileFoot() {
   meta.textContent = L("sheetMeta", { n: foot.n, total: foot.total, score: foot.score });
   go.hidden = !mode;
   go.dataset.mode = mode;
-  const openKey = { tender: "openBrief", whistle: "openLine", haven: "openLand", land: "openFair", fair: "openCrop", crop: "openWash", wash: "openStamp" }[state.competition];
+  const openKey = { tender: "openBrief", whistle: "openLine", haven: "openLand", land: "openFair", fair: "openCrop", crop: "openWash", wash: "openStamp", stamp: "openRoll", roll: "openOath" }[state.competition];
   go.textContent = mode === "continue" ? L("continue") : mode === "next" ? L(openKey || "nextStage") : L("resetStage");
   go.style.background = mode === "reset" ? "var(--crimson)" : mode === "next" ? "var(--green)" : "var(--cyan)";
   go.style.color = mode === "reset" ? "var(--paper)" : "var(--void)";
@@ -3134,13 +3600,15 @@ function advanceQuestion() {
   else if (state.competition === "crop") state.activeCropId = firstOpenCropId(state.cropResults);
   else if (state.competition === "wash") state.activeWashId = firstOpenWashId(state.washResults);
   else if (state.competition === "stamp") state.activeStampId = firstOpenStampId(state.stampResults);
+  else if (state.competition === "roll") state.activeRollId = firstOpenRollId(state.rollResults);
+  else if (state.competition === "oath") state.activeOathId = firstOpenOathId(state.oathResults);
   else state.activeHouseId = firstOpenHouseId(state.results);
   state.selectedId = state.activeHouseId;
   persist(state);
   renderAll();
 }
 function goNextStage() {
-  const order = ["tender", "whistle", "haven", "land", "fair", "crop", "wash", "stamp"];
+  const order = ["tender", "whistle", "haven", "land", "fair", "crop", "wash", "stamp", "roll", "oath"];
   const next = order[order.indexOf(state.competition) + 1];
   if (!next) return;
   state.competition = next;
@@ -3212,6 +3680,14 @@ document.querySelectorAll(".comp-switch").forEach((bar) => bar.addEventListener(
     showToast(L("toastLockStamp"), "info");
     return;
   }
+  if (btn.dataset.comp === "roll" && !roundEightCleared(state.stampResults)) {
+    showToast(L("toastLockRoll"), "info");
+    return;
+  }
+  if (btn.dataset.comp === "oath" && !roundNineCleared(state.rollResults)) {
+    showToast(L("toastLockOath"), "info");
+    return;
+  }
   state.showOutcome = false;
   state.competition = btn.dataset.comp;
   state.mobileTab = "tender";
@@ -3274,6 +3750,8 @@ document.getElementById("tab-round").addEventListener("click", () => {
   else if (state.competition === "fair" && roundFiveCleared(state.fairResults)) next = "crop";
   else if (state.competition === "crop" && roundSixCleared(state.cropResults)) next = "wash";
   else if (state.competition === "wash" && roundSevenCleared(state.washResults)) next = "stamp";
+  else if (state.competition === "stamp" && roundEightCleared(state.stampResults)) next = "roll";
+  else if (state.competition === "roll" && roundNineCleared(state.rollResults)) next = "oath";
   if (next === "whistle" && !roundOneCleared(state.results, state.contractorId)) {
     showToast(L("toastLock"), "info");
     return;
@@ -3302,6 +3780,14 @@ document.getElementById("tab-round").addEventListener("click", () => {
     showToast(L("toastLockStamp"), "info");
     return;
   }
+  if (next === "roll" && !roundEightCleared(state.stampResults)) {
+    showToast(L("toastLockRoll"), "info");
+    return;
+  }
+  if (next === "oath" && !roundNineCleared(state.rollResults)) {
+    showToast(L("toastLockOath"), "info");
+    return;
+  }
   state.competition = next;
   state.showOutcome = false;
   state.mobileTab = "tender";
@@ -3319,6 +3805,8 @@ if ((state.fairResults || []).length < FAIR_CASES.length) state.fairOutcome = "o
 if ((state.cropResults || []).length < CROP_CASES.length) state.cropOutcome = "open";
 if ((state.washResults || []).length < WASH_CASES.length) state.washOutcome = "open";
 if ((state.stampResults || []).length < STAMP_CASES.length) state.stampOutcome = "open";
+if ((state.rollResults || []).length < ROLL_CASES.length) state.rollOutcome = "open";
+if ((state.oathResults || []).length < OATH_CASES.length) state.oathOutcome = "open";
 for (const id of ["market", "clinic", "hall", "bus"]) {
   if (state.results.some((r) => r.houseId === id)) continue;
   const h = state.houses.find((x) => x.id === id);
@@ -3347,6 +3835,12 @@ if (!roundSixCleared(state.cropResults) && state.competition === "wash") {
 }
 if (!roundSevenCleared(state.washResults) && state.competition === "stamp") {
   state.competition = roundSixCleared(state.cropResults) ? "wash" : "crop";
+}
+if (!roundEightCleared(state.stampResults) && state.competition === "roll") {
+  state.competition = roundSevenCleared(state.washResults) ? "stamp" : "wash";
+}
+if (!roundNineCleared(state.rollResults) && state.competition === "oath") {
+  state.competition = roundEightCleared(state.stampResults) ? "roll" : "stamp";
 }
 renderBoot();
 if (state.phase === "play") showPlay();

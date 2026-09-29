@@ -6,7 +6,7 @@ import { LandScene } from "./land.js?v=vg61";
 import { FairScene } from "./fair.js?v=vg71";
 import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg61";
-import { StampScene } from "./stamp.js?v=vg67";
+import { StampScene } from "./stamp.js?v=vg74";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -997,7 +997,7 @@ class VillageEngine {
     this.fair.sync(this.competition, this.fairOutcome, this.fairCorrect, this.fairHeld);
     this.crop.sync(this.competition, this.cropOutcome, this.cropCorrect);
     this.wash.sync(this.competition, this.washOutcome, this.washCorrect);
-    this.stamp.sync(this.competition, this.stampOutcome, this.stampCorrect);
+    this.stamp.sync(this.competition, this.stampOutcome, this.stampCorrect, next.stampDesks, next.stampActive);
     const solo = this.competition !== "tender";
     if (this.village) this.village.visible = !solo;
     if (this.wGroup) this.wGroup.visible = this.competition === "whistle";
@@ -1085,7 +1085,7 @@ class VillageEngine {
     if (this.competition === "stamp") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      this.aimStage(new THREE.Vector3(0.25, 1.0, 1.15), view, 2.3);
+      this.aimStage(new THREE.Vector3(0, 0.95, 0.85), view, 3.3);
       return;
     }
     if (this.competition === "wash") {
@@ -1740,6 +1740,12 @@ function syncPayload() {
     washCorrect: (state.washResults || []).filter((r) => r.correct).length,
     stampOutcome: state.stampOutcome,
     stampCorrect: (state.stampResults || []).filter((r) => r.correct).length,
+    stampDesks: STAMP_CASES.map((c) => {
+      const hit = (state.stampResults || []).find((r) => r.caseId === c.id);
+      if (!hit) return "open";
+      return hit.correct ? "held" : "miss";
+    }),
+    stampActive: Math.max(0, STAMP_CASES.findIndex((c) => c.id === state.activeStampId)),
   };
 }
 engine.sync(syncPayload());

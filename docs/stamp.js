@@ -1,4 +1,4 @@
-// Stage 8. The stamp. Clerk walks the counter and stamps each file that holds.
+// Stage 8. Six desks. A stamp only lands on a correct answer.
 import * as THREE from "three";
 
 const PEARL = 0xf4f5f3;
@@ -12,33 +12,31 @@ class StampScene {
     this.group = new THREE.Group();
     this.geos = [];
     this.mats = [];
-    this.folders = [];
+    this.desks = [];
+    this.queue = [];
     this.competition = "tender";
     this.outcome = "open";
     this.correct = 0;
-    this.stampClock = 1.4;
-    this.seenCorrect = 0;
-    this.clerkLegs = [];
+    this.active = 0;
+    this.deskState = ["open", "open", "open", "open", "open", "open"];
+    this.clocks = [2, 2, 2, 2, 2, 2];
+    this.rejecting = false;
+    this.atRear = false;
+    this.rear = new THREE.Vector3(-3.15, 0, 4.85);
 
     const hemi = new THREE.HemisphereLight(0xd5e4f2, 0x3a3428, 0.55);
     const sun = new THREE.DirectionalLight(0xfff3df, 1.05);
     sun.position.set(4, 10, 6);
     this.group.add(hemi, sun);
-
     this.shell = this.mat(PEARL, { rough: 0.32, metal: 0.22 });
     this.joint = this.mat(JOINT, { rough: 0.45, metal: 0.4 });
-    this.glass = this.mat(GLASS, { rough: 0.12, metal: 0.55, emissive: 0x1a2830, ei: 0.22 });
-    this.ink = this.mat(INK, { rough: 0.45, metal: 0.05 });
-    this.padMat = this.mat(INK, { rough: 0.4, metal: 0.05 });
-
-    this.buildPlaza();
-    this.buildVan();
-    this.buildCounter();
-    this.buildFolders();
-    this.buildShutter();
-    this.buildOfficial();
-    this.buildStamp();
+    this.glass = this.mat(GLASS, { rough: 0.12, metal: 0.55, emissive: 0x1a2830, ei: 0.25 });
+    this.ink = this.mat(INK, { rough: 0.4 });
+    this.paper = this.mat(0xf7f4ee, { rough: 0.75 });
+    this.buildHall();
+    this.buildDesks();
     this.buildQueue();
+    this.customer = this.buildCustomer();
     this.group.visible = false;
     scene.add(this.group);
   }
@@ -67,279 +65,232 @@ class StampScene {
     return mesh;
   }
 
-  buildPlaza() {
-    const pad = this.mesh(this.group, new THREE.CircleGeometry(7.2, 40), this.mat(0xd4cbb8, { rough: 1 }), 0, -0.02, 0.4);
-    pad.rotation.x = -Math.PI / 2;
+  deskX(i) {
+    return -2.5 + i * 1;
   }
 
-  buildVan() {
-    const g = new THREE.Group();
-    this.mesh(g, new THREE.BoxGeometry(3.7, 0.16, 1.55), this.joint, 0, 0.28, 0);
-    this.mesh(g, new THREE.BoxGeometry(3.45, 0.82, 1.32), this.shell, 0, 0.78, 0);
-    this.mesh(g, new THREE.BoxGeometry(2.15, 0.46, 1.18), this.shell, -0.35, 1.38, 0);
-    this.mesh(g, new THREE.BoxGeometry(3.55, 0.05, 1.42), this.joint, 0, 1.66, 0);
-    this.visor = this.mesh(g, new THREE.BoxGeometry(1.85, 0.32, 0.06), this.glass, -0.4, 1.4, 0.62);
-    this.mesh(g, new THREE.BoxGeometry(2.9, 0.22, 0.05), this.glass, 0.15, 1.02, 0.68);
+  buildHall() {
+    const floor = this.mesh(this.group, new THREE.CircleGeometry(8, 48), this.mat(0xd4cbb8, { rough: 1 }), 0, -0.02, 0.6);
+    floor.rotation.x = -Math.PI / 2;
+    this.mesh(this.group, new THREE.BoxGeometry(8.4, 1.7, 0.08), this.shell, 0, 1.15, -1.35);
     FLAG.forEach((color, i) => {
-      const band = this.mat(color, { rough: 0.4, metal: 0.15 });
-      this.mesh(g, new THREE.BoxGeometry(0.62, 0.045, 0.03), band, -1.15 + i * 0.72, 0.62, 0.68);
-    });
-    this.wheels = [];
-    [-1.35, 1.25].forEach((x) => {
-      [-0.72, 0.72].forEach((z) => {
-        const wheel = this.mesh(g, new THREE.CylinderGeometry(0.28, 0.28, 0.16, 14), this.joint, x, 0.28, z);
-        wheel.rotation.z = Math.PI / 2;
-        const hub = this.mesh(
-          g,
-          new THREE.CylinderGeometry(0.1, 0.1, 0.18, 8),
-          this.mat(0xd5d6d2, { rough: 0.3, metal: 0.6 }),
-          x,
-          0.28,
-          z,
-        );
-        hub.rotation.z = Math.PI / 2;
-        this.wheels.push(wheel);
-      });
-    });
-    this.group.add(g);
-    this.van = g;
-  }
-
-  buildCounter() {
-    this.counter = new THREE.Group();
-    this.mesh(this.counter, new THREE.BoxGeometry(2.9, 0.08, 0.95), this.shell, 0, 0, 0);
-    this.mesh(this.counter, new THREE.BoxGeometry(2.74, 0.025, 0.78), this.glass, 0, 0.05, 0);
-    this.mesh(this.counter, new THREE.BoxGeometry(2.96, 0.03, 0.04), this.joint, 0, 0.02, 0.48);
-    this.counter.position.set(0.15, 0.98, 1.22);
-    this.group.add(this.counter);
-    this.drawer = this.mesh(this.group, new THREE.BoxGeometry(0.7, 0.16, 0.42), this.joint, 1.15, 0.72, 0.85);
-  }
-
-  folderIcon(kind, parent) {
-    if (kind === "envelope") {
-      this.mesh(parent, new THREE.BoxGeometry(0.16, 0.012, 0.1), this.mat(0xf4f1ea, { rough: 0.7 }), 0, 0.05, 0);
-      const flap = this.mesh(parent, new THREE.BoxGeometry(0.16, 0.012, 0.06), this.mat(0xe7e2d6, { rough: 0.7 }), 0, 0.06, -0.02);
-      flap.rotation.x = -0.5;
-    } else if (kind === "kin") {
-      const skin = this.mat(0xd7b39a, { rough: 0.65 });
-      this.mesh(parent, new THREE.SphereGeometry(0.035, 8, 6), skin, -0.04, 0.07, 0);
-      this.mesh(parent, new THREE.SphereGeometry(0.035, 8, 6), skin, 0.04, 0.07, 0);
-    } else if (kind === "plate") {
-      const plate = this.mesh(parent, new THREE.TorusGeometry(0.05, 0.012, 6, 14), this.mat(0xf0c030, { metal: 0.4, rough: 0.35 }), 0, 0.06, 0);
-      plate.rotation.x = Math.PI / 2;
-    } else if (kind === "slab") {
-      this.mesh(parent, new THREE.BoxGeometry(0.14, 0.04, 0.1), this.mat(0xb7b2a8, { rough: 0.85 }), 0, 0.06, 0);
-    } else if (kind === "calendar") {
-      this.mesh(parent, new THREE.BoxGeometry(0.14, 0.012, 0.16), this.mat(0xf7f4ee, { rough: 0.8 }), 0, 0.05, 0);
-      this.mesh(parent, new THREE.BoxGeometry(0.14, 0.02, 0.03), this.ink, 0, 0.065, -0.06);
-    } else {
-      this.mesh(parent, new THREE.BoxGeometry(0.12, 0.07, 0.1), this.shell, 0, 0.07, 0);
-      this.mesh(parent, new THREE.ConeGeometry(0.09, 0.06, 4), this.joint, 0, 0.13, 0);
-    }
-  }
-
-  buildFolders() {
-    const kinds = ["envelope", "kin", "plate", "slab", "calendar", "listing"];
-    kinds.forEach((kind, i) => {
-      const folder = new THREE.Group();
-      const paper = this.mat(0xf7f4ee, { rough: 0.75 });
-      this.mesh(folder, new THREE.BoxGeometry(0.34, 0.035, 0.42), paper, 0, 0, 0);
-      this.folderIcon(kind, folder);
-      const mark = this.mesh(folder, new THREE.CircleGeometry(0.07, 16), this.ink, 0.08, 0.03, 0.08);
-      mark.rotation.x = -Math.PI / 2;
-      mark.scale.setScalar(0.001);
-      const smear = this.mesh(
-        folder,
-        new THREE.CircleGeometry(0.09, 12),
-        this.mat(0x6a2030, { rough: 0.8, opacity: 0.0 }),
-        -0.04,
-        0.03,
-        -0.04,
-      );
-      smear.rotation.x = -Math.PI / 2;
-      smear.material.transparent = true;
-      folder.position.set(-1.15 + i * 0.46, 0.06, 0);
-      this.counter.add(folder);
-      this.folders.push({ group: folder, mark, smear, homeX: folder.position.x });
+      this.mesh(this.group, new THREE.BoxGeometry(8.4, 0.045, 0.02), this.mat(color, { rough: 0.4 }), 0, 0.18 + i * 0.05, -1.3);
     });
   }
 
-  buildStamp() {
-    this.stamp = new THREE.Group();
-    this.mesh(this.stamp, new THREE.CylinderGeometry(0.04, 0.045, 0.22, 10), this.joint, 0, 0.12, 0);
-    this.mesh(this.stamp, new THREE.BoxGeometry(0.14, 0.045, 0.14), this.shell, 0, 0.0, 0);
-    this.pad = this.mesh(this.stamp, new THREE.BoxGeometry(0.1, 0.02, 0.1), this.padMat, 0, -0.03, 0);
-    this.stamp.position.set(0, -0.12, 0.02);
-    this.group.add(this.stamp);
-    this.handWorld = new THREE.Vector3();
-    this.paperWorld = new THREE.Vector3();
-  }
-
-  buildShutter() {
-    this.shutter = this.mesh(this.group, new THREE.BoxGeometry(3.15, 0.72, 0.04), this.shell, 0.1, 1.85, 0.74);
-  }
-
-  buildPerson(opts) {
+  figure(opts) {
     const g = new THREE.Group();
     const s = opts.scale ?? 1;
     const skin = this.mat(opts.skin, { rough: 0.62 });
-    const cloth = this.mat(opts.cloth, { rough: 0.55 });
+    const cloth = this.mat(opts.cloth, { rough: 0.52 });
+    const pants = this.mat(opts.pants ?? opts.cloth, { rough: 0.58 });
     const hair = this.mat(opts.hair, { rough: 0.5 });
+    const body = new THREE.Group();
+    g.add(body);
     const legs = [];
     [-1, 1].forEach((side) => {
       const hip = new THREE.Group();
-      hip.position.set(side * 0.08 * s, 0.4 * s, 0);
-      this.mesh(hip, new THREE.CapsuleGeometry(0.045 * s, 0.16 * s, 3, 6), opts.skirt ? skin : cloth, 0, -0.12 * s, 0);
-      this.mesh(hip, new THREE.BoxGeometry(0.08 * s, 0.04 * s, 0.12 * s), this.joint, 0, -0.24 * s, 0.02 * s);
-      g.add(hip);
+      hip.position.set(side * 0.07 * s, 0.4 * s, 0);
+      this.mesh(hip, new THREE.CapsuleGeometry(0.042 * s, 0.16 * s, 3, 5), opts.skirt ? cloth : pants, 0, -0.12 * s, 0);
+      this.mesh(hip, new THREE.BoxGeometry(0.07 * s, 0.035 * s, 0.11 * s), this.joint, 0, -0.24 * s, 0.02 * s);
+      body.add(hip);
       legs.push(hip);
     });
-    if (opts.skirt) this.mesh(g, new THREE.ConeGeometry(0.16 * s, 0.26 * s, 8), cloth, 0, 0.4 * s, 0);
-    this.mesh(g, new THREE.BoxGeometry(0.26 * s, 0.28 * s, 0.14 * s), cloth, 0, 0.6 * s, 0);
-    this.mesh(g, new THREE.SphereGeometry(0.09 * s, 10, 8), skin, 0, 0.84 * s, 0);
-    this.mesh(g, new THREE.SphereGeometry(0.096 * s, 8, 6), hair, 0, 0.9 * s, -0.015 * s);
-    this.mesh(g, new THREE.BoxGeometry(0.12 * s, 0.08 * s, 0.02 * s), cloth, 0, 0.58 * s, 0.08 * s);
-    const paper = this.mesh(g, new THREE.BoxGeometry(0.1 * s, 0.012 * s, 0.14 * s), this.mat(0xf7f4ee, { rough: 0.7 }), 0.12 * s, 0.48 * s, 0.08 * s);
-    paper.rotation.z = -0.4;
-    g.position.set(opts.x, 0, opts.z);
-    g.rotation.y = opts.rot ?? Math.PI;
+    if (opts.skirt) this.mesh(body, new THREE.ConeGeometry(0.16 * s, 0.28 * s, 8), cloth, 0, 0.42 * s, 0);
+    this.mesh(body, new THREE.BoxGeometry((opts.broad ? 0.32 : 0.26) * s, 0.28 * s, 0.14 * s), cloth, 0, 0.62 * s, 0);
+    if (opts.tie) this.mesh(body, new THREE.BoxGeometry(0.03 * s, 0.14 * s, 0.012 * s), this.ink, 0, 0.6 * s, 0.08 * s);
+    const arm = new THREE.Group();
+    arm.position.set(0.16 * s, 0.72 * s, 0.02 * s);
+    this.mesh(arm, new THREE.CapsuleGeometry(0.035 * s, 0.16 * s, 3, 5), cloth, 0.02 * s, -0.12 * s, 0.04 * s);
+    const hand = this.mesh(arm, new THREE.SphereGeometry(0.04 * s, 8, 6), skin, 0.02 * s, -0.24 * s, 0.06 * s);
+    body.add(arm);
+    this.mesh(g, new THREE.SphereGeometry(0.09 * s, 10, 8), skin, 0, 0.86 * s, 0);
+    if (!opts.bald) {
+      const crown = this.mesh(g, new THREE.SphereGeometry((opts.hijab ? 0.105 : 0.095) * s, 8, 6), opts.hijab || opts.wrap ? cloth : hair, 0, 0.92 * s, -0.01 * s);
+      crown.scale.y = opts.hijab ? 0.85 : 0.6;
+    }
+    if (opts.beard) this.mesh(g, new THREE.SphereGeometry(0.05 * s, 6, 5), hair, 0, 0.8 * s, 0.05 * s);
+    if (opts.cap) this.mesh(g, new THREE.CylinderGeometry(0.07 * s, 0.08 * s, 0.04 * s, 8), opts.cap, 0, 0.96 * s, 0);
+    if (opts.wrap) this.mesh(g, new THREE.TorusGeometry(0.07 * s, 0.025 * s, 6, 10), cloth, 0, 0.9 * s, 0);
+    if (opts.cane) this.mesh(body, new THREE.CylinderGeometry(0.012 * s, 0.012 * s, 0.7 * s, 5), this.mat(0x6d5a40, { rough: 0.7 }), 0.2 * s, 0.32 * s, 0.08 * s);
     g.userData.legs = legs;
-    this.group.add(g);
+    g.userData.body = body;
+    g.userData.arm = arm;
+    g.userData.hand = hand;
     return g;
   }
 
-  buildOfficial() {
-    const g = new THREE.Group();
-    const s = 1.22;
-    const skin = this.mat(0xc4865a, { rough: 0.58 });
-    const suit = this.mat(0x1a2744, { rough: 0.42, metal: 0.12 });
-    const shirt = this.mat(0xf7f4ee, { rough: 0.5 });
-    this.clerkLegs = [];
-    [-1, 1].forEach((side) => {
-      const hip = new THREE.Group();
-      hip.position.set(side * 0.08 * s, 0.42 * s, 0);
-      this.mesh(hip, new THREE.CapsuleGeometry(0.05 * s, 0.18 * s, 3, 6), suit, 0, -0.12 * s, 0);
-      this.mesh(hip, new THREE.BoxGeometry(0.09 * s, 0.045 * s, 0.14 * s), this.joint, 0, -0.26 * s, 0.03 * s);
-      g.add(hip);
-      this.clerkLegs.push(hip);
+  buildDesks() {
+    const clerks = [
+      { skin: 0xc4865a, cloth: 0x1a2744, pants: 0x1a2744, hair: 0x14120e, tie: true },
+      { skin: 0x8d5524, cloth: 0x243044, pants: 0x1c242c, hair: 0x1a120c, tie: true },
+      { skin: 0xd7b39a, cloth: 0x1a206d, pants: 0x1a1c22, hair: 0x3a2418, tie: true },
+      { skin: 0x5c3317, cloth: 0x2a2428, pants: 0x1c2430, hair: 0x0e0c0a, tie: true },
+      { skin: 0xf0c7a0, cloth: 0x1a3a4a, pants: 0x1a2744, hair: 0x6b4423, tie: true, bald: true },
+      { skin: 0xa86b45, cloth: 0x142033, pants: 0x1a1c22, hair: 0x2a1810, tie: true },
+    ];
+    clerks.forEach((look, i) => {
+      const desk = new THREE.Group();
+      desk.position.set(this.deskX(i), 0, 0);
+      this.mesh(desk, new THREE.BoxGeometry(0.86, 0.68, 0.52), this.mat(0x6d4c32, { rough: 0.7 }), 0, 0.34, 0.05);
+      this.mesh(desk, new THREE.BoxGeometry(0.92, 0.06, 0.62), this.shell, 0, 0.7, 0.06);
+      this.mesh(desk, new THREE.BoxGeometry(0.22, 0.015, 0.16), this.joint, -0.22, 0.75, 0.02);
+      const screen = this.mesh(desk, new THREE.BoxGeometry(0.22, 0.14, 0.015), this.glass.clone(), -0.22, 0.84, -0.04);
+      this.mats.push(screen.material);
+      screen.rotation.x = -0.35;
+      this.mesh(desk, new THREE.BoxGeometry(0.1, 0.02, 0.1), this.ink, 0.24, 0.75, 0.08);
+      this.mesh(desk, new THREE.BoxGeometry(0.12, 0.16, 0.02), this.mat(0xe7d7a8, { rough: 0.7 }), 0.16, 0.82, -0.12);
+      this.mesh(desk, new THREE.BoxGeometry(0.12, 0.16, 0.02), this.mat(0xf4f1ea, { rough: 0.7 }), 0.3, 0.82, -0.1);
+      const form = this.mesh(desk, new THREE.BoxGeometry(0.22, 0.012, 0.16), this.paper, 0.02, 0.76, 0.12);
+      form.visible = false;
+      const mark = this.mesh(desk, new THREE.CircleGeometry(0.045, 14), this.ink, 0.05, 0.78, 0.12);
+      mark.rotation.x = -Math.PI / 2;
+      mark.scale.setScalar(0.001);
+      const clerk = this.figure({ ...look, scale: 1.05, broad: true });
+      clerk.position.set(0, 0, -0.42);
+      const stamp = new THREE.Group();
+      this.mesh(stamp, new THREE.CylinderGeometry(0.028, 0.032, 0.16, 8), this.joint, 0, 0.08, 0);
+      this.mesh(stamp, new THREE.BoxGeometry(0.09, 0.03, 0.09), this.shell, 0, -0.01, 0);
+      this.mesh(stamp, new THREE.BoxGeometry(0.07, 0.015, 0.07), this.ink, 0, -0.03, 0);
+      clerk.userData.hand.add(stamp);
+      stamp.position.set(0, -0.05, 0.02);
+      desk.add(clerk);
+      this.group.add(desk);
+      this.desks.push({ root: desk, clerk, form, mark, stamp, screen });
     });
-    this.mesh(g, new THREE.BoxGeometry(0.34 * s, 0.36 * s, 0.16 * s), suit, 0, 0.64 * s, 0);
-    this.mesh(g, new THREE.BoxGeometry(0.07 * s, 0.18 * s, 0.02 * s), shirt, 0, 0.66 * s, 0.09 * s);
-    this.mesh(g, new THREE.BoxGeometry(0.03 * s, 0.14 * s, 0.015 * s), this.ink, 0, 0.62 * s, 0.105 * s);
-    this.mesh(g, new THREE.SphereGeometry(0.1 * s, 12, 8), skin, 0, 0.94 * s, 0);
-    this.mesh(g, new THREE.BoxGeometry(0.16 * s, 0.05 * s, 0.12 * s), this.mat(0x14120e, { rough: 0.45 }), 0, 1.02 * s, -0.01 * s);
-    this.hand = new THREE.Group();
-    this.hand.position.set(0.2 * s, 0.9 * s, 0.28 * s);
-    g.add(this.hand);
-    this.mesh(this.hand, new THREE.SphereGeometry(0.045 * s, 8, 6), skin, 0, 0, 0);
-    this.mesh(g, new THREE.CapsuleGeometry(0.04 * s, 0.16 * s, 3, 5), suit, 0.16 * s, 0.72 * s, 0.1 * s);
-    g.position.set(-0.42, 0, 1.52);
-    g.rotation.y = -Math.PI / 2;
-    this.group.add(g);
-    this.official = g;
   }
 
   buildQueue() {
     const people = [
-      { skin: 0xf3d2b5, cloth: 0x2a6f7f, hair: 0x2a1810 },
-      { skin: 0x8d5524, cloth: 0xf4f1ea, hair: 0x111111, skirt: true },
-      { skin: 0x5c3317, cloth: 0xc45c26, hair: 0x1a120c },
-      { skin: 0xd7b39a, cloth: 0x1a206d, hair: 0x6b4423, skirt: true },
-      { skin: 0x3d2314, cloth: 0x00a551, hair: 0x0e0c0a },
-      { skin: 0xf0c7a0, cloth: 0xea2839, hair: 0x3a2418 },
-      { skin: 0xa86b45, cloth: 0xe07030, hair: 0x1c140f, skirt: true },
-      { skin: 0xc48a62, cloth: 0x245c8a, hair: 0x2a1810 },
+      { skin: 0xc48a62, cloth: 0x3a3148, pants: 0x3a3148, hair: 0x2a1810, hijab: true, skirt: true },
+      { skin: 0x5c3317, cloth: 0xc45c26, pants: 0x1c242c, hair: 0x1a120c, cap: this.mat(0xf0c030, { rough: 0.5 }), beard: true },
+      { skin: 0xf3d2b5, cloth: 0x4a5560, pants: 0x2c3138, hair: 0xd5d3cc, cane: true, scale: 0.92 },
+      { skin: 0x3d2314, cloth: 0x00a551, pants: 0x1a2744, hair: 0x0e0c0a, wrap: true, skirt: true },
+      { skin: 0xa86b45, cloth: 0xf4f1ea, pants: 0x1a1c22, hair: 0x2a1810, wrap: true, beard: true },
+      { skin: 0xf0c7a0, cloth: 0x245c8a, pants: 0x1c2430, hair: 0x3a2418, skirt: true },
+      { skin: 0xd7b39a, cloth: 0x1a1c22, pants: 0x1a2744, hair: 0x1a120e, cap: this.mat(0x14161c, { rough: 0.45 }) },
+      { skin: 0x8d5524, cloth: 0xc45b78, pants: 0xc45b78, hair: 0x1a120c, skirt: true },
+      { skin: 0xe8c4a8, cloth: 0x2a6f7f, pants: 0x243044, hair: 0x6b4423, cap: this.mat(0x1a2744, { rough: 0.5 }) },
+      { skin: 0x6b3a22, cloth: 0x7a3e8a, pants: 0x2a2428, hair: 0x140e0c, skirt: true },
     ];
-    this.queue = people.map((person, i) => this.buildPerson({
-      ...person,
-      x: 2.15 + (i % 2) * 0.32,
-      z: 2.05 + i * 0.42,
-      rot: Math.PI,
-      scale: 0.98 + (i % 3) * 0.08,
-    }));
+    people.forEach((person, i) => {
+      const fig = this.figure(person);
+      fig.position.set(-3.15, 0, 0.15 + i * 0.46);
+      fig.rotation.y = -Math.PI / 2;
+      this.group.add(fig);
+      this.queue.push(fig);
+    });
   }
 
-  sync(competition, outcome, correct) {
+  buildCustomer() {
+    const fig = this.figure({
+      skin: 0xd7b39a,
+      cloth: 0x0e7c86,
+      pants: 0x1c2430,
+      hair: 0x2a1810,
+      scale: 1.05,
+    });
+    fig.position.set(-2.2, 0, 0.2);
+    fig.rotation.y = 0.4;
+    const form = this.mesh(fig.userData.hand, new THREE.BoxGeometry(0.16, 0.012, 0.11), this.paper, 0, -0.02, 0.06);
+    form.rotation.x = -0.6;
+    fig.userData.form = form;
+    this.group.add(fig);
+    return fig;
+  }
+
+  sync(competition, outcome, correct, desks, active) {
     this.competition = competition;
     this.outcome = outcome;
-    if (correct > this.seenCorrect) this.stampClock = 0;
-    if (correct < this.seenCorrect) this.stampClock = 1.4;
-    this.seenCorrect = correct;
-    this.correct = correct;
+    this.correct = correct || 0;
+    const next = Array.isArray(desks) && desks.length === 6 ? desks : this.deskState;
+    if (next.every((d) => d === "open")) {
+      this.rejecting = false;
+      this.atRear = false;
+      this.clocks = [2, 2, 2, 2, 2, 2];
+      if (this.customer) this.customer.position.set(-2.2, 0, 0.2);
+    } else {
+      const freshMiss = next.findIndex((d, i) => d === "miss" && this.deskState[i] !== "miss");
+      if (freshMiss >= 0) {
+        this.rejecting = true;
+        this.atRear = false;
+      }
+      next.forEach((d, i) => {
+        if (d === "held" && this.deskState[i] !== "held") this.clocks[i] = 0;
+      });
+    }
+    this.deskState = next.slice();
+    this.active = Number.isFinite(active) ? active : 0;
+  }
+
+  face(root, yaw, ease) {
+    let dy = yaw - root.rotation.y;
+    while (dy > Math.PI) dy -= Math.PI * 2;
+    while (dy < -Math.PI) dy += Math.PI * 2;
+    root.rotation.y += dy * ease;
   }
 
   tick(dt, t, reduced) {
     const on = this.competition === "stamp";
     this.group.visible = on;
     if (!on) return;
-    const ease = reduced ? 1 : 1 - Math.exp(-3.4 * dt);
-    const click = this.outcome === "click";
-    const smear = this.outcome === "smear";
-    const shut = this.outcome === "shut";
-    const slot = this.correct > 0 ? Math.min(5, this.correct - 1) : 0;
-    const folderX = -1 + slot * 0.46;
-    const goalX = shut ? 1.35 : folderX + 0.58;
-    const goalZ = shut ? 2.15 : 1.52;
-    const dx = goalX - this.official.position.x;
-    this.official.position.x += dx * ease;
-    this.official.position.z += (goalZ - this.official.position.z) * ease;
-    const moving = Math.abs(dx) > 0.06;
-    if (!moving) this.stampClock = Math.min(1.6, this.stampClock + dt);
-    const yaw = moving ? (dx > 0 ? Math.PI / 2 : -Math.PI / 2) : -Math.PI / 2;
-    let dyaw = yaw - this.official.rotation.y;
-    while (dyaw > Math.PI) dyaw -= Math.PI * 2;
-    while (dyaw < -Math.PI) dyaw += Math.PI * 2;
-    this.official.rotation.y += dyaw * ease;
-    const u = Math.min(1, this.stampClock / 1.15);
-    const dip = !shut && !moving && this.correct > 0 && u < 1
-      ? (u < 0.28 ? u / 0.28 : u < 0.72 ? 1 : 1 - (u - 0.72) / 0.28)
-      : 0;
-    this.official.rotation.x = dip * 0.22;
-    this.folders.forEach((folder, i) => {
-      const held = i < this.correct;
-      const landed = i < this.correct - 1 || (i === slot && this.correct > 0 && (dip > 0.85 || this.stampClock >= 1.15 || reduced));
-      const markScale = held && landed ? 1.7 : 0.001;
-      folder.mark.scale.x += (markScale - folder.mark.scale.x) * ease;
-      folder.mark.scale.y += (markScale - folder.mark.scale.y) * ease;
-      folder.mark.scale.z += (markScale - folder.mark.scale.z) * ease;
-      const blot = smear && !held ? 0.72 : 0;
-      folder.smear.material.opacity += (blot - folder.smear.material.opacity) * ease;
-      const under = shut && !held;
-      const y = held ? 0.08 : under ? -0.22 : 0.06;
-      const z = under ? -0.35 : 0;
-      folder.group.position.y += (y - folder.group.position.y) * ease;
-      folder.group.position.z += (z - folder.group.position.z) * ease;
+    const ease = reduced ? 1 : 1 - Math.exp(-3.2 * dt);
+    const perfect = this.deskState.every((d) => d === "held");
+    if (this.rejecting && this.atRear && this.deskState[this.active] === "open") this.rejecting = false;
+    const desk = this.desks[this.active];
+    const at = desk.root.position;
+    let goalX = at.x;
+    let goalZ = 0.95;
+    if (perfect) {
+      goalX = 0;
+      goalZ = 1.35;
+    } else if (this.rejecting) {
+      goalX = this.rear.x;
+      goalZ = this.rear.z;
+    }
+    const customer = this.customer;
+    const dx = goalX - customer.position.x;
+    const dz = goalZ - customer.position.z;
+    const dist = Math.hypot(dx, dz);
+    const moving = dist > 0.05;
+    customer.position.x += dx * ease;
+    customer.position.z += dz * ease;
+    if (moving) this.face(customer, Math.atan2(dx, dz), ease);
+    else if (perfect) this.face(customer, 0, ease);
+    else if (!this.rejecting) this.face(customer, Math.PI, ease);
+    const arrived = dist < 0.12;
+    if (this.rejecting && arrived) this.atRear = true;
+    const step = moving ? Math.sin(t * 9) * 0.65 : 0;
+    customer.userData.legs[0].rotation.x = step;
+    customer.userData.legs[1].rotation.x = -step;
+    const dance = perfect && !moving && !reduced;
+    customer.userData.body.rotation.z = dance ? Math.sin(t * 8) * 0.28 : 0;
+    customer.userData.body.rotation.x = dance ? Math.abs(Math.sin(t * 8)) * 0.08 : 0;
+    customer.userData.body.position.y = dance ? Math.abs(Math.sin(t * 8)) * 0.05 : 0;
+    const showCarry = !perfect && (moving || this.rejecting || !arrived);
+    customer.userData.form.visible = showCarry;
+    this.desks.forEach((item, i) => {
+      this.clocks[i] = Math.min(2, this.clocks[i] + dt);
+      const held = this.deskState[i] === "held";
+      const waiting = i === this.active && !held && !this.rejecting && arrived && !perfect;
+      item.form.visible = held || waiting;
+      const u = Math.min(1, this.clocks[i] / 0.85);
+      const dip = held && u < 1 ? Math.sin(u * Math.PI) : 0;
+      item.clerk.userData.arm.rotation.x = 0.45 + dip * 1.15;
+      const mark = held && (this.clocks[i] > 0.4 || reduced) ? 1.5 : 0.001;
+      item.mark.scale.x += (mark - item.mark.scale.x) * ease;
+      item.mark.scale.y += (mark - item.mark.scale.y) * ease;
+      item.mark.scale.z += (mark - item.mark.scale.z) * ease;
+      const idle = reduced ? 0 : Math.sin(t * 1.4 + i) * 0.04;
+      item.clerk.userData.legs[0].rotation.x = idle;
+      item.clerk.userData.legs[1].rotation.x = -idle;
+      item.screen.material.emissive.set(held ? 0x143024 : 0x1a2830);
     });
-    const shutterY = shut ? 1.12 : 1.92;
-    this.shutter.position.y += (shutterY - this.shutter.position.y) * ease;
-    const drawerZ = shut ? 1.15 : 0.85;
-    this.drawer.position.z += (drawerZ - this.drawer.position.z) * ease;
-    const handX = 0.02;
-    const handY = shut ? 0.42 : 1.42 - dip * 0.34;
-    const handZ = shut ? 0.06 : 0.22 + dip * 0.42;
-    this.hand.position.x += (handX - this.hand.position.x) * ease;
-    this.hand.position.y += (handY - this.hand.position.y) * ease;
-    this.hand.position.z += (handZ - this.hand.position.z) * ease;
-    if (!reduced && !shut && dip === 0) this.hand.position.y += Math.sin(t * 2.2) * 0.01;
-    this.hand.getWorldPosition(this.handWorld);
-    this.folders[slot].group.getWorldPosition(this.paperWorld);
-    this.paperWorld.y += 0.1;
-    this.stamp.position.lerpVectors(this.handWorld, this.paperWorld, shut ? 0 : dip);
-    this.stamp.position.y += 0.05;
-    this.padMat.color.set(dip > 0.45 && !shut ? INK : 0x3a2428);
-    const glassOn = click || this.correct > 0;
-    this.visor.material.emissive.set(glassOn ? 0x1a2838 : 0x050608);
-    this.visor.material.emissiveIntensity = shut ? 0.02 : glassOn ? 0.35 : 0.12;
-    const step = moving ? Math.sin(t * 9) * 0.7 : Math.sin(t * 1.6) * 0.04;
-    this.clerkLegs[0].rotation.x = step;
-    this.clerkLegs[1].rotation.x = -step;
     if (!reduced) {
       this.queue.forEach((person, i) => {
-        const sway = t * 1.4 + i;
-        const shift = Math.sin(sway) * 0.012;
-        person.position.x = 2.15 + (i % 2) * 0.32 + shift;
-        person.userData.legs[0].rotation.x = Math.sin(sway) * 0.06;
-        person.userData.legs[1].rotation.x = Math.sin(sway + Math.PI) * 0.06;
+        const sway = Math.sin(t * 1.3 + i) * 0.03;
+        person.userData.body.rotation.z = sway;
+        person.position.x = -3.15 + Math.sin(t * 0.8 + i) * 0.02;
       });
     }
   }

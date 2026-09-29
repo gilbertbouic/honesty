@@ -43,6 +43,10 @@ var LandScene = class {
   signBits = [];
   slabHalves = [];
   crops = [];
+  bricks = [];
+  scaffold = null;
+  beds = [];
+  fieldMats = [];
   seaMat;
   pageMat;
   competition = "tender";
@@ -154,20 +158,24 @@ var LandScene = class {
       mat.opacity = clean ? 0 : lost ? 0.85 + Math.sin(t * 5) * 0.15 : 1;
     });
     const farmed = n >= 6 && !lost;
-    this.slabHalves.forEach((half, i) => {
-      const x = farmed ? i === 0 ? -0.72 : 0.42 : i === 0 ? -0.18 : 0.08;
-      half.position.x += (x - half.position.x) * ease;
-      const mat = half.material;
-      mat.color.copy(lost ? CRIMSON : FILL);
-      mat.opacity = farmed ? 0.16 : 0.88;
+    const showWork = farmed ? 0 : 0.95;
+    this.bricks.forEach((mesh) => {
+      const y = farmed ? -0.25 : mesh.userData.homeY;
+      mesh.position.y += (y - mesh.position.y) * ease;
+      mesh.material.opacity += (showWork - mesh.material.opacity) * ease;
     });
-    this.crops.forEach((crop, i) => {
+    if (this.scaffold) {
+      const s = farmed ? 0.02 : 1;
+      this.scaffold.scale.y += (s - this.scaffold.scale.y) * ease;
+      this.scaffold.scale.x += (s - this.scaffold.scale.x) * ease;
+      this.scaffold.scale.z += (s - this.scaffold.scale.z) * ease;
+    }
+    this.beds.forEach((bed, i) => {
       const s = farmed ? 1 : 0.02;
-      crop.scale.y += (s - crop.scale.y) * ease;
-      crop.position.y = 0.04 + crop.scale.y * 0.22;
-      const mat = crop.material;
-      mat.opacity = farmed ? 0.92 : 0;
-      if (!reduced && farmed) crop.rotation.y = Math.sin(t * 1.4 + i) * 0.08;
+      bed.scale.x += (s - bed.scale.x) * ease;
+      bed.scale.y += (s - bed.scale.y) * ease;
+      bed.scale.z += (s - bed.scale.z) * ease;
+      if (!reduced && farmed) bed.rotation.y = Math.sin(t * 1.2 + i) * 0.02;
     });
     const warm = held || n >= 6;
     this.windows.forEach((mat) => {
@@ -218,6 +226,7 @@ var LandScene = class {
     ];
     for (const m of mats) m.dispose();
     for (const m of this.folkMats ?? []) m.dispose();
+    for (const m of this.fieldMats ?? []) m.dispose();
     for (const mesh of [...this.boardHalves, ...this.fills, ...this.signBits, ...this.slabHalves, ...this.crops, ...this.villas.map((v) => v.mesh)]) {
       mesh.material.dispose();
     }
@@ -645,31 +654,87 @@ var LandScene = class {
     ].forEach(([x, z, s]) => bush(x, z, s));
   }
   buildField() {
-    [-0.18, 0.08].forEach((x) => {
-      const geo = new THREE.BoxGeometry(0.55, 0.08, 1.3);
+    const cx = 0.15;
+    const cz = -5.35;
+    const soil = (color, rough = 0.9) => {
+      const mat = new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: 0.04, transparent: true, opacity: 0.96 });
+      this.fieldMats.push(mat);
+      return mat;
+    };
+    const add = (parent, geo, mat, x, y, z) => {
       this.geos.push(geo);
-      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x8a847c, roughness: 0.85, transparent: true, opacity: 0.9 }));
-      mesh.position.set(x, 0.08, -2.4);
-      this.slabHalves.push(mesh);
-      this.group.add(mesh);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      parent.add(mesh);
+      return mesh;
+    };
+    const ground = soil(0x6a4a2c);
+    add(this.group, new THREE.BoxGeometry(3.8, 0.08, 2.9), ground, cx, 0.04, cz);
+    const brickMat = soil(0xb5523a, 0.78);
+    const brickSpots = [[-1.15, -0.7], [-0.7, -0.85], [1.05, 0.55], [1.35, 0.35], [0.15, 0.1], [-1.3, 0.7]];
+    brickSpots.forEach(([x, z], i) => {
+      const stack = 1 + i % 3;
+      for (let k = 0; k < stack; k++) {
+        const mesh = add(this.group, new THREE.BoxGeometry(0.28, 0.08, 0.14), brickMat, cx + x, 0.12 + k * 0.08, cz + z);
+        mesh.rotation.y = i % 2 ? 0.4 : -0.2;
+        mesh.userData.homeY = mesh.position.y;
+        this.bricks.push(mesh);
+      }
     });
-    const spots = [
-      [-0.55, -2.9],
-      [-0.15, -2.7],
-      [0.25, -2.95],
-      [-0.4, -2.15],
-      [0.15, -1.95],
-      [0.5, -2.35]
-    ];
-    for (const [x, z] of spots) {
-      const geo = new THREE.ConeGeometry(0.1, 0.42, 5);
-      this.geos.push(geo);
-      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: CROP, roughness: 0.6, transparent: true, opacity: 0 }));
-      mesh.position.set(x, 0.06, z);
-      mesh.scale.y = 0.02;
-      this.crops.push(mesh);
-      this.group.add(mesh);
-    }
+    const frame = new THREE.Group();
+    frame.position.set(cx, 0, cz);
+    const pole = soil(0x8d9398, 0.45);
+    const plank = soil(0x8a6a42, 0.7);
+    [[-1.7, -1.25], [1.7, -1.25], [-1.7, 1.25], [1.7, 1.25]].forEach(([x, z]) => {
+      add(frame, new THREE.CylinderGeometry(0.045, 0.045, 1.7, 6), pole, x, 0.85, z);
+    });
+    add(frame, new THREE.BoxGeometry(3.5, 0.06, 0.16), plank, 0, 1.55, -1.25);
+    add(frame, new THREE.BoxGeometry(3.5, 0.06, 0.16), plank, 0, 1.55, 1.25);
+    add(frame, new THREE.BoxGeometry(0.14, 0.06, 2.6), plank, -1.7, 1.62, 0);
+    add(frame, new THREE.BoxGeometry(0.14, 0.06, 2.6), plank, 1.7, 1.62, 0);
+    add(frame, new THREE.BoxGeometry(3.2, 0.05, 0.4), plank, 0, 1.48, 0);
+    this.group.add(frame);
+    this.scaffold = frame;
+    const bedMat = soil(0x4e3420);
+    const leaf = soil(0x2f7a32, 0.6);
+    const carrot = soil(0xe07a1f, 0.55);
+    const tomato = soil(0xd12323, 0.45);
+    const chilli = soil(0xc81e1e, 0.5);
+    const eggplant = soil(0x5a2d82, 0.45);
+    const plant = (bed, kind, x, z) => {
+      if (kind === "carrot") {
+        add(bed, new THREE.ConeGeometry(0.06, 0.16, 5), carrot, x, 0.1, z);
+        add(bed, new THREE.SphereGeometry(0.07, 6, 5), leaf, x, 0.2, z);
+      } else if (kind === "tomato") {
+        add(bed, new THREE.CylinderGeometry(0.015, 0.015, 0.16, 4), leaf, x, 0.16, z);
+        add(bed, new THREE.SphereGeometry(0.07, 7, 6), tomato, x, 0.22, z);
+        add(bed, new THREE.SphereGeometry(0.05, 6, 5), tomato, x + 0.08, 0.16, z);
+      } else if (kind === "chilli") {
+        add(bed, new THREE.CylinderGeometry(0.012, 0.012, 0.2, 4), leaf, x, 0.16, z);
+        const pod = add(bed, new THREE.ConeGeometry(0.025, 0.12, 5), chilli, x + 0.04, 0.16, z);
+        pod.rotation.z = 0.8;
+      } else {
+        add(bed, new THREE.CylinderGeometry(0.015, 0.015, 0.16, 4), leaf, x, 0.14, z);
+        const fruit = add(bed, new THREE.SphereGeometry(0.08, 7, 6), eggplant, x, 0.12, z);
+        fruit.scale.set(0.7, 1.25, 0.7);
+      }
+    };
+    const kinds = ["carrot", "tomato", "chilli", "eggplant"];
+    [[-0.9, -0.62], [0.9, -0.62], [-0.9, 0.62], [0.9, 0.62]].forEach(([x, z], i) => {
+      const bed = new THREE.Group();
+      bed.position.set(cx + x, 0.08, cz + z);
+      add(bed, new THREE.BoxGeometry(1.45, 0.08, 1.05), bedMat, 0, 0.04, 0);
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 4; col++) {
+          plant(bed, kinds[i], -0.48 + col * 0.32, -0.28 + row * 0.28);
+        }
+      }
+      bed.scale.setScalar(0.02);
+      this.group.add(bed);
+      this.beds.push(bed);
+    });
   }
 };
 export {

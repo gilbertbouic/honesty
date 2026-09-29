@@ -870,7 +870,7 @@ class VillageEngine {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
 
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.Fog(0x8ea4b8, 28, 58);
+    this.scene.fog = new THREE.Fog(0x8ea4b8, 36, 62);
     this.scene.background = new THREE.Color(0x8ea4b8);
     this.camera = new THREE.PerspectiveCamera(46, 1, 0.1, 80);
     this.camera.position.set(11.2, 7.4, 11.2);
@@ -1088,46 +1088,47 @@ class VillageEngine {
 
   frameCompetition() {
     const fog = this.scene.fog;
+    const view = new THREE.Vector3(0.4, 4.6, 11);
     if (this.competition === "stamp") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      this.aimStage(new THREE.Vector3(0.1, 1.05, 0.7), new THREE.Vector3(0.2, 3.4, 8.4), 4.6);
+      this.aimStage(new THREE.Vector3(0.25, 1.0, 1.15), view, 2.3);
       return;
     }
     if (this.competition === "wash") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      this.aimStage(new THREE.Vector3(0, 1.45, 1.1), new THREE.Vector3(0.4, 5.6, 13.2), 5.2);
+      this.aimStage(new THREE.Vector3(0.05, 2.05, 0.75), view, 2.3);
       return;
     }
     if (this.competition === "crop") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      this.aimStage(new THREE.Vector3(0, 0.8, 0), new THREE.Vector3(0.4, 4.6, 11), 2.2);
+      this.aimStage(new THREE.Vector3(0, 0.8, 0), view, 2.2);
       return;
     }
     if (this.competition === "fair") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      this.aimStage(new THREE.Vector3(0, 1.2, 0), new THREE.Vector3(0.4, 5.3, 10.4), 3.6);
+      this.aimStage(new THREE.Vector3(0, 1.15, 0.15), view, 2.6);
       return;
     }
     if (this.competition === "land") {
       fog.color.set(0x9aa8b0);
       this.scene.background = new THREE.Color(0x9aa8b0);
-      this.aimStage(new THREE.Vector3(0.8, 1.2, 2.2), new THREE.Vector3(0, 4, 12.2), 4.4);
+      this.aimStage(new THREE.Vector3(0.3, 1.0, 1.7), view, 2.8);
       return;
     }
     if (this.competition === "haven") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      this.aimStage(new THREE.Vector3(0, 1.1, -0.2), new THREE.Vector3(0.2, 3.6, 8.2), 4.4);
+      this.aimStage(new THREE.Vector3(0, 1.05, 0.2), view, 2.2);
       return;
     }
     if (this.competition !== "whistle") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      this.aimStage(new THREE.Vector3(0, 1.2, 0), new THREE.Vector3(11.2, 6.8, 11.2), 5.2);
+      this.aimStage(new THREE.Vector3(0.2, 1.05, 0.7), view, 3.2);
       return;
     }
     if (this.whistleOutcome === "exile") {
@@ -1143,7 +1144,7 @@ class VillageEngine {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
     }
-    this.aimStage(new THREE.Vector3(5.2, 1.8, 6), new THREE.Vector3(9, 7, 11), 4.2);
+    this.aimStage(new THREE.Vector3(6.4, 1.45, 6.9), view, 3.0);
   }
 
   paintParts(parts, color, fillOp = 0.22, lineOp = 0.85) {

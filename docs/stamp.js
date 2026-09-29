@@ -22,6 +22,8 @@ class StampScene {
     this.clocks = [2, 2, 2, 2, 2, 2];
     this.rejecting = false;
     this.atRear = false;
+    this.rejectTimer = 0;
+    this.stamped = 0;
     this.rear = new THREE.Vector3(-3.15, 0, 4.85);
 
     const hemi = new THREE.HemisphereLight(0xd5e4f2, 0x3a3428, 0.55);
@@ -190,8 +192,8 @@ class StampScene {
       hair: 0x2a1810,
       scale: 1.05,
     });
-    fig.position.set(-2.2, 0, 0.2);
-    fig.rotation.y = 0.4;
+    fig.position.set(this.deskX(0), 0, 0.95);
+    fig.rotation.y = Math.PI;
     const form = this.mesh(fig.userData.hand, new THREE.BoxGeometry(0.16, 0.012, 0.11), this.paper, 0, -0.02, 0.06);
     form.rotation.x = -0.6;
     fig.userData.form = form;
@@ -204,20 +206,26 @@ class StampScene {
     this.outcome = outcome;
     this.correct = correct || 0;
     const next = Array.isArray(desks) && desks.length === 6 ? desks : this.deskState;
+    const stamped = next.filter((d) => d === "held").length;
     if (next.every((d) => d === "open")) {
       this.rejecting = false;
       this.atRear = false;
+      this.rejectTimer = 0;
+      this.stamped = 0;
       this.clocks = [2, 2, 2, 2, 2, 2];
-      if (this.customer) this.customer.position.set(-2.2, 0, 0.2);
+      if (this.customer) {
+        this.customer.position.set(this.deskX(0), 0, 0.95);
+        this.customer.rotation.y = Math.PI;
+      }
     } else {
       const freshMiss = next.findIndex((d, i) => d === "miss" && this.deskState[i] !== "miss");
       if (freshMiss >= 0) {
         this.rejecting = true;
         this.atRear = false;
+        this.rejectTimer = 0;
       }
-      next.forEach((d, i) => {
-        if (d === "held" && this.deskState[i] !== "held") this.clocks[i] = 0;
-      });
+      if (stamped > this.stamped) this.clocks[stamped - 1] = 0;
+      this.stamped = stamped;
     }
     this.deskState = next.slice();
     this.active = Number.isFinite(active) ? active : 0;
@@ -235,13 +243,22 @@ class StampScene {
     this.group.visible = on;
     if (!on) return;
     const ease = reduced ? 1 : 1 - Math.exp(-3.2 * dt);
-    const perfect = this.deskState.every((d) => d === "held");
-    if (this.rejecting && this.atRear && this.deskState[this.active] === "open") this.rejecting = false;
-    const desk = this.desks[this.active];
-    const at = desk.root.position;
+    const perfect = this.stamped >= 6;
+    if (this.rejecting && this.atRear) {
+      this.rejectTimer += dt;
+      if (this.rejectTimer > 0.55) {
+        this.rejecting = false;
+        this.atRear = false;
+        this.rejectTimer = 0;
+      }
+    }
+    const slot = Math.min(5, this.stamped);
+    const stamping = this.stamped > 0 && this.clocks[this.stamped - 1] < 0.75;
+    const goalSlot = perfect ? 5 : stamping ? this.stamped - 1 : slot;
+    const at = this.desks[goalSlot].root.position;
     let goalX = at.x;
     let goalZ = 0.95;
-    if (perfect) {
+    if (perfect && !stamping) {
       goalX = 0;
       goalZ = 1.35;
     } else if (this.rejecting) {
@@ -271,8 +288,8 @@ class StampScene {
     customer.userData.form.visible = showCarry;
     this.desks.forEach((item, i) => {
       this.clocks[i] = Math.min(2, this.clocks[i] + dt);
-      const held = this.deskState[i] === "held";
-      const waiting = i === this.active && !held && !this.rejecting && arrived && !perfect;
+      const held = i < this.stamped;
+      const waiting = i === goalSlot && !held && !this.rejecting && arrived && !perfect;
       item.form.visible = held || waiting;
       const u = Math.min(1, this.clocks[i] / 0.85);
       const dip = held && u < 1 ? Math.sin(u * Math.PI) : 0;

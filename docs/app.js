@@ -7,7 +7,7 @@ import { FairScene } from "./fair.js?v=vg71";
 import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg61";
 import { StampScene } from "./stamp.js?v=vg90";
-import { RollScene } from "./roll.js?v=vg89";
+import { RollScene } from "./roll.js?v=vg91";
 import { OathScene } from "./oath.js?v=vg89";
 
 let lang = loadLang();
@@ -1237,7 +1237,7 @@ class VillageEngine {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
       const phone = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
-      this.aimStage(new THREE.Vector3(0, phone ? 1.15 : 1.02, phone ? 0.02 : 0.08), phone ? new THREE.Vector3(0.2, 5.8, 8.6) : view, phone ? 2.18 : 2.42);
+      this.aimStage(new THREE.Vector3(phone ? -0.7 : -1.05, phone ? 1.12 : 1.02, phone ? 0.25 : 0.4), phone ? new THREE.Vector3(0.15, 5.2, 9) : view, phone ? 3.0 : 3.45);
       return;
     }
     if (this.competition === "stamp") {

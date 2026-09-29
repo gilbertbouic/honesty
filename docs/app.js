@@ -1071,19 +1071,12 @@ class VillageEngine {
     this.controls.maxDistance = dist * 1.85;
     this.camera.updateProjectionMatrix();
     this.controls.update();
-    if (!mobile) {
-      this.controls.minAzimuthAngle = -Infinity;
-      this.controls.maxAzimuthAngle = Infinity;
-      this.controls.minPolarAngle = 0.55;
-      this.controls.maxPolarAngle = 1.2;
-      return;
-    }
-    this.controls.autoRotate = false;
-    const az = this.controls.getAzimuthalAngle();
-    this.controls.minAzimuthAngle = az - Math.PI / 2;
-    this.controls.maxAzimuthAngle = az + Math.PI / 2;
+    this.controls.minAzimuthAngle = -Infinity;
+    this.controls.maxAzimuthAngle = Infinity;
     this.controls.minPolarAngle = 0.2;
     this.controls.maxPolarAngle = Math.PI / 2 - 0.05;
+    if (!mobile) return;
+    this.controls.autoRotate = false;
   }
 
   frameCompetition() {

@@ -52,6 +52,7 @@ var LandScene = class {
   competition = "tender";
   outcome = "open";
   correct = 0;
+  held = [];
   constructor(scene) {
     this.buildGround();
     this.rope = this.buildPath();
@@ -76,10 +77,11 @@ var LandScene = class {
     this.group.visible = false;
     scene.add(this.group);
   }
-  sync(competition, outcome, correct) {
+  sync(competition, outcome, correct, held) {
     this.competition = competition;
     this.outcome = outcome;
     this.correct = correct;
+    this.held = Array.isArray(held) ? held : [];
   }
   tick(dt, t, reduced) {
     const on = this.competition === "land";
@@ -99,16 +101,34 @@ var LandScene = class {
     this.rope.scale.x += ((pathOpen ? 0.2 : 1) - this.rope.scale.x) * ease;
     this.ropeMat.color.copy(pathOpen ? GREEN : lost ? CRIMSON : SAND);
     this.ropeMat.opacity = pathOpen ? 0.12 : 0.92;
-    const sold = n >= 2 && !lost;
+    const sold = this.held.includes("title");
     this.boardHalves.forEach((half, i) => {
       const mat = half.material;
-      const y = sold ? 0.12 : 0.95;
-      const rot = sold ? i === 0 ? 0.7 : -0.7 : 0;
+      const y = sold ? -0.2 : 0.95;
+      const rot = sold ? i === 0 ? 1.2 : -1.2 : 0;
       half.position.y += (y - half.position.y) * ease;
       half.rotation.z += (rot - half.rotation.z) * ease;
-      mat.color.copy(lost ? CRIMSON : SAND);
-      mat.opacity = sold ? 0.12 : 0.88;
+      mat.opacity += ((sold ? 0 : 0.95) - mat.opacity) * ease;
     });
+    if (this.saleSign) {
+      const y = sold ? -0.15 : 0.98;
+      this.saleSign.position.y += (y - this.saleSign.position.y) * ease;
+      this.saleSign.rotation.z += ((sold ? 0.6 : 0) - this.saleSign.rotation.z) * ease;
+      this.saleSign.material.opacity += ((sold ? 0 : 1) - this.saleSign.material.opacity) * ease;
+    }
+    if (this.salePost) {
+      const y = sold ? -0.3 : 0.42;
+      this.salePost.position.y += (y - this.salePost.position.y) * ease;
+      this.salePost.material.opacity += ((sold ? 0 : 0.85) - this.salePost.material.opacity) * ease;
+    }
+    if (this.seesaw) {
+      const s = sold ? 1 : 0.02;
+      this.seesaw.scale.x += (s - this.seesaw.scale.x) * ease;
+      this.seesaw.scale.y += (s - this.seesaw.scale.y) * ease;
+      this.seesaw.scale.z += (s - this.seesaw.scale.z) * ease;
+      const tilt = sold && !reduced ? Math.sin(t * 1.7) * 0.34 : 0;
+      this.plank.rotation.z += (tilt - this.plank.rotation.z) * ease;
+    }
     this.plotMats.forEach((mat) => {
       mat.color.copy(sold ? STATE : lost ? CRIMSON : SAND);
       mat.opacity = sold ? 0.9 : 0.45;
@@ -341,22 +361,89 @@ var LandScene = class {
     stamp.position.set(2.3, 0.08, 1.6);
     stamp.scale.set(0.04, 1, 0.04);
     this.group.add(stamp);
-    [-0.28, 0.28].forEach((x, i) => {
-      const geo = new THREE.BoxGeometry(0.5, 0.7, 0.06);
+    [-0.32, 0.32].forEach((x) => {
+      const geo = new THREE.BoxGeometry(0.58, 0.86, 0.06);
       this.geos.push(geo);
       const mesh = new THREE.Mesh(
         geo,
-        new THREE.MeshStandardMaterial({ color: 0xf4f5f3, roughness: 0.55, transparent: true, opacity: 0.9 })
+        new THREE.MeshStandardMaterial({ color: 0xf4f5f3, roughness: 0.55, transparent: true, opacity: 0.95 })
       );
       mesh.position.set(2.3 + x, 0.95, 3.35);
       this.boardHalves.push(mesh);
       this.group.add(mesh);
-      if (i === 0) {
-        const post = { fills: [], lines: [] };
-        box(this.group, this.geos, post, 2.3, 0.4, 3.35, 0.06, 0.8, 0.06, PAPER, 0.7);
-      }
     });
+    const sale = document.createElement("canvas");
+    sale.width = 512;
+    sale.height = 320;
+    const ctx = sale.getContext("2d");
+    ctx.fillStyle = "#f7f4ee";
+    ctx.fillRect(0, 0, 512, 320);
+    ctx.fillStyle = "#ea2839";
+    ctx.fillRect(0, 0, 512, 22);
+    ctx.fillRect(0, 298, 512, 22);
+    ctx.fillStyle = "#1a1c1f";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "700 78px Georgia, serif";
+    ctx.fillText("FOR SALE", 256, 118);
+    ctx.fillStyle = "#1a206d";
+    ctx.font = "600 34px Georgia, serif";
+    ctx.fillText("PAS GÉOMÉTRIQUES", 256, 210);
+    const tex = new THREE.CanvasTexture(sale);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    this.geos.push(tex);
+    const saleMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 1 });
+    this.fieldMats.push(saleMat);
+    const saleSign = new THREE.Mesh(new THREE.PlaneGeometry(1.16, 0.78), saleMat);
+    this.geos.push(saleSign.geometry);
+    saleSign.position.set(2.3, 0.98, 3.4);
+    this.group.add(saleSign);
+    this.saleSign = saleSign;
+    const post = { fills: [], lines: [] };
+    this.salePost = box(this.group, this.geos, post, 2.3, 0.42, 3.35, 0.07, 0.84, 0.07, PAPER, 0.85);
+    this.buildSeesaw();
     return stamp;
+  }
+  buildSeesaw() {
+    const saw = new THREE.Group();
+    saw.position.set(2.3, 0, 1.65);
+    const wood = new THREE.MeshStandardMaterial({ color: 0x8a5a32, roughness: 0.7 });
+    const metal = new THREE.MeshStandardMaterial({ color: 0x8d9398, roughness: 0.4, metalness: 0.35 });
+    this.fieldMats.push(wood, metal);
+    const put = (parent, geo, mat, x, y, z) => {
+      this.geos.push(geo);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      parent.add(mesh);
+      return mesh;
+    };
+    put(saw, new THREE.BoxGeometry(0.16, 0.36, 0.42), wood, 0, 0.18, 0);
+    put(saw, new THREE.CylinderGeometry(0.06, 0.06, 0.5, 8), metal, 0, 0.38, 0).rotation.x = Math.PI / 2;
+    const plank = new THREE.Group();
+    plank.position.y = 0.42;
+    saw.add(plank);
+    put(plank, new THREE.BoxGeometry(2.3, 0.06, 0.28), wood, 0, 0, 0);
+    put(plank, new THREE.BoxGeometry(0.08, 0.16, 0.28), wood, -1.08, 0.1, 0);
+    put(plank, new THREE.BoxGeometry(0.08, 0.16, 0.28), wood, 1.08, 0.1, 0);
+    const seat = (x, shirt, pants, hair, skin) => {
+      const kid = this.figure({
+        x: 0, y: 0, z: 0, yaw: 0,
+        shirt, pants, hair, skin,
+        scale: 0.48
+      });
+      this.group.remove(kid.root);
+      plank.add(kid.root);
+      kid.root.position.set(x, 0.02, 0);
+      kid.legL.rotation.x = -1.15;
+      kid.legR.rotation.x = -1.15;
+    };
+    seat(-0.86, 0x3a6fd8, 0x243044, 0x2a1814, 0xd7b39a);
+    seat(0.86, 0xe07a1f, 0x3a3148, 0x1a120c, 0x8d5524);
+    saw.scale.setScalar(0.02);
+    this.group.add(saw);
+    this.seesaw = saw;
+    this.plank = plank;
   }
   buildVillas() {
     const homes = [

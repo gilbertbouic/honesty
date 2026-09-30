@@ -149,10 +149,48 @@ class HavenScene {
       this.mesh(g, new THREE.BoxGeometry(w, 0.28, w), mat, 0, 0.28 + i * 0.36, 0);
     }
     const core = this.mesh(g, new THREE.CylinderGeometry(0.035, 0.035, 2.35, 8), this.mat(0xe7eef2, { metal: 0.2, rough: 0.3, opacity: 0.35 }), 0, 1.2, 0);
-    this.mesh(g, new THREE.OctahedronGeometry(0.14, 0), this.mat(SHELL, { rough: 0.3, metal: 0.2 }), 0, 2.45, 0);
+    this.justice = this.buildJustice(g);
     g.userData.core = core;
     this.group.add(g);
     return g;
+  }
+
+  buildJustice(parent) {
+    const bronze = this.mat(0xb08a4a, { rough: 0.42, metal: 0.55 });
+    const dark = this.mat(0x5a3e1c, { rough: 0.5, metal: 0.4 });
+    const cloth = this.mat(0xc4a35a, { rough: 0.55, metal: 0.22 });
+    const root = new THREE.Group();
+    root.position.set(0, 2.38, 0);
+    parent.add(root);
+    this.mesh(root, new THREE.CylinderGeometry(0.16, 0.2, 0.08, 8), dark, 0, 0.04, 0);
+    this.mesh(root, new THREE.ConeGeometry(0.2, 0.55, 8), cloth, 0, 0.36, 0);
+    this.mesh(root, new THREE.BoxGeometry(0.16, 0.22, 0.12), cloth, 0, 0.68, 0);
+    this.mesh(root, new THREE.SphereGeometry(0.09, 10, 8), bronze, 0, 0.88, 0);
+    this.mesh(root, new THREE.BoxGeometry(0.16, 0.035, 0.035), dark, 0, 0.89, 0.07);
+    this.mesh(root, new THREE.BoxGeometry(0.12, 0.05, 0.1), bronze, 0, 0.96, -0.01);
+    const leftArm = new THREE.Group();
+    leftArm.position.set(-0.14, 0.7, 0);
+    leftArm.rotation.z = 0.55;
+    root.add(leftArm);
+    this.mesh(leftArm, new THREE.BoxGeometry(0.05, 0.28, 0.05), cloth, 0, 0.12, 0);
+    const scales = new THREE.Group();
+    scales.position.set(0, 0.3, 0);
+    leftArm.add(scales);
+    this.mesh(scales, new THREE.BoxGeometry(0.42, 0.02, 0.03), dark, 0, 0, 0);
+    this.mesh(scales, new THREE.CylinderGeometry(0.015, 0.015, 0.08, 6), dark, 0, 0.04, 0);
+    const panL = this.mesh(scales, new THREE.CylinderGeometry(0.07, 0.055, 0.025, 8), bronze, -0.2, -0.16, 0);
+    const panR = this.mesh(scales, new THREE.CylinderGeometry(0.07, 0.055, 0.025, 8), bronze, 0.2, -0.16, 0);
+    this.mesh(scales, new THREE.BoxGeometry(0.01, 0.16, 0.01), dark, -0.2, -0.08, 0);
+    this.mesh(scales, new THREE.BoxGeometry(0.01, 0.16, 0.01), dark, 0.2, -0.08, 0);
+    const rightArm = new THREE.Group();
+    rightArm.position.set(0.14, 0.7, 0);
+    rightArm.rotation.z = -0.85;
+    root.add(rightArm);
+    this.mesh(rightArm, new THREE.BoxGeometry(0.05, 0.28, 0.05), cloth, 0, 0.12, 0);
+    this.mesh(rightArm, new THREE.BoxGeometry(0.03, 0.42, 0.03), dark, 0, 0.38, 0);
+    this.mesh(rightArm, new THREE.BoxGeometry(0.08, 0.03, 0.03), dark, 0, 0.58, 0);
+    root.userData.scales = scales;
+    return root;
   }
 
   buildFlames() {
@@ -389,6 +427,9 @@ class HavenScene {
     phoneMat.emissiveIntensity = outcome === "fog" ? 0.05 : 0.2 + blink * 0.8;
 
     this.column.rotation.y = reduced ? 0.4 : t * 0.15;
+    if (this.justice?.userData.scales) {
+      this.justice.userData.scales.rotation.z = reduced ? 0 : Math.sin(t * 1.4) * 0.08;
+    }
     this.core.material.opacity = outcome === "fog" ? 0.2 : 0.85;
 
     this.stageMats.forEach((mat, i) => {

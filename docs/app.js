@@ -61,16 +61,16 @@ const CONTRACTORS = [
 ];
 
 const HOUSES = [
-  { id: "cwa-pump", name: "CWA Pump House", hint: "Water Grid Renewal · SPEC-01", variant: "pump", x: 0.2, z: 3.4, cost: 80, renovated: false, owner: null, ownerSector: null },
-  { id: "block-a", name: "Village Block A", hint: "Cité roofs · SPEC-04", variant: "block", x: -4.2, z: 1.6, cost: 60, renovated: false, owner: null, ownerSector: null },
-  { id: "block-b", name: "Village Block B", hint: "Cité wiring · SPEC-05", variant: "block", x: 4.3, z: 1.4, cost: 60, renovated: false, owner: null, ownerSector: null },
+  { id: "cwa-pump", name: "CWA Pump House", hint: "Water Grid Renewal · SPEC-01", variant: "pump", x: -1.55, z: 1.95, cost: 80, renovated: false, owner: null, ownerSector: null },
+  { id: "block-a", name: "Village Block A", hint: "Cité roofs · SPEC-04", variant: "block", x: -3.85, z: 0.35, cost: 60, renovated: false, owner: null, ownerSector: null },
+  { id: "block-b", name: "Village Block B", hint: "Cité wiring · SPEC-05", variant: "block", x: 4.05, z: 0.35, cost: 60, renovated: false, owner: null, ownerSector: null },
   { id: "market", name: "Market Shed", hint: "Market stalls · SPEC-02", variant: "market", x: -3.6, z: -2.1, cost: 50, renovated: false, owner: null, ownerSector: null },
   { id: "clinic", name: "District Clinic", hint: "Clinic stores · SPEC-03", variant: "clinic", x: 3.9, z: -2.3, cost: 90, renovated: false, owner: null, ownerSector: null },
   { id: "school", name: "Primary School", hint: "School works · SPEC-06", variant: "school", x: -1.4, z: -4.8, cost: 70, renovated: false, owner: null, ownerSector: null },
   { id: "hall", name: "Civic Hall", hint: "Hall hire · SPEC-11", variant: "hall", x: 1.9, z: -4.9, cost: 85, renovated: false, owner: null, ownerSector: null },
-  { id: "bus", name: "Bus Shelter", hint: "Shelter panels · SPEC-12", variant: "bus", x: 5.4, z: 3.2, cost: 40, renovated: false, owner: null, ownerSector: null },
-  { id: "power", name: "CEB Substation", hint: "Street lighting feed · SPEC-07", variant: "power", x: -5.6, z: 3.3, cost: 90, renovated: false, owner: null, ownerSector: null },
-  { id: "drain", name: "Drainage Node", hint: "Land Drainage Authority · SPEC-08", variant: "drain", x: 0.1, z: 6.0, cost: 50, renovated: false, owner: null, ownerSector: null },
+  { id: "bus", name: "Bus Shelter", hint: "Shelter panels · SPEC-12", variant: "bus", x: 6.2, z: 2.15, cost: 40, renovated: false, owner: null, ownerSector: null },
+  { id: "power", name: "CEB Substation", hint: "Street lighting feed · SPEC-07", variant: "power", x: -6.15, z: 2.05, cost: 90, renovated: false, owner: null, ownerSector: null },
+  { id: "drain", name: "Drainage Node", hint: "Land Drainage Authority · SPEC-08", variant: "drain", x: 0.1, z: 6.35, cost: 50, renovated: false, owner: null, ownerSector: null },
   { id: "light", name: "Street Lighting Mast", hint: "CEB classified road · SPEC-09", variant: "light", x: 6.4, z: -0.4, cost: 40, renovated: false, owner: null, ownerSector: null },
   { id: "community", name: "Community Centre", hint: "Village committee hall · SPEC-10", variant: "community", x: -6.2, z: -0.6, cost: 70, renovated: false, owner: null, ownerSector: null },
 ];
@@ -2103,7 +2103,12 @@ function loadState() {
     if (!raw) return defaultState();
     const data = JSON.parse(raw);
     if (data.version !== SAVE_VERSION) return defaultState();
-    return { ...defaultState(), ...claimAsYou(data), hoveredId: null, selectedId: null, toast: null };
+    const loaded = { ...defaultState(), ...claimAsYou(data), hoveredId: null, selectedId: null, toast: null };
+    loaded.houses = (loaded.houses || []).map((h) => {
+      const src = HOUSES.find((s) => s.id === h.id);
+      return src ? { ...h, x: src.x, z: src.z } : h;
+    });
+    return loaded;
   } catch {
     return defaultState();
   }

@@ -1297,7 +1297,7 @@ class VillageEngine {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
     }
-    this.aimStage(new THREE.Vector3(6.4, 1.45, 6.9), view, 3.0);
+    this.aimStage(new THREE.Vector3(5.2, 1.55, 6.7), view, 4.15);
   }
 
   paintParts(parts, color, fillOp = 0.22, lineOp = 0.85) {
@@ -1731,20 +1731,12 @@ class VillageEngine {
     this.addWBox(this.wGroup, this.wGeos, this.boatHull, bx, 0.4, bz + 0.08, 0.78, 0.22, 2.05, blackS);
     this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.58, bz + 0.08, 0.78, 0.16, 2.05, whiteS);
     this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.5, bz + 0.08, 0.8, 0.025, 2.08, stripeS);
-    const prowLow = new THREE.ConeGeometry(0.39, 0.95, 8);
-    const prowUp = new THREE.ConeGeometry(0.39, 0.95, 8);
-    this.wGeos.push(prowLow, prowUp);
-    const prowLowM = new THREE.MeshStandardMaterial({ color: 0x14161c, roughness: 0.42, metalness: 0.12 });
-    const prowUpM = new THREE.MeshStandardMaterial({ color: 0xf4f5f3, roughness: 0.38, metalness: 0.08 });
-    this.boatHull.fills.push(prowLowM);
-    this.boat.fills.push(prowUpM);
-    const prowA = new THREE.Mesh(prowLow, prowLowM);
-    prowA.position.set(bx, 0.4, bz + 1.28);
-    prowA.rotation.x = -Math.PI / 2;
-    const prowB = new THREE.Mesh(prowUp, prowUpM);
-    prowB.position.set(bx, 0.58, bz + 1.28);
-    prowB.rotation.x = -Math.PI / 2;
-    this.wGroup.add(prowA, prowB);
+    this.addWBox(this.wGroup, this.wGeos, this.boatHull, bx, 0.38, bz + 1.22, 0.52, 0.18, 0.36, blackS);
+    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.56, bz + 1.22, 0.52, 0.14, 0.36, whiteS);
+    this.addWBox(this.wGroup, this.wGeos, this.boatHull, bx, 0.36, bz + 1.44, 0.3, 0.14, 0.26, blackS);
+    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.52, bz + 1.44, 0.3, 0.12, 0.26, whiteS);
+    this.addWBox(this.wGroup, this.wGeos, this.boatHull, bx, 0.34, bz + 1.62, 0.14, 0.1, 0.18, blackS);
+    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.48, bz + 1.62, 0.14, 0.1, 0.18, whiteS);
     this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.68, bz + 0.55, 0.62, 0.04, 0.9, { fill: 0.94, depth: true, color: 0xd4c4a0 });
     const glassS = { fill: 0.28, depth: true, color: 0x1a2428 };
     const screen = this.addWBox(this.wGroup, this.wGeos, this.boatHull, bx, 0.86, bz - 0.05, 0.7, 0.28, 0.04, glassS);
@@ -1780,16 +1772,23 @@ class VillageEngine {
     const rightLeaf = this.addWBox(this.wGroup, this.wGeos, this.compoundWall, west - 0.02, 0.62, gateZ - 0.22, 0.05, 1.12, 0.38, leafS);
     rightLeaf.rotation.y = -0.6;
     const alleyZ = gateZ;
-    this.addWBox(this.wGroup, this.wGeos, this.cite, (3.35 + west) / 2, 0.03, alleyZ, west - 3.35, 0.05, 1.15, { fill: 0.95, depth: true, color: 0x6a6660 });
+    const alleyLen0 = west - 3.4;
+    const alleyStart = west - alleyLen0 * 3;
+    this.addWBox(this.wGroup, this.wGeos, this.cite, (alleyStart + west) / 2, 0.03, alleyZ, west - alleyStart, 0.05, 1.15, { fill: 0.95, depth: true, color: 0x6a6660 });
     const alleyWallH = 1.18;
-    this.addLowWallRun(this.cite, 3.4, alleyZ - 0.62, west, alleyZ - 0.62, alleyWallH, 0.09);
-    this.addLowWallRun(this.cite, 3.4, alleyZ + 0.62, west - 0.15, alleyZ + 0.62, alleyWallH, 0.09);
-    [3.55, 4.55, 5.55].forEach((hx) => this.addRustyShack(this.cite, hx, alleyZ - 1.28, 0.92));
-    [3.55, 4.55, 5.55].forEach((hx) => this.addRustyShack(this.cite, hx, alleyZ + 1.28, 0.92));
+    this.addLowWallRun(this.cite, alleyStart, alleyZ - 0.62, west, alleyZ - 0.62, alleyWallH, 0.09);
+    this.addLowWallRun(this.cite, alleyStart, alleyZ + 0.62, west - 0.15, alleyZ + 0.62, alleyWallH, 0.09);
+    const shackXs = [0.2, 0.48, 0.76].map((t) => alleyStart + (west - alleyStart) * t);
+    shackXs.forEach((hx) => this.addRustyShack(this.cite, hx, alleyZ - 1.32, 0.92));
+    shackXs.forEach((hx) => this.addRustyShack(this.cite, hx, alleyZ + 1.32, 0.92));
+    const roadX = alleyStart - 1.05;
+    this.addWBox(this.wGroup, this.wGeos, this.cite, roadX, 0.025, alleyZ + 0.4, 1.7, 0.05, 14.5, { fill: 0.95, depth: true, color: 0x3a3c40 });
+    for (let i = -5; i <= 5; i++) {
+      this.addWBox(this.wGroup, this.wGeos, this.cite, roadX, 0.055, alleyZ + i * 1.15, 0.08, 0.02, 0.45, { fill: 0.95, depth: true, color: 0xd5d6d2 });
+    }
     this.addCiteTree(west - 0.55, alleyZ - 0.95, 1.12);
     this.addCiteTree(west - 0.35, alleyZ + 0.88, 1.28);
     this.addCiteTree(west - 1.15, alleyZ - 0.22, 0.95);
-    this.addCiteTree(5.15, alleyZ - 0.82, 1.05);
     const lx = LODGING.x, lz = LODGING.z;
     const lodS = { fill: 0.92, depth: true, color: 0x8a4b32 };
     const W = 2.15, D = 1.75, H = 2.2, wall = 0.1, winW = 1.02, winH = 1.15, winY = 1.28;
@@ -1826,6 +1825,22 @@ class VillageEngine {
     this.watcher.renderOrder = 4;
     this.watcher.traverse((obj) => { obj.renderOrder = 4; });
     this.watcherHome = this.watcher.position.clone();
+    const forestRing = [];
+    for (let fx = roadX - 4.2; fx <= eastWall + 3.8; fx += 1.35) {
+      forestRing.push([fx, south - 2.4], [fx + 0.45, north + 2.6], [fx - 0.3, south - 3.5], [fx + 0.2, north + 3.8]);
+    }
+    for (let fz = south - 3.2; fz <= north + 4.0; fz += 1.4) {
+      forestRing.push([roadX - 2.6, fz], [roadX - 3.8, fz + 0.5], [eastWall + 2.4, fz], [eastWall + 3.6, fz - 0.4]);
+    }
+    forestRing.forEach(([tx, tz], i) => {
+      const inAlley = tx > alleyStart - 0.4 && tx < west + 0.3 && Math.abs(tz - alleyZ) < 1.7;
+      const inYard = tx > west - 0.2 && tx < eastWall + 0.3 && tz > south - 0.2 && tz < north + 0.3;
+      const inLodge = Math.hypot(tx - lx, tz - lz) < 1.8;
+      const inRoad = Math.abs(tx - roadX) < 1.1 && Math.abs(tz - alleyZ) < 7.4;
+      const inSight = tx > lx && tx < x && tz < lz + 0.4 && tz > z - 0.2;
+      if (inAlley || inYard || inLodge || inRoad || inSight) return;
+      this.addCiteTree(tx, tz, 0.85 + (i % 5) * 0.18);
+    });
     const spots = [
       { x: x - 1.35, z: z + 2.05, s: 1.04, yaw: Math.PI / 2, look: { skin: 0x3d2314, hair: 0x1a120c, lock: 0x4a2a14, locks: true, suit: 0xea2839, drink: [0xea2839, 0xf0c030, 0x00a551, 0x2d6bff] } },
       { x: x + 0.15, z: z + 3.05, s: 1.06, yaw: Math.PI, look: { skin: 0x8d5524, hair: 0x14110e, suit: 0x1a206d, drink: [0xf0c030, 0xea2839, 0x2d6bff, 0x00a551] } },

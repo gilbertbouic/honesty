@@ -2732,7 +2732,6 @@ function renderHaven() {
         }).join("")}
       </div>
       <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holds") : L("looksAway")) : L("scoring")}</p>
-      <p style="font-size:.8rem">${L("scoringHaven")}</p>
       <p class="rose" style="font-size:.8rem">${L("hotlineNote")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-haven" style="margin-top:.75rem">${L("nextSignal")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker ${state.havenOutcome === "line" ? "green" : state.havenOutcome === "lamp" ? "amber" : "crimson"}" style="margin:.5rem 0 0">${
@@ -2833,7 +2832,6 @@ function renderLand() {
         }).join("")}
       </div>
       <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsLand") : L("missLand")) : L("scoring")}</p>
-      <p style="font-size:.8rem">${L("scoringLand")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-land" style="margin-top:.75rem;background:#e6c36a">${L("nextPlot")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.landOutcome === "held" ? "var(--green)" : state.landOutcome === "shift" ? "#e6c36a" : "var(--crimson)"}">${
         state.landOutcome === "held" ? L("doneHeld") : state.landOutcome === "shift" ? L("doneShift") : L("doneLost")
@@ -2931,7 +2929,6 @@ function renderFair() {
         }).join("")}
       </div>
       <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsFair") : L("missFair")) : L("scoring")}</p>
-      <p style="font-size:.8rem">${L("scoringFair")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-fair" style="margin-top:.75rem;background:#b388ff">${L("nextGate")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.fairOutcome === "fair" ? "var(--green)" : state.fairOutcome === "half" ? "#b388ff" : "var(--crimson)"}">${
         state.fairOutcome === "fair" ? L("doneFair") : state.fairOutcome === "half" ? L("doneHalf") : L("doneBarred")
@@ -3020,7 +3017,6 @@ function renderCrop() {
         }).join("")}
       </div>
       <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsCrop") : L("missCrop")) : L("scoring")}</p>
-      <p style="font-size:.8rem">${L("scoringCrop")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-crop" style="margin-top:.75rem;background:#6fbf73">${L("nextRow")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.cropOutcome === "grown" ? "var(--green)" : state.cropOutcome === "thin" ? "#6fbf73" : "var(--crimson)"}">${
         state.cropOutcome === "grown" ? L("doneGrown") : state.cropOutcome === "thin" ? L("doneThin") : L("doneBare")
@@ -3109,7 +3105,6 @@ function renderWash() {
         }).join("")}
       </div>
       <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsWash") : L("missWash")) : L("scoring")}</p>
-      <p style="font-size:.8rem">${L("scoringWash")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-wash" style="margin-top:.75rem;background:#c9a15a">${L("nextFloor")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.washOutcome === "clean" ? "var(--green)" : state.washOutcome === "thin" ? "#c9a15a" : "var(--crimson)"}">${
         state.washOutcome === "clean" ? L("doneClean") : state.washOutcome === "thin" ? L("doneWashThin") : L("doneWash")
@@ -3199,7 +3194,6 @@ function renderStamp() {
         }).join("")}
       </div>
       <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsStamp") : L("missStamp")) : L("scoring")}</p>
-      <p style="font-size:.8rem">${L("scoringStamp")}</p>
       <p style="font-size:.8rem">${L("stampRule")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-stamp" style="margin-top:.75rem;background:#ea2839">${L("nextFile")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.stampOutcome === "click" ? "var(--green)" : state.stampOutcome === "smear" ? "#ea2839" : "var(--crimson)"}">${
@@ -3289,7 +3283,6 @@ function renderRoll() {
         }).join("")}
       </div>
       <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsRoll") : L("missRoll")) : L("scoring")}</p>
-      <p style="font-size:.8rem">${L("scoringRoll")}</p>
       <p style="font-size:.8rem">${L("rollRule")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-roll" style="margin-top:.75rem;background:#2a6f8f">${L("nextName")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.rollOutcome === "list" ? "var(--green)" : state.rollOutcome === "sheet" ? "#2a6f8f" : "var(--crimson)"}">${
@@ -3379,7 +3372,6 @@ function renderOath() {
         }).join("")}
       </div>
       <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsOath") : L("missOath")) : L("scoring")}</p>
-      <p style="font-size:.8rem">${L("scoringOath")}</p>
       <p style="font-size:.8rem">${L("oathRule")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-oath" style="margin-top:.75rem;background:#1a206d">${L("nextSeat")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.oathOutcome === "whole" ? "var(--green)" : state.oathOutcome === "page" ? "#1a206d" : "var(--crimson)"}">${
@@ -3490,7 +3482,6 @@ function renderCase() {
             }</p>${roundTwoCleared(state.whistleResults) ? `<button type="button" class="cta open-next" id="open-haven">${L("openLine")}</button>` : ""}`}
       ` : `
         <p class="kicker mute">${L("scoring")}</p>
-        <p style="margin:.35rem 0 0;font-size:.8rem">${L("scoringBody", { name: "Ravi" })}</p>
       `}
     </div>`;
   document.querySelectorAll("[data-case]").forEach((btn) => {

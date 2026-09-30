@@ -42,6 +42,7 @@ class OathScene {
     this.seat(this.member, 1);
     this.seat(this.memberB, 1);
     this.group.visible = false;
+    this.group.scale.setScalar(1.25);
     scene.add(this.group);
   }
 

@@ -1,14 +1,14 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg89";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg90";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
 import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg61";
 import { StampScene } from "./stamp.js?v=vg90";
-import { RollScene } from "./roll.js?v=vg91";
-import { OathScene } from "./oath.js?v=vg89";
+import { RollScene } from "./roll.js?v=vg92";
+import { OathScene } from "./oath.js?v=vg90";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -1935,7 +1935,18 @@ engine.sync(syncPayload());
 
 const boot = document.getElementById("boot");
 const play = document.getElementById("play");
+const howtoPane = document.getElementById("howto-pane");
+const enterPane = document.getElementById("enter-pane");
 const enterBtn = document.getElementById("enter-btn");
+function showHowTo() {
+  howtoPane.hidden = false;
+  enterPane.hidden = true;
+}
+function showEnterGate() {
+  howtoPane.hidden = true;
+  enterPane.hidden = false;
+}
+document.getElementById("howto-btn").addEventListener("click", showEnterGate);
 enterBtn.addEventListener("click", () => {
   state.phase = "play";
   state.contractorId = "you";
@@ -1947,6 +1958,7 @@ enterBtn.addEventListener("click", () => {
 function resetGame() {
   try { localStorage.removeItem(SAVE_KEY); } catch { /* ignore */ }
   Object.assign(state, defaultState());
+  showHowTo();
   boot.hidden = false;
   play.hidden = true;
   engine.sync(syncPayload());
@@ -2046,6 +2058,13 @@ function setLang(next) {
 }
 
 function renderBoot() {
+  document.getElementById("howto-kicker").textContent = L("howtoKicker");
+  document.getElementById("howto-title").textContent = L("howtoTitle");
+  document.getElementById("howto-lead").textContent = L("howtoLead");
+  document.getElementById("howto-steps").innerHTML = ["howtoScore", "howtoOutcomes", "howtoOrder", "howtoCap"]
+    .map((key) => `<li>${L(key)}</li>`)
+    .join("");
+  document.getElementById("howto-btn").textContent = L("howtoNext");
   document.getElementById("boot-title").textContent = L("title");
   document.getElementById("boot-goal").textContent = L("goal");
   document.getElementById("enter-btn").textContent = L("enter");

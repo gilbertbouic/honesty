@@ -26,7 +26,7 @@
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Share+Tech+Mono&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=vg73" />
+    <link rel="stylesheet" href="./styles.css?v=vg74" />
     <script type="importmap">
       {
         "imports": {
@@ -46,10 +46,19 @@
           <div class="orient-switch" id="boot-orient"></div>
           <div class="lang-switch" id="boot-lang"></div>
         </div>
-        <h1 id="boot-title">Integrity Village</h1>
-        <p class="lede" id="boot-goal"></p>
-        <ol class="stages" id="boot-stages"></ol>
-        <button type="button" class="cta" id="enter-btn">Enter</button>
+        <div id="howto-pane">
+          <p class="kicker cyan" id="howto-kicker"></p>
+          <h1 id="howto-title"></h1>
+          <p class="lede" id="howto-lead"></p>
+          <ol class="howto-list" id="howto-steps"></ol>
+          <button type="button" class="cta" id="howto-btn"></button>
+        </div>
+        <div id="enter-pane" hidden>
+          <h1 id="boot-title">Integrity Village</h1>
+          <p class="lede" id="boot-goal"></p>
+          <ol class="stages" id="boot-stages"></ol>
+          <button type="button" class="cta" id="enter-btn">Enter</button>
+        </div>
       </div>
     </div>
 
@@ -135,6 +144,6 @@
       <a href="https://mkweli.tech">A Mkweli product</a>
     </footer>
 
-    <script type="module" src="./app.js?v=vg92"></script>
+    <script type="module" src="./app.js?v=vg93"></script>
   </body>
 </html>

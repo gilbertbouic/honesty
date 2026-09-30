@@ -50,6 +50,7 @@ class RollScene {
     this.flash.position.set(1.15, 1.2, 0.12);
     this.group.add(this.flash);
     this.group.visible = false;
+    this.group.scale.setScalar(1.25);
     scene.add(this.group);
   }
 

@@ -1,4 +1,4 @@
-import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg1";
+import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg2";
 
 // src/lib/game/i18n.ts
 var LANG_KEY = "village-grid-lang";
@@ -89,7 +89,7 @@ var UI = {
     midScore: "Mid score",
     lowScore: "Low score",
     jailTitle: "{name} jailed",
-    jailBody: "The file held. Police remand the dive master. Villa, car and boat are seized. The entourage is taken off the compound.",
+    jailBody: "The file held. Police remand Ravi. Villa, car and boat are seized. The entourage is taken off the compound.",
     burnTitle: "Your lodging is burning",
     burnBody: "The file was too thin. Ravi\u2019s crew torch the lodging you sleep in. The villa still stands.",
     exileTitle: "Chased out of the village",
@@ -116,7 +116,7 @@ var UI = {
     awardedTag: "held",
     rejectedTag: "rejected",
     wage: "Rs 15,000 / month",
-    job: "Dive master",
+    job: "Declared wage",
     foot: "",
     resetRound: "Reset round",
     toastStage: "Stage reset.",
@@ -463,7 +463,7 @@ var UI = {
     midScore: "Score moyen",
     lowScore: "Score bas",
     jailTitle: "{name} en prison",
-    jailBody: "Le dossier est solide. La police place le moniteur de plong\xE9e en d\xE9tention. La villa, la voiture et le bateau sont saisis. L'entourage quitte le domaine.",
+    jailBody: "Le dossier est solide. La police place Ravi en d\xE9tention. La villa, la voiture et le bateau sont saisis. L'entourage quitte le domaine.",
     burnTitle: "Ton logement br\xFBle",
     burnBody: "Le dossier \xE9tait trop mince. L'\xE9quipe de Ravi incendie le logement o\xF9 tu dors. La villa est encore debout.",
     exileTitle: "Chass\xE9 du village",
@@ -490,7 +490,7 @@ var UI = {
     awardedTag: "tenue",
     rejectedTag: "refus\xE9e",
     wage: "Rs 15 000 / mois",
-    job: "Moniteur de plong\xE9e",
+    job: "Salaire d\xE9clar\xE9",
     foot: "",
     resetRound: "R\xE9initialiser",
     toastStage: "\xC9tape r\xE9initialis\xE9e.",
@@ -892,21 +892,21 @@ var TENDER_FR = {
 var CASE_FR = {
   car: {
     title: "Voiture de luxe",
-    question: "Ravi est moniteur de plong\xE9e \xE0 Rs 15 000 par mois. Cette semaine il gare un SUV neuf de plusieurs millions de roupies devant la cit\xE9. Un cousin dit de se taire \u2014 \xAB c'est une affaire de famille \xBB. Quelle est l'action licite ?",
+    question: "Ravi d\xE9clare Rs 15 000 par mois. Cette semaine il gare un SUV neuf de plusieurs millions de roupies devant la cit\xE9. Un cousin dit de se taire \u2014 \xAB c'est une affaire de famille \xBB. Quelle est l'action licite ?",
     options: {
-      A: "Se taire. Un moniteur peut avoir un oncle riche en Italie et le village ne doit pas fouiller un garage.",
-      B: "D\xE9poser un signalement de richesse suspecte \xE0 la police / l'ADSU. Un salaire de Rs 15 000 n'explique pas une voiture de plusieurs millions. Ne prends pas d'argent du silence.",
+      A: "Se taire. Un parent \xE0 l'\xE9tranger peut acheter une voiture, donc le village n'a pas \xE0 ouvrir un dossier.",
+      B: "D\xE9poser un signalement de richesse suspecte \xE0 la police / l'ADSU. Le salaire d\xE9clar\xE9 n'explique pas la voiture. Ne prends pas d'argent du silence.",
       C: "Accepter Rs 20 000 pour \xAB surveiller la voiture la nuit \xBB et garder l'immatriculation hors de tout dossier.",
       D: "Publier la plaque sur une page de rumeurs et s'arr\xEAter l\xE0. Ni rapport officiel, ni dossier."
     }
   },
   villa: {
     title: "Villa de luxe",
-    question: "Ravi commence une villa de trois \xE9tages en pierre import\xE9e avec piscine, toujours au salaire de moniteur. Le ma\xE7on murmure que le permis \xAB s'arrange \xBB. Restes-tu silencieux ?",
+    question: "Ravi commence une villa de trois \xE9tages en pierre import\xE9e avec piscine, toujours au salaire d\xE9clar\xE9. Le ma\xE7on murmure que le permis \xAB s'arrange \xBB. Quelle est l'action licite ?",
     options: {
       A: "Demander un travail sur le chantier et prendre une enveloppe \xE0 la fin de chaque \xE9tage.",
       B: "Se taire. C'est son terrain. Un homme peut b\xE2tir comme il veut si les voisins aiment le rendu.",
-      C: "Signaler le chantier inexpliqu\xE9. Exiger le dossier de permis. Un salaire de Rs 15 000 ne finance pas une villa.",
+      C: "Signaler le chantier inexpliqu\xE9. Demander le dossier de permis. Le salaire d\xE9clar\xE9 ne finance pas cette villa.",
       D: "Le dire en priv\xE9 au conseiller de district autour d'un verre et traiter un hochement comme le permis."
     }
   },
@@ -915,9 +915,9 @@ var CASE_FR = {
     question: "Un cabin-cruiser appara\xEEt sur une remorque derri\xE8re la villa. Pas de num\xE9ro d'immatriculation, carburant en liquide, sorties de nuit vers le r\xE9cif. Ravi t'offre une partie de p\xEAche si tu te tais. Que dois-tu faire ?",
     options: {
       A: "Accepter la sortie, photographier le coucher de soleil, et garder le bateau hors de tout dossier.",
-      B: "Signaler le navire non immatricul\xE9 et le carburant en liquide. Un bien marin inexpliqu\xE9 sur un salaire de moniteur est un signal de trafic.",
+      B: "Signaler le navire non immatricul\xE9 et le carburant en liquide. Un bien marin non d\xE9clar\xE9 plus des sorties de nuit en liquide est un signal de trafic.",
       C: "D\xE9placer la remorque derri\xE8re le hangar du march\xE9 pour que la patrouille ne la voie pas.",
-      D: "Se taire. Les bateaux sont un loisir c\xF4tier. Un moniteur de plong\xE9e est cens\xE9 en avoir un."
+      D: "Se taire. Un travailleur du littoral peut avoir un bateau."
     }
   },
   clothes: {
@@ -934,7 +934,7 @@ var CASE_FR = {
     title: "L'entourage",
     question: "Un groupe tournant de femmes \xE9trang\xE8res loge maintenant \xE0 la villa. Aucune n'a de famille au village, aucune ne montre de permis de travail, et elles ne prennent jamais le bus de jour. Ravi dit de se taire ou de perdre ton toit. Que dois-tu faire ?",
     options: {
-      A: "Se taire. Les invit\xE9s sont priv\xE9s. Un moniteur peut recevoir qui il veut.",
+      A: "Se taire. Les invit\xE9s sont priv\xE9s. Un h\xF4te peut recevoir qui il veut.",
       B: "Prendre de l'argent pour \xAB regarder ailleurs \xE0 la grille \xBB et garder les noms hors de tout dossier.",
       C: "Entrer seul dans la villa la nuit et ordonner au groupe de partir, sans dossier de police.",
       D: "Signaler un h\xE9bergement et un trafic suspects \xE0 la police. Ne pas se taire. Ne pas affronter la villa soi-m\xEAme."
@@ -942,7 +942,7 @@ var CASE_FR = {
   },
   cash: {
     title: "Dons en liquide",
-    question: "Ravi se met \xE0 payer en liquide les dettes de boutique et les frais d'\xE9cole des voisins, toujours avec un salaire de moniteur de Rs 15 000. Il appelle \xE7a de la charit\xE9 et te demande de ne rien \xE9crire. Quelle est l'action licite ?",
+    question: "Ravi se met \xE0 payer en liquide les dettes de boutique et les frais d'\xE9cole des voisins, toujours avec un salaire d\xE9clar\xE9 de Rs 15 000. Il appelle \xE7a de la charit\xE9 et te demande de ne rien \xE9crire. Quelle est l'action licite ?",
     options: {
       A: "Se taire. Payer les frais d'un voisin est une gentillesse. Un village ne contr\xF4le pas un don.",
       B: "Prendre une part du liquide pour tes propres frais et laisser le reste hors dossier.",

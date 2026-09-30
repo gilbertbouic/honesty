@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg94";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg95";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
@@ -189,20 +189,20 @@ const TENDERS = [
 
 const WHISTLE_CASES = [
   { id: "car", spec: "CASE-01", title: "Luxury car",
-    question: "Ravi works as a dive master on Rs 15,000 a month. This week he parks a brand-new SUV worth several million rupees outside the cité. A cousin says stay silent — “it is family business.” What is the lawful action?",
+    question: "Ravi declares Rs 15,000 a month. This week he parks a new SUV worth several million rupees outside the cité. A cousin says stay silent — “it is family business.” What is the lawful action?",
     options: [
-      { id: "A", text: "Stay silent. A dive master can have a rich uncle in Italy and the village should not poke into a man’s garage." },
-      { id: "B", text: "File a suspicious-wealth report with the police / ADSU. A Rs 15,000 wage cannot explain a multi-million car. Do not take hush money." },
+      { id: "A", text: "Stay silent. A relative abroad can buy a car, so the village should not open a file." },
+      { id: "B", text: "File a suspicious-wealth report with the police / ADSU. The declared wage does not explain the car. Do not take hush money." },
       { id: "C", text: "Accept Rs 20,000 to “watch the car at night” and keep the registration off any village file." },
       { id: "D", text: "Post the number plate on a rumour page and leave it there. No official report, no file." },
     ],
     correct: "B", npcReports: { kuzin: 78, cheri: 61, malin: 84, kokin: 55 } },
   { id: "villa", spec: "CASE-02", title: "Luxury villa",
-    question: "Ravi starts a three-storey villa with imported stone and a pool, still on the same dive-master wage. The mason whispers that the permit is “being arranged.” Do you stay silent?",
+    question: "Ravi starts a three-storey villa with imported stone and a pool, still on the same declared wage. The mason whispers that the permit is “being arranged.” What is the lawful action?",
     options: [
       { id: "A", text: "Ask for a job on the site and take cash in an envelope at the end of each floor." },
       { id: "B", text: "Stay silent. It is his plot. A man may build as he likes if the neighbours like the look of it." },
-      { id: "C", text: "Report the unexplained build. Demand the building-permit file. A Rs 15,000 wage does not fund a villa." },
+      { id: "C", text: "Report the unexplained build. Ask for the building-permit file. The declared wage does not fund this villa." },
       { id: "D", text: "Tell the district councillor privately over a drink and treat a nod as the permit." },
     ],
     correct: "C", npcReports: { kuzin: 66, cheri: 80, malin: 72, kokin: 58 } },
@@ -210,9 +210,9 @@ const WHISTLE_CASES = [
     question: "A cabin cruiser appears on a trailer behind the villa. No registry number, cash for fuel, night runs toward the reef. Ravi offers you a free fishing trip if you stay silent. What must you do?",
     options: [
       { id: "A", text: "Take the trip, photograph the sunset, and keep the boat off every file." },
-      { id: "B", text: "Report the unregistered vessel and the cash fuel pattern. Unexplained marine assets on a dive-master wage are a trafficking flag." },
+      { id: "B", text: "Report the unregistered vessel and the cash fuel pattern. An undeclared marine asset plus night cash runs is a trafficking flag." },
       { id: "C", text: "Move the trailer behind the market shed so the police patrol does not see it." },
-      { id: "D", text: "Stay silent. Boats are a coastal hobby. A dive master is expected to own one." },
+      { id: "D", text: "Stay silent. A coastal worker may keep a boat." },
     ],
     correct: "B", npcReports: { kuzin: 82, cheri: 54, malin: 69, kokin: 76 } },
   { id: "clothes", spec: "CASE-04", title: "Designer clothes",
@@ -227,14 +227,14 @@ const WHISTLE_CASES = [
   { id: "entourage", spec: "CASE-05", title: "The entourage",
     question: "A rotating group of foreign women now stay at the villa. None have family in the village, none show a work permit, and they are never on the daytime bus. Ravi says stay silent or lose the roof over your head. What must you do?",
     options: [
-      { id: "A", text: "Stay silent. Guests are private. A dive master may host whoever he likes." },
+      { id: "A", text: "Stay silent. Guests are private. A host may receive who he likes." },
       { id: "B", text: "Take cash to “look the other way at the gate” and keep the names off every file." },
       { id: "C", text: "Walk into the villa alone at night and order the group to leave, with no police file." },
       { id: "D", text: "Report suspected harbouring and trafficking to the police. Do not stay silent. Do not confront the villa yourself." },
     ],
     correct: "D", npcReports: { kuzin: 70, cheri: 62, malin: 77, kokin: 85 } },
   { id: "cash", spec: "CASE-06", title: "Cash gifts",
-    question: "Ravi starts paying neighbours’ shop debts and school fees in cash, still on a dive-master wage of Rs 15,000. He calls it charity and asks you not to write it down. What is the lawful action?",
+    question: "Ravi starts paying neighbours’ shop debts and school fees in cash, still on a declared wage of Rs 15,000. He calls it charity and asks you not to write it down. What is the lawful action?",
     options: [
       { id: "A", text: "Stay silent. Paying a neighbour’s fee is kindness. A village should not audit a gift." },
       { id: "B", text: "Take a share of the cash for your own fees and leave the rest off the file." },

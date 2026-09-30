@@ -36,6 +36,8 @@ const BLUSH = new THREE.Color(0xff8ec0);
 const SKIN = new THREE.Color(0xf2c7a5);
 const HAIR = new THREE.Color(0x3a242c);
 const HOUSE = new THREE.Color(0xd4894a);
+const RUST = new THREE.Color(0x8a4b32);
+const RUST_DARK = new THREE.Color(0x5c3224);
 const POOL = new THREE.Color(0x3ec8ff);
 const FLAG_RED = new THREE.Color(0xff3b4e);
 const FLAG_BLUE = new THREE.Color(0x2d6bff);
@@ -1324,6 +1326,71 @@ class VillageEngine {
     fill.castShadow = true;
     fill.receiveShadow = true;
     group.add(fill);
+    return fill;
+  }
+
+  addCorrugatedFace(parts, x, y, z, w, h, d, axis, opts = {}) {
+    const rust = { fill: opts.fill ?? 0.92, depth: true, color: opts.color ?? 0x8a4b32 };
+    this.addWBox(this.wGroup, this.wGeos, parts, x, y, z, w, h, d, rust);
+    const along = axis === "x" ? w : d;
+    const n = Math.max(4, Math.round(along / 0.16));
+    const rib = { fill: rust.fill, depth: true, color: opts.rib ?? 0x6a3824 };
+    for (let i = 0; i < n; i++) {
+      const u = -along / 2 + (i + 0.5) * (along / n);
+      if (axis === "x") this.addWBox(this.wGroup, this.wGeos, parts, x + u, y, z + d * 0.52, 0.04, h * 0.94, 0.03, rib);
+      else this.addWBox(this.wGroup, this.wGeos, parts, x + w * 0.52, y, z + u, 0.03, h * 0.94, 0.04, rib);
+    }
+  }
+
+  addRustyShack(parts, x, z, scale = 1) {
+    const s = scale;
+    const W = 1.12 * s, D = 0.9 * s, H = 1.05 * s;
+    const rust = { fill: 0.94, depth: true, color: 0x8a4b32 };
+    const dark = { fill: 0.94, depth: true, color: 0x4a2a1c };
+    this.addCorrugatedFace(parts, x, H / 2, z + D / 2, W, H, 0.07 * s, "x", rust);
+    this.addCorrugatedFace(parts, x, H / 2, z - D / 2, W, H, 0.07 * s, "x", rust);
+    this.addCorrugatedFace(parts, x + W / 2, H / 2, z, 0.07 * s, H, D, "z", rust);
+    this.addCorrugatedFace(parts, x - W / 2, H / 2, z, 0.07 * s, H, D, "z", rust);
+    this.addWBox(this.wGroup, this.wGeos, parts, x - 0.16 * s, 0.4 * s, z + D / 2 + 0.01, 0.26 * s, 0.7 * s, 0.04 * s, dark);
+    const roof = this.addWBox(this.wGroup, this.wGeos, parts, x, H + 0.07 * s, z, W + 0.16 * s, 0.055 * s, D + 0.2 * s, { fill: 0.94, depth: true, color: 0x6e3a26 });
+    roof.rotation.z = 0.09;
+    for (let i = 0; i < 5; i++) {
+      const u = -W / 2 + (i + 0.5) * (W / 5);
+      this.addWBox(this.wGroup, this.wGeos, parts, x + u, H + 0.11 * s, z, 0.035 * s, 0.028 * s, D + 0.16 * s, { fill: 0.94, depth: true, color: 0x5a2e1c });
+    }
+  }
+
+  addCiteTree(x, z, scale = 1) {
+    const g = new THREE.Group();
+    const bark = new THREE.MeshStandardMaterial({ color: 0x4a3424, roughness: 0.86 });
+    const leaf = new THREE.MeshStandardMaterial({ color: 0x2f5a32, roughness: 0.78 });
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.07 * scale, 0.1 * scale, 1.15 * scale, 6), bark);
+    trunk.position.y = 0.55 * scale;
+    trunk.castShadow = true;
+    g.add(trunk);
+    [[0, 1.45, 0, 0.55], [0.28, 1.28, 0.12, 0.38], [-0.22, 1.22, -0.16, 0.34]].forEach(([px, py, pz, r]) => {
+      const mesh = new THREE.Mesh(new THREE.SphereGeometry(r * scale, 8, 6), leaf);
+      mesh.position.set(px * scale, py * scale, pz * scale);
+      mesh.castShadow = true;
+      g.add(mesh);
+    });
+    g.position.set(x, 0, z);
+    this.wGroup.add(g);
+    return g;
+  }
+
+  addLowWallRun(parts, ax, az, bx, bz, h = 0.56, thick = 0.1) {
+    const dx = bx - ax, dz = bz - az;
+    const len = Math.hypot(dx, dz);
+    if (len < 0.05) return;
+    const stone = { fill: 0.92, depth: true, color: 0xb7b1a4 };
+    const cap = { fill: 0.92, depth: true, color: 0x9a9488 };
+    const cx = (ax + bx) / 2, cz = (az + bz) / 2;
+    const yaw = Math.atan2(dx, dz);
+    const wall = this.addWBox(this.wGroup, this.wGeos, parts, cx, h / 2, cz, thick, h, len, stone);
+    wall.rotation.y = yaw;
+    const top = this.addWBox(this.wGroup, this.wGeos, parts, cx, h + 0.03, cz, thick + 0.04, 0.06, len + 0.04, cap);
+    top.rotation.y = yaw;
   }
 
   addWCyl(group, geos, parts, x, y, z, r, h, seg = 8, opts = {}) {
@@ -1528,7 +1595,7 @@ class VillageEngine {
     this.addWCyl(this.wGroup, this.wGeos, f0, x + 1.45, 1.15, z + 1.05, 0.08, 2.3, 6, solid);
     this.addWBox(this.wGroup, this.wGeos, this.pool, x + 0.15, 0.05, z + 2.05, 2.5, 0.08, 1.35, { fill: 0.5, depth: true, color: CYAN });
     this.addWBox(this.wGroup, this.wGeos, this.pool, x + 0.15, 0.1, z + 2.05, 2.7, 0.06, 1.55, solid);
-    const cx = x - 3.35, cz = z - 0.85;
+    const cx = x - 2.05, cz = z - 1.05;
     const carS = { fill: 0.4, depth: true, color: GOLD };
     this.addWBox(this.wGroup, this.wGeos, this.car, cx, 0.38, cz, 2.05, 0.52, 1.05, carS);
     this.addWBox(this.wGroup, this.wGeos, this.car, cx + 0.05, 0.78, cz, 1.25, 0.42, 1.0, carS);
@@ -1543,20 +1610,54 @@ class VillageEngine {
     this.addWBox(this.wGroup, this.wGeos, this.boat, bx - 0.15, 0.58, bz, 1.35, 0.42, 0.62, boatS);
     this.addWBox(this.wGroup, this.wGeos, this.boat, bx + 1.15, 0.28, bz, 0.7, 0.16, 0.55, boatS);
     this.addWCyl(this.wGroup, this.wGeos, this.boat, bx + 0.85, 0.85, bz, 0.035, 1.25, 5, boatS);
+    this.cite = { fills: [], lines: [] };
+    this.compoundWall = { fills: [], lines: [] };
+    const west = x - 2.25, eastWall = x + 2.15, south = z - 1.55, north = z + 2.45;
+    const gateZ = z - 0.95, gateHalf = 0.42;
+    this.addLowWallRun(this.compoundWall, west, south, eastWall, south);
+    this.addLowWallRun(this.compoundWall, eastWall, south, eastWall, north);
+    this.addLowWallRun(this.compoundWall, eastWall, north, west + 0.9, north);
+    this.addLowWallRun(this.compoundWall, west, north, west, gateZ + gateHalf);
+    this.addLowWallRun(this.compoundWall, west, gateZ - gateHalf, west, south);
+    const postS = { fill: 0.94, depth: true, color: 0x2a2c30 };
+    this.addWBox(this.wGroup, this.wGeos, this.compoundWall, west, 0.72, gateZ + gateHalf, 0.12, 1.44, 0.12, postS);
+    this.addWBox(this.wGroup, this.wGeos, this.compoundWall, west, 0.72, gateZ - gateHalf, 0.12, 1.44, 0.12, postS);
+    this.addWBox(this.wGroup, this.wGeos, this.compoundWall, west, 1.46, gateZ, 0.08, 0.08, gateHalf * 2, postS);
+    const leafS = { fill: 0.94, depth: true, color: 0x3a3d42 };
+    const leftLeaf = this.addWBox(this.wGroup, this.wGeos, this.compoundWall, west - 0.02, 0.62, gateZ + 0.22, 0.05, 1.12, 0.38, leafS);
+    leftLeaf.rotation.y = 0.55;
+    const rightLeaf = this.addWBox(this.wGroup, this.wGeos, this.compoundWall, west - 0.02, 0.62, gateZ - 0.22, 0.05, 1.12, 0.38, leafS);
+    rightLeaf.rotation.y = -0.6;
+    const alleyZ = gateZ;
+    this.addWBox(this.wGroup, this.wGeos, this.cite, (3.35 + west) / 2, 0.03, alleyZ, west - 3.35, 0.05, 1.15, { fill: 0.95, depth: true, color: 0x6a6660 });
+    const alleyWallH = 1.18;
+    this.addLowWallRun(this.cite, 3.4, alleyZ - 0.62, west, alleyZ - 0.62, alleyWallH, 0.09);
+    this.addLowWallRun(this.cite, 3.4, alleyZ + 0.62, west - 0.15, alleyZ + 0.62, alleyWallH, 0.09);
+    [3.55, 4.55, 5.55].forEach((hx) => this.addRustyShack(this.cite, hx, alleyZ - 1.28, 0.92));
+    [3.55, 4.55, 5.55].forEach((hx) => this.addRustyShack(this.cite, hx, alleyZ + 1.28, 0.92));
+    this.addCiteTree(west - 0.55, alleyZ - 0.95, 1.12);
+    this.addCiteTree(west - 0.35, alleyZ + 0.88, 1.28);
+    this.addCiteTree(west - 1.15, alleyZ - 0.22, 0.95);
+    this.addCiteTree(5.15, alleyZ - 0.82, 1.05);
     const lx = LODGING.x, lz = LODGING.z;
-    const lodS = { fill: 0.5, depth: true, color: HOUSE };
-    const W = 2.15, D = 1.75, H = 2.2, wall = 0.12, winW = 1.02, winH = 1.15, winY = 1.28;
+    const lodS = { fill: 0.92, depth: true, color: 0x8a4b32 };
+    const W = 2.15, D = 1.75, H = 2.2, wall = 0.1, winW = 1.02, winH = 1.15, winY = 1.28;
     const east = lx + W / 2 - wall / 2;
     const side = (D - winW) / 2;
-    this.addWBox(this.wGroup, this.wGeos, this.lodging, lx - W / 2 + wall / 2, H / 2, lz, wall, H, D, lodS);
-    this.addWBox(this.wGroup, this.wGeos, this.lodging, lx, H / 2, lz + D / 2 - wall / 2, W, H, wall, lodS);
-    this.addWBox(this.wGroup, this.wGeos, this.lodging, lx, H / 2, lz - D / 2 + wall / 2, W, H, wall, lodS);
+    this.addCorrugatedFace(this.lodging, lx - W / 2 + wall / 2, H / 2, lz, wall, H, D, "z", lodS);
+    this.addCorrugatedFace(this.lodging, lx, H / 2, lz + D / 2 - wall / 2, W, H, wall, "x", lodS);
+    this.addCorrugatedFace(this.lodging, lx, H / 2, lz - D / 2 + wall / 2, W, H, wall, "x", lodS);
     this.addWBox(this.wGroup, this.wGeos, this.lodging, east, (winY - winH / 2) / 2, lz, wall, winY - winH / 2, D, lodS);
     const topH = H - (winY + winH / 2);
     this.addWBox(this.wGroup, this.wGeos, this.lodging, east, winY + winH / 2 + topH / 2, lz, wall, topH, D, lodS);
     this.addWBox(this.wGroup, this.wGeos, this.lodging, east, winY, lz + winW / 2 + side / 2, wall, winH, side, lodS);
     this.addWBox(this.wGroup, this.wGeos, this.lodging, east, winY, lz - winW / 2 - side / 2, wall, winH, side, lodS);
-    this.addWBox(this.wGroup, this.wGeos, this.lodging, lx, H + 0.09, lz, W + 0.22, 0.18, D + 0.22, lodS);
+    const roof = this.addWBox(this.wGroup, this.wGeos, this.lodging, lx, H + 0.08, lz, W + 0.28, 0.07, D + 0.26, { fill: 0.92, depth: true, color: 0x6e3a26 });
+    roof.rotation.z = 0.06;
+    for (let i = 0; i < 8; i++) {
+      const u = -W / 2 + (i + 0.5) * (W / 8);
+      this.addWBox(this.wGroup, this.wGeos, this.lodging, lx + u, H + 0.13, lz, 0.05, 0.03, D + 0.22, { fill: 0.92, depth: true, color: 0x5a2e1c });
+    }
     for (let i = 0; i < 6; i++) {
       const step = { fills: [], lines: [] };
       this.lodgeSteps.push(step);
@@ -1631,7 +1732,7 @@ class VillageEngine {
         const flag = [FLAG_GREEN, FLAG_GREEN, FLAG_YELLOW, FLAG_BLUE, FLAG_RED, FLAG_RED];
         this.lodgeSteps.forEach((step, i) => this.paintParts(step, flag[i], 0.94 * show, 1 * show));
       } else {
-        const house = HOUSE.clone().lerp(GREEN, n / 6);
+        const house = RUST.clone().lerp(GREEN, n / 6);
         this.paintParts(this.lodging, house, 0.88 * show, 0.95 * show);
         this.lodgeSteps.forEach((step, i) => this.paintParts(step, GREEN, (n > i ? 0.82 : 0.04) * show, (n > i ? 0.95 : 0.08) * show));
       }

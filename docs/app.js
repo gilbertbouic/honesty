@@ -1407,6 +1407,39 @@ class VillageEngine {
     return fill;
   }
 
+  addFloorShell(parts, cx, cy, cz, w, h, d) {
+    const wall = 0.1;
+    const winW = Math.min(w * 0.46, 1.2);
+    const winH = Math.min(h * 0.48, 0.5);
+    const sill = 0.22;
+    const glass = { fill: 0.2, depth: false, color: 0x7ec8d4 };
+    const stone = { fill: 0.5, depth: true };
+    this.addWBox(this.wGroup, this.wGeos, parts, cx, cy - h / 2 + 0.05, cz, w - 0.04, 0.1, d - 0.04, stone);
+    this.addWBox(this.wGroup, this.wGeos, parts, cx, cy + h / 2 - 0.04, cz, w, 0.08, d, stone);
+    const faceX = (pos) => {
+      const side = (d - winW) / 2;
+      this.addWBox(this.wGroup, this.wGeos, parts, pos, cy, cz - winW / 2 - side / 2, wall, h, Math.max(0.12, side), stone);
+      this.addWBox(this.wGroup, this.wGeos, parts, pos, cy, cz + winW / 2 + side / 2, wall, h, Math.max(0.12, side), stone);
+      this.addWBox(this.wGroup, this.wGeos, parts, pos, cy - h / 2 + sill / 2, cz, wall, sill, winW + 0.04, stone);
+      const topH = Math.max(0.12, h - sill - winH);
+      this.addWBox(this.wGroup, this.wGeos, parts, pos, cy + h / 2 - topH / 2, cz, wall, topH, winW + 0.04, stone);
+      this.addWBox(this.wGroup, this.wGeos, parts, pos, cy - h / 2 + sill + winH / 2, cz, 0.03, winH, winW, glass);
+    };
+    const faceZ = (pos) => {
+      const side = (w - winW) / 2;
+      this.addWBox(this.wGroup, this.wGeos, parts, cx - winW / 2 - side / 2, cy, pos, Math.max(0.12, side), h, wall, stone);
+      this.addWBox(this.wGroup, this.wGeos, parts, cx + winW / 2 + side / 2, cy, pos, Math.max(0.12, side), h, wall, stone);
+      this.addWBox(this.wGroup, this.wGeos, parts, cx, cy - h / 2 + sill / 2, pos, winW + 0.04, sill, wall, stone);
+      const topH = Math.max(0.12, h - sill - winH);
+      this.addWBox(this.wGroup, this.wGeos, parts, cx, cy + h / 2 - topH / 2, pos, winW + 0.04, topH, wall, stone);
+      this.addWBox(this.wGroup, this.wGeos, parts, cx, cy - h / 2 + sill + winH / 2, pos, winW, winH, 0.03, glass);
+    };
+    faceX(cx - w / 2 + wall / 2);
+    faceX(cx + w / 2 - wall / 2);
+    faceZ(cz - d / 2 + wall / 2);
+    faceZ(cz + d / 2 - wall / 2);
+  }
+
   addLady(x, z, scale, look) {
     const g = new THREE.Group();
     const skin = new THREE.MeshStandardMaterial({ color: look.skin, roughness: 0.72, transparent: true, opacity: 1 });
@@ -1631,13 +1664,28 @@ class VillageEngine {
     const x = COMPOUND.x, z = COMPOUND.z;
     const solid = { fill: 0.34, depth: true };
     const f0 = this.floors[0], f1 = this.floors[1], f2 = this.floors[2];
-    this.addWBox(this.wGroup, this.wGeos, f0, x, 0.62, z, 3.3, 1.24, 2.35, solid);
-    this.addWBox(this.wGroup, this.wGeos, f1, x, 1.78, z, 3.15, 1.08, 2.2, solid);
-    this.addWBox(this.wGroup, this.wGeos, f2, x - 0.15, 2.82, z, 2.7, 0.98, 1.95, solid);
-    this.addWBox(this.wGroup, this.wGeos, f2, x - 0.15, 3.38, z, 2.9, 0.16, 2.15, solid);
+    this.interior = { fills: [], lines: [] };
+    this.addFloorShell(f0, x, 0.66, z, 3.3, 1.24, 2.35);
+    this.addFloorShell(f1, x, 1.82, z, 3.15, 1.08, 2.2);
+    this.addFloorShell(f2, x - 0.15, 2.86, z, 2.7, 0.98, 1.95);
+    this.addWBox(this.wGroup, this.wGeos, f2, x - 0.15, 3.4, z, 2.9, 0.14, 2.15, solid);
     this.addWBox(this.wGroup, this.wGeos, f1, x + 0.05, 1.28, z + 1.22, 2.2, 0.1, 0.55, solid);
     this.addWCyl(this.wGroup, this.wGeos, f0, x - 1.45, 1.15, z + 1.05, 0.08, 2.3, 6, solid);
     this.addWCyl(this.wGroup, this.wGeos, f0, x + 1.45, 1.15, z + 1.05, 0.08, 2.3, 6, solid);
+    const wood = { fill: 0.92, depth: true, color: 0x6d4c32 };
+    const dark = { fill: 0.92, depth: true, color: 0x1a1c1f };
+    const cream = { fill: 0.92, depth: true, color: 0xe7d7b8 };
+    const tvGlow = { fill: 0.85, depth: true, color: 0x1a2838 };
+    this.addWBox(this.wGroup, this.wGeos, this.interior, x - 0.35, 0.32, z + 0.15, 1.15, 0.28, 0.42, cream);
+    this.addWBox(this.wGroup, this.wGeos, this.interior, x - 0.35, 0.48, z - 0.02, 1.15, 0.12, 0.1, cream);
+    this.addWBox(this.wGroup, this.wGeos, this.interior, x + 0.45, 0.22, z + 0.05, 0.55, 0.12, 0.55, wood);
+    this.addWBox(this.wGroup, this.wGeos, this.interior, x + 1.28, 0.55, z - 0.15, 0.06, 0.72, 1.05, dark);
+    this.addWBox(this.wGroup, this.wGeos, this.interior, x + 1.24, 0.55, z - 0.15, 0.03, 0.62, 0.92, tvGlow);
+    this.addWCyl(this.wGroup, this.wGeos, this.interior, x - 0.7, 0.22, z + 0.62, 0.38, 0.2, 10, { fill: 0.92, depth: true, color: 0xd5d6d2 });
+    this.addWCyl(this.wGroup, this.wGeos, this.interior, x - 0.7, 0.3, z + 0.62, 0.3, 0.08, 10, { fill: 0.7, depth: true, color: 0x3ec8ff });
+    this.addWBox(this.wGroup, this.wGeos, this.interior, x - 0.2, 1.48, z + 0.1, 0.9, 0.22, 0.38, cream);
+    this.addWBox(this.wGroup, this.wGeos, this.interior, x + 0.55, 1.42, z - 0.2, 0.4, 0.1, 0.4, wood);
+    this.addWBox(this.wGroup, this.wGeos, this.interior, x - 0.15, 2.52, z, 0.7, 0.18, 0.32, cream);
     this.addWBox(this.wGroup, this.wGeos, this.pool, x + 0.15, 0.05, z + 2.05, 2.5, 0.08, 1.35, { fill: 0.5, depth: true, color: CYAN });
     this.addWBox(this.wGroup, this.wGeos, this.pool, x + 0.15, 0.1, z + 2.05, 2.7, 0.06, 1.55, solid);
     const cx = x + 3.45, cz = z - 0.35;
@@ -1657,21 +1705,36 @@ class VillageEngine {
       wheel.rotation.x = Math.PI / 2;
     });
     const bx = x + 3.55, bz = z + 1.35;
-    const boatS = { fill: 0.4, depth: true, color: CYAN };
     const trailS = { fill: 0.92, depth: true, color: 0x3a3d42 };
     this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.18, bz, 0.7, 0.08, 2.55, trailS);
-    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.22, bz + 1.45, 0.16, 0.1, 0.55, trailS);
+    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.22, bz - 1.4, 0.16, 0.1, 0.55, trailS);
     [[-0.38, 0.85], [0.38, 0.85], [-0.38, -0.55], [0.38, -0.55]].forEach(([wx, wz]) => {
       const wheel = this.addWCyl(this.wGroup, this.wGeos, this.boat, bx + wx, 0.18, bz + wz, 0.17, 0.1, 10, { fill: 0.92, depth: true, color: 0x1a1c1f });
       wheel.rotation.z = Math.PI / 2;
     });
-    const hull = this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.52, bz, 2.7, 0.28, 0.78, boatS);
-    const cabin = this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.86, bz - 0.2, 1.2, 0.36, 0.58, boatS);
-    const bow = this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.56, bz + 1.05, 0.7, 0.14, 0.5, boatS);
-    hull.rotation.y = Math.PI / 2;
-    cabin.rotation.y = Math.PI / 2;
-    bow.rotation.y = Math.PI / 2;
-    this.addWCyl(this.wGroup, this.wGeos, this.boat, bx, 1.15, bz + 0.35, 0.035, 1.15, 5, boatS);
+    const hullS = { fill: 0.88, depth: true, color: 0xd5d6d2 };
+    const stripeS = { fill: 0.88, depth: true, color: 0x1a2744 };
+    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.48, bz + 0.05, 0.72, 0.26, 1.55, hullS);
+    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.4, bz + 0.05, 0.62, 0.12, 1.7, stripeS);
+    const prowGeo = new THREE.ConeGeometry(0.36, 0.98, 8);
+    this.wGeos.push(prowGeo);
+    const prowMat = new THREE.MeshStandardMaterial({ color: 0xd5d6d2, roughness: 0.42, metalness: 0.18, transparent: true, opacity: 0.88 });
+    this.boat.fills.push(prowMat);
+    const prow = new THREE.Mesh(prowGeo, prowMat);
+    prow.position.set(bx, 0.5, bz + 1.2);
+    prow.rotation.x = -Math.PI / 2;
+    prow.castShadow = true;
+    this.wGroup.add(prow);
+    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.64, bz + 0.05, 0.58, 0.06, 1.2, hullS);
+    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.82, bz - 0.15, 0.42, 0.28, 0.7, { fill: 0.35, depth: true, color: 0x7ec8d4 });
+    const redS = { fill: 0.94, depth: true, color: 0xea2839 };
+    const blackS = { fill: 0.94, depth: true, color: 0x1a1c1f };
+    [-0.16, 0.16].forEach((ox) => {
+      this.addWBox(this.wGroup, this.wGeos, this.boat, bx + ox, 0.72, bz - 0.92, 0.18, 0.42, 0.22, redS);
+      this.addWBox(this.wGroup, this.wGeos, this.boat, bx + ox, 0.42, bz - 0.92, 0.1, 0.28, 0.12, blackS);
+      const prop = this.addWCyl(this.wGroup, this.wGeos, this.boat, bx + ox, 0.22, bz - 0.92, 0.12, 0.04, 8, blackS);
+      prop.rotation.x = Math.PI / 2;
+    });
     this.cite = { fills: [], lines: [] };
     this.compoundWall = { fills: [], lines: [] };
     const west = x - 2.7, eastWall = x + 4.9, south = z - 1.85, north = z + 4.15;

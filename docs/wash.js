@@ -9,6 +9,7 @@ class WashScene {
     this.geos = [];
     this.mats = [];
     this.floors = [];
+    this.prizeHits = [];
     this.competition = "tender";
     this.outcome = "open";
     this.correct = 0;
@@ -341,6 +342,23 @@ class WashScene {
     });
     const plate = this.mesh(board, new THREE.PlaneGeometry(2.5, 0.5), face, 0, 0, 0.05);
     plate.castShadow = false;
+    const back = this.labelMat((ctx, canvas) => {
+      ctx.fillStyle = "#e7e2d6";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#5a4030";
+      ctx.font = "500 28px Georgia, 'Times New Roman', serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("support@mkweli.tech", canvas.width / 2, canvas.height / 2);
+    });
+    const hidden = this.mesh(board, new THREE.PlaneGeometry(2.5, 0.5), back, 0, 0, -0.05);
+    hidden.rotation.y = Math.PI;
+    hidden.castShadow = false;
+    const hit = this.mesh(board, new THREE.BoxGeometry(2.8, 0.72, 0.22), this.mat(0xf4f1ea, { rough: 1, opacity: 0.01 }), 0, 0, 0);
+    hit.castShadow = false;
+    hit.receiveShadow = false;
+    this.prizeHits = [plate, hidden, hit];
+    this.prizeHits.forEach((mesh) => { mesh.userData.prize = true; });
     this.group.add(board);
   }
 

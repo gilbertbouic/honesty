@@ -1,11 +1,11 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg90";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg91";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
 import { CropScene } from "./crop.js?v=vg61";
-import { WashScene } from "./wash.js?v=vg61";
+import { WashScene } from "./wash.js?v=vg62";
 import { StampScene } from "./stamp.js?v=vg90";
 import { RollScene } from "./roll.js?v=vg92";
 import { OathScene } from "./oath.js?v=vg90";
@@ -1990,7 +1990,15 @@ class VillageEngine {
     this.pointer.y = -((e.clientY - r.top) / r.height) * 2 + 1;
     this.pointer.inside = true;
   };
-  onDown = (e) => { if (e.button === 0) { const id = this.pick(); if (id) this.hooks.onSelect(id); } };
+  onDown = (e) => {
+    if (e.button !== 0) return;
+    if (this.pickPrize()) {
+      window.open("https://forms.gle/XYYsW2awXsab9uVc6", "_blank", "noopener");
+      return;
+    }
+    const id = this.pick();
+    if (id) this.hooks.onSelect(id);
+  };
   onLeave = () => {
     this.pointer.inside = false;
     if (this.hoverId) { this.hoverId = null; this.hooks.onHover(null); }
@@ -2005,14 +2013,23 @@ class VillageEngine {
     return typeof id === "string" ? id : null;
   }
 
+  pickPrize() {
+    if (this.competition !== "wash" || !this.wash?.prizeHits?.length) return false;
+    NDC.set(this.pointer.x, this.pointer.y);
+    this.raycaster ??= new THREE.Raycaster();
+    this.raycaster.setFromCamera(NDC, this.camera);
+    return this.raycaster.intersectObjects(this.wash.prizeHits, false).length > 0;
+  }
+
   tick = (time) => {
     const dt = Math.min((time - this.last) / 1000, 0.1) || 0.016;
     this.last = time;
     const t = time * 0.001;
     if (this.pointer.inside) {
+      const prize = this.pickPrize();
       const id = this.pick();
       if (id !== this.hoverId) { this.hoverId = id; this.hooks.onHover(id); }
-      this.canvas.style.cursor = id ? "pointer" : "grab";
+      this.canvas.style.cursor = prize || id ? "pointer" : "grab";
     }
     this.controls.update();
     this.gridMat.uniforms.uIntegrity.value = this.integrity;

@@ -1423,7 +1423,7 @@ class VillageEngine {
       this.addWBox(this.wGroup, this.wGeos, parts, pos, cy - h / 2 + sill / 2, cz, wall, sill, winW + 0.04, stone);
       const topH = Math.max(0.12, h - sill - winH);
       this.addWBox(this.wGroup, this.wGeos, parts, pos, cy + h / 2 - topH / 2, cz, wall, topH, winW + 0.04, stone);
-      this.addWBox(this.wGroup, this.wGeos, parts, pos, cy - h / 2 + sill + winH / 2, cz, 0.03, winH, winW, glass);
+      this.addWBox(this.wGroup, this.wGeos, this.villaGlass, pos, cy - h / 2 + sill + winH / 2, cz, 0.03, winH, winW, glass);
     };
     const faceZ = (pos) => {
       const side = (w - winW) / 2;
@@ -1432,7 +1432,7 @@ class VillageEngine {
       this.addWBox(this.wGroup, this.wGeos, parts, cx, cy - h / 2 + sill / 2, pos, winW + 0.04, sill, wall, stone);
       const topH = Math.max(0.12, h - sill - winH);
       this.addWBox(this.wGroup, this.wGeos, parts, cx, cy + h / 2 - topH / 2, pos, winW + 0.04, topH, wall, stone);
-      this.addWBox(this.wGroup, this.wGeos, parts, cx, cy - h / 2 + sill + winH / 2, pos, winW, winH, 0.03, glass);
+      this.addWBox(this.wGroup, this.wGeos, this.villaGlass, cx, cy - h / 2 + sill + winH / 2, pos, winW, winH, 0.03, glass);
     };
     faceX(cx - w / 2 + wall / 2);
     faceX(cx + w / 2 - wall / 2);
@@ -1653,6 +1653,7 @@ class VillageEngine {
     this.wGroup = new THREE.Group();
     this.wGeos = [];
     this.villa = { fills: [], lines: [] };
+    this.villaGlass = { fills: [], lines: [] };
     this.car = { fills: [], lines: [] };
     this.carTrim = { fills: [], lines: [] };
     this.boat = { fills: [], lines: [] };
@@ -1791,7 +1792,7 @@ class VillageEngine {
     this.addCiteTree(west - 1.15, alleyZ - 0.22, 0.95);
     const lx = LODGING.x, lz = LODGING.z;
     const lodS = { fill: 0.92, depth: true, color: 0x8a4b32 };
-    const W = 2.15, D = 1.75, H = 2.2, wall = 0.1, winW = 1.02, winH = 1.15, winY = 1.28;
+    const W = 2.15, D = 1.75, H = 1.05, wall = 0.1, winW = 0.78, winH = 0.52, winY = 0.58;
     const east = lx + W / 2 - wall / 2;
     const side = (D - winW) / 2;
     this.addCorrugatedFace(this.lodging, lx - W / 2 + wall / 2, H / 2, lz, wall, H, D, "z", lodS);
@@ -1811,16 +1812,16 @@ class VillageEngine {
     for (let i = 0; i < 6; i++) {
       const step = { fills: [], lines: [] };
       this.lodgeSteps.push(step);
-      this.addWBox(this.wGroup, this.wGeos, step, lx - 0.42, 0.28 + i * 0.36, lz, 1.05, 0.28, 1.15, { fill: 0.04, depth: true, color: GREEN });
+      this.addWBox(this.wGroup, this.wGeos, step, lx - 0.42, 0.14 + i * 0.155, lz, 1.05, 0.13, 1.15, { fill: 0.04, depth: true, color: GREEN });
     }
-    const glassGeo = new THREE.BoxGeometry(0.04, 1.08, 0.96);
+    const glassGeo = new THREE.BoxGeometry(0.04, 0.5, 0.72);
     this.wGeos.push(glassGeo);
     this.glass = new THREE.Mesh(glassGeo, new THREE.MeshBasicMaterial({ color: 0xd7eef6, transparent: true, opacity: 0.18, depthWrite: false }));
-    this.glass.position.set(lx + 1.02, 1.28, lz);
+    this.glass.position.set(lx + 1.02, 0.58, lz);
     this.glass.renderOrder = 6;
     this.wGroup.add(this.glass);
-    this.watcher = this.addWhistleblower(lx + 0.8, lz, 1.02);
-    this.watcher.position.y = 0.74;
+    this.watcher = this.addWhistleblower(lx + 0.8, lz, 0.52);
+    this.watcher.position.y = 0.28;
     this.watcher.rotation.y = Math.PI / 2;
     this.watcher.renderOrder = 4;
     this.watcher.traverse((obj) => { obj.renderOrder = 4; });
@@ -1894,6 +1895,7 @@ class VillageEngine {
       this.paintParts(this.boat, seized ?? new THREE.Color(0xf4f5f3), 0.9 * show, 0.9 * show);
       this.paintParts(this.boatHull, seized ?? new THREE.Color(0x14161c), 0.9 * show, 0.9 * show);
       this.paintParts(this.pool, seized ?? POOL, 0.72 * show, 0.4 * show);
+      this.paintParts(this.villaGlass, new THREE.Color(0x7ec8d4), 0.18 * show, 0);
       this.paintParts(this.lodging, outcome === "burn" ? new THREE.Color(0x1a1210) : CRIMSON, 0.88 * show, 0.95 * show);
       this.lodgeSteps.forEach((step) => this.paintParts(step, outcome === "burn" ? new THREE.Color(0x1a1210) : CRIMSON, 0.15 * show, 0.2 * show));
     } else {
@@ -1912,6 +1914,7 @@ class VillageEngine {
         this.lodgeSteps.forEach((step, i) => this.paintParts(step, GREEN, (n > i ? 0.82 : 0.04) * show, (n > i ? 0.95 : 0.08) * show));
       }
     }
+    this.paintParts(this.villaGlass, new THREE.Color(0x7ec8d4), 0.16 * show, 0);
     this.glass.visible = whistle;
     this.glass.material.opacity = whistle ? 0.2 : 0;
     this.seize.visible = outcome === "jail";

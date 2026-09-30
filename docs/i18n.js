@@ -1,3 +1,5 @@
+import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg1";
+
 // src/lib/game/i18n.ts
 var LANG_KEY = "village-grid-lang";
 var UI = {
@@ -278,13 +280,13 @@ var UI = {
     floorsHeld: "{n}/{total} floors held",
     openWash: "Open stage 7",
     dockWash: "Stage 7 \xB7 the wash",
-    stage8: "Stage 8 \xB7 The stamp",
-    phaseStamp: "Stage 8 \xB7 The stamp",
+    stage8: "Stage 8 \xB7 Corruption",
+    phaseStamp: "Stage 8 \xB7 Corruption",
     stamp: "Stage 8",
     stampScore: "Stage 8 score",
-    stampHint: "Stage 8 \xB7 The stamp",
+    stampHint: "Stage 8 \xB7 Corruption",
     lockStamp: "Answer every financial-crime question to open stage 8",
-    briefStamp: "Stage 8 \xB7 The stamp",
+    briefStamp: "Stage 8 \xB7 Corruption",
     holdsStamp: "The file holds \xB7 +100",
     missStamp: "The file slips \xB7 +20",
     scoringStamp: "Five or six correct: the stamp clicks and the queue moves. Two to four: ink smears; one folder still waits under the desk. None or one: the window shuts; the stamp stays in the drawer.",
@@ -305,18 +307,18 @@ var UI = {
     toastShut: "The window shuts. The stamp stays in the drawer.",
     toastFile: "File held. The stamp lands.",
     toastSlipFile: "That answer lets the file slip.",
-    boardStamp: "Stage 8 \xB7 The stamp",
+    boardStamp: "Stage 8 \xB7 Corruption",
     stampRule: "A fee on the wall is the only fee. A cousin at the window is still a member of the public. A missing paper is a no, not a price.",
     filesHeld: "{n}/{total} files held",
     openStamp: "Open stage 8",
     dockStamp: "Stage 8 \xB7 the counter",
-    stage9: "Stage 9 \xB7 The roll",
-    phaseRoll: "Stage 9 \xB7 The roll",
+    stage9: "Stage 9 \xB7 Electoral fraud",
+    phaseRoll: "Stage 9 \xB7 Electoral fraud",
     roll: "Stage 9",
     rollScore: "Stage 9 score",
-    rollHint: "Stage 9 \xB7 The roll",
+    rollHint: "Stage 9 \xB7 Electoral fraud",
     lockRoll: "Answer every stamp question to open stage 9",
-    briefRoll: "Stage 9 \xB7 The roll",
+    briefRoll: "Stage 9 \xB7 Electoral fraud",
     holdsRoll: "The roll holds \xB7 +100",
     missRoll: "The roll slips \xB7 +20",
     scoringRoll: "Five or six correct: the roll stays one list. Two to four: a second sheet is still in the drawer. None or one: the box leaves in a private van.",
@@ -337,18 +339,18 @@ var UI = {
     toastVan: "The box leaves in a private van.",
     toastName: "Name held. The roll stays shut.",
     toastSlipName: "That answer opens a second list.",
-    boardRoll: "Stage 9 \xB7 The roll",
+    boardRoll: "Stage 9 \xB7 Electoral fraud",
     rollRule: "The register closes. One person, one roll, one vote. A ballot is secret. A sealed box moves only with the officers.",
     namesHeld: "{n}/{total} names held",
     openRoll: "Open stage 9",
     dockRoll: "Stage 9 \xB7 the station",
-    stage10: "Stage 10 \xB7 The oath",
-    phaseOath: "Stage 10 \xB7 The oath",
+    stage10: "Stage 10 \xB7 Abuse of office",
+    phaseOath: "Stage 10 \xB7 Abuse of office",
     oath: "Stage 10",
     oathScore: "Stage 10 score",
-    oathHint: "Stage 10 \xB7 The oath",
+    oathHint: "Stage 10 \xB7 Abuse of office",
     lockOath: "Answer every roll question to open stage 10",
-    briefOath: "Stage 10 \xB7 The oath",
+    briefOath: "Stage 10 \xB7 Abuse of office",
     holdsOath: "The chair holds \xB7 +100",
     missOath: "The chair splits \xB7 +20",
     scoringOath: "Five or six correct: the chair stays whole. Two to four: the minute has a second page. None or one: the key is gone and the hamper stays.",
@@ -369,7 +371,7 @@ var UI = {
     toastKey: "The key is gone. The hamper stays.",
     toastSeat: "Seat held. The chair does not split.",
     toastSlipSeat: "That answer splits the chair.",
-    boardOath: "Stage 10 \xB7 The oath",
+    boardOath: "Stage 10 \xB7 Abuse of office",
     oathRule: "Say the interest and leave the decision. The minute is what was said. A gift after an award is still a gift. Do not sign what you have not read. The key is the office.",
     seatsHeld: "{n}/{total} seats held",
     openOath: "Open stage 10",
@@ -652,13 +654,13 @@ var UI = {
     floorsHeld: "{n}/{total} \xE9tages tenus",
     openWash: "Ouvrir l'\xE9tape 7",
     dockWash: "\xC9tape 7 \xB7 le lavage",
-    stage8: "\xC9tape 8 \xB7 Le tampon",
-    phaseStamp: "\xC9tape 8 \xB7 Le tampon",
+    stage8: "\xC9tape 8 \xB7 Corruption",
+    phaseStamp: "\xC9tape 8 \xB7 Corruption",
     stamp: "\xC9tape 8",
     stampScore: "Score \xB7 \xE9tape 8",
-    stampHint: "\xC9tape 8 \xB7 Le tampon",
+    stampHint: "\xC9tape 8 \xB7 Corruption",
     lockStamp: "R\xE9ponds juste \xE0 chaque question de crime financier pour ouvrir l'\xE9tape 8",
-    briefStamp: "\xC9tape 8 \xB7 Le tampon",
+    briefStamp: "\xC9tape 8 \xB7 Corruption",
     holdsStamp: "Bonne r\xE9ponse \xB7 +100",
     missStamp: "Mauvaise r\xE9ponse \xB7 +20",
     scoringStamp: "Cinq ou six justes : le tampon clique et la file avance. Deux \xE0 quatre : l'encre bave ; un dossier attend encore sous le bureau. Z\xE9ro ou un : le guichet se ferme ; le tampon reste dans le tiroir.",
@@ -679,18 +681,18 @@ var UI = {
     toastShut: "Le guichet se ferme. Le tampon reste dans le tiroir.",
     toastFile: "Bonne r\xE9ponse. Le tampon est appos\xE9.",
     toastSlipFile: "Mauvaise r\xE9ponse. Le dossier glisse.",
-    boardStamp: "\xC9tape 8 \xB7 Le tampon",
+    boardStamp: "\xC9tape 8 \xB7 Corruption",
     stampRule: "Le tarif au mur est le seul tarif. Un cousin au guichet reste un membre du public. Un papier manquant est un non, pas un prix.",
     filesHeld: "{n}/{total} dossiers tenus",
     openStamp: "Ouvrir l'\xE9tape 8",
     dockStamp: "\xC9tape 8 \xB7 le guichet",
-    stage9: "\xC9tape 9 \xB7 La liste",
-    phaseRoll: "\xC9tape 9 \xB7 La liste",
+    stage9: "\xC9tape 9 \xB7 Fraude \xE9lectorale",
+    phaseRoll: "\xC9tape 9 \xB7 Fraude \xE9lectorale",
     roll: "\xC9tape 9",
     rollScore: "Score \xB7 \xE9tape 9",
-    rollHint: "\xC9tape 9 \xB7 La liste",
+    rollHint: "\xC9tape 9 \xB7 Fraude \xE9lectorale",
     lockRoll: "R\xE9ponds juste \xE0 chaque question du tampon pour ouvrir l'\xE9tape 9",
-    briefRoll: "\xC9tape 9 \xB7 La liste",
+    briefRoll: "\xC9tape 9 \xB7 Fraude \xE9lectorale",
     holdsRoll: "Bonne r\xE9ponse \xB7 +100",
     missRoll: "Mauvaise r\xE9ponse \xB7 +20",
     scoringRoll: "Cinq ou six justes : il n'y a qu'une liste. Deux \xE0 quatre : une seconde feuille est encore dans le tiroir. Z\xE9ro ou un : l'urne part dans une camionnette priv\xE9e.",
@@ -711,18 +713,18 @@ var UI = {
     toastVan: "L'urne part dans une camionnette priv\xE9e.",
     toastName: "Bonne r\xE9ponse. Le registre reste ferm\xE9.",
     toastSlipName: "Mauvaise r\xE9ponse. Une seconde liste s'ouvre.",
-    boardRoll: "\xC9tape 9 \xB7 La liste",
+    boardRoll: "\xC9tape 9 \xB7 Fraude \xE9lectorale",
     rollRule: "Le registre se ferme. Une personne, une liste, un vote. Le bulletin est secret. Une urne scell\xE9e ne bouge qu'avec les officiers.",
     namesHeld: "{n}/{total} noms tenus",
     openRoll: "Ouvrir l'\xE9tape 9",
     dockRoll: "\xC9tape 9 \xB7 le bureau",
-    stage10: "\xC9tape 10 \xB7 Le serment",
-    phaseOath: "\xC9tape 10 \xB7 Le serment",
+    stage10: "\xC9tape 10 \xB7 Abus de fonction",
+    phaseOath: "\xC9tape 10 \xB7 Abus de fonction",
     oath: "\xC9tape 10",
     oathScore: "Score \xB7 \xE9tape 10",
-    oathHint: "\xC9tape 10 \xB7 Le serment",
+    oathHint: "\xC9tape 10 \xB7 Abus de fonction",
     lockOath: "R\xE9ponds juste \xE0 chaque question de la liste pour ouvrir l'\xE9tape 10",
-    briefOath: "\xC9tape 10 \xB7 Le serment",
+    briefOath: "\xC9tape 10 \xB7 Abus de fonction",
     holdsOath: "Bonne r\xE9ponse \xB7 +100",
     missOath: "Mauvaise r\xE9ponse \xB7 +20",
     scoringOath: "Cinq ou six justes : le fauteuil reste entier. Deux \xE0 quatre : le proc\xE8s-verbal a une seconde page. Z\xE9ro ou un : la cl\xE9 est partie et le panier reste.",
@@ -743,18 +745,19 @@ var UI = {
     toastKey: "La cl\xE9 est partie. Le panier reste.",
     toastSeat: "Bonne r\xE9ponse. Le fauteuil ne se divise pas.",
     toastSlipSeat: "Mauvaise r\xE9ponse. Le fauteuil se divise.",
-    boardOath: "\xC9tape 10 \xB7 Le serment",
+    boardOath: "\xC9tape 10 \xB7 Abus de fonction",
     oathRule: "Dis l'int\xE9r\xEAt et quitte la d\xE9cision. Le proc\xE8s-verbal est ce qui a \xE9t\xE9 dit. Un cadeau apr\xE8s une attribution reste un cadeau. Ne signe pas ce que tu n'as pas lu. La cl\xE9 est la fonction.",
     seatsHeld: "{n}/{total} si\xE8ges tenus",
     openOath: "Ouvrir l'\xE9tape 10",
     dockOath: "\xC9tape 10 \xB7 le fauteuil"
-  }
+  },
+  pt: UI_PT
 };
 function loadLang() {
   if (typeof window === "undefined") return "en";
   try {
     const raw = localStorage.getItem(LANG_KEY);
-    return raw === "fr" ? "fr" : "en";
+    return raw === "fr" || raw === "pt" ? raw : "en";
   } catch {
     return "en";
   }
@@ -1012,38 +1015,41 @@ var SHORT_FR = {
   bid: "Offre",
   name: "Nom"
 };
+function pickLoc(frDict, ptDict, id, lang) {
+  if (lang === "pt") return ptDict?.[id];
+  if (lang === "fr") return frDict?.[id];
+  return void 0;
+}
+function localizeQA(item, entry) {
+  if (!entry) return item;
+  return {
+    ...item,
+    title: entry.title,
+    question: entry.question,
+    options: item.options.map((opt) => ({ ...opt, text: entry.options[opt.id] ?? opt.text }))
+  };
+}
 function shortLabel(id, lang, fallback) {
+  if (lang === "pt" && SHORT_PT[id]) return SHORT_PT[id];
   if (lang === "fr" && SHORT_FR[id]) return SHORT_FR[id];
   return fallback;
 }
 function houseLabel(house, lang) {
   if (!house) return t(lang, "theContract");
+  if (lang === "pt" && HOUSE_PT[house.id]) return HOUSE_PT[house.id].name;
   if (lang === "fr" && HOUSE_FR[house.id]) return HOUSE_FR[house.id].name;
   return house.name;
 }
 function houseHint(house, lang) {
+  if (lang === "pt" && HOUSE_PT[house.id]) return HOUSE_PT[house.id].hint;
   if (lang === "fr" && HOUSE_FR[house.id]) return HOUSE_FR[house.id].hint;
   return house.hint;
 }
 function localizeTender(tender, lang) {
-  const fr = lang === "fr" ? TENDER_FR[tender.id] : void 0;
-  if (!fr) return tender;
-  return {
-    ...tender,
-    title: fr.title,
-    question: fr.question,
-    options: tender.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
-  };
+  return localizeQA(tender, pickLoc(TENDER_FR, TENDER_PT, tender.id, lang));
 }
 function localizeCase(item, lang) {
-  const fr = lang === "fr" ? CASE_FR[item.id] : void 0;
-  if (!fr) return item;
-  return {
-    ...item,
-    title: fr.title,
-    question: fr.question,
-    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
-  };
+  return localizeQA(item, pickLoc(CASE_FR, CASE_PT, item.id, lang));
 }
 var HAVEN_FR = {
   private: {
@@ -1108,14 +1114,7 @@ var HAVEN_FR = {
   }
 };
 function localizeHaven(item, lang) {
-  const fr = lang === "fr" ? HAVEN_FR[item.id] : void 0;
-  if (!fr) return item;
-  return {
-    ...item,
-    title: fr.title,
-    question: fr.question,
-    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
-  };
+  return localizeQA(item, pickLoc(HAVEN_FR, HAVEN_PT, item.id, lang));
 }
 var LAND_FR = {
   shore: {
@@ -1180,14 +1179,7 @@ var LAND_FR = {
   }
 };
 function localizeLand(item, lang) {
-  const fr = lang === "fr" ? LAND_FR[item.id] : void 0;
-  if (!fr) return item;
-  return {
-    ...item,
-    title: fr.title,
-    question: fr.question,
-    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
-  };
+  return localizeQA(item, pickLoc(LAND_FR, LAND_PT, item.id, lang));
 }
 var FAIR_FR = {
   race: {
@@ -1252,14 +1244,7 @@ var FAIR_FR = {
   }
 };
 function localizeFair(item, lang) {
-  const fr = lang === "fr" ? FAIR_FR[item.id] : void 0;
-  if (!fr) return item;
-  return {
-    ...item,
-    title: fr.title,
-    question: fr.question,
-    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
-  };
+  return localizeQA(item, pickLoc(FAIR_FR, FAIR_PT, item.id, lang));
 }
 var CROP_FR = {
   spray: {
@@ -1449,14 +1434,7 @@ const STAMP_FR = {
   }
 };
 function localizeStamp(item, lang) {
-  const fr = lang === "fr" ? STAMP_FR[item.id] : void 0;
-  if (!fr) return item;
-  return {
-    ...item,
-    title: fr.title,
-    question: fr.question,
-    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
-  };
+  return localizeQA(item, pickLoc(STAMP_FR, STAMP_PT, item.id, lang));
 }
 function localizeRoll(item, lang) {
   return item;
@@ -1465,24 +1443,10 @@ function localizeOath(item, lang) {
   return item;
 }
 function localizeWash(item, lang) {
-  const fr = lang === "fr" ? WASH_FR[item.id] : void 0;
-  if (!fr) return item;
-  return {
-    ...item,
-    title: fr.title,
-    question: fr.question,
-    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
-  };
+  return localizeQA(item, pickLoc(WASH_FR, WASH_PT, item.id, lang));
 }
 function localizeCrop(item, lang) {
-  const fr = lang === "fr" ? CROP_FR[item.id] : void 0;
-  if (!fr) return item;
-  return {
-    ...item,
-    title: fr.title,
-    question: fr.question,
-    options: item.options.map((opt) => ({ ...opt, text: fr.options[opt.id] ?? opt.text }))
-  };
+  return localizeQA(item, pickLoc(CROP_FR, CROP_PT, item.id, lang));
 }
 export {
   LANG_KEY,

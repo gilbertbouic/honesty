@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg93";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg94";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
@@ -12,7 +12,7 @@ import { OathScene } from "./oath.js?v=vg90";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
-document.documentElement.lang = lang === "fr" ? "fr" : "en";
+document.documentElement.lang = lang;
 
 const PALETTE = { void: 0x08080c, cyan: 0x00e5ff, green: 0x3dff9a, amber: 0xe07030, crimson: 0xff3b4e };
 const DECAY = new THREE.Color(PALETTE.amber);
@@ -2335,14 +2335,14 @@ function showPlay() {
 
 function paintLang(root) {
   if (!root) return;
-  root.innerHTML = ["en", "fr"].map((id) => `<button type="button" data-lang="${id}" class="${lang === id ? "on" : ""}">${id}</button>`).join("");
+  root.innerHTML = ["en", "fr", "pt"].map((id) => `<button type="button" data-lang="${id}" class="${lang === id ? "on" : ""}">${id}</button>`).join("");
   root.querySelectorAll("[data-lang]").forEach((btn) => {
     btn.addEventListener("click", () => setLang(btn.dataset.lang));
   });
 }
 
 function setLang(next) {
-  lang = next === "fr" ? "fr" : "en";
+  lang = next === "fr" || next === "pt" ? next : "en";
   try { localStorage.setItem(LANG_KEY, lang); } catch { /* ignore */ }
   document.documentElement.lang = lang;
   document.title = L("title");

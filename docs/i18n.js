@@ -1,4 +1,4 @@
-import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg2";
+import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg3";
 
 // src/lib/game/i18n.ts
 var LANG_KEY = "village-grid-lang";
@@ -101,7 +101,7 @@ var UI = {
     dockAward: "Green \xB7 held",
     dockReject: "Red",
     dockWhistle: "Watcher \xB7 mansion",
-    dockHaven: "Stage 3 \xB7 139",
+    dockHaven: "Stage 3 \xB7 Line",
     toastLock: "Stage 2 is locked. Get every award right first.",
     toastAward: "Award held \xB7 {house}",
     toastReject: "Award refused. Only the right answer turns the house green.",
@@ -129,7 +129,7 @@ var UI = {
     holds: "Right answer \xB7 +100",
     looksAway: "Wrong answer \xB7 +20",
     scoringHaven: "4\u20135 right: the door opens to safety. 2\u20133: a lamp stays on. 0\u20131: the silence closes. The column does not leave.",
-    hotlineNote: "In danger now, in Mauritius: call 139, free, day and night. A child in danger: 113. The Lespwar app can alert the police with your location.",
+    hotlineNote: "In danger, call your local whistle-blower line or the police.",
     nextSignal: "Next signal",
     doneLine: "The line is open",
     doneLamp: "A lamp, not a way out",
@@ -151,10 +151,10 @@ var UI = {
     boardHaven: "Stage 3 \xB7 Domestic violence",
     notRanking: "Not a ranking",
     grokRefuse: "AI will not help anyone harm, threaten, stalk, or control a partner. It will help the person in danger get safe.",
-    hotlineBig: "139",
-    hotlineCaption: "Free, day and night. Domestic violence hotline, Mauritius.",
-    childLine: "A child in danger: 113",
-    lespwar: "Lespwar can alert the police with a location.",
+    hotlineBig: "",
+    hotlineCaption: "",
+    childLine: "",
+    lespwar: "",
     signalsHeld: "{n}/{total} signals held",
     phaseLand: "Stage 4 \xB7 Land use",
     land: "Stage 4",
@@ -475,7 +475,7 @@ var UI = {
     dockAward: "Verte \xB7 tenue",
     dockReject: "Rouge",
     dockWhistle: "Guetteur \xB7 villa",
-    dockHaven: "\xC9tape 3 \xB7 139",
+    dockHaven: "\xC9tape 3 \xB7 Ligne",
     toastLock: "L'\xE9tape 2 est verrouill\xE9e. Obtiens d'abord chaque march\xE9.",
     toastAward: "March\xE9 obtenu \xB7 {house}",
     toastReject: "March\xE9 refus\xE9. Seule une bonne r\xE9ponse passe la maison au vert.",
@@ -503,7 +503,7 @@ var UI = {
     holds: "Bonne r\xE9ponse \xB7 +100",
     looksAway: "Mauvaise r\xE9ponse \xB7 +20",
     scoringHaven: "4\u20135 justes : la porte s'ouvre et le chemin m\xE8ne \xE0 l'abri. 2\u20133 : une lampe reste allum\xE9e. 0\u20131 : le silence se referme. La colonne ne part pas.",
-    hotlineNote: "En danger maintenant, \xE0 Maurice : appelle le 139, gratuit, jour et nuit. Un enfant en danger : 113. L'application Lespwar peut alerter la police avec ta position.",
+    hotlineNote: "En danger, appelle ta ligne locale d'alerte ou la police.",
     nextSignal: "Signal suivant",
     doneLine: "La ligne est ouverte",
     doneLamp: "Une lampe, pas une sortie",
@@ -525,10 +525,10 @@ var UI = {
     boardHaven: "\xC9tape 3 \xB7 Violences domestiques",
     notRanking: "Pas un classement",
     grokRefuse: "L'IA n'aide personne \xE0 blesser, menacer, suivre ou contr\xF4ler un partenaire. Elle aide la personne en danger \xE0 se mettre en s\xFBret\xE9.",
-    hotlineBig: "139",
-    hotlineCaption: "Gratuit, jour et nuit. Ligne des violences domestiques, Maurice.",
-    childLine: "Un enfant en danger : 113",
-    lespwar: "Lespwar peut alerter la police avec une position.",
+    hotlineBig: "",
+    hotlineCaption: "",
+    childLine: "",
+    lespwar: "",
     signalsHeld: "{n}/{total} bonnes r\xE9ponses",
     phaseLand: "\xC9tape 4 \xB7 Utilisation des terres",
     land: "\xC9tape 4",
@@ -988,7 +988,7 @@ var SHORT_FR = {
   believe: "Croire",
   control: "Contr\xF4le",
   grok: "AI",
-  hotline: "139",
+  hotline: "Ligne",
   child: "Enfant",
   shore: "Rivage",
   title: "Titre",
@@ -1068,7 +1068,7 @@ var HAVEN_FR = {
     options: {
       A: "Les asseoir tous les deux ce soir et jouer les m\xE9diateurs jusqu'\xE0 des excuses.",
       B: "Leur dire de rentrer calmer le partenaire.",
-      C: "Les croire. Ne confronte pas le partenaire. Aide-les \xE0 rejoindre un lieu s\xFBr, et appelle le 139 \u2014 gratuit, jour et nuit.",
+      C: "Les croire. Ne confronte pas le partenaire. Aide-les \xE0 rejoindre un lieu s\xFBr. Appelle ta ligne locale d'alerte ou la police.",
       D: "Demander ce qu'ils ont fait pour le provoquer avant de choisir un camp."
     }
   },
@@ -1093,11 +1093,11 @@ var HAVEN_FR = {
     }
   },
   hotline: {
-    title: "Appeler le 139",
-    question: "Il est tard au village. Quelqu'un a besoin d'aide maintenant et ne peut pas parler en s\xFBret\xE9 dans la maison. Quelle est la ligne gratuite, 24 heures sur 24, contre la violence domestique \xE0 Maurice ?",
+    title: "Appeler \xE0 l'aide",
+    question: "Quelqu'un a besoin d'aide maintenant et ne peut pas parler en s\xFBret\xE9 dans la maison. Que fais-tu ?",
     options: {
       A: "Attendre le march\xE9 de samedi et le dire au conseil.",
-      B: "Le 139.",
+      B: "Appeler ta ligne locale d'alerte ou la police.",
       C: "Publier d'abord un message dans le groupe du village.",
       D: "Appeler seulement si un bleu se verra sur une photo."
     }
@@ -1108,7 +1108,7 @@ var HAVEN_FR = {
     options: {
       A: "Promettre de ne rien dire, et renvoyer l'enfant voir si \xE7a s'est arr\xEAt\xE9.",
       B: "Demander \xE0 l'enfant de d\xE9crire la violence en d\xE9tail avant de d\xE9cider.",
-      C: "Un enfant en danger ne garde pas ce secret. Ne le renvoie pas. Appelle le 113. Si un adulte est aussi en danger, appelle le 139.",
+      C: "Un enfant en danger ne garde pas ce secret. Ne le renvoie pas. Appelle ta ligne locale d'alerte ou la police.",
       D: "Attendre qu'un parent t'invite, puis jouer les m\xE9diateurs entre les adultes."
     }
   }

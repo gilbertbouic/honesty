@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg95";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg96";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
@@ -285,7 +285,7 @@ const HAVEN_CASES = [
     options: [
       { id: "A", text: "Sit both of them down tonight and mediate until there is an apology." },
       { id: "B", text: "Tell them to go back and calm the partner down." },
-      { id: "C", text: "Believe them. Do not confront the partner. Help them reach a safe place, and call 139 — free, day and night." },
+      { id: "C", text: "Believe them. Do not confront the partner. Help them reach a safe place. Call your local whistle-blower line or the police." },
       { id: "D", text: "Ask what they did to cause it before you take a side." },
     ], correct: "C" },
   { id: "control", spec: "LINE-03", title: "Control counts",
@@ -304,11 +304,11 @@ const HAVEN_CASES = [
       { id: "C", text: "Give the tracking steps if they say it is for protection." },
       { id: "D", text: "Stay neutral and explain both how to threaten and how to get away." },
     ], correct: "B" },
-  { id: "hotline", spec: "LINE-05", title: "Call 139",
-    question: "It is late in the village. Someone needs help now and cannot talk safely inside the house. Which line is the free, 24-hour domestic violence hotline in Mauritius?",
+  { id: "hotline", spec: "LINE-05", title: "Call for help",
+    question: "Someone needs help now and cannot talk safely in the house. What do you do?",
     options: [
       { id: "A", text: "Wait for the Saturday market and tell the council." },
-      { id: "B", text: "139." },
+      { id: "B", text: "Call your local whistle-blower line or the police." },
       { id: "C", text: "Post a message in the village group first." },
       { id: "D", text: "Call only if a bruise will show in a photo." },
     ], correct: "B" },
@@ -317,11 +317,11 @@ const HAVEN_CASES = [
     options: [
       { id: "A", text: "Promise to tell no one, and send the child back inside to see if it has stopped." },
       { id: "B", text: "Ask the child to describe the violence in detail before you decide." },
-      { id: "C", text: "A child in danger does not keep that secret. Do not send them back in. Call 113. If an adult is also unsafe, call 139." },
+      { id: "C", text: "A child in danger does not keep that secret. Do not send them back. Call your local whistle-blower line or the police." },
       { id: "D", text: "Wait until a parent invites you in, then mediate between the adults." },
     ], correct: "C" },
 ];
-const HSHORT = { private: "Private", believe: "Believe", control: "Control", grok: "AI", hotline: "139", child: "Child" };
+const HSHORT = { private: "Private", believe: "Believe", control: "Control", grok: "AI", hotline: "Line", child: "Child" };
 function havenCaseById(id) { return HAVEN_CASES.find((c) => c.id === id) ?? HAVEN_CASES[0]; }
 function firstOpenHavenId(results) {
   const done = new Set(results.map((r) => r.caseId));
@@ -3733,10 +3733,7 @@ function renderBoard() {
         <p style="margin:.4rem 0 0;font-size:.8rem">${L("grokRefuse")}</p>
       </div>
       <div class="side-body">
-        <p class="rose" style="font-family:var(--display);font-size:2rem;letter-spacing:.12em;margin:0">${L("hotlineBig")}</p>
-        <p style="font-size:.8rem">${L("hotlineCaption")}</p>
-        <p style="font-size:.8rem">${L("childLine")}</p>
-        <p class="mute" style="font-size:.75rem">${L("lespwar")}</p>
+        <p style="font-size:.85rem">${L("hotlineNote")}</p>
         <p class="mono green">${L("signalsHeld", { n: held, total: HAVEN_CASES.length })}</p>
       </div>`;
     return;

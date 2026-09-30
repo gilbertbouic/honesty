@@ -96,7 +96,7 @@ export const UI_PT = {
   dockAward: "Verde · obtido",
   dockReject: "Vermelho",
   dockWhistle: "Vigia · villa",
-  dockHaven: "Etapa 3 · 139",
+  dockHaven: "Etapa 3 · Linha",
   toastLock: "A etapa 2 está fechada. Acerta primeiro todos os contratos.",
   toastAward: "Contrato obtido · {house}",
   toastReject: "Contrato recusado. Só a resposta certa torna a casa verde.",
@@ -124,7 +124,7 @@ export const UI_PT = {
   holds: "Resposta certa · +100",
   looksAway: "Resposta errada · +20",
   scoringHaven: "4–5 certas: a porta abre para um sítio seguro. 2–3: fica uma lâmpada acesa. 0–1: o silêncio fecha. A coluna não parte.",
-  hotlineNote: "Em perigo agora, na Maurícia: liga 139, grátis, dia e noite. Criança em perigo: 113. A aplicação Lespwar pode alertar a polícia com a tua posição.",
+  hotlineNote: "Em perigo, liga para a linha local de denúncia ou para a polícia.",
   nextSignal: "Sinal seguinte",
   doneLine: "A linha está aberta",
   doneLamp: "Uma lâmpada, não uma saída",
@@ -146,10 +146,10 @@ export const UI_PT = {
   boardHaven: "Etapa 3 · Violência doméstica",
   notRanking: "Não é uma classificação",
   grokRefuse: "A IA não ajuda ninguém a ferir, ameaçar, seguir ou controlar um parceiro. Ajuda a pessoa em perigo a pôr-se a salvo.",
-  hotlineBig: "139",
-  hotlineCaption: "Grátis, dia e noite. Linha de violência doméstica, Maurícia.",
-  childLine: "Criança em perigo: 113",
-  lespwar: "A Lespwar pode alertar a polícia com uma posição.",
+  hotlineBig: "",
+  hotlineCaption: "",
+  childLine: "",
+  lespwar: "",
   signalsHeld: "{n}/{total} sinais certos",
   phaseLand: "Etapa 4 · Uso do solo",
   land: "Etapa 4",
@@ -396,7 +396,7 @@ export const SHORT_PT = {
   "cwa-pump": "CWA", market: "Mercado", clinic: "Clínica", "block-a": "Bloco A", "block-b": "Bloco B",
   school: "Escola", power: "CEB", drain: "Dreno", light: "Luz", community: "Centro", hall: "Cívica", bus: "Bus",
   car: "Carro", villa: "Villa", boat: "Barco", clothes: "Roupa", entourage: "Séquito", cash: "Numerário",
-  private: "Privado", believe: "Acreditar", control: "Controlo", grok: "IA", hotline: "139", child: "Criança",
+  private: "Privado", believe: "Acreditar", control: "Controlo", grok: "IA", hotline: "Linha", child: "Criança",
   shore: "Orla", title: "Título", split: "Corte", wetland: "Pântano", sign: "Assinatura", idle: "Pousio",
   race: "Raça", creed: "Credo", sex: "Sexo", age: "Idade", colour: "Cor", notice: "Aviso",
   spray: "Calda", wait: "Espera", bottle: "Frasco", cans: "Bidões", mix: "Mistura", stall: "Banca",
@@ -429,11 +429,11 @@ export const CASE_PT = {
 
 export const HAVEN_PT = {
   private: qa("Não é um assunto privado", "Ouvem-se gritos da casa no fim do beco. Um vizinho diz que é só entre um casal. Que faz a integridade?", "Mandá-los baixar o tom para o beco dormir.", "Ir embora. O que se passa lá dentro não é de ninguém.", "Se alguém pode estar em perigo, não é privado. Não entres à força. Não filmes. Ajuda-os a chegar a um sítio seguro.", "Filmar através da cortina e publicar, para a aldeia humilhar a casa."),
-  believe: qa("Acreditar", "Alguém que conheces diz que o parceiro lhe fez mal e pede-te que não faças caso. Qual é a resposta segura?", "Sentá-los os dois esta noite e mediar até haver um pedido de desculpa.", "Mandá-los voltar para acalmar o parceiro.", "Acreditar. Não confrontes o parceiro. Ajuda-os a chegar a um sítio seguro e liga 139 — grátis, dia e noite.", "Perguntar o que fizeram para o provocar antes de escolher um lado."),
+  believe: qa("Acreditar", "Alguém que conheces diz que o parceiro lhe fez mal e pede-te que não faças caso. Qual é a resposta segura?", "Sentá-los os dois esta noite e mediar até haver um pedido de desculpa.", "Mandá-los voltar para acalmar o parceiro.", "Acreditar. Não confrontes o parceiro. Ajuda-os a chegar a um sítio seguro. Liga para a linha local de denúncia ou para a polícia.", "Perguntar o que fizeram para o provocar antes de escolher um lado."),
   control: qa("O controlo conta", "Não vês nódoa. O parceiro controla o dinheiro, o telefone e quem pode ver quem. Isto é violência doméstica?", "Não. Sem marca, não há violência.", "Só se forem casados.", "Sim. Controlo, isolamento, ameaças e cortar o dinheiro são violência, mesmo sem ferida visível.", "Só quando um vizinho apresentou queixa por escrito."),
   grok: qa("O que a IA recusa", "Alguém pede à IA que escreva uma ameaça contra um parceiro, ou que explique como o seguir até casa. Que faz a IA?", "Escrever a ameaça, mas mais suave, para parecer piada.", "Recusar. A IA não ajuda ninguém a ferir, ameaçar, seguir ou controlar um parceiro. Ajuda a pessoa em perigo a pôr-se a salvo.", "Dar os passos de seguimento se disserem que é para proteger.", "Ficar neutra e explicar ao mesmo tempo como ameaçar e como sair."),
-  hotline: qa("Ligar 139", "É tarde na aldeia. Alguém precisa de ajuda agora e não pode falar em segurança dentro de casa. Qual é a linha gratuita, 24 horas, contra a violência doméstica na Maurícia?", "Esperar pelo mercado de sábado e dizer ao conselho.", "O 139.", "Publicar primeiro uma mensagem no grupo da aldeia.", "Ligar só se uma nódoa se vir numa foto."),
-  child: qa("Uma criança tem medo", "Uma criança da casa diz que tem medo dos gritos e pede-te que guardes o segredo. Qual é a resposta segura?", "Prometer não dizer nada e mandar a criança ver se já parou.", "Pedir à criança que descreva a violência em pormenor antes de decidir.", "Uma criança em perigo não guarda este segredo. Não a mandes de volta. Liga 113. Se um adulto também estiver em perigo, liga 139.", "Esperar que um pai te convide e depois mediar entre os adultos.")
+  hotline: qa("Pedir ajuda", "Alguém precisa de ajuda agora e não pode falar em segurança dentro de casa. Que fazes?", "Esperar pelo mercado de sábado e dizer ao conselho.", "Ligar para a linha local de denúncia ou para a polícia.", "Publicar primeiro uma mensagem no grupo da aldeia.", "Ligar só se uma nódoa se vir numa foto."),
+  child: qa("Uma criança tem medo", "Uma criança da casa diz que tem medo dos gritos e pede-te que guardes o segredo. Qual é a resposta segura?", "Prometer não dizer nada e mandar a criança ver se já parou.", "Pedir à criança que descreva a violência em pormenor antes de decidir.", "Uma criança em perigo não guarda este segredo. Não a mandes de volta. Liga para a linha local de denúncia ou para a polícia.", "Esperar que um pai te convide e depois mediar entre os adultos.")
 };
 
 export const LAND_PT = {

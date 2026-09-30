@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg92";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg93";
 import { HavenScene } from "./haven.js?v=vg48";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
@@ -12,16 +12,7 @@ import { OathScene } from "./oath.js?v=vg90";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
-const ORIENT_KEY = "village-orient";
-function readOrient() {
-  try {
-    const saved = localStorage.getItem(ORIENT_KEY);
-    if (saved === "portrait" || saved === "landscape") return saved;
-  } catch { /* ignore */ }
-  return window.innerHeight > window.innerWidth ? "portrait" : "landscape";
-}
-let orient = readOrient();
-document.documentElement.dataset.orient = orient;
+document.documentElement.lang = lang === "fr" ? "fr" : "en";
 
 const PALETTE = { void: 0x08080c, cyan: 0x00e5ff, green: 0x3dff9a, amber: 0xe07030, crimson: 0xff3b4e };
 const DECAY = new THREE.Color(PALETTE.amber);
@@ -1147,7 +1138,7 @@ class VillageEngine {
     const solo = this.competition !== "tender";
     if (this.village) this.village.visible = !solo;
     if (this.wGroup) this.wGroup.visible = this.competition === "whistle";
-    const mobile = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
+    const mobile = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth;
     this.controls.autoRotate = !mobile && !this.holdOrbit && !next.reducedMotion && this.competition !== "haven" && !solo && this.whistleOutcome !== "exile";
     this.rain.visible = !next.reducedMotion && this.competition === "tender";
     if (switched) this.holdOrbit = false;
@@ -1178,7 +1169,7 @@ class VillageEngine {
   }
 
   aimStage(focus, view, radius) {
-    const mobile = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
+    const mobile = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth;
     if (this.holdOrbit && mobile) return;
     const band = this.openBand();
     const fracW = Math.max(0.35, (band.right - band.left) / band.w);
@@ -1231,14 +1222,14 @@ class VillageEngine {
     if (this.competition === "oath") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      const phone = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
+      const phone = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth;
       this.aimStage(new THREE.Vector3(0, phone ? 1.18 : 1.08, phone ? -0.08 : -0.02), phone ? new THREE.Vector3(0.15, 6.4, 8.2) : view, phone ? 2.05 : 2.32);
       return;
     }
     if (this.competition === "roll") {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
-      const phone = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth || document.documentElement.dataset.orient === "portrait";
+      const phone = this.canvas.clientWidth < 900 || this.canvas.clientHeight > this.canvas.clientWidth;
       this.aimStage(new THREE.Vector3(phone ? -0.7 : -1.05, phone ? 1.12 : 1.02, phone ? 0.25 : 0.4), phone ? new THREE.Vector3(0.15, 5.2, 9) : view, phone ? 3.0 : 3.45);
       return;
     }
@@ -2376,19 +2367,6 @@ function renderBoot() {
   paintLang(document.getElementById("boot-lang"));
   paintLang(document.getElementById("play-lang"));
   paintLang(document.getElementById("play-lang-mobile"));
-  const orientRoot = document.getElementById("boot-orient");
-  if (orientRoot) {
-    orientRoot.innerHTML = ["portrait", "landscape"].map((id) => `<button type="button" data-orient="${id}" class="${orient === id ? "on" : ""}">${L(id)}</button>`).join("");
-    orientRoot.querySelectorAll("[data-orient]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        orient = btn.dataset.orient === "landscape" ? "landscape" : "portrait";
-        try { localStorage.setItem(ORIENT_KEY, orient); } catch { /* ignore */ }
-        document.documentElement.dataset.orient = orient;
-        renderBoot();
-        engine.frameCompetition();
-      });
-    });
-  }
   document.getElementById("reset-stage").textContent = L("resetStage");
   document.getElementById("reset-game").textContent = L("resetGame");
   document.getElementById("tab-reset-stage").textContent = L("resetStage");

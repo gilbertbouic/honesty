@@ -408,43 +408,6 @@ button { font: inherit; color: inherit; }
   text-transform: uppercase;
   min-height: 2.75rem;
 }
-html[data-orient="portrait"] .hud {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0;
-  padding: 0;
-}
-html[data-orient="portrait"] .header,
-html[data-orient="portrait"] .dock,
-html[data-orient="portrait"] .tabs,
-html[data-orient="portrait"] .foot,
-html[data-orient="portrait"] .side.right,
-html[data-orient="portrait"] .qcount,
-html[data-orient="portrait"] .week { display: none !important; }
-html[data-orient="portrait"] .side.left {
-  display: flex !important;
-  width: 100%;
-  max-height: min(42svh, 24rem);
-  margin: 0;
-  align-self: stretch;
-  border-radius: 1.15rem 1.15rem 0 0;
-}
-html[data-orient="portrait"] .side-foot .cta,
-html[data-orient="portrait"] .side-body .cta { display: none; }
-html[data-orient="portrait"] .side-foot .cta.open-next,
-html[data-orient="portrait"] .side-body .cta.open-next { display: block; }
-html[data-orient="portrait"] .mobile-sheet-foot {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  pointer-events: auto;
-  padding: 0.35rem 0.85rem calc(0.55rem + env(safe-area-inset-bottom));
-  background: color-mix(in oklab, var(--surface) 94%, transparent);
-  border: 1px solid color-mix(in oklab, var(--cyan) 26%, transparent);
-  border-top: 0;
-}
-html[data-orient="portrait"] .mobile-sheet-foot .cta { margin-top: 0; }
 .mobile-sheet-foot .mobile-comp {
   width: 100%;
   overflow-x: auto;
@@ -461,26 +424,6 @@ html[data-orient="portrait"] .mobile-sheet-foot .cta { margin-top: 0; }
   letter-spacing: 0.03em;
   white-space: nowrap;
 }
-.orient-switch {
-  display: flex;
-  border: 1px solid var(--line);
-  border-radius: 0.7rem;
-  padding: 2px;
-  background: var(--raised);
-}
-.orient-switch button {
-  min-height: 2.75rem;
-  border: 0;
-  border-radius: 0.55rem;
-  background: transparent;
-  padding: 0 0.55rem;
-  font-family: var(--display);
-  letter-spacing: 0.12em;
-  font-size: 0.62rem;
-  text-transform: uppercase;
-  color: var(--mute);
-}
-.orient-switch button.on { background: color-mix(in oklab, var(--cyan) 16%, transparent); color: var(--cyan); }
 .stage-resets { display: flex; justify-content: center; gap: 1.1rem; }
 
 @media (max-width: 860px) {

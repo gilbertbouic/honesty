@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg97";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg98";
 import { HavenScene } from "./haven.js?v=vg49";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
@@ -8,7 +8,7 @@ import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg62";
 import { StampScene } from "./stamp.js?v=vg90";
 import { RollScene } from "./roll.js?v=vg92";
-import { OathScene } from "./oath.js?v=vg91";
+import { OathScene } from "./oath.js?v=vg92";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -3394,7 +3394,7 @@ function renderOath() {
       <p style="font-size:.8rem">${L("oathRule")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-oath" style="margin-top:.75rem;background:#00a551">${L("nextSeat")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.oathOutcome === "whole" ? "var(--green)" : state.oathOutcome === "page" ? "#00a551" : "var(--crimson)"}">${
-        state.oathOutcome === "whole" ? L("doneWhole") : state.oathOutcome === "page" ? L("donePage") : L("doneKey")
+        state.oathOutcome === "whole" ? L("prizeWin") : state.oathOutcome === "page" ? L("donePage") : L("doneKey")
       }</p>` : ""}
     </div>`;
   panel.querySelectorAll("[data-oath]").forEach((btn) => {
@@ -3630,7 +3630,7 @@ function renderOutcome() {
     : haven
       ? L("scoreHaven", { score: state.havenScore }) + " · " + L("hotlineNote")
       : L("scoreLine", { score: state.whistleScore });
-  document.getElementById("outcome-dismiss").textContent = L("watchGrid");
+  document.getElementById("outcome-dismiss").textContent = oath && state.oathOutcome === "whole" ? L("prizeWin") : L("watchGrid");
   card.className = "panel boot-card " + copy.cls;
   el.hidden = false;
 }

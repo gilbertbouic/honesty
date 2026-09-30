@@ -43,6 +43,7 @@ class OathScene {
     this.seat(this.memberB, 1);
     this.group.visible = false;
     this.group.scale.setScalar(1.25);
+    this.buildParty();
     scene.add(this.group);
   }
 
@@ -363,6 +364,113 @@ class OathScene {
     this.member.userData.arm.rotation.x += (((silence === "live" || silence === "miss") ? -0.8 : -0.2) - this.member.userData.arm.rotation.x) * ease;
     const doorOpen = gift === "held" || (roomEmpty && act === "minute");
     this.hinge.rotation.y += ((doorOpen ? -1.15 : -0.05) - this.hinge.rotation.y) * ease;
+    this.tickParty(dt, t, reduced);
+  }
+
+  buildParty() {
+    const root = new THREE.Group();
+    root.position.set(0.55, 0.5, -0.08);
+    const glass = this.mat(0x1f6b3a, { rough: 0.18, metal: 0.35 });
+    const foil = this.mat(0xc4a35a, { rough: 0.3, metal: 0.7 });
+    const cream = this.mat(0xf4f1ea, { rough: 0.4 });
+    this.mesh(root, new THREE.CylinderGeometry(0.045, 0.055, 0.28, 10), glass, 0, 0.16, 0);
+    this.mesh(root, new THREE.CylinderGeometry(0.028, 0.04, 0.1, 8), glass, 0, 0.34, 0);
+    this.mesh(root, new THREE.CylinderGeometry(0.032, 0.03, 0.06, 8), foil, 0, 0.42, 0);
+    this.mesh(root, new THREE.CylinderGeometry(0.018, 0.02, 0.05, 6), cream, 0, 0.47, 0);
+    this.mesh(root, new THREE.CylinderGeometry(0.07, 0.07, 0.02, 10), foil, 0, 0.02, 0);
+    root.rotation.z = -0.18;
+    root.visible = false;
+    this.group.add(root);
+    this.champ = root;
+
+    const burstN = 140;
+    this.fwPos = new Float32Array(burstN * 3);
+    this.fwVel = new Float32Array(burstN * 3);
+    this.fwCol = new Float32Array(burstN * 3);
+    this.fwLife = new Float32Array(burstN);
+    const colors = [[1, 0.82, 0.2], [0, 0.65, 0.32], [0.92, 0.16, 0.22], [0.95, 0.95, 0.95], [0.4, 0.7, 1]];
+    for (let i = 0; i < burstN; i++) {
+      this.fwLife[i] = Math.random();
+      const c = colors[i % colors.length];
+      this.fwCol[i * 3] = c[0];
+      this.fwCol[i * 3 + 1] = c[1];
+      this.fwCol[i * 3 + 2] = c[2];
+    }
+    const fwGeo = new THREE.BufferGeometry();
+    fwGeo.setAttribute("position", new THREE.BufferAttribute(this.fwPos, 3));
+    fwGeo.setAttribute("color", new THREE.BufferAttribute(this.fwCol, 3));
+    this.geos.push(fwGeo);
+    const fwMat = new THREE.PointsMaterial({ size: 0.07, vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false, blending: THREE.AdditiveBlending });
+    this.mats.push(fwMat);
+    this.fireworks = new THREE.Points(fwGeo, fwMat);
+    this.fireworks.visible = false;
+    this.group.add(this.fireworks);
+
+    const fizzN = 80;
+    this.fizzPos = new Float32Array(fizzN * 3);
+    this.fizzVel = new Float32Array(fizzN * 3);
+    this.fizzLife = new Float32Array(fizzN);
+    for (let i = 0; i < fizzN; i++) this.fizzLife[i] = Math.random();
+    const fzGeo = new THREE.BufferGeometry();
+    fzGeo.setAttribute("position", new THREE.BufferAttribute(this.fizzPos, 3));
+    this.geos.push(fzGeo);
+    const fzMat = new THREE.PointsMaterial({ color: 0xf7f0d2, size: 0.035, transparent: true, opacity: 0.85, depthWrite: false, blending: THREE.AdditiveBlending });
+    this.mats.push(fzMat);
+    this.fizz = new THREE.Points(fzGeo, fzMat);
+    this.fizz.visible = false;
+    this.group.add(this.fizz);
+  }
+
+  burstSpark(i) {
+    const ang = Math.random() * Math.PI * 2;
+    const lift = 0.8 + Math.random() * 1.6;
+    const spread = 0.6 + Math.random() * 1.1;
+    const ox = (Math.random() - 0.5) * 2.4;
+    const oz = (Math.random() - 0.5) * 1.6;
+    this.fwPos[i * 3] = ox;
+    this.fwPos[i * 3 + 1] = 1.2 + Math.random() * 0.8;
+    this.fwPos[i * 3 + 2] = oz;
+    this.fwVel[i * 3] = Math.cos(ang) * spread;
+    this.fwVel[i * 3 + 1] = lift;
+    this.fwVel[i * 3 + 2] = Math.sin(ang) * spread;
+    this.fwLife[i] = 0.7 + Math.random() * 0.7;
+  }
+
+  tickParty(dt, t, reduced) {
+    const win = this.outcome === "whole";
+    if (this.champ) this.champ.visible = win;
+    if (this.fireworks) this.fireworks.visible = win && !reduced;
+    if (this.fizz) this.fizz.visible = win && !reduced;
+    if (!win) return;
+    if (this.champ) this.champ.rotation.z = -0.18 + Math.sin(t * 3.2) * 0.04;
+    if (reduced) return;
+    for (let i = 0; i < this.fwLife.length; i++) {
+      this.fwLife[i] -= dt;
+      if (this.fwLife[i] <= 0) this.burstSpark(i);
+      this.fwVel[i * 3 + 1] -= 2.4 * dt;
+      this.fwPos[i * 3] += this.fwVel[i * 3] * dt;
+      this.fwPos[i * 3 + 1] += this.fwVel[i * 3 + 1] * dt;
+      this.fwPos[i * 3 + 2] += this.fwVel[i * 3 + 2] * dt;
+    }
+    this.fireworks.geometry.getAttribute("position").needsUpdate = true;
+    const mouth = new THREE.Vector3(0.52, 0.98, -0.08);
+    for (let i = 0; i < this.fizzLife.length; i++) {
+      this.fizzLife[i] -= dt * 1.6;
+      if (this.fizzLife[i] <= 0) {
+        this.fizzPos[i * 3] = mouth.x + (Math.random() - 0.5) * 0.04;
+        this.fizzPos[i * 3 + 1] = mouth.y;
+        this.fizzPos[i * 3 + 2] = mouth.z + (Math.random() - 0.5) * 0.04;
+        this.fizzVel[i * 3] = (Math.random() - 0.5) * 0.25;
+        this.fizzVel[i * 3 + 1] = 0.7 + Math.random() * 0.9;
+        this.fizzVel[i * 3 + 2] = (Math.random() - 0.5) * 0.25;
+        this.fizzLife[i] = 0.35 + Math.random() * 0.4;
+      }
+      this.fizzVel[i * 3 + 1] -= 1.1 * dt;
+      this.fizzPos[i * 3] += this.fizzVel[i * 3] * dt;
+      this.fizzPos[i * 3 + 1] += this.fizzVel[i * 3 + 1] * dt;
+      this.fizzPos[i * 3 + 2] += this.fizzVel[i * 3 + 2] * dt;
+    }
+    this.fizz.geometry.getAttribute("position").needsUpdate = true;
   }
 
   dispose() {

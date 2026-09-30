@@ -92,6 +92,7 @@ export const UI_PT = {
   exileBody: "Ficaste demasiado calado. A equipa do Ravi expulsa-te da aldeia. Não voltes nesta ronda.",
   scoreLine: "Pontuação · etapa 2 · {score}/600",
   watchGrid: "Continuar",
+  prizeWin: "Parabéns: ganhaste um prémio de integridade escondido nas etapas. Encontra a ligação.",
   openSpec: "Caderno",
   bids: "Decisão",
   dockAward: "Verde · obtido",

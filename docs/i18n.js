@@ -1,4 +1,4 @@
-import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg4";
+import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg5";
 
 // src/lib/game/i18n.ts
 var LANG_KEY = "village-grid-lang";
@@ -97,6 +97,7 @@ var UI = {
     exileBody: "You stayed too quiet. Ravi\u2019s crew run you off the village. Do not come back on this round.",
     scoreLine: "Stage 2 score \xB7 {score}/600",
     watchGrid: "Continue",
+    prizeWin: "Congratulations: you have won an integrity prize hidden among the stages. Find the link.",
     openSpec: "Spec",
     bids: "Decision",
     dockAward: "Green \xB7 held",
@@ -472,6 +473,7 @@ var UI = {
     exileBody: "Tu es rest\xE9 trop silencieux. L'\xE9quipe de Ravi te chasse du village. Ne reviens pas sur cette manche.",
     scoreLine: "Score \xB7 \xE9tape 2 \xB7 {score}/600",
     watchGrid: "Continuer",
+    prizeWin: "F\xE9licitations : tu as gagn\xE9 un prix d'int\xE9grit\xE9 cach\xE9 dans les \xE9tapes. Trouve le lien.",
     openSpec: "Cahier",
     bids: "D\xE9cision",
     dockAward: "Verte \xB7 tenue",

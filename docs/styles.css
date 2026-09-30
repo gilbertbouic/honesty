@@ -582,8 +582,8 @@ button { font: inherit; color: inherit; }
   color: #2a6f8f;
 }
 .comp-switch button[data-comp="oath"].on {
-  background: color-mix(in oklab, #1a206d 22%, transparent);
-  color: #1a206d;
+  background: color-mix(in oklab, #00a551 22%, transparent);
+  color: #00a551;
 }
 .rose, .kicker.rose, .qcount.rose { color: var(--rose); }
 .toast.line { border-color: var(--green); color: var(--green); background: color-mix(in oklab, var(--green) 12%, var(--surface)); }

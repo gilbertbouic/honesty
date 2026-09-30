@@ -8,7 +8,7 @@ import { CropScene } from "./crop.js?v=vg61";
 import { WashScene } from "./wash.js?v=vg62";
 import { StampScene } from "./stamp.js?v=vg90";
 import { RollScene } from "./roll.js?v=vg92";
-import { OathScene } from "./oath.js?v=vg90";
+import { OathScene } from "./oath.js?v=vg91";
 
 let lang = loadLang();
 const L = (key, vars) => tr(lang, key, vars);
@@ -2512,7 +2512,7 @@ function renderHeader() {
   const stat = document.getElementById("stat-won");
   stat.textContent = oath ? `${state.oathScore}/${OATH_CASES.length * 100}` : roll ? `${state.rollScore}/${ROLL_CASES.length * 100}` : stamp ? `${state.stampScore}/${STAMP_CASES.length * 100}` : wash ? `${state.washScore}/${WASH_CASES.length * 100}` : crop ? `${state.cropScore}/${CROP_CASES.length * 100}` : fair ? `${state.fairScore}/${FAIR_CASES.length * 100}` : land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
   stat.className = "mono";
-  stat.style.color = oath ? "#1a206d" : roll ? "#2a6f8f" : stamp ? "#ea2839" : wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
+  stat.style.color = oath ? "#00a551" : roll ? "#2a6f8f" : stamp ? "#ea2839" : wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
   if (haven) stat.className = "mono rose";
   if (whistle) stat.className = "mono amber";
   if (!oath && !roll && !stamp && !wash && !crop && !fair && !land && !haven && !whistle) stat.className = "mono green";
@@ -2585,7 +2585,7 @@ function renderHeader() {
             ? `${state.whistleResults.length}/${WHISTLE_CASES.length}`
             : `${state.results.length}/${TENDERS.length}`;
   qcount.className = haven ? "qcount rose" : whistle ? "qcount amber" : "qcount green";
-  qcount.style.color = oath ? "#1a206d" : roll ? "#2a6f8f" : stamp ? "#ea2839" : wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
+  qcount.style.color = oath ? "#00a551" : roll ? "#2a6f8f" : stamp ? "#ea2839" : wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
   document.getElementById("tab-case").textContent = oath || roll || stamp || wash || crop || fair || land || haven || whistle ? L("case") : L("tender");
   document.getElementById("tab-round").textContent = state.competition === "tender"
     ? L("whistle")
@@ -3368,7 +3368,7 @@ function renderOath() {
   panel.classList.toggle("reject", locked && !held);
   panel.innerHTML = `
     <div class="side-head">
-      <p class="kicker" style="color:#1a206d">${L("briefOath")} · ${item.spec}</p>
+      <p class="kicker" style="color:#00a551">${L("briefOath")} · ${item.spec}</p>
       <h2>${item.title}</h2>
       <p class="mono mute">${state.oathResults.length}/${OATH_CASES.length}</p>
     </div>
@@ -3392,8 +3392,8 @@ function renderOath() {
       </div>
       <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsOath") : L("missOath")) : L("scoring")}</p>
       <p style="font-size:.8rem">${L("oathRule")}</p>
-      ${result && remaining ? `<button type="button" class="cta" id="next-oath" style="margin-top:.75rem;background:#1a206d">${L("nextSeat")}</button>` : ""}
-      ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.oathOutcome === "whole" ? "var(--green)" : state.oathOutcome === "page" ? "#1a206d" : "var(--crimson)"}">${
+      ${result && remaining ? `<button type="button" class="cta" id="next-oath" style="margin-top:.75rem;background:#00a551">${L("nextSeat")}</button>` : ""}
+      ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.oathOutcome === "whole" ? "var(--green)" : state.oathOutcome === "page" ? "#00a551" : "var(--crimson)"}">${
         state.oathOutcome === "whole" ? L("doneWhole") : state.oathOutcome === "page" ? L("donePage") : L("doneKey")
       }</p>` : ""}
     </div>`;
@@ -3647,7 +3647,7 @@ function renderBoard() {
     const seats = state.oathResults.filter((r) => r.correct).length;
     board.innerHTML = `
       <div class="side-head">
-        <p class="kicker" style="color:#1a206d">${L("boardOath")}</p>
+        <p class="kicker" style="color:#00a551">${L("boardOath")}</p>
         <h2>${L("notRanking")}</h2>
       </div>
       <div class="side-body">
@@ -3787,7 +3787,7 @@ function renderDock() {
   }
   if (state.competition === "oath") {
     dock.hidden = false;
-    dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#1a206d">${L("dockOath")}</p></div>`;
+    dock.innerHTML = `<div class="panel dock-inner"><p style="margin:0;letter-spacing:.16em;text-transform:uppercase;font-family:var(--display);font-size:10px;color:#00a551">${L("dockOath")}</p></div>`;
     return;
   }
   if (state.competition === "roll") {

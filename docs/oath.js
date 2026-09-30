@@ -158,7 +158,7 @@ class OathScene {
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "#f4f5f3";
     ctx.fillRect(0, 0, 1024, 280);
-    ctx.fillStyle = "#1a206d";
+    ctx.fillStyle = "#00a551";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "700 68px Georgia, serif";

@@ -1410,32 +1410,51 @@ class VillageEngine {
     const g = new THREE.Group();
     const skin = new THREE.MeshStandardMaterial({ color: 0xd7b39a, roughness: 0.72, transparent: true, opacity: 1 });
     const hair = new THREE.MeshStandardMaterial({ color: dressHex === 0xc9a24a ? 0x3a2418 : 0x1a1214, roughness: 0.55, transparent: true, opacity: 1 });
-    const dress = new THREE.MeshStandardMaterial({ color: dressHex, roughness: 0.42, metalness: 0.06, transparent: true, opacity: 1 });
-    const heel = new THREE.MeshStandardMaterial({ color: 0x1a1c1f, roughness: 0.35, metalness: 0.2, transparent: true, opacity: 1 });
-    const put = (geo, material, px, y, pz) => {
+    const suit = new THREE.MeshStandardMaterial({ color: dressHex, roughness: 0.38, metalness: 0.08, transparent: true, opacity: 1 });
+    const frame = new THREE.MeshStandardMaterial({ color: 0x2a2c30, roughness: 0.4, metalness: 0.35, transparent: true, opacity: 1 });
+    const cloth = new THREE.MeshStandardMaterial({ color: 0xe7d7b8, roughness: 0.7, transparent: true, opacity: 1 });
+    const drink = new THREE.MeshStandardMaterial({ color: dressHex === 0xc9a24a ? 0xf0c030 : 0xe24b8a, roughness: 0.25, transparent: true, opacity: 1 });
+    const glass = new THREE.MeshStandardMaterial({ color: 0xd7eef6, roughness: 0.12, metalness: 0.2, transparent: true, opacity: 0.35 });
+    const put = (parent, geo, material, px, y, pz) => {
       this.wGeos.push(geo);
       const mesh = new THREE.Mesh(geo, material);
       mesh.position.set(px, y, pz);
       mesh.castShadow = true;
-      g.add(mesh);
+      parent.add(mesh);
       return mesh;
     };
     const s = scale;
-    put(new THREE.BoxGeometry(0.07 * s, 0.08 * s, 0.11 * s), heel, -0.07 * s, 0.04 * s, 0.01 * s);
-    put(new THREE.BoxGeometry(0.07 * s, 0.08 * s, 0.11 * s), heel, 0.07 * s, 0.04 * s, 0.01 * s);
-    const skirt = put(new THREE.ConeGeometry(0.22 * s, 0.48 * s, 12), dress, 0, 0.32 * s, 0);
-    skirt.geometry.rotateX(0);
-    put(new THREE.BoxGeometry(0.16 * s, 0.22 * s, 0.12 * s), dress, 0, 0.58 * s, 0);
-    put(new THREE.CapsuleGeometry(0.035 * s, 0.16 * s, 3, 6), skin, -0.12 * s, 0.58 * s, 0);
-    put(new THREE.CapsuleGeometry(0.035 * s, 0.16 * s, 3, 6), skin, 0.12 * s, 0.58 * s, 0);
-    put(new THREE.SphereGeometry(0.09 * s, 12, 10), skin, 0, 0.78 * s, 0);
-    put(new THREE.SphereGeometry(0.1 * s, 12, 8), hair, 0, 0.84 * s, -0.02 * s);
-    put(new THREE.BoxGeometry(0.08 * s, 0.1 * s, 0.06 * s), hair, 0.02 * s, 0.7 * s, -0.06 * s);
-    put(new THREE.TorusGeometry(0.045 * s, 0.008 * s, 6, 10), dress, 0, 0.7 * s, 0.07 * s);
+    const chair = new THREE.Group();
+    put(chair, new THREE.BoxGeometry(0.42 * s, 0.05 * s, 1.05 * s), cloth, 0, 0.18 * s, 0.08 * s);
+    put(chair, new THREE.BoxGeometry(0.05 * s, 0.16 * s, 1.08 * s), frame, -0.2 * s, 0.14 * s, 0.08 * s);
+    put(chair, new THREE.BoxGeometry(0.05 * s, 0.16 * s, 1.08 * s), frame, 0.2 * s, 0.14 * s, 0.08 * s);
+    put(chair, new THREE.BoxGeometry(0.42 * s, 0.42 * s, 0.05 * s), cloth, 0, 0.36 * s, -0.44 * s);
+    chair.rotation.x = -0.42;
+    g.add(chair);
+    const body = new THREE.Group();
+    body.rotation.x = -1.05;
+    body.position.set(0, 0.28 * s, 0.06 * s);
+    put(body, new THREE.CapsuleGeometry(0.045 * s, 0.28 * s, 3, 6), skin, -0.07 * s, 0.16 * s, 0);
+    put(body, new THREE.CapsuleGeometry(0.045 * s, 0.28 * s, 3, 6), skin, 0.07 * s, 0.16 * s, 0);
+    put(body, new THREE.BoxGeometry(0.2 * s, 0.1 * s, 0.16 * s), suit, 0, 0.34 * s, 0);
+    put(body, new THREE.BoxGeometry(0.2 * s, 0.28 * s, 0.12 * s), skin, 0, 0.54 * s, 0);
+    put(body, new THREE.BoxGeometry(0.18 * s, 0.08 * s, 0.12 * s), suit, 0, 0.62 * s, 0.01 * s);
+    const arm = new THREE.Group();
+    arm.position.set(0.16 * s, 0.58 * s, 0);
+    arm.rotation.x = -0.55;
+    put(arm, new THREE.CapsuleGeometry(0.03 * s, 0.22 * s, 3, 5), skin, 0, -0.12 * s, 0);
+    const glassCup = put(arm, new THREE.CylinderGeometry(0.035 * s, 0.018 * s, 0.08 * s, 8), glass, 0.02 * s, 0.04 * s, 0.08 * s);
+    put(arm, new THREE.CylinderGeometry(0.008 * s, 0.008 * s, 0.07 * s, 6), glass, 0.02 * s, -0.02 * s, 0.08 * s);
+    put(arm, new THREE.CylinderGeometry(0.028 * s, 0.028 * s, 0.03 * s, 8), drink, 0.02 * s, 0.045 * s, 0.08 * s);
+    body.add(arm);
+    put(body, new THREE.CapsuleGeometry(0.03 * s, 0.2 * s, 3, 5), skin, -0.16 * s, 0.5 * s, 0.04 * s);
+    put(body, new THREE.SphereGeometry(0.09 * s, 12, 10), skin, 0, 0.78 * s, 0);
+    put(body, new THREE.SphereGeometry(0.1 * s, 12, 8), hair, 0, 0.84 * s, -0.03 * s);
+    g.add(body);
     g.position.set(x, 0, z);
-    g.rotation.y = 0.5;
-    g.userData.mats = [dress, skin, hair, heel];
-    g.userData.homeColors = [dress.color.clone(), skin.color.clone(), hair.color.clone(), heel.color.clone()];
+    g.userData.lounge = true;
+    g.userData.mats = [suit, skin, hair, drink, frame, cloth];
+    g.userData.homeColors = [suit.color.clone(), skin.color.clone(), hair.color.clone(), drink.color.clone(), frame.color.clone(), cloth.color.clone()];
     this.wGroup.add(g);
     return g;
   }
@@ -1595,24 +1614,34 @@ class VillageEngine {
     this.addWCyl(this.wGroup, this.wGeos, f0, x + 1.45, 1.15, z + 1.05, 0.08, 2.3, 6, solid);
     this.addWBox(this.wGroup, this.wGeos, this.pool, x + 0.15, 0.05, z + 2.05, 2.5, 0.08, 1.35, { fill: 0.5, depth: true, color: CYAN });
     this.addWBox(this.wGroup, this.wGeos, this.pool, x + 0.15, 0.1, z + 2.05, 2.7, 0.06, 1.55, solid);
-    const cx = x - 2.05, cz = z - 1.05;
-    const carS = { fill: 0.4, depth: true, color: GOLD };
-    this.addWBox(this.wGroup, this.wGeos, this.car, cx, 0.38, cz, 2.05, 0.52, 1.05, carS);
-    this.addWBox(this.wGroup, this.wGeos, this.car, cx + 0.05, 0.78, cz, 1.25, 0.42, 1.0, carS);
-    this.addWBox(this.wGroup, this.wGeos, this.car, cx + 0.08, 0.86, cz, 0.85, 0.22, 0.92, { fill: 0.28, depth: true, color: CYAN });
-    this.addWCyl(this.wGroup, this.wGeos, this.car, cx - 0.62, 0.2, cz + 0.52, 0.2, 0.12, 8, carS);
-    this.addWCyl(this.wGroup, this.wGeos, this.car, cx + 0.62, 0.2, cz + 0.52, 0.2, 0.12, 8, carS);
-    this.addWCyl(this.wGroup, this.wGeos, this.car, cx - 0.62, 0.2, cz - 0.52, 0.2, 0.12, 8, carS);
-    this.addWCyl(this.wGroup, this.wGeos, this.car, cx + 0.62, 0.2, cz - 0.52, 0.2, 0.12, 8, carS);
-    const bx = x + 3.7, bz = z + 0.15;
+    const cx = x + 3.45, cz = z - 0.35;
+    const carS = { fill: 0.92, depth: true, color: 0xc4a35a };
+    const carDark = { fill: 0.92, depth: true, color: 0x1a1c1f };
+    const carGlass = { fill: 0.45, depth: true, color: 0x7ec8d4 };
+    this.addWBox(this.wGroup, this.wGeos, this.car, cx, 0.2, cz, 2.18, 0.18, 0.92, carS);
+    this.addWBox(this.wGroup, this.wGeos, this.car, cx + 0.28, 0.32, cz, 1.28, 0.14, 0.88, carS);
+    this.addWBox(this.wGroup, this.wGeos, this.car, cx + 0.82, 0.26, cz, 0.55, 0.1, 0.7, carS);
+    this.addWBox(this.wGroup, this.wGeos, this.car, cx - 0.72, 0.24, cz, 0.42, 0.12, 0.86, carS);
+    const screen = this.addWBox(this.wGroup, this.wGeos, this.car, cx - 0.08, 0.48, cz, 0.04, 0.28, 0.78, carGlass);
+    screen.rotation.z = 0.52;
+    this.addWBox(this.wGroup, this.wGeos, this.car, cx - 0.42, 0.34, cz + 0.2, 0.34, 0.12, 0.28, carDark);
+    this.addWBox(this.wGroup, this.wGeos, this.car, cx - 0.42, 0.34, cz - 0.2, 0.34, 0.12, 0.28, carDark);
+    this.addWCyl(this.wGroup, this.wGeos, this.car, cx - 0.68, 0.16, cz + 0.46, 0.16, 0.1, 8, carDark);
+    this.addWCyl(this.wGroup, this.wGeos, this.car, cx + 0.62, 0.16, cz + 0.46, 0.16, 0.1, 8, carDark);
+    this.addWCyl(this.wGroup, this.wGeos, this.car, cx - 0.68, 0.16, cz - 0.46, 0.16, 0.1, 8, carDark);
+    this.addWCyl(this.wGroup, this.wGeos, this.car, cx + 0.62, 0.16, cz - 0.46, 0.16, 0.1, 8, carDark);
+    const bx = x + 3.5, bz = z + 1.25;
     const boatS = { fill: 0.4, depth: true, color: CYAN };
-    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.22, bz, 2.9, 0.32, 0.85, boatS);
-    this.addWBox(this.wGroup, this.wGeos, this.boat, bx - 0.15, 0.58, bz, 1.35, 0.42, 0.62, boatS);
-    this.addWBox(this.wGroup, this.wGeos, this.boat, bx + 1.15, 0.28, bz, 0.7, 0.16, 0.55, boatS);
-    this.addWCyl(this.wGroup, this.wGeos, this.boat, bx + 0.85, 0.85, bz, 0.035, 1.25, 5, boatS);
+    const hull = this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.22, bz, 2.9, 0.32, 0.85, boatS);
+    const cabin = this.addWBox(this.wGroup, this.wGeos, this.boat, bx - 0.15, 0.58, bz, 1.35, 0.42, 0.62, boatS);
+    const bow = this.addWBox(this.wGroup, this.wGeos, this.boat, bx + 1.15, 0.28, bz, 0.7, 0.16, 0.55, boatS);
+    hull.rotation.y = Math.PI / 2;
+    cabin.rotation.y = Math.PI / 2;
+    bow.rotation.y = Math.PI / 2;
+    this.addWCyl(this.wGroup, this.wGeos, this.boat, bx, 0.85, bz + 0.55, 0.035, 1.25, 5, boatS);
     this.cite = { fills: [], lines: [] };
     this.compoundWall = { fills: [], lines: [] };
-    const west = x - 2.25, eastWall = x + 2.15, south = z - 1.55, north = z + 2.45;
+    const west = x - 2.25, eastWall = x + 4.65, south = z - 1.7, north = z + 3.15;
     const gateZ = z - 0.95, gateHalf = 0.42;
     this.addLowWallRun(this.compoundWall, west, south, eastWall, south);
     this.addLowWallRun(this.compoundWall, eastWall, south, eastWall, north);
@@ -1676,12 +1705,13 @@ class VillageEngine {
     this.watcher.traverse((obj) => { obj.renderOrder = 4; });
     this.watcherHome = this.watcher.position.clone();
     const spots = [
-      [x - 0.9, z + 3.15, 1.45, 0xe24b8a],
-      [x + 0.15, z + 3.35, 1.62, 0xc9a24a],
-      [x + 1.15, z + 3.05, 1.38, 0x7a3e8a],
+      [x - 1.2, z + 2.12, 1.05, 0xe24b8a, Math.PI / 2],
+      [x + 0.15, z + 2.92, 1.08, 0xc9a24a, Math.PI],
+      [x + 1.48, z + 2.12, 1.02, 0x7a3e8a, -Math.PI / 2],
     ];
-    for (const [fx, fz, fs, dress] of spots) {
+    for (const [fx, fz, fs, dress, yaw] of spots) {
       const fig = this.addLady(fx, fz, fs, dress);
+      fig.rotation.y = yaw;
       this.figures.push(fig);
       this.figureHome.push(new THREE.Vector3(fx, 0, fz));
     }
@@ -1768,9 +1798,15 @@ class VillageEngine {
       } else {
         const homes = fig.userData.homeColors;
         mats.forEach((m, mi) => { m.color.copy(homes?.[mi] ?? PINK); m.opacity = 0.94; });
-        fig.position.x = home.x + Math.sin(t * 0.8 + i) * 0.08;
-        fig.position.z = home.z + Math.cos(t * 0.55 + i) * 0.05;
-        fig.rotation.z = Math.sin(t * 1.3 + i) * 0.04;
+        if (fig.userData.lounge) {
+          fig.position.x = home.x;
+          fig.position.z = home.z;
+          fig.rotation.z = Math.sin(t * 0.9 + i) * 0.012;
+        } else {
+          fig.position.x = home.x + Math.sin(t * 0.8 + i) * 0.08;
+          fig.position.z = home.z + Math.cos(t * 0.55 + i) * 0.05;
+          fig.rotation.z = Math.sin(t * 1.3 + i) * 0.04;
+        }
       }
     }
     this.watcher.visible = whistle;

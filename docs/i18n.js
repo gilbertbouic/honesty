@@ -1,4 +1,4 @@
-import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg3";
+import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg4";
 
 // src/lib/game/i18n.ts
 var LANG_KEY = "village-grid-lang";
@@ -23,6 +23,7 @@ var UI = {
     howtoOutcomes: "Each stage ends on one of three scenes. The village rule is one line.",
     howtoOrder: "Stages open in order. Finish every question on a stage before the next stage opens.",
     howtoCap: "After you finish every stage, find the link to support@mkweli.tech in the game. Fill in the form to win a prize.",
+    toastPrizeLock: "The form opens only when every stage is answered correctly.",
     howtoNext: "Continue",
     langLabel: "Language",
     projectPhase: "Project phase",
@@ -397,6 +398,7 @@ var UI = {
     howtoOutcomes: "Chaque \xE9tape se termine par une des trois sc\xE8nes. La r\xE8gle du village tient en une ligne.",
     howtoOrder: "Les \xE9tapes s'ouvrent dans l'ordre. Termine chaque question d'une \xE9tape avant d'ouvrir la suivante.",
     howtoCap: "Apr\xE8s toutes les \xE9tapes, trouve le lien vers support@mkweli.tech dans le jeu. Remplis le formulaire pour gagner un prix.",
+    toastPrizeLock: "Le formulaire s'ouvre seulement si chaque \xE9tape est r\xE9pondue juste.",
     howtoNext: "Continuer",
     langLabel: "Langue",
     projectPhase: "Phase du projet",

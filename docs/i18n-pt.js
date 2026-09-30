@@ -18,6 +18,7 @@ export const UI_PT = {
   howtoOutcomes: "Cada etapa termina numa de três cenas. A regra da aldeia cabe numa linha.",
   howtoOrder: "As etapas abrem por ordem. Termina todas as perguntas de uma etapa antes de abrir a seguinte.",
   howtoCap: "Depois de todas as etapas, encontra a liga\u00e7\u00e3o para support@mkweli.tech no jogo. Preenche o formul\u00e1rio para ganhar um pr\u00e9mio.",
+  toastPrizeLock: "O formulário só abre quando todas as etapas estão respondidas corretamente.",
   howtoNext: "Continuar",
   langLabel: "Língua",
   projectPhase: "Fase do projeto",

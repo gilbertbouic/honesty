@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg96";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg97";
 import { HavenScene } from "./haven.js?v=vg49";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
@@ -790,6 +790,21 @@ const OATHSHORT = { cousin: "Cousin", minute: "Minute", gift: "Gift", silence: "
 function roundNineCleared(results) {
   return results.length >= ROLL_CASES.length && results.every((r) => r.correct);
 }
+function roundTenCleared(results) {
+  return results.length >= OATH_CASES.length && results.every((r) => r.correct);
+}
+function allStagesCorrect(state) {
+  return roundOneCleared(state.results, state.contractorId)
+    && roundTwoCleared(state.whistleResults)
+    && roundThreeCleared(state.havenResults)
+    && roundFourCleared(state.landResults)
+    && roundFiveCleared(state.fairResults)
+    && roundSixCleared(state.cropResults)
+    && roundSevenCleared(state.washResults)
+    && roundEightCleared(state.stampResults)
+    && roundNineCleared(state.rollResults)
+    && roundTenCleared(state.oathResults);
+}
 function oathCaseById(id) { return OATH_CASES.find((c) => c.id === id) ?? OATH_CASES[0]; }
 function firstOpenOathId(results) {
   const done = new Set(results.map((r) => r.caseId));
@@ -1126,6 +1141,7 @@ class VillageEngine {
     this.rollCorrect = next.rollCorrect || 0;
     this.oathOutcome = next.oathOutcome || "open";
     this.oathCorrect = next.oathCorrect || 0;
+    this.prizeOpen = Boolean(next.prizeOpen);
     this.fairHeld = next.fairHeld || [];
     this.haven.sync(this.competition, this.havenOutcome, this.havenCorrect);
     this.land.sync(this.competition, this.landOutcome, this.landCorrect, next.landHeld, next.landActive, next.landSeen);
@@ -2067,7 +2083,8 @@ class VillageEngine {
   onDown = (e) => {
     if (e.button !== 0) return;
     if (this.pickPrize()) {
-      window.open("https://forms.gle/XYYsW2awXsab9uVc6", "_blank", "noopener");
+      if (this.prizeOpen) window.open("https://forms.gle/XYYsW2awXsab9uVc6", "_blank", "noopener");
+      else this.hooks.onPrizeLocked?.();
       return;
     }
     const id = this.pick();
@@ -2103,7 +2120,7 @@ class VillageEngine {
       const prize = this.pickPrize();
       const id = this.pick();
       if (id !== this.hoverId) { this.hoverId = id; this.hooks.onHover(id); }
-      this.canvas.style.cursor = prize || id ? "pointer" : "grab";
+      this.canvas.style.cursor = (prize && this.prizeOpen) || id ? "pointer" : "grab";
     }
     this.controls.update();
     this.gridMat.uniforms.uIntegrity.value = this.integrity;
@@ -2267,6 +2284,7 @@ const engine = new VillageEngine(canvas, state.houses, {
     renderDock();
     engine.sync(syncPayload());
   },
+  onPrizeLocked: () => showToast(L("toastPrizeLock"), "info"),
 });
 function syncPayload() {
   return {
@@ -2310,6 +2328,7 @@ function syncPayload() {
       return [c.id, hit ? (hit.correct ? "held" : "miss") : "open"];
     })),
     oathActive: state.activeOathId,
+    prizeOpen: allStagesCorrect(state),
   };
 }
 engine.sync(syncPayload());

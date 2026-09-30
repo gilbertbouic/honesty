@@ -1778,6 +1778,7 @@ class VillageEngine {
     for (let i = -5; i <= 5; i++) {
       this.addWBox(this.wGroup, this.wGeos, this.cite, roadX, 0.055, alleyZ + i * 1.15, 0.08, 0.02, 0.45, { fill: 0.95, depth: true, color: 0xd5d6d2 });
     }
+    this.buildPoliceCar(roadX, alleyZ, west - 1.15);
     this.addCiteTree(west - 0.55, alleyZ - 0.95, 1.12);
     this.addCiteTree(west - 0.35, alleyZ + 0.88, 1.28);
     this.addCiteTree(west - 1.15, alleyZ - 0.22, 0.95);
@@ -1958,6 +1959,88 @@ class VillageEngine {
     this.watcher.position.z = this.watcherHome.z;
     this.watcher.position.y = this.watcherHome.y + Math.sin(t * 1.4) * 0.012;
     this.watcher.rotation.y = Math.PI / 2;
+    this.tickPolice(dt, t);
+  }
+
+  buildPoliceCar(roadX, alleyZ, gateX) {
+    const root = new THREE.Group();
+    const body = new THREE.MeshStandardMaterial({ color: 0xf2f4f6, roughness: 0.38, metalness: 0.18 });
+    const dark = new THREE.MeshStandardMaterial({ color: 0x1a1c22, roughness: 0.42, metalness: 0.28 });
+    const stripe = new THREE.MeshStandardMaterial({ color: 0x1a3d9c, roughness: 0.4, metalness: 0.12 });
+    const glass = new THREE.MeshStandardMaterial({ color: 0x1a2830, roughness: 0.12, metalness: 0.55, emissive: 0x152028, emissiveIntensity: 0.18 });
+    const put = (geo, mat, x, y, z, rx = 0) => {
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y, z);
+      if (rx) mesh.rotation.x = rx;
+      mesh.castShadow = true;
+      root.add(mesh);
+      return mesh;
+    };
+    put(new THREE.BoxGeometry(0.58, 0.28, 1.18), body, 0, 0.32, 0);
+    put(new THREE.BoxGeometry(0.54, 0.22, 0.58), body, 0, 0.52, -0.08);
+    put(new THREE.BoxGeometry(0.5, 0.16, 0.22), glass, 0, 0.54, 0.38);
+    put(new THREE.BoxGeometry(0.5, 0.14, 0.42), glass, 0, 0.55, -0.12);
+    put(new THREE.BoxGeometry(0.6, 0.06, 0.16), stripe, 0, 0.36, 0);
+    put(new THREE.BoxGeometry(0.42, 0.05, 1.12), dark, 0, 0.2, 0);
+    put(new THREE.BoxGeometry(0.46, 0.06, 0.28), dark, 0, 0.66, -0.08);
+    const lampL = put(new THREE.BoxGeometry(0.16, 0.07, 0.12), new THREE.MeshStandardMaterial({ color: 0x2d6bff, emissive: 0x2d6bff, emissiveIntensity: 0.2, roughness: 0.25 }), -0.12, 0.73, -0.08);
+    const lampR = put(new THREE.BoxGeometry(0.16, 0.07, 0.12), new THREE.MeshStandardMaterial({ color: 0x7ec8ff, emissive: 0x7ec8ff, emissiveIntensity: 0.2, roughness: 0.25 }), 0.12, 0.73, -0.08);
+    const wheels = [];
+    [-0.38, 0.4].forEach((z) => {
+      [-0.28, 0.28].forEach((x) => {
+        const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.08, 12), dark);
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(x, 0.13, z);
+        root.add(wheel);
+        wheels.push(wheel);
+      });
+    });
+    root.visible = false;
+    root.position.set(roadX, 0, alleyZ - 6.2);
+    this.wGroup.add(root);
+    this.police = { root, wheels, lamps: [lampL, lampR], clock: -1, roadX, alleyZ, gateX };
+  }
+
+  tickPolice(dt, t) {
+    const p = this.police;
+    if (!p) return;
+    const run = this.competition === "whistle" && this.whistleOutcome === "jail";
+    p.root.visible = run;
+    if (!run) {
+      p.clock = -1;
+      p.root.position.set(p.roadX, 0, p.alleyZ - 6.2);
+      p.root.rotation.y = 0;
+      return;
+    }
+    if (p.clock < 0) p.clock = 0;
+    if (this.reduced) p.clock = 20;
+    else p.clock += dt;
+    const tRoad = 2.7;
+    const tAlley = 3.3;
+    const ease = (k) => { const u = Math.max(0, Math.min(1, k)); return u * u * (3 - 2 * u); };
+    let x = p.gateX;
+    let z = p.alleyZ;
+    let yaw = -Math.PI / 2;
+    let moving = false;
+    if (p.clock < tRoad) {
+      const e = ease(p.clock / tRoad);
+      x = p.roadX;
+      z = p.alleyZ - 6.2 + 6.2 * e;
+      yaw = 0;
+      moving = e < 0.995;
+    } else if (p.clock < tRoad + tAlley) {
+      const e = ease((p.clock - tRoad) / tAlley);
+      x = p.roadX + (p.gateX - p.roadX) * e;
+      z = p.alleyZ;
+      yaw = -Math.PI / 2;
+      moving = e < 0.995;
+    }
+    p.root.position.set(x, 0, z);
+    p.root.rotation.y = yaw;
+    const on = Math.sin(t * 16) > 0;
+    p.lamps[0].material.emissiveIntensity = on ? 2.6 : 0.12;
+    p.lamps[1].material.emissiveIntensity = on ? 0.12 : 2.6;
+    if (moving) p.wheels.forEach((wheel) => { wheel.rotation.x += dt * 9; });
   }
 
   resize = () => {

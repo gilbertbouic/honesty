@@ -1404,17 +1404,20 @@ class VillageEngine {
     const fill = new THREE.Mesh(geo, fillMat); fill.position.set(x, y, z);
     fill.castShadow = true;
     group.add(fill);
+    return fill;
   }
 
-  addLady(x, z, scale, dressHex) {
+  addLady(x, z, scale, look) {
     const g = new THREE.Group();
-    const skin = new THREE.MeshStandardMaterial({ color: 0xd7b39a, roughness: 0.72, transparent: true, opacity: 1 });
-    const hair = new THREE.MeshStandardMaterial({ color: dressHex === 0xc9a24a ? 0x3a2418 : 0x1a1214, roughness: 0.55, transparent: true, opacity: 1 });
-    const suit = new THREE.MeshStandardMaterial({ color: dressHex, roughness: 0.38, metalness: 0.08, transparent: true, opacity: 1 });
+    const skin = new THREE.MeshStandardMaterial({ color: look.skin, roughness: 0.72, transparent: true, opacity: 1 });
+    const hair = new THREE.MeshStandardMaterial({ color: look.hair, roughness: 0.55, transparent: true, opacity: 1 });
+    const lockMat = new THREE.MeshStandardMaterial({ color: look.lock ?? look.hair, roughness: 0.58, transparent: true, opacity: 1 });
+    const suit = new THREE.MeshStandardMaterial({ color: look.suit, roughness: 0.38, metalness: 0.08, transparent: true, opacity: 1 });
     const frame = new THREE.MeshStandardMaterial({ color: 0x2a2c30, roughness: 0.4, metalness: 0.35, transparent: true, opacity: 1 });
     const cloth = new THREE.MeshStandardMaterial({ color: 0xe7d7b8, roughness: 0.7, transparent: true, opacity: 1 });
-    const drink = new THREE.MeshStandardMaterial({ color: dressHex === 0xc9a24a ? 0xf0c030 : 0xe24b8a, roughness: 0.25, transparent: true, opacity: 1 });
-    const glass = new THREE.MeshStandardMaterial({ color: 0xd7eef6, roughness: 0.12, metalness: 0.2, transparent: true, opacity: 0.35 });
+    const glass = new THREE.MeshStandardMaterial({ color: 0xd7eef6, roughness: 0.12, metalness: 0.2, transparent: true, opacity: 0.32 });
+    const layers = look.drink ?? [0xea2839, 0xf0c030, 0x00a551, 0x2d6bff];
+    const drinkMats = layers.map((color) => new THREE.MeshStandardMaterial({ color, roughness: 0.28, transparent: true, opacity: 0.92 }));
     const put = (parent, geo, material, px, y, pz) => {
       this.wGeos.push(geo);
       const mesh = new THREE.Mesh(geo, material);
@@ -1425,36 +1428,59 @@ class VillageEngine {
     };
     const s = scale;
     const chair = new THREE.Group();
-    put(chair, new THREE.BoxGeometry(0.42 * s, 0.05 * s, 1.05 * s), cloth, 0, 0.18 * s, 0.08 * s);
-    put(chair, new THREE.BoxGeometry(0.05 * s, 0.16 * s, 1.08 * s), frame, -0.2 * s, 0.14 * s, 0.08 * s);
-    put(chair, new THREE.BoxGeometry(0.05 * s, 0.16 * s, 1.08 * s), frame, 0.2 * s, 0.14 * s, 0.08 * s);
-    put(chair, new THREE.BoxGeometry(0.42 * s, 0.42 * s, 0.05 * s), cloth, 0, 0.36 * s, -0.44 * s);
-    chair.rotation.x = -0.42;
+    put(chair, new THREE.BoxGeometry(0.46 * s, 0.05 * s, 0.72 * s), cloth, 0, 0.2 * s, 0.22 * s);
+    put(chair, new THREE.BoxGeometry(0.46 * s, 0.05 * s, 0.55 * s), cloth, 0, 0.42 * s, -0.32 * s);
+    put(chair, new THREE.BoxGeometry(0.05 * s, 0.16 * s, 0.78 * s), frame, -0.21 * s, 0.16 * s, 0.2 * s);
+    put(chair, new THREE.BoxGeometry(0.05 * s, 0.16 * s, 0.78 * s), frame, 0.21 * s, 0.16 * s, 0.2 * s);
+    put(chair, new THREE.BoxGeometry(0.05 * s, 0.42 * s, 0.05 * s), frame, -0.21 * s, 0.36 * s, -0.18 * s);
+    put(chair, new THREE.BoxGeometry(0.05 * s, 0.42 * s, 0.05 * s), frame, 0.21 * s, 0.36 * s, -0.18 * s);
+    chair.children[1].rotation.x = -0.72;
+    chair.children[1].position.set(0, 0.38 * s, -0.28 * s);
     g.add(chair);
-    const body = new THREE.Group();
-    body.rotation.x = -1.05;
-    body.position.set(0, 0.28 * s, 0.06 * s);
-    put(body, new THREE.CapsuleGeometry(0.045 * s, 0.28 * s, 3, 6), skin, -0.07 * s, 0.16 * s, 0);
-    put(body, new THREE.CapsuleGeometry(0.045 * s, 0.28 * s, 3, 6), skin, 0.07 * s, 0.16 * s, 0);
-    put(body, new THREE.BoxGeometry(0.2 * s, 0.1 * s, 0.16 * s), suit, 0, 0.34 * s, 0);
-    put(body, new THREE.BoxGeometry(0.2 * s, 0.28 * s, 0.12 * s), skin, 0, 0.54 * s, 0);
-    put(body, new THREE.BoxGeometry(0.18 * s, 0.08 * s, 0.12 * s), suit, 0, 0.62 * s, 0.01 * s);
+    const hips = new THREE.Group();
+    hips.position.set(0, 0.26 * s, 0.16 * s);
+    const legs = new THREE.Group();
+    legs.rotation.x = 1.22;
+    put(legs, new THREE.CapsuleGeometry(0.045 * s, 0.3 * s, 3, 6), skin, -0.07 * s, 0.16 * s, 0);
+    put(legs, new THREE.CapsuleGeometry(0.045 * s, 0.3 * s, 3, 6), skin, 0.07 * s, 0.16 * s, 0);
+    hips.add(legs);
+    put(hips, new THREE.BoxGeometry(0.2 * s, 0.1 * s, 0.16 * s), suit, 0, 0.08 * s, 0);
+    const torso = new THREE.Group();
+    torso.position.set(0, 0.12 * s, -0.02 * s);
+    torso.rotation.x = -0.72;
+    put(torso, new THREE.BoxGeometry(0.2 * s, 0.26 * s, 0.12 * s), skin, 0, 0.16 * s, 0);
+    put(torso, new THREE.BoxGeometry(0.18 * s, 0.07 * s, 0.12 * s), suit, 0, 0.22 * s, 0.01 * s);
     const arm = new THREE.Group();
-    arm.position.set(0.16 * s, 0.58 * s, 0);
-    arm.rotation.x = -0.55;
+    arm.position.set(0.15 * s, 0.2 * s, 0.02 * s);
+    arm.rotation.x = -1.15;
+    arm.rotation.z = -0.35;
     put(arm, new THREE.CapsuleGeometry(0.03 * s, 0.22 * s, 3, 5), skin, 0, -0.12 * s, 0);
-    const glassCup = put(arm, new THREE.CylinderGeometry(0.035 * s, 0.018 * s, 0.08 * s, 8), glass, 0.02 * s, 0.04 * s, 0.08 * s);
-    put(arm, new THREE.CylinderGeometry(0.008 * s, 0.008 * s, 0.07 * s, 6), glass, 0.02 * s, -0.02 * s, 0.08 * s);
-    put(arm, new THREE.CylinderGeometry(0.028 * s, 0.028 * s, 0.03 * s, 8), drink, 0.02 * s, 0.045 * s, 0.08 * s);
-    body.add(arm);
-    put(body, new THREE.CapsuleGeometry(0.03 * s, 0.2 * s, 3, 5), skin, -0.16 * s, 0.5 * s, 0.04 * s);
-    put(body, new THREE.SphereGeometry(0.09 * s, 12, 10), skin, 0, 0.78 * s, 0);
-    put(body, new THREE.SphereGeometry(0.1 * s, 12, 8), hair, 0, 0.84 * s, -0.03 * s);
-    g.add(body);
+    put(arm, new THREE.CylinderGeometry(0.008 * s, 0.012 * s, 0.07 * s, 6), glass, 0.02 * s, 0.02 * s, 0.09 * s);
+    put(arm, new THREE.CylinderGeometry(0.038 * s, 0.02 * s, 0.09 * s, 8), glass, 0.02 * s, 0.09 * s, 0.09 * s);
+    drinkMats.forEach((mat, i) => {
+      put(arm, new THREE.CylinderGeometry(0.03 * s - i * 0.002, 0.026 * s - i * 0.002, 0.018 * s, 8), mat, 0.02 * s, 0.06 * s + i * 0.018 * s, 0.09 * s);
+    });
+    torso.add(arm);
+    put(torso, new THREE.CapsuleGeometry(0.03 * s, 0.2 * s, 3, 5), skin, -0.15 * s, 0.12 * s, 0.04 * s);
+    const head = put(torso, new THREE.SphereGeometry(0.09 * s, 12, 10), skin, 0, 0.38 * s, 0.02 * s);
+    put(torso, new THREE.SphereGeometry(0.095 * s, 12, 8), hair, 0, 0.43 * s, -0.02 * s);
+    if (look.locks) {
+      for (let i = 0; i < 10; i++) {
+        const side = i < 5 ? -1 : 1;
+        const lock = put(torso, new THREE.CapsuleGeometry(0.016 * s, 0.22 * s, 3, 5), i % 3 === 0 ? lockMat : hair, side * (0.06 + (i % 5) * 0.018) * s, 0.28 * s, -0.06 * s);
+        lock.rotation.x = 0.55 + (i % 4) * 0.12;
+        lock.rotation.z = side * (0.25 + (i % 5) * 0.08);
+      }
+    } else {
+      put(torso, new THREE.BoxGeometry(0.16 * s, 0.28 * s, 0.06 * s), hair, 0, 0.26 * s, -0.08 * s);
+      put(torso, new THREE.BoxGeometry(0.12 * s, 0.34 * s, 0.05 * s), hair, 0.02 * s, 0.18 * s, -0.1 * s);
+    }
+    hips.add(torso);
+    g.add(hips);
     g.position.set(x, 0, z);
     g.userData.lounge = true;
-    g.userData.mats = [suit, skin, hair, drink, frame, cloth];
-    g.userData.homeColors = [suit.color.clone(), skin.color.clone(), hair.color.clone(), drink.color.clone(), frame.color.clone(), cloth.color.clone()];
+    g.userData.mats = [suit, skin, hair, lockMat, frame, cloth, ...drinkMats];
+    g.userData.homeColors = g.userData.mats.map((m) => m.color.clone());
     this.wGroup.add(g);
     return g;
   }
@@ -1626,22 +1652,29 @@ class VillageEngine {
     screen.rotation.z = 0.52;
     this.addWBox(this.wGroup, this.wGeos, this.car, cx - 0.42, 0.34, cz + 0.2, 0.34, 0.12, 0.28, carDark);
     this.addWBox(this.wGroup, this.wGeos, this.car, cx - 0.42, 0.34, cz - 0.2, 0.34, 0.12, 0.28, carDark);
-    this.addWCyl(this.wGroup, this.wGeos, this.car, cx - 0.68, 0.16, cz + 0.46, 0.16, 0.1, 8, carDark);
-    this.addWCyl(this.wGroup, this.wGeos, this.car, cx + 0.62, 0.16, cz + 0.46, 0.16, 0.1, 8, carDark);
-    this.addWCyl(this.wGroup, this.wGeos, this.car, cx - 0.68, 0.16, cz - 0.46, 0.16, 0.1, 8, carDark);
-    this.addWCyl(this.wGroup, this.wGeos, this.car, cx + 0.62, 0.16, cz - 0.46, 0.16, 0.1, 8, carDark);
-    const bx = x + 3.5, bz = z + 1.25;
+    [[-0.68, 0.46], [0.62, 0.46], [-0.68, -0.46], [0.62, -0.46]].forEach(([wx, wz]) => {
+      const wheel = this.addWCyl(this.wGroup, this.wGeos, this.car, cx + wx, 0.18, cz + wz, 0.18, 0.1, 10, carDark);
+      wheel.rotation.x = Math.PI / 2;
+    });
+    const bx = x + 3.55, bz = z + 1.35;
     const boatS = { fill: 0.4, depth: true, color: CYAN };
-    const hull = this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.22, bz, 2.9, 0.32, 0.85, boatS);
-    const cabin = this.addWBox(this.wGroup, this.wGeos, this.boat, bx - 0.15, 0.58, bz, 1.35, 0.42, 0.62, boatS);
-    const bow = this.addWBox(this.wGroup, this.wGeos, this.boat, bx + 1.15, 0.28, bz, 0.7, 0.16, 0.55, boatS);
+    const trailS = { fill: 0.92, depth: true, color: 0x3a3d42 };
+    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.18, bz, 0.7, 0.08, 2.55, trailS);
+    this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.22, bz + 1.45, 0.16, 0.1, 0.55, trailS);
+    [[-0.38, 0.85], [0.38, 0.85], [-0.38, -0.55], [0.38, -0.55]].forEach(([wx, wz]) => {
+      const wheel = this.addWCyl(this.wGroup, this.wGeos, this.boat, bx + wx, 0.18, bz + wz, 0.17, 0.1, 10, { fill: 0.92, depth: true, color: 0x1a1c1f });
+      wheel.rotation.z = Math.PI / 2;
+    });
+    const hull = this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.52, bz, 2.7, 0.28, 0.78, boatS);
+    const cabin = this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.86, bz - 0.2, 1.2, 0.36, 0.58, boatS);
+    const bow = this.addWBox(this.wGroup, this.wGeos, this.boat, bx, 0.56, bz + 1.05, 0.7, 0.14, 0.5, boatS);
     hull.rotation.y = Math.PI / 2;
     cabin.rotation.y = Math.PI / 2;
     bow.rotation.y = Math.PI / 2;
-    this.addWCyl(this.wGroup, this.wGeos, this.boat, bx, 0.85, bz + 0.55, 0.035, 1.25, 5, boatS);
+    this.addWCyl(this.wGroup, this.wGeos, this.boat, bx, 1.15, bz + 0.35, 0.035, 1.15, 5, boatS);
     this.cite = { fills: [], lines: [] };
     this.compoundWall = { fills: [], lines: [] };
-    const west = x - 2.25, eastWall = x + 4.65, south = z - 1.7, north = z + 3.15;
+    const west = x - 2.7, eastWall = x + 4.9, south = z - 1.85, north = z + 4.15;
     const gateZ = z - 0.95, gateHalf = 0.42;
     this.addLowWallRun(this.compoundWall, west, south, eastWall, south);
     this.addLowWallRun(this.compoundWall, eastWall, south, eastWall, north);
@@ -1705,16 +1738,22 @@ class VillageEngine {
     this.watcher.traverse((obj) => { obj.renderOrder = 4; });
     this.watcherHome = this.watcher.position.clone();
     const spots = [
-      [x - 1.2, z + 2.12, 1.05, 0xe24b8a, Math.PI / 2],
-      [x + 0.15, z + 2.92, 1.08, 0xc9a24a, Math.PI],
-      [x + 1.48, z + 2.12, 1.02, 0x7a3e8a, -Math.PI / 2],
+      { x: x - 1.35, z: z + 2.05, s: 1.04, yaw: Math.PI / 2, look: { skin: 0x3d2314, hair: 0x1a120c, lock: 0x4a2a14, locks: true, suit: 0xea2839, drink: [0xea2839, 0xf0c030, 0x00a551, 0x2d6bff] } },
+      { x: x + 0.15, z: z + 3.05, s: 1.06, yaw: Math.PI, look: { skin: 0x8d5524, hair: 0x14110e, suit: 0x1a206d, drink: [0xf0c030, 0xea2839, 0x2d6bff, 0x00a551] } },
+      { x: x + 1.55, z: z + 2.05, s: 1.03, yaw: -Math.PI / 2, look: { skin: 0xf0d2b0, hair: 0xe8c878, suit: 0xc45b78, drink: [0x00a551, 0x2d6bff, 0xf0c030, 0xea2839] } },
     ];
-    for (const [fx, fz, fs, dress, yaw] of spots) {
-      const fig = this.addLady(fx, fz, fs, dress);
-      fig.rotation.y = yaw;
+    for (const spot of spots) {
+      const fig = this.addLady(spot.x, spot.z, spot.s, spot.look);
+      fig.rotation.y = spot.yaw;
       this.figures.push(fig);
-      this.figureHome.push(new THREE.Vector3(fx, 0, fz));
+      this.figureHome.push(new THREE.Vector3(spot.x, 0, spot.z));
     }
+    const bottleS = { fill: 0.92, depth: true, color: 0x1f4a32 };
+    const foilS = { fill: 0.92, depth: true, color: 0xc4a35a };
+    [[x - 0.55, z + 2.55], [x + 0.85, z + 2.58]].forEach(([px, pz]) => {
+      this.addWCyl(this.wGroup, this.wGeos, this.pool, px, 0.22, pz, 0.045, 0.32, 8, bottleS);
+      this.addWCyl(this.wGroup, this.wGeos, this.pool, px, 0.4, pz, 0.03, 0.1, 8, foilS);
+    });
     const ringGeo = new THREE.RingGeometry(2.55, 2.72, 40);
     this.wGeos.push(ringGeo);
     this.seize = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: GREEN, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false }));

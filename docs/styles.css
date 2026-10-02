@@ -254,7 +254,7 @@ button { font: inherit; color: inherit; }
   font-family: var(--display);
   font-size: 0.9rem;
 }
-.side-head, .side-foot { padding: 0.85rem 1rem; border-bottom: 1px solid var(--line); }
+.side-head, .side-foot { padding: 0.85rem 1rem; border-bottom: 1px solid var(--line); flex-shrink: 0; }
 .side-foot { border-bottom: 0; border-top: 1px solid var(--line); }
 .side-body { padding: 0.85rem 1rem; flex: 1; }
 .q { margin: 0; max-width: 62ch; font-size: 0.88rem; line-height: 1.5; }
@@ -448,7 +448,15 @@ button { font: inherit; color: inherit; }
     margin: 0;
     align-self: stretch;
     border-radius: 1.15rem 1.15rem 0 0;
+    overflow: hidden;
   }
+  .side-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+  .side-body > p:first-child,
+  .side-body > .q { margin-top: 0; }
   .side-foot .cta,
   .side-body .cta { display: none; }
   .side-foot .cta.open-next,
@@ -489,13 +497,16 @@ button { font: inherit; color: inherit; }
 .reset-btn:hover { border-color: var(--crimson); color: var(--crimson); }
 .spec-nav {
   display: flex;
+  flex: 0 0 auto;
   gap: 0.25rem;
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--line);
 }
 .spec-nav button {
   flex-shrink: 0;
+  min-height: 1.85rem;
   border: 1px solid var(--line);
   background: var(--raised);
   border-radius: 0.4rem;

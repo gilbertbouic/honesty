@@ -495,35 +495,6 @@ button { font: inherit; color: inherit; }
   text-transform: uppercase;
 }
 .reset-btn:hover { border-color: var(--crimson); color: var(--crimson); }
-.spec-nav {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 0.25rem;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--line);
-}
-.spec-nav button {
-  flex-shrink: 0;
-  min-height: 1.85rem;
-  border: 1px solid var(--line);
-  background: var(--raised);
-  border-radius: 0.4rem;
-  padding: 0.25rem 0.5rem;
-  font-family: var(--display);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.spec-nav button.on {
-  border-color: var(--cyan);
-  color: var(--cyan);
-  background: color-mix(in oklab, var(--cyan) 12%, var(--raised));
-}
-.spec-nav button.won { color: var(--green); border-color: color-mix(in oklab, var(--green) 40%, var(--line)); }
-.spec-nav button.rejected { color: var(--crimson); border-color: color-mix(in oklab, var(--crimson) 40%, var(--line)); }
 .bid-row.rejected { color: var(--crimson); }
 .chip.you {
   border-color: var(--cyan);
@@ -600,11 +571,6 @@ button { font: inherit; color: inherit; }
 .toast.line { border-color: var(--green); color: var(--green); background: color-mix(in oklab, var(--green) 12%, var(--surface)); }
 .toast.lamp { border-color: var(--amber); color: var(--amber); background: color-mix(in oklab, var(--amber) 12%, var(--surface)); }
 .toast.fog { border-color: var(--crimson); color: var(--crimson); background: color-mix(in oklab, var(--crimson) 12%, var(--surface)); }
-.spec-nav button.haven-on {
-  border-color: var(--rose);
-  color: var(--rose);
-  background: color-mix(in oklab, var(--rose) 12%, var(--raised));
-}
 .tabs button.on.haven { color: var(--rose); }
 .amber { color: var(--amber); }
 .crimson { color: var(--crimson); }
@@ -622,12 +588,6 @@ button { font: inherit; color: inherit; }
 .toast.jail, .toast.award { border-color: var(--green); color: var(--green); background: color-mix(in oklab, var(--green) 12%, var(--surface)); }
 .toast.reject, .toast.exile { border-color: var(--crimson); color: var(--crimson); background: color-mix(in oklab, var(--crimson) 12%, var(--surface)); }
 .toast.burn { border-color: var(--amber); color: var(--amber); background: color-mix(in oklab, var(--amber) 12%, var(--surface)); }
-.spec-nav button.on.whistle,
-.spec-nav button.whistle-on {
-  border-color: var(--amber);
-  color: var(--amber);
-  background: color-mix(in oklab, var(--amber) 12%, var(--raised));
-}
 #outcome .boot-card h2 {
   margin: 0.4rem 0 0;
   font-family: var(--display);

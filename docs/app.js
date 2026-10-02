@@ -2652,15 +2652,7 @@ function renderTender() {
       </div>
       <span class="week">${state.results.length}/${TENDERS.length}</span>
     </div>
-    <div class="spec-nav">
-      ${TENDERS.map((t) => {
-        const done = Boolean(resultFor(t.houseId));
-        const on = t.houseId === tender.houseId;
-        const won = done && resultFor(t.houseId).winnerId === "you";
-        const rejected = done && !resultFor(t.houseId).winnerId;
-        return `<button type="button" data-house="${t.houseId}" class="${on ? "on" : won ? "won" : rejected ? "rejected" : ""}">${shortLabel(t.houseId, lang, SHORT[t.houseId] ?? t.spec)}</button>`;
-      }).join("")}
-    </div>
+
     <div class="side-body">
       <p class="q">${tender.question}</p>
       <ul class="opts">
@@ -2730,16 +2722,7 @@ function renderHaven() {
       <h2>${item.title}</h2>
       <p class="mono mute">${state.havenResults.length}/${HAVEN_CASES.length}</p>
     </div>
-    <div class="spec-nav">
-      ${HAVEN_CASES.map((c) => {
-        const done = state.havenResults.some((r) => r.caseId === c.id);
-        const hit = state.havenResults.find((r) => r.caseId === c.id);
-        const on = c.id === item.id;
-        const won = done && hit?.correct;
-        const lost = done && !hit?.correct;
-        return `<button type="button" data-haven="${c.id}" class="${on && !done ? "haven-on" : ""} ${won ? "won" : ""} ${lost ? "rejected" : ""}">${shortLabel(c.id, lang, HSHORT[c.id])}</button>`;
-      }).join("")}
-    </div>
+
     <div class="side-body">
       <p>${item.question}</p>
       <div class="opts">
@@ -2830,16 +2813,7 @@ function renderLand() {
       <h2>${item.title}</h2>
       <p class="mono mute">${state.landResults.length}/${LAND_CASES.length}</p>
     </div>
-    <div class="spec-nav">
-      ${LAND_CASES.map((c) => {
-        const done = state.landResults.some((r) => r.caseId === c.id);
-        const hit = state.landResults.find((r) => r.caseId === c.id);
-        const on = c.id === item.id;
-        const won = done && hit?.correct;
-        const lost = done && !hit?.correct;
-        return `<button type="button" data-land="${c.id}" class="${on && !done ? "haven-on" : ""} ${won ? "won" : ""} ${lost ? "rejected" : ""}">${shortLabel(c.id, lang, LSHORT[c.id])}</button>`;
-      }).join("")}
-    </div>
+
     <div class="side-body">
       <p>${item.question}</p>
       <div class="opts">
@@ -2929,14 +2903,7 @@ function renderFair() {
       <h2>${item.title}</h2>
       <p class="mono mute">${state.fairResults.length}/${FAIR_CASES.length}</p>
     </div>
-    <div class="spec-nav">
-      ${FAIR_CASES.map((c) => {
-        const done = state.fairResults.some((r) => r.caseId === c.id);
-        const hit = state.fairResults.find((r) => r.caseId === c.id);
-        const on = c.id === item.id;
-        return `<button type="button" data-fair="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, FSHORT[c.id])}</button>`;
-      }).join("")}
-    </div>
+
     <div class="side-body">
       <p>${item.question}</p>
       <div class="opts">
@@ -3017,14 +2984,7 @@ function renderCrop() {
       <h2>${item.title}</h2>
       <p class="mono mute">${state.cropResults.length}/${CROP_CASES.length}</p>
     </div>
-    <div class="spec-nav">
-      ${CROP_CASES.map((c) => {
-        const done = state.cropResults.some((r) => r.caseId === c.id);
-        const hit = state.cropResults.find((r) => r.caseId === c.id);
-        const on = c.id === item.id;
-        return `<button type="button" data-crop="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, CSHORT[c.id])}</button>`;
-      }).join("")}
-    </div>
+
     <div class="side-body">
       <p>${item.question}</p>
       <div class="opts">
@@ -3105,14 +3065,7 @@ function renderWash() {
       <h2>${item.title}</h2>
       <p class="mono mute">${state.washResults.length}/${WASH_CASES.length}</p>
     </div>
-    <div class="spec-nav">
-      ${WASH_CASES.map((c) => {
-        const done = state.washResults.some((r) => r.caseId === c.id);
-        const hit = state.washResults.find((r) => r.caseId === c.id);
-        const on = c.id === item.id;
-        return `<button type="button" data-wash="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, WASHSHORT[c.id])}</button>`;
-      }).join("")}
-    </div>
+
     <div class="side-body">
       <p>${item.question}</p>
       <div class="opts">
@@ -3194,14 +3147,7 @@ function renderStamp() {
       <h2>${item.title}</h2>
       <p class="mono mute">${state.stampResults.length}/${STAMP_CASES.length}</p>
     </div>
-    <div class="spec-nav">
-      ${STAMP_CASES.map((c) => {
-        const done = state.stampResults.some((r) => r.caseId === c.id);
-        const hit = state.stampResults.find((r) => r.caseId === c.id);
-        const on = c.id === item.id;
-        return `<button type="button" data-stamp="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, STAMPSHORT[c.id])}</button>`;
-      }).join("")}
-    </div>
+
     <div class="side-body">
       <p>${item.question}</p>
       <div class="opts">
@@ -3283,14 +3229,7 @@ function renderRoll() {
       <h2>${item.title}</h2>
       <p class="mono mute">${state.rollResults.length}/${ROLL_CASES.length}</p>
     </div>
-    <div class="spec-nav">
-      ${ROLL_CASES.map((c) => {
-        const done = state.rollResults.some((r) => r.caseId === c.id);
-        const hit = state.rollResults.find((r) => r.caseId === c.id);
-        const on = c.id === item.id;
-        return `<button type="button" data-roll="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, ROLLSHORT[c.id])}</button>`;
-      }).join("")}
-    </div>
+
     <div class="side-body">
       <p>${item.question}</p>
       <div class="opts">
@@ -3372,14 +3311,7 @@ function renderOath() {
       <h2>${item.title}</h2>
       <p class="mono mute">${state.oathResults.length}/${OATH_CASES.length}</p>
     </div>
-    <div class="spec-nav">
-      ${OATH_CASES.map((c) => {
-        const done = state.oathResults.some((r) => r.caseId === c.id);
-        const hit = state.oathResults.find((r) => r.caseId === c.id);
-        const on = c.id === item.id;
-        return `<button type="button" data-oath="${c.id}" class="${on && !done ? "haven-on" : ""} ${done && hit?.correct ? "won" : ""} ${done && hit && !hit.correct ? "rejected" : ""}">${shortLabel(c.id, lang, OATHSHORT[c.id])}</button>`;
-      }).join("")}
-    </div>
+
     <div class="side-body">
       <p>${item.question}</p>
       <div class="opts">
@@ -3466,16 +3398,7 @@ function renderCase() {
       </div>
       <span class="week">${state.whistleResults.length}/${WHISTLE_CASES.length}</span>
     </div>
-    <div class="spec-nav">
-      ${WHISTLE_CASES.map((c) => {
-        const done = Boolean(whistleResultFor(c.id));
-        const on = c.id === item.id;
-        const hit = whistleResultFor(c.id);
-        const won = done && hit?.correct;
-        const lost = done && !hit?.correct;
-        return `<button type="button" data-case="${c.id}" class="${on && !done ? "whistle-on" : on ? (won ? "won" : "rejected") : won ? "won" : lost ? "rejected" : ""}">${shortLabel(c.id, lang, WSHORT[c.id])}</button>`;
-      }).join("")}
-    </div>
+
     <div class="side-body">
       <p class="q">${item.question}</p>
       <ul class="opts">

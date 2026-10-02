@@ -1,4 +1,4 @@
-import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg5";
+import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg6";
 
 // src/lib/game/i18n.ts
 var LANG_KEY = "village-grid-lang";
@@ -16,6 +16,9 @@ var UI = {
     stage7: "Stage 7 \xB7 Financial crime",
     choose: "Choose your character",
     enter: "Enter",
+    aimKicker: "The aim",
+    aimTitle: "Ten civic issues",
+    aimLead: "Ten issues in Mauritian public life are set as stages. Each stage asks what the right course is. Your answers are scored, and they change the scene.",
     howtoKicker: "How to play",
     howtoTitle: "Instructions",
     howtoLead: "Read this before you enter. Each stage is a public file. Your answers change the scene.",
@@ -392,6 +395,9 @@ var UI = {
     stage7: "\xC9tape 7 \xB7 Crime financier",
     choose: "Choisis ton personnage",
     enter: "Entrer",
+    aimKicker: "Le but",
+    aimTitle: "Dix enjeux civiques",
+    aimLead: "Dix enjeux de la vie publique mauricienne sont posés en étapes. Chaque étape demande quelle est la conduite juste. Tes réponses sont notées, et elles changent la scène.",
     howtoKicker: "Mode d'emploi",
     howtoTitle: "Instructions",
     howtoLead: "Lis ceci avant d'entrer. Chaque \xE9tape est un dossier public. Tes r\xE9ponses changent la sc\xE8ne.",

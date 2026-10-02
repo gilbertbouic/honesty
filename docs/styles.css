@@ -150,6 +150,14 @@ button { font: inherit; color: inherit; }
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+#howto-pane .aim-follow { margin-top: 1.2rem; }
+#howto-title {
+  margin: 0.4rem 0 0;
+  font-family: var(--display);
+  font-size: clamp(1.15rem, 3.4vw, 1.45rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 .lede {
   margin: 0.7rem 0 0;
   max-width: 46ch;

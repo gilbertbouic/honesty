@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg98";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg99";
 import { HavenScene } from "./haven.js?v=vg49";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
@@ -2458,6 +2458,9 @@ function setLang(next) {
 }
 
 function renderBoot() {
+  document.getElementById("aim-kicker").textContent = L("aimKicker");
+  document.getElementById("aim-title").textContent = L("aimTitle");
+  document.getElementById("aim-lead").textContent = L("aimLead");
   document.getElementById("howto-kicker").textContent = L("howtoKicker");
   document.getElementById("howto-title").textContent = L("howtoTitle");
   document.getElementById("howto-lead").textContent = L("howtoLead");

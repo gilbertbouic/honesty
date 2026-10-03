@@ -108,6 +108,7 @@ var UI = {
     dockWhistle: "Watcher \xB7 mansion",
     dockHaven: "Stage 3 \xB7 Line",
     toastLock: "Stage 2 is locked. Get every award right first.",
+    toastSheet: "This question stays until Next tender.",
     toastAward: "Award held \xB7 {house}",
     toastReject: "Award refused. Only the right answer turns the house green.",
     toastSweep: "Every award held. Stage 2 is open.",

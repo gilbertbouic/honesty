@@ -2285,9 +2285,12 @@ const canvas = document.getElementById("village");
 const engine = new VillageEngine(canvas, state.houses, {
   onHover: (id) => { state.hoveredId = id; renderDock(); engine.sync(syncPayload()); },
   onSelect: (id) => {
+    if (id && tenderForHouse(id) && state.competition === "tender" && id !== state.activeHouseId) {
+      showToast(L("toastSheet"), "info");
+      return;
+    }
     state.selectedId = id;
     if (id && tenderForHouse(id) && state.competition === "tender") {
-      state.activeHouseId = id;
       state.mobileTab = "tender";
       play.classList.add("show-tender");
       play.classList.remove("show-board");
@@ -2690,7 +2693,10 @@ function renderTender() {
     </div>`;
   document.querySelectorAll("[data-house]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      state.activeHouseId = btn.dataset.house;
+      if (btn.dataset.house !== state.activeHouseId) {
+        showToast(L("toastSheet"), "info");
+        return;
+      }
       state.selectedId = btn.dataset.house;
       persist(state);
       renderAll();
@@ -3768,7 +3774,10 @@ function renderDock() {
     ${tender ? `<button type="button" class="reno" id="open-spec">${result ? L("bids") : L("openSpec")}</button>` : ""}
   </div>`;
   document.getElementById("open-spec")?.addEventListener("click", () => {
-    state.activeHouseId = house.id;
+    if (house.id !== state.activeHouseId) {
+      showToast(L("toastSheet"), "info");
+      return;
+    }
     state.selectedId = house.id;
     persist(state);
     renderAll();

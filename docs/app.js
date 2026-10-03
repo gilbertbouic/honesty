@@ -1111,6 +1111,8 @@ class VillageEngine {
     this.resize();
     canvas.addEventListener("pointermove", this.onMove);
     canvas.addEventListener("pointerdown", this.onDown);
+    canvas.addEventListener("pointerup", this.onUp);
+    canvas.addEventListener("pointercancel", this.onCancel);
     canvas.addEventListener("pointerleave", this.onLeave);
     this.renderer.setAnimationLoop(this.tick);
   }
@@ -2082,6 +2084,16 @@ class VillageEngine {
   };
   onDown = (e) => {
     if (e.button !== 0) return;
+    this.onMove(e);
+    this.press = { x: e.clientX, y: e.clientY, id: e.pointerId };
+  };
+  onUp = (e) => {
+    const press = this.press;
+    this.press = null;
+    if (!press || e.pointerId !== press.id || e.button !== 0) return;
+    // A drag rotates the village. Only a tap may open a house, so the question stays put.
+    if (Math.hypot(e.clientX - press.x, e.clientY - press.y) > 10) return;
+    this.onMove(e);
     if (this.pickPrize()) {
       if (this.prizeOpen) window.open("https://forms.gle/XYYsW2awXsab9uVc6", "_blank", "noopener");
       else this.hooks.onPrizeLocked?.();
@@ -2090,6 +2102,7 @@ class VillageEngine {
     const id = this.pick();
     if (id) this.hooks.onSelect(id);
   };
+  onCancel = () => { this.press = null; };
   onLeave = () => {
     this.pointer.inside = false;
     if (this.hoverId) { this.hoverId = null; this.hooks.onHover(null); }

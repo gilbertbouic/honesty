@@ -103,7 +103,7 @@ export const UI_PT = {
   dockWhistle: "Vigia · villa",
   dockHaven: "Etapa 3 · Linha",
   toastLock: "A etapa 2 está fechada. Acerta primeiro todos os contratos.",
-  toastSheet: "Esta pergunta fica até ao contrato seguinte.",
+  toastStay: "Esta pergunta fica até ao contrato seguinte.",
   toastAward: "Contrato obtido · {house}",
   toastReject: "Contrato recusado. Só a resposta certa torna a casa verde.",
   toastSweep: "Todos os contratos obtidos. A etapa 2 está aberta.",

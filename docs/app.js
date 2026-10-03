@@ -2286,7 +2286,7 @@ const engine = new VillageEngine(canvas, state.houses, {
   onHover: (id) => { state.hoveredId = id; renderDock(); engine.sync(syncPayload()); },
   onSelect: (id) => {
     if (id && tenderForHouse(id) && state.competition === "tender" && id !== state.activeHouseId) {
-      showToast(L("toastSheet"), "info");
+      showToast(L("toastStay"), "info");
       return;
     }
     state.selectedId = id;
@@ -2694,7 +2694,7 @@ function renderTender() {
   document.querySelectorAll("[data-house]").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (btn.dataset.house !== state.activeHouseId) {
-        showToast(L("toastSheet"), "info");
+        showToast(L("toastStay"), "info");
         return;
       }
       state.selectedId = btn.dataset.house;
@@ -3775,7 +3775,7 @@ function renderDock() {
   </div>`;
   document.getElementById("open-spec")?.addEventListener("click", () => {
     if (house.id !== state.activeHouseId) {
-      showToast(L("toastSheet"), "info");
+      showToast(L("toastStay"), "info");
       return;
     }
     state.selectedId = house.id;

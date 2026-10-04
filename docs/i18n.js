@@ -1068,60 +1068,60 @@ var HAVEN_FR = {
     title: "Pas une affaire priv\xE9e",
     question: "Des cris viennent de la maison au bout de la ruelle. Un voisin dit que c'est juste entre un couple. Que fait l'int\xE9grit\xE9 ?",
     options: {
-      A: "Leur dire de baisser le ton pour que la ruelle dorme.",
-      B: "Partir. Ce qui se passe \xE0 l'int\xE9rieur ne regarde personne.",
-      C: "Si quelqu'un peut \xEAtre en danger, ce n'est pas priv\xE9. N'entre pas de force. Ne filme pas. Aide-les \xE0 atteindre un lieu s\xFBr.",
-      D: "Filmer \xE0 travers le rideau et publier, pour que le village humilie la maison."
+      A: "Leur dire de baisser le ton. Une ruelle calme suffit si personne ne demande d'aide.",
+      B: "Partir. Ce qui se passe dedans ne regarde personne, et un voisin ne doit pas entrer.",
+      C: "Si quelqu'un peut être en danger, aide-les à atteindre un lieu sûr. N'entre pas et ne filme pas.",
+      D: "Filmer à travers le rideau et publier, pour que le village humilie la maison ce soir.",
     }
   },
   believe: {
     title: "Les croire",
     question: "Quelqu'un que tu connais dit que son partenaire lui a fait du mal, puis te demande de ne pas faire d'histoire. Quelle est la r\xE9ponse s\xFBre ?",
     options: {
-      A: "Les asseoir tous les deux ce soir et jouer les m\xE9diateurs jusqu'\xE0 des excuses.",
-      B: "Leur dire de rentrer calmer le partenaire.",
-      C: "Les croire. Ne confronte pas le partenaire. Aide-les \xE0 rejoindre un lieu s\xFBr. Appelle ta ligne locale d'alerte ou la police.",
-      D: "Demander ce qu'ils ont fait pour le provoquer avant de choisir un camp."
+      A: "Les asseoir tous les deux ce soir et jouer les médiateurs jusqu'à des excuses.",
+      B: "Leur dire de rentrer calmer le partenaire avant d'appeler qui que ce soit.",
+      C: "Les croire. Ne confronte pas le partenaire. Aide-les à rejoindre un lieu sûr.",
+      D: "Demander ce qu'ils ont fait pour le provoquer avant de choisir un camp.",
     }
   },
   control: {
     title: "Le contr\xF4le compte",
     question: "Tu ne vois pas de bleu. Le partenaire contr\xF4le l'argent, le t\xE9l\xE9phone, et qui a le droit de voir qui. Est-ce de la violence domestique ?",
     options: {
-      A: "Non. Sans marque, il n'y a pas de violence.",
-      B: "Seulement s'ils sont mari\xE9s.",
-      C: "Oui. Le contr\xF4le, l'isolement, les menaces et couper l'argent sont des violences, m\xEAme sans blessure visible.",
-      D: "Seulement quand un voisin a port\xE9 plainte par \xE9crit."
+      A: "Non. Sans marque, il n'y a pas de violence à signaler.",
+      B: "Seulement s'ils sont mariés. Un partenaire non marié reste une affaire privée.",
+      C: "Oui. Le contrôle et couper l'argent sont des violences, même sans bleu.",
+      D: "Seulement quand un voisin a porté plainte par écrit au conseil.",
     }
   },
   grok: {
     title: "Ce que l'IA refuse",
     question: "Quelqu'un demande \xE0 l'IA d'\xE9crire une menace contre un partenaire, ou d'expliquer comment le suivre jusque chez lui. Que fait l'IA ?",
     options: {
-      A: "\xC9crire la menace, mais plus douce, pour que \xE7a ressemble \xE0 une blague.",
-      B: "Refuser. L'IA n'aide personne \xE0 blesser, menacer, suivre ou contr\xF4ler un partenaire. Elle aide la personne en danger \xE0 se mettre en s\xFBret\xE9.",
-      C: "Donner les \xE9tapes de pistage s'ils disent que c'est pour prot\xE9ger.",
-      D: "Rester neutre et expliquer \xE0 la fois comment menacer et comment partir."
+      A: "Écrire la menace, mais plus douce, pour que ça ressemble à une blague entre amis.",
+      B: "Refuser. L'IA n'aide personne à menacer, suivre ou contrôler un partenaire.",
+      C: "Donner les étapes de pistage s'ils disent que c'est seulement pour protéger.",
+      D: "Rester neutre et expliquer à la fois comment menacer et comment partir.",
     }
   },
   hotline: {
     title: "Appeler \xE0 l'aide",
     question: "Quelqu'un a besoin d'aide maintenant et ne peut pas parler en s\xFBret\xE9 dans la maison. Que fais-tu ?",
     options: {
-      A: "Attendre le march\xE9 de samedi et le dire au conseil.",
+      A: "Attendre le marché de samedi et le dire au conseil quand la ruelle sera calme.",
       B: "Appeler ta ligne locale d'alerte ou la police.",
-      C: "Publier d'abord un message dans le groupe du village.",
-      D: "Appeler seulement si un bleu se verra sur une photo."
+      C: "Publier d'abord un message dans le groupe du village avant d'appeler.",
+      D: "Appeler seulement si un bleu se verra sur une photo prise ce soir.",
     }
   },
   child: {
     title: "Un enfant a peur",
     question: "Un enfant de la maison dit qu'il a peur des cris et te demande de garder le secret. Quelle est la r\xE9ponse s\xFBre ?",
     options: {
-      A: "Promettre de ne rien dire, et renvoyer l'enfant voir si \xE7a s'est arr\xEAt\xE9.",
-      B: "Demander \xE0 l'enfant de d\xE9crire la violence en d\xE9tail avant de d\xE9cider.",
-      C: "Un enfant en danger ne garde pas ce secret. Ne le renvoie pas. Appelle ta ligne locale d'alerte ou la police.",
-      D: "Attendre qu'un parent t'invite, puis jouer les m\xE9diateurs entre les adultes."
+      A: "Promettre de ne rien dire, et renvoyer l'enfant voir si ça s'est arrêté.",
+      B: "Demander à l'enfant de décrire la violence en détail avant de décider.",
+      C: "Un enfant en danger ne garde pas ce secret. Ne le renvoie pas.",
+      D: "Attendre qu'un parent t'invite, puis jouer les médiateurs entre les adultes.",
     }
   }
 };
@@ -1133,60 +1133,60 @@ var LAND_FR = {
     title: "Le chemin ferm\xE9",
     question: "Un voisin barre avec une corde le chemin que le village emprunte vers la mer et cloue un panneau : \xAB Plage priv\xE9e \xBB. Il dit que son bail de campement comprend le sable. Quelle est l'action licite ?",
     options: {
-      A: "Laisser faire. Un bail sur une terre de l'\xC9tat comprend la plage devant.",
-      B: "D\xE9placer la corde la nuit et ne rien dire.",
-      C: "Le rivage et le chemin public restent ouverts. Un bail de campement n'est pas un titre sur la plage. Demande au minist\xE8re du Logement et des Terres et au conseil de district d'enlever l'obstacle.",
-      D: "Faire payer les visiteurs et partager avec lui."
+      A: "Laisser faire. Un bail sur une terre de l'État comprend la plage devant le campement.",
+      B: "Déplacer la corde la nuit et ne rien dire au conseil de district.",
+      C: "Le rivage et le chemin public restent ouverts. Un bail de campement n'est pas la plage.",
+      D: "Faire payer les visiteurs et partager avec lui à la fin de la semaine.",
     }
   },
   title: {
     title: "Vendu comme pleine propri\xE9t\xE9",
     question: "Un agent propose un terrain en bord de mer \xAB \xE0 vendre \xBB et dit que l'acheteur en sera pleinement propri\xE9taire. Le plan montre des Pas G\xE9om\xE9triques. Quelle est l'action licite ?",
     options: {
-      A: "Prendre une commission et appeler \xE7a une pleine propri\xE9t\xE9 priv\xE9e.",
-      B: "Les Pas G\xE9om\xE9triques sont des terres de l'\xC9tat. Elles ne se vendent pas comme un bien priv\xE9. Ne sers pas d'interm\xE9diaire. Signale l'annonce au minist\xE8re du Logement et des Terres.",
-      C: "Laisser le plus offrant prendre le terrain si le village a une part.",
-      D: "Redessiner le plan pour que la parcelle paraisse \xE0 l'int\xE9rieur des terres et que la vente se fasse."
+      A: "Prendre une commission et appeler ça une pleine propriété privée dans l'annonce.",
+      B: "Les Pas Géométriques sont des terres de l'État. Ne sers pas d'intermédiaire. Signale l'annonce.",
+      C: "Laisser le plus offrant prendre le terrain si le village a une part du prix.",
+      D: "Redessiner le plan pour que la parcelle paraisse à l'intérieur et que la vente se fasse.",
     }
   },
   split: {
     title: "Sous le seuil",
     question: "Un promoteur veut 20 villas sur une terre c\xF4ti\xE8re de l'\xC9tat. Il d\xE9coupe le dossier en petits lots pour rester sous le seuil de l'EIA, et commence \xE0 vendre sur plan avant un permis de construire et d'utilisation des terres. Quelle est l'action licite ?",
     options: {
-      A: "D\xE9couper le dossier. Sous 50 unit\xE9s, pas d'EIA, et les ventes peuvent commencer.",
-      B: "Couper les arbres d'abord pour que le site paraisse pr\xEAt quand le permis arrivera.",
-      C: "Un projet, un dossier. Ni travaux ni vente sur plan avant l'EIA et le permis. Ne d\xE9coupe pas le projet pour \xE9viter l'\xE9tude.",
-      D: "Demander au commis du conseil de l'approuver apr\xE8s les heures."
+      A: "Découper le dossier. Sous 50 unités, pas d'EIA, et les ventes peuvent commencer.",
+      B: "Couper les arbres d'abord pour que le site paraisse prêt quand le permis arrivera.",
+      C: "Un projet, un dossier. Ni travaux ni vente avant l'EIA et le permis.",
+      D: "Demander au commis du conseil de l'approuver après les heures, hors registre.",
     }
   },
   wetland: {
     title: "Le marais remblay\xE9",
     question: "Un entrepreneur d\xE9verse du remblai dans le marais derri\xE8re la ruelle pour couler une dalle. Il appelle \xE7a de l'am\xE9nagement et dit que le drain pourra \xEAtre bus\xE9 plus tard. Quelle est l'action licite ?",
     options: {
-      A: "Signer comme am\xE9nagement. Le sol d'un marais est un terrain en trop.",
-      B: "Buser le drain sous le remblai et garder le marais hors du plan.",
-      C: "Un marais et son drain ne sont pas un terrain en trop. Arr\xEAte le remblai. Signale-le. Un marais remblay\xE9 envoie la crue sur les maisons en aval.",
-      D: "Ne remblayer que le bord, pour que \xAB l'essentiel \xBB du marais reste."
+      A: "Le signer comme aménagement. Le sol du marais est une réserve une fois le drain déplacé.",
+      B: "Passer le drain sous le remblai et garder le marais hors du plan.",
+      C: "Un marais et son drain ne sont pas une réserve. Arrête le remblai et signale-le.",
+      D: "Remblayer seulement le bord, pour pouvoir dire que le marais reste.",
     }
   },
   sign: {
     title: "La signature emprunt\xE9e",
     question: "Quelqu'un propose de t\xE9l\xE9verser des plans sur le National Electronic Licensing System avec la signature \xE9lectronique d'un architecte inscrit. L'architecte ne les a pas dessin\xE9s. La maison d\xE9passe 150 m\xB2. Quelle est l'action licite ?",
     options: {
-      A: "Utiliser la signature. La plateforme v\xE9rifie seulement qu'un nom est sur le dossier.",
-      B: "C'est un faux document. Refuse. Les plans de cette taille doivent \xEAtre pr\xE9par\xE9s et sign\xE9s par l'architecte qui a fait le travail. Signale l'offre.",
-      C: "Payer une petite somme \xE0 l'architecte apr\xE8s le permis et antidater le dessin.",
-      D: "Mettre ton propre nom comme architecte. Le conseil ne v\xE9rifiera pas le registre."
+      A: "Utiliser la signature. La plateforme vérifie seulement qu'un nom est sur le dossier.",
+      B: "C'est un faux document. Refuse. L'architecte qui a fait le travail doit signer.",
+      C: "Payer l'architecte une petite somme après le permis et antidater le dessin.",
+      D: "Mettre ton propre nom comme architecte. Le conseil ne vérifiera pas le registre.",
     }
   },
   idle: {
     title: "Allocation en friche",
     question: "Un proche a re\xE7u une terre agricole de l'\xC9tat et l'a laiss\xE9e vide. Un promoteur offre du liquide pour couler une dalle, l'appeler un hangar, et \xAB convertir plus tard \xBB. Quelle est l'action licite ?",
     options: {
-      A: "Couler la dalle. La conversion peut \xEAtre demand\xE9e une fois la maison debout.",
-      B: "Laisser en friche. Une terre allou\xE9e peut rester inutilis\xE9e aussi longtemps que la famille veut.",
-      C: "Prendre le liquide et garder le dossier marqu\xE9 \xAB cultures \xBB.",
-      D: "Une terre allou\xE9e est pour l'agriculture. Les parcelles en friche peuvent \xEAtre reprises. Un changement d'usage exige un permis de conversion avant toute dalle. Ne prends pas le liquide."
+      A: "Couler la dalle. La conversion peut être demandée une fois la maison debout.",
+      B: "La laisser en friche. Une terre allouée peut rester vide tant que la famille veut.",
+      C: "Prendre l'argent et garder le dossier marqué cultures jusqu'à la vente de la maison.",
+      D: "Une terre allouée est pour cultiver. Un changement d'usage exige un permis avant la dalle.",
     }
   }
 };
@@ -1198,60 +1198,60 @@ var FAIR_FR = {
     title: "Le comptoir ferm\xE9",
     question: "Un commer\xE7ant te dit de refuser un client \xE0 cause de sa race. Il dit que la boutique est \xE0 lui, et que la porte est \xE0 lui de fermer. Quelle est l'action licite ?",
     options: {
-      A: "Faire comme il dit. Une boutique priv\xE9e peut choisir ses clients selon la race.",
-      B: "Refuser l'ordre. La race est un statut prot\xE9g\xE9 par l'Equal Opportunities Act. Le comptoir reste ouvert. Une plainte \xE9crite peut aller \xE0 l'Equal Opportunities Commission.",
-      C: "Les servir seulement \xE0 la porte de derri\xE8re.",
-      D: "Leur demander d'envoyer quelqu'un d'autre de la famille."
+      A: "Faire comme il dit. Une boutique privée peut choisir ses clients selon la race.",
+      B: "Refuser l'ordre. La race est protégée. Le comptoir reste ouvert à tous.",
+      C: "Les servir seulement à la porte de derrière, et appeler ça un arrangement plus calme.",
+      D: "Leur demander d'envoyer quelqu'un d'autre de la famille chercher la commande.",
     }
   },
   creed: {
     title: "Le pupitre vide",
     question: "Une \xE9cole laisse un pupitre vide parce que l'enfant suit une autre croyance. Un enseignant dit que l'enfant peut s'asseoir s'il cache le signe de sa foi. Quelle est l'action licite ?",
     options: {
-      A: "Laisser le pupitre vide. La croyance appartient \xE0 la maison.",
-      B: "Dire \xE0 l'enfant de cacher le signe, puis le laisser s'asseoir.",
-      C: "La croyance est prot\xE9g\xE9e. Le pupitre reste ouvert. Ne force pas un enfant \xE0 cacher sa foi. Signale l'interdiction \xE0 l'Equal Opportunities Commission.",
-      D: "Mettre l'enfant dans une classe \xE0 part \xAB pour la paix \xBB."
+      A: "Laisser le bureau vide. La croyance reste à la maison, pas dans la classe.",
+      B: "Dire à l'enfant de cacher le signe, puis le laisser s'asseoir avec les autres.",
+      C: "La croyance est protégée. Le bureau reste ouvert. Ne fais pas cacher sa foi à un enfant.",
+      D: "Mettre l'enfant dans une classe à part et appeler ça une façon de garder la paix.",
     }
   },
   sex: {
     title: "Ray\xE9e de la liste",
     question: "Un contrema\xEEtre raye une femme qualifi\xE9e de la liste de nuit. Il dit que le travail n'est pas pour les femmes, et qu'elle pourrait devenir enceinte. Quelle est l'action licite ?",
     options: {
-      A: "La remettre sur la liste. Le sexe, la grossesse et la responsabilit\xE9 familiale sont prot\xE9g\xE9s. Ne transmets pas cet ordre.",
-      B: "Lui offrir un poste de jour moins pay\xE9 et appeler \xE7a de la gentillesse.",
-      C: "Lui demander de signer qu'elle n'aura pas d'enfants.",
-      D: "Laisser la liste. Le contrema\xEEtre conna\xEEt le travail."
+      A: "La remettre sur la liste. Le sexe et la grossesse sont protégés.",
+      B: "Lui offrir un poste de jour moins payé et appeler ça de la gentillesse.",
+      C: "Lui demander de signer qu'elle n'aura pas d'enfant pendant le chantier.",
+      D: "Laisser la liste telle quelle. Le contremaître connaît le travail mieux que toi.",
     }
   },
   age: {
     title: "Trop \xE2g\xE9e pour la ligne",
     question: "Une conductrice qualifi\xE9e de 58 ans est refus\xE9e sur la ligne. Aucune r\xE8gle de s\xE9curit\xE9 ne fixe un \xE2ge. La note dit \xAB trop \xE2g\xE9e \xBB. Quelle est l'action licite ?",
     options: {
-      A: "\xCAtre d'accord. Apr\xE8s 55 ans la ligne est ferm\xE9e.",
-      B: "R\xE9\xE9crire son \xE2ge sur le formulaire pour que la note disparaisse.",
-      C: "Lui donner une semaine non pay\xE9e, puis d\xE9cider.",
-      D: "L'\xE2ge seul n'est pas une raison. R\xE9tablis sa demande. Si l'\xE2ge n'est pas une vraie condition, signale-le \xE0 l'Equal Opportunities Commission."
+      A: "Accepter. Après 55 ans la ligne est fermée, quel que soit son dossier.",
+      B: "Réécrire son âge sur le formulaire pour que la note disparaisse avant le jury.",
+      C: "Lui donner une semaine sans solde, puis décider quand la ligne sera calme.",
+      D: "L'âge seul n'est pas une raison. Rétablis sa demande et signale la barrière.",
     }
   },
   colour: {
     title: "Descendu dans la file",
     question: "Un commis au logement descend un dossier dans la file \xE0 cause de la couleur du demandeur. Il dit que \xE7a \xAB gardera la paix \xBB. Quelle est l'action licite ?",
     options: {
-      A: "Laisser le dossier l\xE0 o\xF9 il l'a mis. La file est \xE0 lui.",
-      B: "Regrouper tous les dossiers de cette couleur et appeler \xE7a de l'ordre.",
-      C: "La couleur est prot\xE9g\xE9e. Remets le dossier \xE0 sa place. Ne te tais pas. D\xE9pose une plainte \xE9crite \xE0 l'Equal Opportunities Commission.",
-      D: "Dire au demandeur d'attendre un an et de refaire la demande sous un autre nom."
+      A: "Laisser le dossier où il l'a mis. La file est à lui d'arranger.",
+      B: "Mettre tous les dossiers de cette couleur ensemble et appeler ça de l'ordre.",
+      C: "La couleur est protégée. Remets le dossier à sa place.",
+      D: "Dire au demandeur d'attendre un an et de postuler sous un autre nom.",
     }
   },
   notice: {
     title: "La salle interdite",
     question: "Quelqu'un te demande d'imprimer un avis qui interdit une race, une foi, les femmes, ou les personnes au-del\xE0 d'un certain \xE2ge dans la salle du village. Quelle est l'action licite ?",
     options: {
-      A: "L'imprimer si le comit\xE9 de la salle a vot\xE9.",
-      B: "Refuser. Ne l'imprime pas et n'aide pas \xE0 l'\xE9crire. Une salle ne peut pas \xEAtre ferm\xE9e sur ces motifs. Signale la demande.",
-      C: "Imprimer une ligne plus douce qui dit \xAB pr\xE9f\xE9rence \xBB au lieu d'\xAB interdit \xBB.",
-      D: "Afficher l'avis une semaine, puis le retirer."
+      A: "L'imprimer si le comité de la salle a voté et que le cahier est plein.",
+      B: "Refuser. Ne l'imprime pas et n'aide pas à l'écrire.",
+      C: "Imprimer une ligne plus douce qui dit préférence au lieu d'interdit.",
+      D: "Afficher l'avis une semaine, puis le retirer avant que quelqu'un se plaigne.",
     }
   }
 };
@@ -1263,60 +1263,60 @@ var CROP_FR = {
     title: "Le mauvais produit",
     question: "Un voisin dit que le fongicide qu'il met sur les tomates ira pour ta laitue. L'\xE9tiquette ne cite pas la laitue. Quelle est l'action licite ?",
     options: {
-      A: "L'utiliser. Un fongicide est un fongicide.",
-      B: "Mettre la moiti\xE9 de la dose pour que le r\xE9sidu reste petit.",
-      C: "Ne l'utilise pas. Sous la Use of Pesticides Act, un pesticide ne s'emploie sur une culture que s'il est celui permis pour cette culture. Demande au FAREI quel produit est pr\xE9vu pour la laitue.",
-      D: "Pulv\xE9riser la nuit pour que personne ne voie l'\xE9tiquette."
+      A: "L'utiliser. Un fongicide est un fongicide, et la laitue est assez proche de l'étiquette.",
+      B: "Mettre la moitié de la dose pour que le résidu reste petit et les feuilles propres.",
+      C: "Ne l'utilise pas. Un pesticide ne s'utilise que sur la culture pour laquelle il est listé.",
+      D: "Pulvériser la nuit pour que personne ne voie l'étiquette, puis laver les feuilles à l'aube.",
     }
   },
   wait: {
     title: "Les jours d'attente",
     question: "La laitue a \xE9t\xE9 trait\xE9e ce matin. L'\xE9tiquette dit de ne pas r\xE9colter avant sept jours. Un acheteur est \xE0 la barri\xE8re et paie comptant aujourd'hui. Quelle est l'action licite ?",
     options: {
-      A: "La couper. Le lavage enl\xE8ve le r\xE9sidu.",
-      B: "Couper seulement les feuilles du dehors et vendre le c\u0153ur.",
-      C: "Dire \xE0 l'acheteur que c'est bio et prendre l'argent.",
-      D: "Attendre le d\xE9lai de l'\xE9tiquette. Vendre avant, c'est comme \xE7a que le r\xE9sidu d\xE9passe la limite. Ne prends pas l'argent aujourd'hui."
+      A: "La couper. Le lavage enlève le résidu avant l'ouverture de l'étal.",
+      B: "Couper seulement les feuilles du dehors et vendre le cœur comme part propre.",
+      C: "Dire à l'acheteur que c'est bio et prendre l'argent aujourd'hui.",
+      D: "Attendre le délai de l'étiquette. Ne prends pas l'argent aujourd'hui.",
     }
   },
   bottle: {
     title: "La fiole sans \xE9tiquette",
     question: "Un vendeur propose un pesticide bon march\xE9 dans une bouteille de boisson, sans \xE9tiquette et sans autorisation pour ta culture. Il dit que tout le champ l'utilise. Quelle est l'action licite ?",
     options: {
-      A: "L'acheter. Un prix plus bas, c'est le m\xEAme produit.",
-      B: "Le refuser. Ne le stocke pas et ne le pulv\xE9rise pas. N'utilise qu'un produit \xE9tiquet\xE9, permis pour cette culture. Signale la fiole au Pesticides Regulatory Office.",
-      C: "Le verser dans ton propre r\xE9servoir et \xE9crire le nom de la culture toi-m\xEAme.",
-      D: "L'essayer une fois, dans un coin du champ."
+      A: "L'acheter. Un prix plus bas est le même produit, et le champ l'utilise déjà.",
+      B: "Refuse-la. Ne stocke pas et ne pulvérise pas une bouteille sans étiquette.",
+      C: "La verser dans ta cuve et écrire le nom de la culture sur la bouteille toi-même.",
+      D: "L'utiliser une fois, sur un coin du champ, pour voir si les feuilles tiennent.",
     }
   },
   cans: {
     title: "Les bidons vides",
     question: "Apr\xE8s la pulv\xE9risation, les bidons vides sont empil\xE9s pr\xE8s du canal. Quelqu'un dit de les rincer dans l'eau, ou de les br\xFBler derri\xE8re le hangar. Quelle est l'action licite ?",
     options: {
-      A: "Les rincer dans le canal. L'eau emportera le produit.",
-      B: "Les br\xFBler. La cendre est plus propre que le plastique.",
+      A: "Les rincer dans le canal. L'eau emportera le résidu d'ici le matin.",
+      B: "Les brûler derrière la remise. La cendre est plus propre qu'un tas de plastique.",
       C: "Les enterrer dans la planche que tu planteras la semaine prochaine.",
-      D: "Ne les verse pas dans le canal et ne les br\xFBle pas. Rince-les trois fois dans la cuve, puis porte les vides au point de collecte du Pesticides Code of Practice. Le canal n'est pas un \xE9gout pour les produits."
+      D: "Ne les rince pas dans le canal et ne les brûle pas. Porte les vides au point de collecte.",
     }
   },
   mix: {
     title: "Le m\xE9lange",
     question: "Un planteur m\xE9lange trois pesticides pour que chacun reste sous sa propre limite. Il dit que la loi ne v\xE9rifie qu'un produit \xE0 la fois. Quelle est l'action licite ?",
     options: {
-      A: "Les m\xE9langer. Si chacun reste sous sa limite, le lot est licite.",
-      B: "Les m\xE9langer, puis ajouter de l'eau jusqu'\xE0 ce que la couleur soit claire.",
-      C: "Ne les m\xE9lange pas pour contourner la limite. N'utilise que le produit permis pour cette culture, \xE0 la dose de l'\xE9tiquette. Un cocktail n'est pas un moyen de contourner la Use of Pesticides Act.",
-      D: "Les m\xE9langer seulement sur le lot import\xE9. Les lots locaux restent simples."
+      A: "Les mélanger. Si chacun reste sous sa limite, le lot est légal à vendre.",
+      B: "Les mélanger, puis ajouter de l'eau jusqu'à ce que la couleur paraisse claire.",
+      C: "Ne les mélange pas pour contourner la limite. Utilise seulement le produit listé pour cette culture.",
+      D: "Les mélanger seulement sur le lot importé. Les lots locaux restent un seul produit.",
     }
   },
   stall: {
     title: "Le lot d\xE9j\xE0 mang\xE9",
     question: "Un lot de coriandre \xE9choue au test : le pesticide n'\xE9tait pas recommand\xE9 pour cette culture. Le r\xE9sultat arrive tard. Le marchand dit de vendre le reste, parce que les gens ont d\xE9j\xE0 mang\xE9 le d\xE9but. Quelle est l'action licite ?",
     options: {
-      A: "Vendre le reste. Le mal est d\xE9j\xE0 fait.",
-      B: "Le d\xE9placer sur un autre \xE9tal et ne pas parler du test.",
-      C: "Ne vends pas le reste. Un lot \xE9chou\xE9 reste hors de l'\xE9tal. Garde le registre de pulv\xE9risation et pr\xE9viens le Pesticides Regulatory Office. Un r\xE9sultat tardif n'est pas un permis de liquider le stock.",
-      D: "Le vendre cuit. La chaleur enl\xE8ve le r\xE9sidu."
+      A: "Vendre le reste. Le mal est déjà fait, et des gens ont déjà mangé du lot.",
+      B: "Le déplacer à un autre étal et ne pas mentionner le test aux acheteurs.",
+      C: "Ne vends pas le reste. Un lot refusé reste hors de l'étal. Garde le registre.",
+      D: "Le vendre cuit. La chaleur enlève le résidu avant l'assiette.",
     }
   }
 };
@@ -1325,60 +1325,60 @@ const WASH_FR = {
     title: "L'\xE9tag\xE8re vide",
     question: "Une soci\xE9t\xE9 de gestion doit cr\xE9er une soci\xE9t\xE9 dans la journ\xE9e. Elle n'a pas de personnel, pas de bureau, pas d'activit\xE9. Les factures citent des marchandises qui n'ont jamais quitt\xE9 le port. Le propri\xE9taire est un agent public d'un autre pays, et les honoraires sont \xE9lev\xE9s si personne ne pose de question. Quelle est l'action licite ?",
     options: {
-      A: "La constituer. Une soci\xE9t\xE9 sans personnel est normale.",
-      B: "Mettre ton nom comme administrateur pour que le dossier paraisse local.",
-      C: "Une soci\xE9t\xE9 sans activit\xE9 et \xE0 agent public cach\xE9 n'est pas un client. Refuse. D\xE9pose une d\xE9claration de transaction suspecte aupr\xE8s de la FIU. Ne sois pas pr\xEAte-nom.",
-      D: "Change les factures pour qu'elles citent un autre port."
+      A: "La constituer. Une société sans personnel est normale pour une étagère.",
+      B: "Mettre ton propre nom comme administrateur pour que le dossier paraisse local.",
+      C: "Une société sans activité et un responsable caché ne sont pas un client. Refuse.",
+      D: "Changer les factures pour qu'elles citent un autre port.",
     }
   },
   desk: {
     title: "Le guichet silencieux",
     question: "Un banquier priv\xE9 doit recevoir une grosse somme d'une fondation \xE9trang\xE8re, puis l'envoyer le jour m\xEAme \xE0 Duba\xEF et \xE0 un agent immobilier de luxe. Le client ne dit pas d'o\xF9 vient l'argent. Quelle est l'action licite ?",
     options: {
-      A: "Ex\xE9cuter. La vitesse est un service.",
-      B: "Prendre les honoraires, puis \xE9crire \xE0 la conformit\xE9 demain.",
-      C: "Couper la somme en trois comptes pour qu'aucun transfert ne paraisse gros.",
-      D: "N'ex\xE9cute pas le transfert. Garde les fonds que tu peux. D\xE9pose une d\xE9claration de transaction suspecte. Une entr\xE9e et une sortie le m\xEAme jour, sans origine des fonds, est un lavage."
+      A: "La traiter. La vitesse est un service que le guichet est payé pour rendre.",
+      B: "Prendre les honoraires, puis envoyer une note à la conformité demain.",
+      C: "Répartir la somme sur trois comptes pour qu'aucun virement ne paraisse gros.",
+      D: "Ne fais pas le virement. Sans origine des fonds, pas de transfert.",
     }
   },
   deed: {
     title: "L'acte",
     question: "Un agent immobilier se voit offrir du liquide pour une villa au nom d'un ami, plus un permis de r\xE9sidence si la vente se fait cette semaine. L'acheteur n'a pas de travail ici et poss\xE8de d\xE9j\xE0 trois maisons vides. Quelle est l'action licite ?",
     options: {
-      A: "Signer. Un bien est propre d\xE8s qu'il a un titre.",
-      B: "Prendre le liquide mais \xE9crire un prix plus bas sur l'acte.",
-      C: "Un titre ne lave pas l'argent. Refuse la vente en liquide. Signale-la. Un permis de r\xE9sidence n'est pas un lavage.",
-      D: "Louer d'abord la villa \xE0 l'acheteur pour qu'elle paraisse habit\xE9e."
+      A: "Signer. Un bien est propre dès qu'il a un titre et un acheteur.",
+      B: "Prendre l'argent mais écrire un prix plus bas sur l'acte.",
+      C: "Un titre ne blanchit pas l'argent. Refuse la vente au comptant.",
+      D: "Louer la villa à l'acheteur d'abord pour qu'elle paraisse habitée.",
     }
   },
   loop: {
     title: "La boucle",
     question: "Un promoteur veut qu'une soci\xE9t\xE9 locale investisse dans son propre groupe au pays. L'argent est sorti l'an dernier comme pr\xEAt vers une coquille ici. Il revient comme investissement \xE9tranger, avec une demande de ne presque pas payer d'imp\xF4t. Quelle est l'action licite ?",
     options: {
-      A: "Signer le formulaire de trait\xE9. La boucle n'est qu'une structure efficace.",
-      B: "Transformer le pr\xEAt en don pour couper la piste.",
-      C: "L'argent qui sort et revient comme investissement \xE9tranger n'est pas \xE9tranger. Ne certifie pas la demande de trait\xE9. Signale la boucle.",
-      D: "Ajouter deux coquilles pour allonger le chemin."
+      A: "Signer le formulaire de traité. La boucle n'est qu'une structure efficace.",
+      B: "Changer le prêt en don pour que la piste se coupe avant le retour.",
+      C: "L'argent qui part et revient n'est pas étranger. Ne certifie pas la demande.",
+      D: "Ajouter deux coquilles de plus pour que le chemin soit plus long.",
     }
   },
   bid: {
     title: "L'offre",
     question: "Un contrat public de carburant va \xEAtre attribu\xE9 sur une offre non sollicit\xE9e. On demande \xE0 un administrateur local de facturer des honoraires de conseil \xE0 une partie proche de l'attribution, puis d'envoyer les honoraires \xE0 un marchand de montres. Quelle est l'action licite ?",
     options: {
-      A: "Facturer cela comme du conseil. La commande publique, c'est de la politique.",
-      B: "Attendre la signature du contrat, puis prendre les honoraires.",
-      C: "Payer en liquide pour qu'il n'y ait pas de virement.",
-      D: "Un pot-de-vin habill\xE9 en honoraires de conseil reste un pot-de-vin. Ne facture pas. Signale-le \xE0 la Financial Crimes Commission. L'argent public n'est pas un compte client."
+      A: "La facturer comme conseil. La commande publique est de la politique, et les honoraires sont un avis.",
+      B: "Attendre la signature du contrat, puis prendre les honoraires comme prime de succès.",
+      C: "Payer les honoraires en espèces pour qu'il n'y ait pas de virement au dossier.",
+      D: "Un dessous de table habillé en honoraires reste un dessous de table. Ne facture pas.",
     }
   },
   name: {
     title: "Le nom",
     question: "On demande \xE0 un pr\xEAte-nom de si\xE9ger dans cinq soci\xE9t\xE9s. Il ne verra jamais les comptes. On lui dit que le propri\xE9taire est un family office. Une note sur le bureau nomme une personne sous sanctions internationales. Quelle est l'action licite ?",
     options: {
-      A: "Signer. Un pr\xEAte-nom n'est pas responsable s'il ne lit pas le dossier.",
-      B: "N'en signer que quatre sur cinq.",
-      C: "Un pr\xEAte-nom qui cache un propri\xE9taire sanctionn\xE9 fait partie du lavage. D\xE9missionne. Pr\xE9viens la Financial Services Commission et la Financial Crimes Commission. Ne pr\xEAte pas ton nom.",
-      D: "D\xE9placer les soci\xE9t\xE9s vers un autre cabinet et se taire."
+      A: "Signer. Un prête-nom n'est pas responsable s'il ne lit jamais le dossier.",
+      B: "N'en signer que quatre sur cinq et laisser la dernière à un autre clerc.",
+      C: "Un prête-nom qui cache le propriétaire fait partie du lavage. Ne prête pas ton nom.",
+      D: "Déplacer les sociétés vers un autre cabinet et rester silencieux.",
     }
   }
 };
@@ -1388,60 +1388,60 @@ const STAMP_FR = {
     title: "L'enveloppe",
     question: "Un homme glisse une enveloppe sous la vitre avec son dossier de licence commerciale. Il dit que le tarif affich\xE9 est pour ceux qui aiment attendre, et que le guichet marche ainsi apr\xE8s le d\xE9jeuner. Quelle est l'action licite ?",
     options: {
-      A: "Prendre l'enveloppe. Le tarif affich\xE9 est pour ceux qui peuvent attendre.",
-      B: "En prendre la moiti\xE9, noter le dossier, et tamponner aujourd'hui.",
-      C: "Refuse l'enveloppe. Remets-la de son c\xF4t\xE9 de la vitre. Une licence commerciale n'est d\xE9livr\xE9e que si le dossier est complet et que le tarif au mur est pay\xE9 \xE0 la caisse. Une enveloppe sous le comptoir n'est pas un tarif. Signale-la.",
-      D: "Tamponner d'abord, puis l'envoyer \xE0 la caisse plus tard si quelqu'un demande."
+      A: "Prendre l'enveloppe. La taxe affichée est pour ceux qui peuvent attendre.",
+      B: "En prendre la moitié, noter le dossier, et tamponner aujourd'hui.",
+      C: "Refuse l'enveloppe. La taxe affichée est la seule taxe.",
+      D: "Tamponner d'abord, puis l'envoyer à la caisse plus tard si quelqu'un demande.",
     }
   },
   kin: {
     title: "La cousine",
     question: "Ta cousine est au guichet. Deux papiers manquent au dossier de licence commerciale. Elle dit que tu connais la boutique, que tu connais la famille, et qu'une famille ne doit pas \xEAtre trait\xE9e comme une \xE9trang\xE8re. Quelle est l'action licite ?",
     options: {
-      A: "Tamponner. Une cousine n'est pas un membre du public.",
-      B: "Ne tamponne pas. Une cousine au guichet reste un membre du public. Un papier manquant est un non. Dis-lui quels papiers manquent et prends la personne suivante.",
-      C: "Tamponner pour trois mois, le temps qu'elle apporte les papiers.",
-      D: "Passer le dossier au bureau derri\xE8re toi et faire comme si tu n'avais rien vu."
+      A: "Le tamponner. Une cousine n'est pas un membre du public.",
+      B: "Ne le tamponne pas. Une cousine au guichet est encore le public.",
+      C: "Le tamponner pour trois mois, le temps qu'elle apporte les papiers.",
+      D: "Passer le dossier au bureau derrière toi et faire comme si tu ne l'avais pas vu.",
     }
   },
   plate: {
     title: "La plaque",
     question: "Un chauffeur veut le tampon d'un v\xE9hicule de service public. Le certificat de visite est expir\xE9. Il dit que la camionnette est la m\xEAme que l'an dernier, que l'inspecteur est un ami, et que la tourn\xE9e scolaire commence \xE0 l'aube. Quelle est l'action licite ?",
     options: {
-      A: "Tamponner. La camionnette de l'an dernier est celle de cette ann\xE9e.",
-      B: "Tamponner et lui dire de faire la visite la semaine prochaine.",
+      A: "Le tamponner. La camionnette de l'an dernier est celle de cette année si la tournée scolaire attend.",
+      B: "Le tamponner et lui dire de faire le contrôle la semaine prochaine.",
       C: "Appeler l'inspecteur et lui demander de signer de chez lui.",
-      D: "Ne tamponne pas. Un certificat expir\xE9 n'est pas un certificat. Une plaque de service public ne se d\xE9livre pas sur une promesse. Envoie-le \xE0 la visite licite. La tourn\xE9e scolaire ne r\xE9\xE9crit pas le dossier."
+      D: "Ne le tamponne pas. Un certificat expiré n'est pas un certificat.",
     }
   },
   slab: {
     title: "La dalle",
     question: "Un entrepreneur veut le permis de construire et d'usage des terres tamponn\xE9 aujourd'hui. Le dossier n'a pas de plan approuv\xE9 ni d'avis aux voisins. Il dit que la dalle est d\xE9j\xE0 coul\xE9e, que les ouvriers sont sur le site, et qu'arr\xEAter maintenant lui co\xFBte. Quelle est l'action licite ?",
     options: {
-      A: "Tamponner. Une dalle coul\xE9e veut dire que le permis n'est que du papier.",
-      B: "Lui dire de couler le reste apr\xE8s la nuit pour que le dossier rattrape.",
-      C: "Ne tamponne pas. Des travaux avant un Building and Land Use Permit ne cr\xE9ent pas un droit au permis. Un plan manquant et un avis manquant restent manquants. Note les travaux non autoris\xE9s et ne les r\xE9gularise pas au guichet.",
-      D: "Tamponner un b\xE2timent plus petit que celui du site pour que le dossier paraisse modeste."
+      A: "Le tamponner. Une dalle coulée veut dire que le permis n'est que du papier.",
+      B: "Lui demander de couler le reste après la tombée de la nuit pour que le dossier rattrape.",
+      C: "Ne le tamponne pas. Des travaux avant un permis ne créent pas le permis.",
+      D: "Tamponner un bâtiment plus petit que celui du site pour que le dossier paraisse modeste.",
     }
   },
   calendar: {
     title: "Le calendrier",
     question: "Une licence de local alimentaire a expir\xE9 le mois dernier. La visite n'est pas prise. Le marchand dit de tamponner le renouvellement maintenant et de mettre la visite au calendrier du mois prochain, parce que le bazar ne peut pas attendre. Quelle est l'action licite ?",
     options: {
-      A: "Tamponner le renouvellement. Une visite peut suivre une semaine charg\xE9e.",
-      B: "Ne tamponne pas. Un renouvellement n'est pas un autocollant neuf sur une vieille date. Pas de visite, pas de licence. Prends la visite. L'\xE9tal reste ferm\xE9 tant que le dossier n'est pas entier.",
-      C: "Tamponner et \xE9crire visite en attente au crayon.",
-      D: "Le laisser vendre au fond du bazar, loin de l'all\xE9e principale."
+      A: "Tamponner le renouvellement. Une inspection peut suivre une semaine chargée au bazar.",
+      B: "Ne le tamponne pas. Pas d'inspection, pas de licence.",
+      C: "Le tamponner et écrire inspection en attente au crayon.",
+      D: "Le laisser vendre au fond du bazar, loin de l'allée principale.",
     }
   },
   listing: {
     title: "L'annonce",
     question: "Une villa est d\xE9j\xE0 sur un site de r\xE9servation. Les h\xF4tes arrivent ce soir. Le dossier n'a pas de Tourist Enterprise Licence ni de Building and Land Use Permit au nom du demandeur. Le titulaire dit que les chambres ont toujours \xE9t\xE9 \xE0 la famille, et qu'une somme priv\xE9e fera passer l'ancienne carte au nom d'un neveu, sous la vitre. Quelle est l'action licite ?",
     options: {
-      A: "Tamponner l'ancienne carte au nom du neveu. Une villa de famille est d\xE9j\xE0 une maison d'h\xF4tes.",
-      B: "Tamponner pour ce week-end seulement, pour ne pas renvoyer les h\xF4tes.",
-      C: "Ne tamponne pas. Une annonce et une nuit r\xE9serv\xE9e ne cr\xE9ent pas une Tourist Enterprise Licence. La Tourism Authority d\xE9livre cette licence sur un dossier complet, pas sur une somme priv\xE9e au guichet. Le neveu demande en son nom. Des h\xF4tes d\xE9j\xE0 en route ne font pas bouger le tampon.",
-      D: "Ne changer que le pr\xE9nom sur l'ancienne carte et laisser le num\xE9ro de maison."
+      A: "Tamponner l'ancienne carte au nom du neveu. Une villa de famille est déjà une maison d'hôtes.",
+      B: "Le tamponner pour ce week-end seulement, pour ne pas renvoyer les hôtes.",
+      C: "Ne le tamponne pas. Une nuit réservée n'est pas une licence. Il demande en son nom.",
+      D: "Changer seulement le prénom sur l'ancienne carte et laisser le numéro de maison.",
     }
   }
 };

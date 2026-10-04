@@ -1,4 +1,4 @@
-import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg7";
+import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg8";
 
 // src/lib/game/i18n.ts
 var LANG_KEY = "village-grid-lang";
@@ -22,7 +22,7 @@ var UI = {
     howtoKicker: "How to play",
     howtoTitle: "Instructions",
     howtoLead: "Read this before you enter. Each stage is a public file. Your answers change the scene.",
-    howtoScore: "Most stages have six questions. Stage 2 has ten. The right answer scores +100. The wrong answer scores +20.",
+    howtoScore: "The right answer scores +100. The wrong answer scores +20.",
     howtoOutcomes: "Each stage ends on one of three scenes. The village rule is one line.",
     howtoOrder: "Stages open in order. Finish every question on a stage before the next stage opens.",
     howtoCap: "After you finish every stage, find the link to support@mkweli.tech in the game. Fill in the form to win a prize.",
@@ -402,7 +402,7 @@ var UI = {
     howtoKicker: "Mode d'emploi",
     howtoTitle: "Instructions",
     howtoLead: "Lis ceci avant d'entrer. Chaque \xE9tape est un dossier public. Tes r\xE9ponses changent la sc\xE8ne.",
-    howtoScore: "La plupart des \xE9tapes ont six questions. L'\xE9tape 2 en a dix. Une bonne r\xE9ponse vaut +100. Une mauvaise r\xE9ponse vaut +20.",
+    howtoScore: "Une bonne r\xE9ponse vaut +100. Une mauvaise r\xE9ponse vaut +20.",
     howtoOutcomes: "Chaque \xE9tape se termine par une des trois sc\xE8nes. La r\xE8gle du village tient en une ligne.",
     howtoOrder: "Les \xE9tapes s'ouvrent dans l'ordre. Termine chaque question d'une \xE9tape avant d'ouvrir la suivante.",
     howtoCap: "Apr\xE8s toutes les \xE9tapes, trouve le lien vers support@mkweli.tech dans le jeu. Remplis le formulaire pour gagner un prix.",

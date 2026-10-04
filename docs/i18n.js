@@ -378,7 +378,7 @@ var UI = {
     toastSeat: "Seat held. The chair does not split.",
     toastSlipSeat: "That answer splits the chair.",
     boardOath: "Stage 10 \xB7 Abuse of office",
-    oathRule: "Say the interest and leave the decision. The minute is what was said. A gift after an award is still a gift. Do not sign what you have not read. The key is the office.",
+    oathRule: "Declare the interest and leave the decision. The minute is what was said. A gift after an award is still a gift. Do not sign what you have not read. The key is the office.",
     seatsHeld: "{n}/{total} seats held",
     openOath: "Open stage 10",
     dockOath: "Stage 10 \xB7 the chair"
@@ -758,7 +758,7 @@ var UI = {
     toastSeat: "Bonne r\xE9ponse. Le fauteuil ne se divise pas.",
     toastSlipSeat: "Mauvaise r\xE9ponse. Le fauteuil se divise.",
     boardOath: "\xC9tape 10 \xB7 Abus de fonction",
-    oathRule: "Dis l'int\xE9r\xEAt et quitte la d\xE9cision. Le proc\xE8s-verbal est ce qui a \xE9t\xE9 dit. Un cadeau apr\xE8s une attribution reste un cadeau. Ne signe pas ce que tu n'as pas lu. La cl\xE9 est la fonction.",
+    oathRule: "D\xE9clare l'int\xE9r\xEAt et quitte la d\xE9cision. Le proc\xE8s-verbal est ce qui a \xE9t\xE9 dit. Un cadeau apr\xE8s une attribution reste un cadeau. Ne signe pas ce que tu n'as pas lu. La cl\xE9 est la fonction.",
     seatsHeld: "{n}/{total} si\xE8ges tenus",
     openOath: "Ouvrir l'\xE9tape 10",
     dockOath: "\xC9tape 10 \xB7 le fauteuil"

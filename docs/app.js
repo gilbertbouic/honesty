@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg99";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg100";
 import { HavenScene } from "./haven.js?v=vg49";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
@@ -742,7 +742,7 @@ const OATH_CASES = [
     options: [
       { id: "A", text: "Stay, and vote. The chair is above the family." },
       { id: "B", text: "Stay silent. Not speaking is the same as leaving the decision." },
-      { id: "C", text: "Say the interest before the vote, then leave the decision." },
+      { id: "C", text: "Declare the interest before the vote, then leave the decision." },
       { id: "D", text: "Ask your cousin to use another name on the paper, then stay." },
     ] },
   { id: "minute", spec: "OATH-02", title: "After the room", correct: "B",
@@ -764,7 +764,7 @@ const OATH_CASES = [
   { id: "silence", spec: "OATH-04", title: "The silence", correct: "A",
     question: "You learn before the vote that another member will gain from the item. He has not said so. He asks you to leave it, because the room is tired and the matter is small. What is the lawful action?",
     options: [
-      { id: "A", text: "Say it in the room, before the vote. He declares it or he steps out." },
+      { id: "A", text: "Declare it in the room, before the vote. He declares it or he steps out." },
       { id: "B", text: "Tell him privately after the vote, so the minute stays clean." },
       { id: "C", text: "Abstain yourself and let his vote stand, so the room can finish." },
       { id: "D", text: "Mention it only if his side loses, and keep it out of the minute." },

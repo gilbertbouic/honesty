@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg102";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg105";
 import { HavenScene } from "./haven.js?v=vg49";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
@@ -51,7 +51,7 @@ const HAVEN_WRONG = 20;
 const LAND_CORRECT = 100;
 const LAND_WRONG = 20;
 const SHORT = { "cwa-pump": "CWA", "block-a": "Blk A", "block-b": "Blk B", school: "School", power: "CEB", drain: "Drain", light: "Light", community: "Hall", market: "Mkt", clinic: "Clinic", hall: "Civic", bus: "Bus" };
-const WSHORT = { car: "Car", villa: "Villa", boat: "Boat", clothes: "Clothes", entourage: "Entourage", cash: "Cash", gate: "Gate", sachets: "Sachets", client: "Client", straw: "Straw" };
+const WSHORT = { car: "Car", villa: "Villa", boat: "Boat", clothes: "Clothes", entourage: "Entourage", cash: "Cash", gate: "Gate", sachets: "Sachets", client: "Client", straw: "Handoff" };
 
 const CONTRACTORS = [
   { id: "kuzin", name: "Kuzin", sector: "civil", score: 0, holding: "District Clinic" },
@@ -261,21 +261,21 @@ const WHISTLE_CASES = [
     ],
     correct: "B", npcReports: { kuzin: 64, cheri: 77, malin: 69, kokin: 82 } },
   { id: "client", spec: "CASE-09", title: "The night client",
-    question: "A black luxury car rolls off the road, through the gate, and into the yard. The engine stays on. The windows stay up. Nobody gets out. Ravi walks to the driver’s side with a small fold of paper. A neighbour says a relative is dropping cash for the villa. What is the lawful action?",
+    question: "A black luxury car comes down the road and stops at the end of the lane. The engine stays on. The windows stay up. Nobody gets out. A neighbour says a relative is dropping cash for the villa. What is the lawful action?",
     options: [
-      { id: "A", text: "Stay silent. A luxury car in a yard is a family visit if the engine is running." },
+      { id: "A", text: "Stay silent. A luxury car stopped on the road is a family visit if the engine is running." },
       { id: "B", text: "Open the door yourself and tell the driver to leave, with no police file." },
       { id: "C", text: "Take a note from Ravi to “watch the road” and keep the plate off the file." },
-      { id: "D", text: "Report the car, the plate, and the cash visit. A buyer who will not leave the seat is still a sale. Do not approach the car." },
+      { id: "D", text: "Report the car, the plate, and the stop at the lane. A buyer who will not leave the seat is still a sale. Do not approach the car." },
     ],
     correct: "D", npcReports: { kuzin: 79, cheri: 60, malin: 74, kokin: 67 } },
-  { id: "straw", spec: "CASE-10", title: "At the window",
-    question: "The rear window drops. Ravi leans in with a straw and a line of white powder and holds it to the passenger’s nose. The passenger sniffs. The window goes up. The car rolls out. Ravi wipes his hands and tells you that you saw nothing. What must you do?",
+  { id: "straw", spec: "CASE-10", title: "The handoff",
+    question: "The car stays on the road. Ravi leaves the yard, walks out to the driver’s window, and hands over a small fold in person. Cash comes back. He walks in and tells you that you saw nothing. What must you do?",
     options: [
-      { id: "A", text: "Stay silent. What happens at a car window is private, and a straw is not a weapon." },
-      { id: "B", text: "Ask for the same line so you can say you only watched." },
-      { id: "C", text: "Report what you saw: white powder, a straw, a nose, a luxury car, and Ravi at the window. Do not take a share. Do not confront him." },
-      { id: "D", text: "Wipe the sill so the powder is gone before anyone else looks." },
+      { id: "A", text: "Stay silent. A handoff at a car on the road is private." },
+      { id: "B", text: "Ask for the same fold so you can say you only watched." },
+      { id: "C", text: "Report what you saw: a luxury car stopped on the road, Ravi handing a fold through the window, and cash coming back. Do not take a share. Do not confront him." },
+      { id: "D", text: "Take the fold from him and throw it down the drain so the lane looks clean." },
     ],
     correct: "C", npcReports: { kuzin: 68, cheri: 75, malin: 83, kokin: 61 } },
 ];
@@ -1354,11 +1354,12 @@ class VillageEngine {
     const beat = this.whistleBeat || 0;
     const deal = beat >= 9;
     const gate = beat >= 7 && !deal;
-    const viewDeal = new THREE.Vector3(1.4, 8.8, 3.6);
+    const viewDeal = new THREE.Vector3(2.6, 4.8, 4.4);
+    const viewGate = new THREE.Vector3(-2.2, 4.6, 5.2);
     this.aimStage(
-      deal ? new THREE.Vector3(8.15, 0.95, 10.15) : gate ? new THREE.Vector3(3.6, 1.05, 5.25) : new THREE.Vector3(5.2, 1.55, 6.7),
-      deal ? viewDeal : view,
-      deal ? 1.45 : gate ? 3.15 : 4.15
+      deal ? new THREE.Vector3(-1.35, 0.6, 5.35) : gate ? new THREE.Vector3(5.05, 0.7, 5.25) : new THREE.Vector3(5.2, 1.55, 6.7),
+      deal ? viewDeal : gate ? viewGate : view,
+      deal ? 1.35 : gate ? 1.05 : 4.15
     );
   }
 
@@ -1980,7 +1981,8 @@ class VillageEngine {
     put(new THREE.SphereGeometry(0.075 * s, 10, 8), skin, 0, (look.sit ? 0.66 : 0.82) * s, 0.04 * s);
     put(new THREE.SphereGeometry(0.08 * s, 10, 8), hair, 0, (look.sit ? 0.7 : 0.86) * s, -0.01 * s);
     if (look.note) {
-      put(new THREE.BoxGeometry(0.07 * s, 0.012 * s, 0.04 * s), note, 0.16 * s, (look.sit ? 0.4 : 0.48) * s, 0.08 * s);
+      const ns = look.handoff ? 1.7 : 1;
+      put(new THREE.BoxGeometry(0.08 * s * ns, 0.012 * s, 0.045 * s * ns), note, 0.16 * s, (look.sit ? 0.4 : 0.48) * s, 0.1 * s);
     }
     g.position.set(x, look.sit ? 0.02 : 0, z);
     g.rotation.z = (look.lean || 0) * 0.35;
@@ -2002,23 +2004,26 @@ class VillageEngine {
       { skin: 0xe0b080, hair: 0x4a3728, shirt: 0xc9b7a4, shorts: 0x2a2c30, lean: -0.08, yaw: 0.6 },
     ];
     const spots = [
-      [west - 2.15, gateZ],
-      [west - 2.85, gateZ - 0.42],
-      [west - 2.75, gateZ + 0.48],
-      [west - 3.45, gateZ + 0.08],
+      [west - 0.5, gateZ],
+      [west - 0.95, gateZ - 0.32],
+      [west - 0.9, gateZ + 0.34],
+      [west - 1.4, gateZ + 0.02],
     ];
     this.queueHome = [];
     looks.forEach((look, i) => {
-      const fig = this.addRagged(this.queue, spots[i][0], spots[i][1], 2.15, look);
+      const fig = this.addRagged(this.queue, spots[i][0], spots[i][1], 1.05, look);
       this.queueHome.push(fig.position.clone());
     });
-    const pack = new THREE.Mesh(
-      new THREE.BoxGeometry(0.06, 0.04, 0.025),
-      new THREE.MeshStandardMaterial({ color: 0xf4f5f3, roughness: 0.35, transparent: true, opacity: 0.92 })
-    );
-    pack.position.set(west - 2.0, 1.35, gateZ + 0.15);
+    const packMat = new THREE.MeshStandardMaterial({ color: 0xf4f5f3, roughness: 0.35, transparent: true, opacity: 0.92 });
+    const pack = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.05, 0.035), packMat);
+    pack.position.set(west - 0.28, 0.52, gateZ + 0.08);
     this.queue.add(pack);
     this.queuePacket = pack;
+    const pack2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.04, 0.03), packMat.clone());
+    pack2.position.set(west - 0.82, 0.06, gateZ + 0.22);
+    pack2.rotation.y = 0.4;
+    this.queue.add(pack2);
+    this.queuePacket2 = pack2;
     this.queue.visible = false;
   }
 
@@ -2035,67 +2040,47 @@ class VillageEngine {
       root.add(mesh);
       return mesh;
     };
-    put(new THREE.BoxGeometry(0.92, 0.28, 2.35), paint, 0, 0.32, 0);
-    put(new THREE.BoxGeometry(0.86, 0.2, 0.72), paint, 0, 0.5, 0.42);
-    put(new THREE.BoxGeometry(0.9, 0.035, 2.2), gold, 0, 0.22, 0);
-    const rear = put(new THREE.BoxGeometry(0.78, 0.16, 0.42), glass, 0, 0.56, -0.72);
-    put(new THREE.BoxGeometry(0.7, 0.12, 0.4), glass, 0, 0.54, 0.48);
-    const sideGlass = put(new THREE.BoxGeometry(0.04, 0.14, 0.36), glass, 0.44, 0.54, 0.46);
+    put(new THREE.BoxGeometry(0.92, 0.34, 2.2), paint, 0, 0.38, 0);
+    put(new THREE.BoxGeometry(0.86, 0.28, 0.78), paint, 0, 0.62, 0.28);
+    put(new THREE.BoxGeometry(0.9, 0.04, 2.05), gold, 0, 0.22, 0);
+    put(new THREE.BoxGeometry(0.74, 0.18, 0.46), glass, 0, 0.64, -0.55);
+    put(new THREE.BoxGeometry(0.7, 0.16, 0.42), glass, 0, 0.64, 0.55);
+    const sideGlass = put(new THREE.BoxGeometry(0.04, 0.16, 0.4), glass, 0.44, 0.64, 0.22);
+    const driverCloth = new THREE.MeshStandardMaterial({ color: 0x1c2430, roughness: 0.6 });
+    const driverSkin = new THREE.MeshStandardMaterial({ color: 0xd7a574, roughness: 0.6 });
+    const driverHair = new THREE.MeshStandardMaterial({ color: 0x1a120c, roughness: 0.8 });
+    put(new THREE.BoxGeometry(0.26, 0.14, 0.18), driverCloth, 0.1, 0.56, 0.28);
+    put(new THREE.SphereGeometry(0.08, 10, 8), driverSkin, 0.12, 0.66, 0.3);
+    put(new THREE.SphereGeometry(0.08, 8, 6), driverHair, 0.11, 0.71, 0.28);
     const lamps = [
-      put(new THREE.BoxGeometry(0.16, 0.08, 0.06), lampMat, -0.28, 0.34, 1.16),
-      put(new THREE.BoxGeometry(0.16, 0.08, 0.06), lampMat, 0.28, 0.34, 1.16),
+      put(new THREE.BoxGeometry(0.16, 0.08, 0.06), lampMat, -0.28, 0.4, 1.08),
+      put(new THREE.BoxGeometry(0.16, 0.08, 0.06), lampMat, 0.28, 0.4, 1.08),
     ];
     const wheels = [];
-    [-0.72, 0.78].forEach((z) => {
+    [-0.68, 0.72].forEach((z) => {
       [-0.42, 0.42].forEach((x) => {
-        const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.1, 12), new THREE.MeshStandardMaterial({ color: 0x1a1c1f, roughness: 0.5 }));
+        const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.1, 12), new THREE.MeshStandardMaterial({ color: 0x1a1c1f, roughness: 0.5 }));
         wheel.rotation.z = Math.PI / 2;
-        wheel.position.set(x, 0.16, z);
+        wheel.position.set(x, 0.18, z);
         root.add(wheel);
         wheels.push(wheel);
       });
     });
-    const skin = new THREE.MeshStandardMaterial({ color: 0xd7a574, roughness: 0.6 });
-    const hair = new THREE.MeshStandardMaterial({ color: 0x1a120c, roughness: 0.8 });
-    const passenger = put(new THREE.SphereGeometry(0.12, 12, 10), skin, 0.02, 0.62, -0.72);
-    const passengerHair = put(new THREE.SphereGeometry(0.11, 10, 8), hair, 0.0, 0.7, -0.78);
-    const powder = put(
-      new THREE.SphereGeometry(0.09, 10, 8),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1, roughness: 0.2 }),
-      0.2, 0.72, -0.68
-    );
-    const line = put(
-      new THREE.BoxGeometry(0.28, 0.022, 0.05),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xf7f7f5, emissiveIntensity: 0.55, roughness: 0.3 }),
-      0.48, 0.78, -0.68
-    );
-    const straw = put(
-      new THREE.CylinderGeometry(0.028, 0.028, 0.62, 8),
-      new THREE.MeshStandardMaterial({ color: 0xfffaf2, roughness: 0.25 }),
-      0.46, 0.82, -0.68
-    );
-    straw.rotation.z = Math.PI / 2;
-    const ravi = this.addRagged(root, 0.86, -0.66, 1.55, {
-      skin: 0x3d2314, hair: 0x140e0c, shirt: 0xff2436, shorts: 0x141414, lean: 0.9, yaw: -Math.PI / 2,
-    });
-    ravi.position.y = 0;
-    const chain = put(new THREE.TorusGeometry(0.045, 0.012, 6, 12), gold, 0.62, 0.82, -0.62);
-    chain.rotation.y = Math.PI / 2;
-    const serve = new THREE.Group();
-    [passenger, passengerHair, powder, line, straw, ravi, chain].forEach((obj) => {
-      root.remove(obj);
-      serve.add(obj);
-    });
-    root.add(serve);
     root.visible = false;
-    root.scale.setScalar(1.72);
-    root.position.set(roadX, 0, alleyZ - 7);
+    root.position.set(roadX, 0, alleyZ - 8);
     this.wGroup.add(root);
+    const ravi = this.addRagged(this.wGroup, -0.15, alleyZ, 1.05, {
+      skin: 0x3d2314, hair: 0x140e0c, shirt: 0xff2436, shorts: 0x141414, note: true, handoff: true, yaw: -Math.PI / 2,
+    });
+    ravi.visible = false;
     this.deal = {
-      root, wheels, lamps, serve, sideGlass, powder, rear,
-      roadX, alleyZ, gateX: west, yardX: west + 1.35,
-      stopX: 7.35, stopZ: 9.45,
+      root, wheels, lamps, sideGlass, ravi,
+      roadX, alleyZ, gateX: west,
+      raviHome: ravi.position.clone(),
+      meetX: roadX + 0.72,
+      meetZ: alleyZ + 0.42,
       clock: -1,
+      walk: -1,
     };
   }
 
@@ -2103,9 +2088,10 @@ class VillageEngine {
     const beat = this.whistleBeat || 0;
     const whistle = this.competition === "whistle" && this.whistleOutcome !== "jail";
     if (this.queue) {
-      const showQ = whistle && beat >= 7;
+      const showQ = whistle && beat >= 7 && beat < 9;
       this.queue.visible = showQ;
       if (this.queuePacket) this.queuePacket.visible = showQ && beat >= 8;
+      if (this.queuePacket2) this.queuePacket2.visible = showQ && beat >= 8;
       if (showQ) {
         this.queue.children.forEach((fig, i) => {
           if (!fig.userData || !fig.userData.homeColors) return;
@@ -2120,7 +2106,7 @@ class VillageEngine {
       }
     }
     if (this.gateLeaves) {
-      const target = whistle && beat >= 9 ? 1.15 : 0;
+      const target = whistle && beat >= 10 ? 1.05 : 0;
       this.gateLeaves.open += (target - this.gateLeaves.open) * Math.min(1, dt * 2.4);
       this.gateLeaves.left.rotation.y = this.gateLeaves.open;
       this.gateLeaves.right.rotation.y = -this.gateLeaves.open;
@@ -2131,73 +2117,62 @@ class VillageEngine {
     d.root.visible = run;
     if (!run) {
       d.clock = -1;
-      d.root.position.set(d.roadX, 0, d.alleyZ - 7);
+      d.walk = -1;
+      d.root.position.set(d.roadX, 0, d.alleyZ - 8);
       d.root.rotation.y = 0;
-      d.serve.visible = false;
+      if (d.ravi) {
+        d.ravi.visible = false;
+        d.ravi.position.copy(d.raviHome);
+      }
       if (this.citeTrees) this.citeTrees.forEach((tree) => { tree.visible = true; });
       return;
     }
-    const tRoad = 2.0;
-    const tAlley = 2.2;
-    const tYard = 1.3;
-    const tPad = 1.6;
-    const parkedAt = tRoad + tAlley + tYard + tPad;
+    const tRoad = 2.6;
     if (d.clock < 0) d.clock = 0;
-    if (this.reduced || beat >= 10) d.clock = parkedAt;
+    if (this.reduced || beat >= 10) d.clock = tRoad;
     else d.clock += dt;
     const ease = (k) => { const u = Math.max(0, Math.min(1, k)); return u * u * (3 - 2 * u); };
-    let x = d.roadX;
-    let z = d.alleyZ - 7;
-    let yaw = 0;
-    let moving = false;
-    if (d.clock < tRoad) {
-      const e = ease(d.clock / tRoad);
-      z = (d.alleyZ - 7) + 7 * e;
-      moving = e < 0.995;
-    } else if (d.clock < tRoad + tAlley) {
-      const e = ease((d.clock - tRoad) / tAlley);
-      x = d.roadX + (d.gateX - d.roadX) * e;
-      z = d.alleyZ;
-      yaw = -Math.PI / 2;
-      moving = e < 0.995;
-    } else if (d.clock < tRoad + tAlley + tYard) {
-      const e = ease((d.clock - tRoad - tAlley) / tYard);
-      x = d.gateX + (d.yardX - d.gateX) * Math.min(1, e);
-      z = d.alleyZ;
-      yaw = -Math.PI / 2;
-      moving = e < 0.995;
-    } else {
-      const e = ease((d.clock - tRoad - tAlley - tYard) / tPad);
-      x = d.yardX + (d.stopX - d.yardX) * Math.min(1, e);
-      z = d.alleyZ + (d.stopZ - d.alleyZ) * Math.min(1, e);
-      yaw = -1.15;
-      moving = e < 0.995;
-    }
+    const e = ease(d.clock / tRoad);
+    const x = d.roadX;
+    const z = (d.alleyZ - 8) + 8 * Math.min(1, e);
     d.root.position.set(x, 0, z);
-    d.root.rotation.y = yaw;
+    d.root.rotation.y = 0;
+    const moving = e < 0.995 && beat < 10;
     if (moving) d.wheels.forEach((wheel) => { wheel.rotation.x += dt * 10; });
-    const parked = d.clock >= parkedAt - 0.05;
-    const serve = beat >= 10 && parked;
-    d.serve.visible = serve;
-    if (d.sideGlass) d.sideGlass.visible = !serve;
-    if (d.rear) d.rear.visible = !serve;
+    const parked = d.clock >= tRoad - 0.05;
+    const deliver = beat >= 10 && parked;
+    if (d.ravi) {
+      d.ravi.visible = deliver;
+      if (!deliver) {
+        d.walk = -1;
+        d.ravi.position.copy(d.raviHome);
+        d.ravi.rotation.y = -Math.PI / 2;
+        d.ravi.rotation.z = 0;
+      } else {
+        if (d.walk < 0) d.walk = 0;
+        if (this.reduced) d.walk = 1;
+        else d.walk = Math.min(1, d.walk + dt / 2.8);
+        const u = ease(d.walk);
+        d.ravi.position.set(
+          d.raviHome.x + (d.meetX - d.raviHome.x) * u,
+          u < 0.98 ? Math.abs(Math.sin(t * 8)) * 0.03 : 0,
+          d.raviHome.z + (d.meetZ - d.raviHome.z) * u
+        );
+        d.ravi.rotation.y = -Math.PI / 2;
+        d.ravi.rotation.z = u > 0.98 ? 0.2 : 0;
+      }
+    }
     if (this.citeTrees) {
       this.citeTrees.forEach((tree) => {
-        const dx = tree.position.x - d.stopX;
-        const dz = tree.position.z - d.stopZ;
-        const blocking = Math.hypot(dx, dz) < 3.4 || (tree.position.z > 9.4 && tree.position.x > 5 && tree.position.x < 13.2);
-        tree.visible = !(run && blocking);
+        const dx = tree.position.x - d.roadX;
+        const dz = tree.position.z - d.alleyZ;
+        tree.visible = !(run && Math.hypot(dx, dz) < 1.35);
       });
     }
     d.lamps.forEach((lamp, i) => {
       lamp.material.emissiveIntensity = parked ? 0.55 : (Math.sin(t * 18 + i) > 0 ? 1.8 : 0.25);
     });
-    if (d.powder) {
-      const pulse = serve ? 0.85 + Math.sin(t * 6) * 0.15 : 0;
-      d.powder.material.opacity = pulse;
-      d.powder.scale.setScalar(serve ? 0.85 + Math.sin(t * 5) * 0.12 : 1);
-    }
-    if (d.sideGlass) d.sideGlass.position.y = serve ? 0.46 : 0.56;
+    if (d.sideGlass) d.sideGlass.position.y = deliver && d.walk > 0.98 ? 0.52 : 0.64;
   }
 
   tickWhistle(dt, t) {
@@ -2827,6 +2802,28 @@ function renderBoot() {
 
 function resultFor(houseId) { return state.results.find((r) => r.houseId === houseId) ?? null; }
 
+function stageMark() {
+  const c = state.competition;
+  let results;
+  let total;
+  let cleared;
+  let ok;
+  if (c === "whistle") { results = state.whistleResults; total = WHISTLE_CASES.length; cleared = roundTwoCleared(results); ok = (r) => r.correct; }
+  else if (c === "haven") { results = state.havenResults; total = HAVEN_CASES.length; cleared = roundThreeCleared(results); ok = (r) => r.correct; }
+  else if (c === "land") { results = state.landResults; total = LAND_CASES.length; cleared = roundFourCleared(results); ok = (r) => r.correct; }
+  else if (c === "fair") { results = state.fairResults; total = FAIR_CASES.length; cleared = roundFiveCleared(results); ok = (r) => r.correct; }
+  else if (c === "crop") { results = state.cropResults; total = CROP_CASES.length; cleared = roundSixCleared(results); ok = (r) => r.correct; }
+  else if (c === "wash") { results = state.washResults; total = WASH_CASES.length; cleared = roundSevenCleared(results); ok = (r) => r.correct; }
+  else if (c === "stamp") { results = state.stampResults; total = STAMP_CASES.length; cleared = roundEightCleared(results); ok = (r) => r.correct; }
+  else if (c === "roll") { results = state.rollResults; total = ROLL_CASES.length; cleared = roundNineCleared(results); ok = (r) => r.correct; }
+  else if (c === "oath") { results = state.oathResults; total = OATH_CASES.length; cleared = roundTenCleared(results); ok = (r) => r.correct; }
+  else { results = state.results; total = TENDERS.length; cleared = roundOneCleared(results, state.contractorId); ok = (r) => r.winnerId === state.contractorId; }
+  if (!results.length) return "\u2014";
+  if (cleared) return L("pass");
+  if (results.length >= total || results.some((r) => !ok(r))) return L("fail");
+  return "\u2014";
+}
+
 function renderHeader() {
   const whistle = state.competition === "whistle";
   const haven = state.competition === "haven";
@@ -2851,15 +2848,12 @@ function renderHeader() {
     bar.querySelector('[data-comp="oath"]').textContent = L("oath");
   });
   document.getElementById("phase-title").textContent = oath ? L("phaseOath") : roll ? L("phaseRoll") : stamp ? L("phaseStamp") : wash ? L("phaseWash") : crop ? L("phaseCrop") : fair ? L("phaseFair") : land ? L("phaseLand") : haven ? L("phaseHaven") : whistle ? L("phaseWhistle") : L("phaseTender");
-  document.getElementById("stat-label").textContent = oath ? L("oathScore") : roll ? L("rollScore") : stamp ? L("stampScore") : wash ? L("washScore") : crop ? L("cropScore") : fair ? L("fairScore") : land ? L("landScore") : haven ? L("havenScore") : whistle ? L("whistleScore") : L("contractsWon");
-  const won = state.results.filter((r) => r.winnerId === "you").length;
+  document.getElementById("stat-label").textContent = L("result");
   const stat = document.getElementById("stat-won");
-  stat.textContent = oath ? `${state.oathScore}/${OATH_CASES.length * 100}` : roll ? `${state.rollScore}/${ROLL_CASES.length * 100}` : stamp ? `${state.stampScore}/${STAMP_CASES.length * 100}` : wash ? `${state.washScore}/${WASH_CASES.length * 100}` : crop ? `${state.cropScore}/${CROP_CASES.length * 100}` : fair ? `${state.fairScore}/${FAIR_CASES.length * 100}` : land ? `${state.landScore}/${LAND_CASES.length * 100}` : haven ? `${state.havenScore}/${HAVEN_CASES.length * 100}` : whistle ? `${state.whistleScore}/${WHISTLE_CASES.length * 100}` : `${won}/${TENDERS.length}`;
+  const mark = stageMark();
+  stat.textContent = mark;
   stat.className = "mono";
-  stat.style.color = oath ? "#00a551" : roll ? "#2a6f8f" : stamp ? "#ea2839" : wash ? "#c9a15a" : crop ? "#6fbf73" : fair ? "#b388ff" : land ? "#e6c36a" : "";
-  if (haven) stat.className = "mono rose";
-  if (whistle) stat.className = "mono amber";
-  if (!oath && !roll && !stamp && !wash && !crop && !fair && !land && !haven && !whistle) stat.className = "mono green";
+  stat.style.color = mark === L("pass") ? "#1f8a4c" : mark === L("fail") ? "#9d1c2e" : "#8a8175";
   const swept = roundOneCleared(state.results, state.contractorId);
   const lineOpen = roundTwoCleared(state.whistleResults);
   const landOpen = roundThreeCleared(state.havenResults);
@@ -2954,27 +2948,7 @@ function renderHeader() {
     b.classList.toggle("whistle", whistle && b.classList.contains("on"));
     b.classList.toggle("haven", haven && b.classList.contains("on"));
   });
-  document.getElementById("contractor-chips").innerHTML = `
-    <span class="kicker mute">${oath
-      ? L("seatsHeld", { n: state.oathResults.filter((r) => r.correct).length, total: OATH_CASES.length })
-      : roll
-      ? L("namesHeld", { n: state.rollResults.filter((r) => r.correct).length, total: ROLL_CASES.length })
-      : stamp
-      ? L("filesHeld", { n: state.stampResults.filter((r) => r.correct).length, total: STAMP_CASES.length })
-      : wash
-      ? L("floorsHeld", { n: state.washResults.filter((r) => r.correct).length, total: WASH_CASES.length })
-      : crop
-      ? L("rowsHeld", { n: state.cropResults.filter((r) => r.correct).length, total: CROP_CASES.length })
-      : fair
-      ? L("gatesHeld", { n: state.fairResults.filter((r) => r.correct).length, total: FAIR_CASES.length })
-      : land
-        ? L("plotsHeld", { n: state.landResults.filter((r) => r.correct).length, total: LAND_CASES.length })
-      : haven
-        ? L("signalsHeld", { n: state.havenResults.filter((r) => r.correct).length, total: HAVEN_CASES.length })
-        : whistle
-          ? L("casesFiled", { n: state.whistleResults.length, total: WHISTLE_CASES.length })
-          : L("awardedN", { n: state.results.filter((r) => r.winnerId === "you").length })}</span>
-  `;
+  document.getElementById("contractor-chips").innerHTML = "";
 }
 
 function renderTender() {
@@ -2985,7 +2959,7 @@ function renderTender() {
   const locked = Boolean(result);
   const remaining = TENDERS.some((t) => !resultFor(t.houseId));
   const bidRows = result
-    ? `<div class="bid-row${result.winnerId === "you" ? " win" : " rejected"} me"><span class="who">${L("seatName")}${result.winnerId === "you" ? ` · ${L("awardedTag")}` : ` · ${L("rejectedTag")}`}</span><span class="mono">${result.playerScore}</span></div>`
+    ? `<div class="bid-row${result.winnerId === "you" ? " win" : " rejected"} me"><span class="who">${L("seatName")}${result.winnerId === "you" ? ` · ${L("pass")}` : ` · ${L("fail")}`}</span></div>`
     : "";
   document.getElementById("tender-panel").innerHTML = `
     <div class="side-head" style="display:flex;gap:.75rem;align-items:flex-start">
@@ -3080,7 +3054,7 @@ function renderHaven() {
           return `<button type="button" class="opt ${cls}" data-hopt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
         }).join("")}
       </div>
-      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holds") : L("looksAway")) : L("scoring")}</p>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("pass") : L("fail")) : ""}</p>
       <p class="rose" style="font-size:.8rem">${L("hotlineNote")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-haven" style="margin-top:.75rem">${L("nextSignal")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker ${state.havenOutcome === "line" ? "green" : state.havenOutcome === "lamp" ? "amber" : "crimson"}" style="margin:.5rem 0 0">${
@@ -3171,7 +3145,7 @@ function renderLand() {
           return `<button type="button" class="opt ${cls}" data-lopt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
         }).join("")}
       </div>
-      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsLand") : L("missLand")) : L("scoring")}</p>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("pass") : L("fail")) : ""}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-land" style="margin-top:.75rem;background:#e6c36a">${L("nextPlot")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.landOutcome === "held" ? "var(--green)" : state.landOutcome === "shift" ? "#e6c36a" : "var(--crimson)"}">${
         state.landOutcome === "held" ? L("doneHeld") : state.landOutcome === "shift" ? L("doneShift") : L("doneLost")
@@ -3261,7 +3235,7 @@ function renderFair() {
           return `<button type="button" class="opt ${cls}" data-fopt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
         }).join("")}
       </div>
-      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsFair") : L("missFair")) : L("scoring")}</p>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("pass") : L("fail")) : ""}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-fair" style="margin-top:.75rem;background:#b388ff">${L("nextGate")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.fairOutcome === "fair" ? "var(--green)" : state.fairOutcome === "half" ? "#b388ff" : "var(--crimson)"}">${
         state.fairOutcome === "fair" ? L("doneFair") : state.fairOutcome === "half" ? L("doneHalf") : L("doneBarred")
@@ -3342,7 +3316,7 @@ function renderCrop() {
           return `<button type="button" class="opt ${cls}" data-copt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
         }).join("")}
       </div>
-      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsCrop") : L("missCrop")) : L("scoring")}</p>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("pass") : L("fail")) : ""}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-crop" style="margin-top:.75rem;background:#6fbf73">${L("nextRow")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.cropOutcome === "grown" ? "var(--green)" : state.cropOutcome === "thin" ? "#6fbf73" : "var(--crimson)"}">${
         state.cropOutcome === "grown" ? L("doneGrown") : state.cropOutcome === "thin" ? L("doneThin") : L("doneBare")
@@ -3423,7 +3397,7 @@ function renderWash() {
           return `<button type="button" class="opt ${cls}" data-wopt2="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
         }).join("")}
       </div>
-      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsWash") : L("missWash")) : L("scoring")}</p>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("pass") : L("fail")) : ""}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-wash" style="margin-top:.75rem;background:#c9a15a">${L("nextFloor")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.washOutcome === "clean" ? "var(--green)" : state.washOutcome === "thin" ? "#c9a15a" : "var(--crimson)"}">${
         state.washOutcome === "clean" ? L("doneClean") : state.washOutcome === "thin" ? L("doneWashThin") : L("doneWash")
@@ -3505,7 +3479,7 @@ function renderStamp() {
           return `<button type="button" class="opt ${cls}" data-sopt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
         }).join("")}
       </div>
-      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsStamp") : L("missStamp")) : L("scoring")}</p>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("pass") : L("fail")) : ""}</p>
       <p style="font-size:.8rem">${L("stampRule")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-stamp" style="margin-top:.75rem;background:#ea2839">${L("nextFile")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.stampOutcome === "click" ? "var(--green)" : state.stampOutcome === "smear" ? "#ea2839" : "var(--crimson)"}">${
@@ -3587,7 +3561,7 @@ function renderRoll() {
           return `<button type="button" class="opt ${cls}" data-ropt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
         }).join("")}
       </div>
-      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsRoll") : L("missRoll")) : L("scoring")}</p>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("pass") : L("fail")) : ""}</p>
       <p style="font-size:.8rem">${L("rollRule")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-roll" style="margin-top:.75rem;background:#2a6f8f">${L("nextName")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.rollOutcome === "list" ? "var(--green)" : state.rollOutcome === "sheet" ? "#2a6f8f" : "var(--crimson)"}">${
@@ -3669,7 +3643,7 @@ function renderOath() {
           return `<button type="button" class="opt ${cls}" data-oopt="${opt.id}" ${locked ? "disabled" : ""}><span>${opt.id}</span><span>${opt.text}</span></button>`;
         }).join("")}
       </div>
-      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("holdsOath") : L("missOath")) : L("scoring")}</p>
+      <p class="kicker mute" style="margin-top:.8rem">${result ? (held ? L("pass") : L("fail")) : ""}</p>
       <p style="font-size:.8rem">${L("oathRule")}</p>
       ${result && remaining ? `<button type="button" class="cta" id="next-oath" style="margin-top:.75rem;background:#00a551">${L("nextSeat")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.oathOutcome === "whole" ? "var(--green)" : state.oathOutcome === "page" ? "#00a551" : "var(--crimson)"}">${
@@ -3733,9 +3707,7 @@ function renderCase() {
   const panel = document.getElementById("tender-panel");
   panel.classList.toggle("award", awarded);
   panel.classList.toggle("reject", locked && !awarded);
-  const rows = result
-    ? `<div class="bid-row${awarded ? " win" : " rejected"}"><span class="who">${L("youName")}</span><span class="mono">${result.playerScore}</span></div>`
-    : "";
+  const rows = "";
   panel.innerHTML = `
     <div class="side-head" style="display:flex;gap:.75rem;align-items:flex-start">
       <div style="flex:1;min-width:0">
@@ -3761,7 +3733,7 @@ function renderCase() {
     </div>
     <div class="side-foot">
       ${result ? `
-        <p class="kicker ${awarded ? "cyan" : "mute"}">${awarded ? L("reportHolds") : L("weakFile")}</p>
+        <p class="kicker ${awarded ? "cyan" : "mute"}">${awarded ? L("pass") : L("fail")}</p>
         ${rows}
         ${remaining ? `<button type="button" class="cta" id="next-case" style="margin-top:.75rem;background:var(--amber)">${L("nextCase")}</button>`
           : `<p class="kicker ${state.whistleOutcome === "jail" ? "cyan" : ""}" style="margin:.5rem 0 0">${
@@ -3770,7 +3742,7 @@ function renderCase() {
               : L("doneExile")
             }</p>${roundTwoCleared(state.whistleResults) && !campaignOpen() ? `<button type="button" class="cta open-next" id="open-haven">${L("openLine")}</button>` : ""}`}
       ` : `
-        <p class="kicker mute">${L("scoring")}</p>
+        <p class="kicker mute"></p>
       `}
     </div>`;
   document.querySelectorAll("[data-case]").forEach((btn) => {
@@ -3880,26 +3852,22 @@ function renderOutcome() {
     burn: { kicker: L("midScore"), title: L("burnTitle"), body: L("burnBody"), cls: "burn" },
     exile: { kicker: L("lowScore"), title: L("exileTitle"), body: L("exileBody"), cls: "reject" },
   }[state.whistleOutcome];
-  document.getElementById("outcome-kicker").textContent = copy.kicker;
+  document.getElementById("outcome-kicker").textContent = (
+    oath ? roundTenCleared(state.oathResults)
+    : roll ? roundNineCleared(state.rollResults)
+    : stamp ? roundEightCleared(state.stampResults)
+    : wash ? roundSevenCleared(state.washResults)
+    : crop ? roundSixCleared(state.cropResults)
+    : fair ? roundFiveCleared(state.fairResults)
+    : land ? roundFourCleared(state.landResults)
+    : haven ? roundThreeCleared(state.havenResults)
+    : roundTwoCleared(state.whistleResults)
+  ) ? L("pass") : L("fail");
   document.getElementById("outcome-title").textContent = copy.title;
   document.getElementById("outcome-body").textContent = copy.body;
-  document.getElementById("outcome-score").textContent = oath
-    ? L("scoreOath", { score: state.oathScore })
-    : roll
-    ? L("scoreRoll", { score: state.rollScore })
-    : stamp
-    ? L("scoreStamp", { score: state.stampScore })
-    : wash
-    ? L("scoreWash", { score: state.washScore })
-    : crop
-    ? L("scoreCrop", { score: state.cropScore })
-    : fair
-    ? L("scoreFair", { score: state.fairScore })
-    : land
-    ? L("scoreLand", { score: state.landScore })
-    : haven
-      ? L("scoreHaven", { score: state.havenScore }) + " · " + L("hotlineNote")
-      : L("scoreLine", { score: state.whistleScore });
+  const scoreEl = document.getElementById("outcome-score");
+  scoreEl.textContent = "";
+  scoreEl.hidden = true;
   document.getElementById("outcome-dismiss").textContent = oath && state.oathOutcome === "whole" ? L("prizeWin") : L("watchGrid");
   card.className = "panel boot-card " + copy.cls;
   el.hidden = false;
@@ -3914,7 +3882,6 @@ function renderBoard() {
   }
   board.hidden = false;
   if (state.competition === "oath") {
-    const seats = state.oathResults.filter((r) => r.correct).length;
     board.innerHTML = `
       <div class="side-head">
         <p class="kicker" style="color:#00a551">${L("boardOath")}</p>
@@ -3922,12 +3889,11 @@ function renderBoard() {
       </div>
       <div class="side-body">
         <p style="font-size:.8rem">${L("oathRule")}</p>
-        <p class="mono green">${L("seatsHeld", { n: seats, total: OATH_CASES.length })}</p>
+        <p class="mono green">${stageMark()}</p>
       </div>`;
     return;
   }
   if (state.competition === "roll") {
-    const names = state.rollResults.filter((r) => r.correct).length;
     board.innerHTML = `
       <div class="side-head">
         <p class="kicker" style="color:#2a6f8f">${L("boardRoll")}</p>
@@ -3935,12 +3901,11 @@ function renderBoard() {
       </div>
       <div class="side-body">
         <p style="font-size:.8rem">${L("rollRule")}</p>
-        <p class="mono green">${L("namesHeld", { n: names, total: ROLL_CASES.length })}</p>
+        <p class="mono green">${stageMark()}</p>
       </div>`;
     return;
   }
   if (state.competition === "stamp") {
-    const files = state.stampResults.filter((r) => r.correct).length;
     board.innerHTML = `
       <div class="side-head">
         <p class="kicker" style="color:#ea2839">${L("boardStamp")}</p>
@@ -3948,12 +3913,11 @@ function renderBoard() {
       </div>
       <div class="side-body">
         <p style="font-size:.8rem">${L("stampRule")}</p>
-        <p class="mono green">${L("filesHeld", { n: files, total: STAMP_CASES.length })}</p>
+        <p class="mono green">${stageMark()}</p>
       </div>`;
     return;
   }
   if (state.competition === "wash") {
-    const floors = state.washResults.filter((r) => r.correct).length;
     board.innerHTML = `
       <div class="side-head">
         <p class="kicker" style="color:#c9a15a">${L("boardWash")}</p>
@@ -3961,12 +3925,11 @@ function renderBoard() {
       </div>
       <div class="side-body">
         <p style="font-size:.8rem">${L("washRule")}</p>
-        <p class="mono green">${L("floorsHeld", { n: floors, total: WASH_CASES.length })}</p>
+        <p class="mono green">${stageMark()}</p>
       </div>`;
     return;
   }
   if (state.competition === "crop") {
-    const rows = state.cropResults.filter((r) => r.correct).length;
     board.innerHTML = `
       <div class="side-head">
         <p class="kicker" style="color:#6fbf73">${L("boardCrop")}</p>
@@ -3974,12 +3937,11 @@ function renderBoard() {
       </div>
       <div class="side-body">
         <p style="font-size:.8rem">${L("cropRule")}</p>
-        <p class="mono green">${L("rowsHeld", { n: rows, total: CROP_CASES.length })}</p>
+        <p class="mono green">${stageMark()}</p>
       </div>`;
     return;
   }
   if (state.competition === "fair") {
-    const gates = state.fairResults.filter((r) => r.correct).length;
     board.innerHTML = `
       <div class="side-head">
         <p class="kicker" style="color:#b388ff">${L("boardFair")}</p>
@@ -3987,12 +3949,11 @@ function renderBoard() {
       </div>
       <div class="side-body">
         <p style="font-size:.8rem">${L("fairRule")}</p>
-        <p class="mono green">${L("gatesHeld", { n: gates, total: FAIR_CASES.length })}</p>
+        <p class="mono green">${stageMark()}</p>
       </div>`;
     return;
   }
   if (state.competition === "land") {
-    const plots = state.landResults.filter((r) => r.correct).length;
     board.innerHTML = `
       <div class="side-head">
         <p class="kicker" style="color:#e6c36a">${L("boardLand")}</p>
@@ -4000,12 +3961,11 @@ function renderBoard() {
       </div>
       <div class="side-body">
         <p style="font-size:.8rem">${L("landRule")}</p>
-        <p class="mono green">${L("plotsHeld", { n: plots, total: LAND_CASES.length })}</p>
+        <p class="mono green">${stageMark()}</p>
       </div>`;
     return;
   }
   if (state.competition === "haven") {
-    const held = state.havenResults.filter((r) => r.correct).length;
     document.getElementById("board-panel").innerHTML = `
       <div class="side-head">
         <p class="kicker rose">${L("boardHaven")}</p>
@@ -4014,21 +3974,19 @@ function renderBoard() {
       </div>
       <div class="side-body">
         <p style="font-size:.85rem">${L("hotlineNote")}</p>
-        <p class="mono green">${L("signalsHeld", { n: held, total: HAVEN_CASES.length })}</p>
+        <p class="mono green">${stageMark()}</p>
       </div>`;
     return;
   }
-  const playerWins = state.results.filter((r) => r.winnerId === "you").length;
   document.getElementById("board-panel").innerHTML = `
     <div class="side-head">
       <p class="kicker cyan">${L("bidStandings")}</p>
       <h2>${L("seatName")}</h2>
-      <p class="mute" style="margin:.4rem 0 0;font-size:.75rem">${L("awardedN", { n: playerWins })}</p>
     </div>
     <div class="side-body">
       <div class="board-row me">
         <div class="who"><strong>${L("seatName")}</strong><span>${holdingsLabel("You", state.houses)}</span></div>
-        <span class="mono cyan">${playerWins * 100}</span>
+        <span class="mono cyan">${stageMark()}</span>
       </div>
     </div>`;
 }

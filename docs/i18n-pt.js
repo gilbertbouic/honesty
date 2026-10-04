@@ -17,7 +17,7 @@ export const UI_PT = {
   howtoKicker: "Como jogar",
   howtoTitle: "Instruções",
   howtoLead: "Lê isto antes de entrar. Cada etapa é um processo público. As tuas respostas mudam a cena.",
-  howtoScore: "A maior parte das etapas tem seis perguntas. A resposta certa vale +100. A resposta errada vale +20.",
+  howtoScore: "A maior parte das etapas tem seis perguntas. A etapa 2 tem dez. A resposta certa vale +100. A resposta errada vale +20.",
   howtoOutcomes: "Cada etapa termina numa de três cenas. A regra da aldeia cabe numa linha.",
   howtoOrder: "As etapas abrem por ordem. Termina todas as perguntas de uma etapa antes de abrir a seguinte.",
   howtoCap: "Depois de todas as etapas, encontra a liga\u00e7\u00e3o para support@mkweli.tech no jogo. Preenche o formul\u00e1rio para ganhar um pr\u00e9mio.",
@@ -63,7 +63,7 @@ export const UI_PT = {
   reportHolds: "Resposta certa · +100",
   weakFile: "Resposta errada · +20",
   scoring: "Pontuação",
-  scoringBody: "4–5 certas: {name} vai preso e os bens são apreendidos. 2–3: ele queima o teu alojamento. 0–1: és expulso da aldeia.",
+  scoringBody: "7–10 certas: {name} vai preso e os bens são apreendidos. 4–6: ele queima o teu alojamento. 0–3: és expulso da aldeia.",
   nextCase: "Processo seguinte",
   doneJail: "Dossier fechado · traficante preso",
   doneBurn: "Dossier fechado · alojamento queimado",
@@ -401,7 +401,7 @@ export const HOUSE_PT = {
 export const SHORT_PT = {
   "cwa-pump": "CWA", market: "Mercado", clinic: "Clínica", "block-a": "Bloco A", "block-b": "Bloco B",
   school: "Escola", power: "CEB", drain: "Dreno", light: "Luz", community: "Centro", hall: "Cívica", bus: "Bus",
-  car: "Carro", villa: "Villa", boat: "Barco", clothes: "Roupa", entourage: "Séquito", cash: "Numerário",
+  car: "Carro", villa: "Villa", boat: "Barco", clothes: "Roupa", entourage: "Séquito", cash: "Numerário", gate: "Portão", sachets: "Sacos", client: "Cliente", straw: "Palhinha",
   private: "Privado", believe: "Acreditar", control: "Controlo", grok: "IA", hotline: "Linha", child: "Criança",
   shore: "Orla", title: "Título", split: "Corte", wetland: "Pântano", sign: "Assinatura", idle: "Pousio",
   race: "Raça", creed: "Credo", sex: "Sexo", age: "Idade", colour: "Cor", notice: "Aviso",
@@ -431,6 +431,11 @@ export const CASE_PT = {
   clothes: qa("Roupa de marca", "Ravi passa a usar camisas de marca, um relógio de ouro e malas que custam mais de três meses de salário. Ri: «os clientes dão gorjetas em euros.» Um vizinho pede que cales. Qual é a ação lícita?", "Calar. A roupa é privada. Um homem veste-se como quer depois de uma boa época.", "Pedir o relógio emprestado para um casamento e devolvê-lo sem nota no processo.", "Registar o nível de vida sem explicação face ao salário declarado e juntá-lo à mesma denúncia de riqueza suspeita.", "Pedir-lhe uma ronda na loja e tratar isso como prova de que o dinheiro é limpo."),
   entourage: qa("O séquito", "Um grupo rotativo de mulheres estrangeiras vive agora na villa. Nenhuma tem família na aldeia, nenhuma mostra autorização de trabalho e nunca apanham o autocarro de dia. Ravi manda calar ou perdes o teto. Que fazes?", "Calar. Os convidados são privados. Um anfitrião recebe quem quiser.", "Aceitar dinheiro para «olhar para o outro lado no portão» e manter os nomes fora de qualquer processo.", "Entrar sozinho na villa à noite e mandar o grupo sair, sem processo policial.", "Denunciar alojamento e tráfico suspeitos à polícia. Não calar. Não enfrentar a villa sozinho."),
   cash: qa("Donativos em dinheiro", "Ravi passa a pagar em dinheiro dívidas da loja e propinas dos vizinhos, ainda com um salário declarado de Rs 15 000. Chama a isso caridade e pede que não escrevas nada. Qual é a ação lícita?", "Calar. Pagar a propina de um vizinho é um favor. Uma aldeia não fiscaliza um donativo.", "Ficar com uma parte do dinheiro para as tuas contas e deixar o resto fora do processo.", "Juntar estes donativos em dinheiro sem explicação à denúncia de riqueza suspeita. Um salário de Rs 15 000 não financia a cité. Não fiques com uma parte.", "Agradecer-lhe no grupo da aldeia para os donativos parecerem públicos e o processo fechar.")
+,
+  gate: qa("A fila no portão", "De noite o portão enche-se de gente mal vestida. Camisas rasgadas, pés descalços, notas pequenas na mão. Não são convidados. Estão à espera para comprar. Um primo diz que são só «amigos da praia». Qual é a ação lícita?", "Calar. Gente pobre a um portão é uma fila privada. Uma aldeia não os conta.", "Vender-lhes tu um saco para a fila andar e o beco ficar calmo.", "Denunciar a fila como tráfico de rua suspeito. Um salário declarado de Rs 15 000 não explica compradores ao portão. Não vendas. Não fiques com uma parte.", "Filmar-lhes as caras e publicar, para a aldeia humilhar os compradores e o processo fechar."),
+  sachets: qa("Os sacos", "Do alojamento vês pequenos sacos claros a passar entre as grades. O dinheiro entra. O saco sai. Um comprador dobra-se contra o muro e não se levanta. Ravi diz que são «doces da noite» e oferece-te um para esqueceres. Que fazes?", "Aceitar o saco. Um doce não é um processo.", "Denunciar as vendas de mão em mão e a pessoa caída. Não toques no saco. Não entres no pátio.", "Varrer os sacos para a vala antes da patrulha para o beco parecer limpo.", "Calar. O que um adulto compra a um portão é com ele."),
+  client: qa("O cliente da noite", "Um carro de luxo preto sai da estrada, passa o portão e entra no pátio. O motor fica ligado. Os vidros ficam fechados. Ninguém sai. Ravi aproxima-se do lado do condutor com um papel dobrado. Um vizinho diz que um parente traz dinheiro para a villa. Qual é a ação lícita?", "Calar. Um carro de luxo num pátio é uma visita de família se o motor está ligado.", "Abrir tu a porta e mandar o condutor embora, sem processo policial.", "Aceitar uma nota do Ravi para «vigiar a estrada» e manter a matrícula fora do processo.", "Denunciar o carro, a matrícula e a visita em dinheiro. Um comprador que não sai do lugar continua a ser uma venda. Não te aproximes do carro."),
+  straw: qa("À janela", "O vidro de trás desce. Ravi inclina-se com uma palhinha e uma linha de pó branco e encosta-a ao nariz do passageiro. O passageiro cheira. O vidro sobe. O carro sai. Ravi limpa as mãos e diz-te que não viste nada. Que fazes?", "Calar. O que se passa a uma janela é privado, e uma palhinha não é uma arma.", "Pedir a mesma linha para poderes dizer que só olhaste.", "Denunciar o que viste: pó branco, uma palhinha, um nariz, um carro de luxo e Ravi à janela. Não fiques com uma parte. Não o enfrentes.", "Limpar o rebordo para o pó desaparecer antes que mais alguém olhe.")
 };
 
 export const HAVEN_PT = {

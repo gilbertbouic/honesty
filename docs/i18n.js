@@ -1,4 +1,4 @@
-import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg6";
+import { UI_PT, HOUSE_PT, SHORT_PT, TENDER_PT, CASE_PT, HAVEN_PT, LAND_PT, FAIR_PT, CROP_PT, WASH_PT, STAMP_PT } from "./i18n-pt.js?v=vg7";
 
 // src/lib/game/i18n.ts
 var LANG_KEY = "village-grid-lang";
@@ -22,7 +22,7 @@ var UI = {
     howtoKicker: "How to play",
     howtoTitle: "Instructions",
     howtoLead: "Read this before you enter. Each stage is a public file. Your answers change the scene.",
-    howtoScore: "Most stages have six questions. The right answer scores +100. The wrong answer scores +20.",
+    howtoScore: "Most stages have six questions. Stage 2 has ten. The right answer scores +100. The wrong answer scores +20.",
     howtoOutcomes: "Each stage ends on one of three scenes. The village rule is one line.",
     howtoOrder: "Stages open in order. Finish every question on a stage before the next stage opens.",
     howtoCap: "After you finish every stage, find the link to support@mkweli.tech in the game. Fill in the form to win a prize.",
@@ -68,7 +68,7 @@ var UI = {
     reportHolds: "Right answer \xB7 +100",
     weakFile: "Wrong answer \xB7 +20",
     scoring: "Scoring",
-    scoringBody: "4\u20135 right: {name} is jailed and the assets are seized. 2\u20133: he burns your lodging. 0\u20131: you are chased out of the village.",
+    scoringBody: "7\u201310 right: {name} is jailed and the assets are seized. 4\u20136: he burns your lodging. 0\u20133: you are chased out of the village.",
     nextCase: "Next case",
     doneJail: "Brief complete \xB7 trafficker jailed",
     doneBurn: "Brief complete \xB7 lodging burned",
@@ -402,7 +402,7 @@ var UI = {
     howtoKicker: "Mode d'emploi",
     howtoTitle: "Instructions",
     howtoLead: "Lis ceci avant d'entrer. Chaque \xE9tape est un dossier public. Tes r\xE9ponses changent la sc\xE8ne.",
-    howtoScore: "La plupart des \xE9tapes ont six questions. Une bonne r\xE9ponse vaut +100. Une mauvaise r\xE9ponse vaut +20.",
+    howtoScore: "La plupart des \xE9tapes ont six questions. L'\xE9tape 2 en a dix. Une bonne r\xE9ponse vaut +100. Une mauvaise r\xE9ponse vaut +20.",
     howtoOutcomes: "Chaque \xE9tape se termine par une des trois sc\xE8nes. La r\xE8gle du village tient en une ligne.",
     howtoOrder: "Les \xE9tapes s'ouvrent dans l'ordre. Termine chaque question d'une \xE9tape avant d'ouvrir la suivante.",
     howtoCap: "Apr\xE8s toutes les \xE9tapes, trouve le lien vers support@mkweli.tech dans le jeu. Remplis le formulaire pour gagner un prix.",
@@ -448,7 +448,7 @@ var UI = {
     reportHolds: "Bonne r\xE9ponse \xB7 +100",
     weakFile: "Mauvaise r\xE9ponse \xB7 +20",
     scoring: "Bar\xE8me",
-    scoringBody: "4\u20135 justes : {name} en prison, biens saisis. 2\u20133 : il br\xFBle ton logement. 0\u20131 : tu es chass\xE9 du village.",
+    scoringBody: "7\u201310 justes : {name} en prison, biens saisis. 4\u20136 : il br\xFBle ton logement. 0\u20133 : tu es chass\xE9 du village.",
     nextCase: "Dossier suivant",
     doneJail: "Dossier clos \xB7 trafiquant emprisonn\xE9",
     doneBurn: "Dossier clos \xB7 logement br\xFBl\xE9",
@@ -961,7 +961,49 @@ var CASE_FR = {
       C: "Joindre ces dons en liquide inexpliqu\xE9s au signalement de richesse suspecte. Un salaire de Rs 15 000 ne finance pas la cit\xE9. Ne prends pas de part.",
       D: "Le remercier dans le groupe du village pour que les dons paraissent publics et que le dossier se ferme."
     }
+  },
+
+  gate: {
+    title: "La file au portail",
+    question: "La nuit, le portail se remplit de gens mal habillés. Chemises déchirées, pieds nus, petites coupures à la main. Ce ne sont pas des invités. Ils attendent pour acheter. Un cousin dit que ce sont seulement « des amis de la plage ». Quelle est l'action licite ?",
+    options: {
+      A: "Se taire. Des gens pauvres à un portail sont une file privée. Un village ne les compte pas.",
+      B: "Leur vendre un sachet toi-même pour que la file avance et que la ruelle reste calme.",
+      C: "Signaler la file comme un trafic de rue suspect. Un salaire déclaré de Rs 15 000 n'explique pas des acheteurs au portail. Ne vends pas. Ne prends pas de part.",
+      D: "Filmer leurs visages et les publier, pour que le village humilie les acheteurs et que le dossier se ferme."
+    }
+  },
+  sachets: {
+    title: "Les sachets",
+    question: "Depuis le logement tu vois de petits sachets clairs passer entre les barreaux. L'argent entre. Le sachet sort. Un acheteur s'affaisse contre le mur et ne se relève pas. Ravi dit que ce sont « des bonbons pour la nuit » et t'en offre un pour oublier. Que dois-tu faire ?",
+    options: {
+      A: "Prendre le sachet. Un bonbon n'est pas un dossier.",
+      B: "Signaler les ventes de la main à la main et la personne effondrée. Ne touche pas au sachet. N'entre pas dans la cour.",
+      C: "Balayer les sachets dans le drain avant la patrouille pour que la ruelle paraisse propre.",
+      D: "Se taire. Ce qu'un adulte achète à un portail le regarde."
+    }
+  },
+  client: {
+    title: "Le client de nuit",
+    question: "Une voiture de luxe noire quitte la route, passe le portail et entre dans la cour. Le moteur reste allumé. Les vitres restent fermées. Personne ne descend. Ravi s'approche du côté conducteur avec un petit pli de papier. Un voisin dit qu'un parent dépose de l'argent pour la villa. Quelle est l'action licite ?",
+    options: {
+      A: "Se taire. Une voiture de luxe dans une cour est une visite de famille si le moteur tourne.",
+      B: "Ouvrir la portière toi-même et dire au conducteur de partir, sans dossier de police.",
+      C: "Prendre un billet de Ravi pour « surveiller la route » et garder la plaque hors du dossier.",
+      D: "Signaler la voiture, la plaque et la visite en liquide. Un acheteur qui ne quitte pas le siège est quand même une vente. N'approche pas la voiture."
+    }
+  },
+  straw: {
+    title: "À la vitre",
+    question: "La vitre arrière descend. Ravi se penche avec une paille et une ligne de poudre blanche et la tient au nez du passager. Le passager sniffe. La vitre remonte. La voiture sort. Ravi s'essuie les mains et te dit que tu n'as rien vu. Que dois-tu faire ?",
+    options: {
+      A: "Se taire. Ce qui se passe à une vitre est privé, et une paille n'est pas une arme.",
+      B: "Demander la même ligne pour pouvoir dire que tu n'as fait que regarder.",
+      C: "Signaler ce que tu as vu : poudre blanche, une paille, un nez, une voiture de luxe, et Ravi à la vitre. Ne prends pas de part. Ne l'affronte pas.",
+      D: "Essuyer le rebord pour que la poudre disparaisse avant qu'un autre ne regarde."
+    }
   }
+
 };
 var HOUSE_FR = {
   "cwa-pump": { name: "Station de pompage CWA", hint: "R\xE9seau d'eau \xB7 SPEC-01" },
@@ -996,6 +1038,10 @@ var SHORT_FR = {
   clothes: "V\xEAtements",
   entourage: "Entourage",
   cash: "Liquide",
+  gate: "Portail",
+  sachets: "Sachets",
+  client: "Client",
+  straw: "Paille",
   private: "Priv\xE9",
   believe: "Croire",
   control: "Contr\xF4le",

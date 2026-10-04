@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg100";
+import { t as tr, localizeTender, localizeCase, localizeHaven, localizeLand, localizeFair, localizeCrop, localizeWash, localizeStamp, localizeRoll, localizeOath, houseLabel, houseHint, shortLabel, loadLang, LANG_KEY } from "./i18n.js?v=vg101";
 import { HavenScene } from "./haven.js?v=vg49";
 import { LandScene } from "./land.js?v=vg92";
 import { FairScene } from "./fair.js?v=vg71";
@@ -51,7 +51,7 @@ const HAVEN_WRONG = 20;
 const LAND_CORRECT = 100;
 const LAND_WRONG = 20;
 const SHORT = { "cwa-pump": "CWA", "block-a": "Blk A", "block-b": "Blk B", school: "School", power: "CEB", drain: "Drain", light: "Light", community: "Hall", market: "Mkt", clinic: "Clinic", hall: "Civic", bus: "Bus" };
-const WSHORT = { car: "Car", villa: "Villa", boat: "Boat", clothes: "Clothes", entourage: "Entourage", cash: "Cash" };
+const WSHORT = { car: "Car", villa: "Villa", boat: "Boat", clothes: "Clothes", entourage: "Entourage", cash: "Cash", gate: "Gate", sachets: "Sachets", client: "Client", straw: "Straw" };
 
 const CONTRACTORS = [
   { id: "kuzin", name: "Kuzin", sector: "civil", score: 0, holding: "District Clinic" },
@@ -242,6 +242,42 @@ const WHISTLE_CASES = [
       { id: "D", text: "Thank him in the village group so the gifts look public and the file can close." },
     ],
     correct: "C", npcReports: { kuzin: 74, cheri: 68, malin: 57, kokin: 83 } },
+  { id: "gate", spec: "CASE-07", title: "The gate queue",
+    question: "After dark the gate fills with poorly dressed people. Torn shirts, bare feet, hands out with small notes. They are not guests. They are waiting to buy. A cousin says they are only “friends from the beach.” What is the lawful action?",
+    options: [
+      { id: "A", text: "Stay silent. Poor people at a gate are a private queue. A village should not count them." },
+      { id: "B", text: "Sell them a sachet yourself so the queue moves and the lane stays quiet." },
+      { id: "C", text: "Report the queue as suspected street dealing. A declared wage of Rs 15,000 does not explain buyers at the gate. Do not sell. Do not take a cut." },
+      { id: "D", text: "Film their faces and post them, so the village shames the buyers and the file can close." },
+    ],
+    correct: "C", npcReports: { kuzin: 71, cheri: 63, malin: 80, kokin: 58 } },
+  { id: "sachets", spec: "CASE-08", title: "The sachets",
+    question: "From the lodging you watch small clear packets pass through the bars. Cash goes in. The packet goes out. One buyer folds against the wall and does not get up. Ravi says they are “sweets for the night” and offers you a packet to forget it. What must you do?",
+    options: [
+      { id: "A", text: "Take the packet. One sweet is not a file." },
+      { id: "B", text: "Report the hand-to-hand sales and the person who collapsed. Do not touch the packet. Do not enter the yard." },
+      { id: "C", text: "Sweep the packets into the drain before the patrol so the lane looks clean." },
+      { id: "D", text: "Stay silent. What a grown person buys at a gate is their own business." },
+    ],
+    correct: "B", npcReports: { kuzin: 64, cheri: 77, malin: 69, kokin: 82 } },
+  { id: "client", spec: "CASE-09", title: "The night client",
+    question: "A black luxury car rolls off the road, through the gate, and into the yard. The engine stays on. The windows stay up. Nobody gets out. Ravi walks to the driver’s side with a small fold of paper. A neighbour says a relative is dropping cash for the villa. What is the lawful action?",
+    options: [
+      { id: "A", text: "Stay silent. A luxury car in a yard is a family visit if the engine is running." },
+      { id: "B", text: "Open the door yourself and tell the driver to leave, with no police file." },
+      { id: "C", text: "Take a note from Ravi to “watch the road” and keep the plate off the file." },
+      { id: "D", text: "Report the car, the plate, and the cash visit. A buyer who will not leave the seat is still a sale. Do not approach the car." },
+    ],
+    correct: "D", npcReports: { kuzin: 79, cheri: 60, malin: 74, kokin: 67 } },
+  { id: "straw", spec: "CASE-10", title: "At the window",
+    question: "The rear window drops. Ravi leans in with a straw and a line of white powder and holds it to the passenger’s nose. The passenger sniffs. The window goes up. The car rolls out. Ravi wipes his hands and tells you that you saw nothing. What must you do?",
+    options: [
+      { id: "A", text: "Stay silent. What happens at a car window is private, and a straw is not a weapon." },
+      { id: "B", text: "Ask for the same line so you can say you only watched." },
+      { id: "C", text: "Report what you saw: white powder, a straw, a nose, a luxury car, and Ravi at the window. Do not take a share. Do not confront him." },
+      { id: "D", text: "Wipe the sill so the powder is gone before anyone else looks." },
+    ],
+    correct: "C", npcReports: { kuzin: 68, cheri: 75, malin: 83, kokin: 61 } },
 ];
 function whistleCaseById(id) { return WHISTLE_CASES.find((c) => c.id === id) ?? WHISTLE_CASES[0]; }
 function firstOpenWhistleId(results) {
@@ -250,8 +286,9 @@ function firstOpenWhistleId(results) {
 }
 function whistleOutcomeOf(score, answered) {
   if (answered < WHISTLE_CASES.length) return "open";
-  if (score >= 400) return "jail";
-  if (score >= 200) return "burn";
+  // 7–10 correct jails, 4–6 burns the lodging, 0–3 exiles. Wrong answers score 20.
+  if (score >= 760) return "jail";
+  if (score >= 520) return "burn";
   return "exile";
 }
 function whistleTotal(id, results) { return results.reduce((sum, r) => sum + (r.reports[id] ?? 0), 0); }
@@ -270,6 +307,9 @@ function roundOneCleared(results, contractorId) {
 }
 function roundTwoCleared(results) {
   return results.length >= WHISTLE_CASES.length && results.every((r) => r.correct);
+}
+function campaignOpen() {
+  return roundNineCleared(state.rollResults);
 }
 const HAVEN_CASES = [
   { id: "private", spec: "LINE-01", title: "Not a private matter",
@@ -1092,6 +1132,8 @@ class VillageEngine {
 
     this.competition = "tender";
     this.whistleOutcome = "open";
+    this.whistleBeat = 0;
+    this.whistleBand = 0;
     this.buildWhistle();
     this.haven = new HavenScene(this.scene);
     this.land = new LandScene(this.scene);
@@ -1127,6 +1169,9 @@ class VillageEngine {
     this.competition = next.competition || "tender";
     this.whistleOutcome = next.whistleOutcome || "open";
     this.whistleCorrect = next.whistleCorrect || 0;
+    const prevBand = this.whistleBand || 0;
+    this.whistleBeat = next.whistleBeat || 0;
+    this.whistleBand = this.whistleBeat >= 9 ? 2 : this.whistleBeat >= 7 ? 1 : 0;
     this.havenOutcome = next.havenOutcome || "open";
     this.havenCorrect = next.havenCorrect || 0;
     this.landOutcome = next.landOutcome || "open";
@@ -1160,7 +1205,7 @@ class VillageEngine {
     this.controls.autoRotate = !mobile && !this.holdOrbit && !next.reducedMotion && this.competition !== "haven" && !solo && this.whistleOutcome !== "exile";
     this.rain.visible = !next.reducedMotion && this.competition === "tender";
     if (switched) this.holdOrbit = false;
-    if (switched || this.whistleOutcome !== "open" || this.havenOutcome !== "open") this.frameCompetition();
+    if (switched || this.whistleOutcome !== "open" || this.havenOutcome !== "open" || (this.competition === "whistle" && prevBand !== this.whistleBand)) this.frameCompetition();
   }
 
   openBand() {
@@ -1198,7 +1243,7 @@ class VillageEngine {
     const vFov = (fov * Math.PI) / 180;
     const aspect = band.w / band.h;
     const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
-    const dist = Math.max(radius / Math.tan((vFov * fracH * 0.62) / 2), radius / Math.tan((hFov * fracW * 0.7) / 2), 7);
+    const dist = Math.max(radius / Math.tan((vFov * fracH * 0.62) / 2), radius / Math.tan((hFov * fracW * 0.7) / 2), radius < 3.6 ? 4.4 : 7);
     const dir = view.clone().normalize();
     const pos = focus.clone().addScaledVector(dir, dist);
     pos.y += dist * 0.05;
@@ -1306,7 +1351,15 @@ class VillageEngine {
       fog.color.set(0x8ea4b8);
       this.scene.background = new THREE.Color(0x8ea4b8);
     }
-    this.aimStage(new THREE.Vector3(5.2, 1.55, 6.7), view, 4.15);
+    const beat = this.whistleBeat || 0;
+    const deal = beat >= 9;
+    const gate = beat >= 7 && !deal;
+    const viewDeal = new THREE.Vector3(1.4, 8.8, 3.6);
+    this.aimStage(
+      deal ? new THREE.Vector3(8.15, 0.95, 10.15) : gate ? new THREE.Vector3(3.6, 1.05, 5.25) : new THREE.Vector3(5.2, 1.55, 6.7),
+      deal ? viewDeal : view,
+      deal ? 1.45 : gate ? 3.15 : 4.15
+    );
   }
 
   paintParts(parts, color, fillOp = 0.22, lineOp = 0.85) {
@@ -1385,6 +1438,8 @@ class VillageEngine {
     });
     g.position.set(x, 0, z);
     this.wGroup.add(g);
+    if (!this.citeTrees) this.citeTrees = [];
+    this.citeTrees.push(g);
     return g;
   }
 
@@ -1778,8 +1833,10 @@ class VillageEngine {
     this.addWBox(this.wGroup, this.wGeos, this.compoundWall, west, 1.46, gateZ, 0.08, 0.08, gateHalf * 2, postS);
     const leafS = { fill: 0.94, depth: true, color: 0x3a3d42 };
     const leftLeaf = this.addWBox(this.wGroup, this.wGeos, this.compoundWall, west - 0.02, 0.62, gateZ + 0.22, 0.05, 1.12, 0.38, leafS);
+    leftLeaf.userData.hinge = true;
     leftLeaf.rotation.y = 0.55;
     const rightLeaf = this.addWBox(this.wGroup, this.wGeos, this.compoundWall, west - 0.02, 0.62, gateZ - 0.22, 0.05, 1.12, 0.38, leafS);
+    this.gateLeaves = { left: leftLeaf, right: rightLeaf, open: 0 };
     rightLeaf.rotation.y = -0.6;
     const alleyZ = gateZ;
     const alleyLen0 = west - 3.4;
@@ -1797,9 +1854,11 @@ class VillageEngine {
       this.addWBox(this.wGroup, this.wGeos, this.cite, roadX, 0.055, alleyZ + i * 1.15, 0.08, 0.02, 0.45, { fill: 0.95, depth: true, color: 0xd5d6d2 });
     }
     this.buildPoliceCar(roadX, alleyZ, west - 1.15);
+    this.buildQueue(west, gateZ);
+    this.buildDeal(roadX, alleyZ, west);
     this.addCiteTree(west - 0.55, alleyZ - 0.95, 1.12);
     this.addCiteTree(west - 0.35, alleyZ + 0.88, 1.28);
-    this.addCiteTree(west - 1.15, alleyZ - 0.22, 0.95);
+    this.addCiteTree(west - 1.9, alleyZ - 0.95, 0.95);
     const lx = LODGING.x, lz = LODGING.z;
     const lodS = { fill: 0.92, depth: true, color: 0x8a4b32 };
     const W = 2.15, D = 1.75, H = 1.05, wall = 0.1, winW = 0.78, winH = 0.52, winY = 0.58;
@@ -1849,7 +1908,8 @@ class VillageEngine {
       const inLodge = Math.hypot(tx - lx, tz - lz) < 1.8;
       const inRoad = Math.abs(tx - roadX) < 1.1 && Math.abs(tz - alleyZ) < 7.4;
       const inSight = tx > lx && tx < x && tz < lz + 0.4 && tz > z - 0.2;
-      if (inAlley || inYard || inLodge || inRoad || inSight) return;
+      const nearGate = Math.hypot(tx - west, tz - gateZ) < 2.6 && tx < west + 0.6;
+      if (inAlley || inYard || inLodge || inRoad || inSight || nearGate) return;
       this.addCiteTree(tx, tz, 0.85 + (i % 5) * 0.18);
     });
     const spots = [
@@ -1891,13 +1951,262 @@ class VillageEngine {
     this.scene.add(this.wGroup);
   }
 
+
+  addRagged(parent, x, z, scale, look) {
+    const g = new THREE.Group();
+    const skin = new THREE.MeshStandardMaterial({ color: look.skin, roughness: 0.9, transparent: true });
+    const hair = new THREE.MeshStandardMaterial({ color: look.hair, roughness: 0.95, transparent: true });
+    const shirt = new THREE.MeshStandardMaterial({ color: look.shirt, roughness: 0.96, transparent: true });
+    const shorts = new THREE.MeshStandardMaterial({ color: look.shorts, roughness: 0.95, transparent: true });
+    const note = new THREE.MeshStandardMaterial({ color: 0xe6d7a8, roughness: 0.8, transparent: true });
+    const put = (geo, material, px, y, pz) => {
+      this.wGeos.push(geo);
+      const mesh = new THREE.Mesh(geo, material);
+      mesh.position.set(px, y, pz);
+      mesh.castShadow = true;
+      g.add(mesh);
+      return mesh;
+    };
+    const s = scale;
+    const stand = look.sit ? 0.42 : 1;
+    put(new THREE.CapsuleGeometry(0.035 * s, 0.28 * s * stand, 3, 5), skin, -0.055 * s, 0.22 * s * stand, look.sit ? 0.12 * s : 0);
+    put(new THREE.CapsuleGeometry(0.035 * s, 0.28 * s * stand, 3, 5), skin, 0.055 * s, 0.22 * s * stand, look.sit ? 0.08 * s : 0);
+    put(new THREE.BoxGeometry(0.22 * s, 0.1 * s, 0.14 * s), shorts, 0.01 * s, (look.sit ? 0.32 : 0.42) * s, 0);
+    put(new THREE.BoxGeometry(0.15 * s, 0.22 * s, 0.09 * s), skin, 0, (look.sit ? 0.48 : 0.6) * s, 0.01 * s);
+    const rag = put(new THREE.BoxGeometry(0.17 * s, 0.12 * s, 0.1 * s), shirt, 0.03 * s, (look.sit ? 0.52 : 0.66) * s, 0.02 * s);
+    rag.rotation.z = look.lean || 0;
+    put(new THREE.CapsuleGeometry(0.025 * s, 0.18 * s, 3, 4), skin, 0.13 * s, (look.sit ? 0.46 : 0.55) * s, 0.04 * s);
+    put(new THREE.CapsuleGeometry(0.025 * s, 0.18 * s, 3, 4), skin, -0.12 * s, (look.sit ? 0.44 : 0.52) * s, 0.02 * s);
+    put(new THREE.SphereGeometry(0.075 * s, 10, 8), skin, 0, (look.sit ? 0.66 : 0.82) * s, 0.04 * s);
+    put(new THREE.SphereGeometry(0.08 * s, 10, 8), hair, 0, (look.sit ? 0.7 : 0.86) * s, -0.01 * s);
+    if (look.note) {
+      put(new THREE.BoxGeometry(0.07 * s, 0.012 * s, 0.04 * s), note, 0.16 * s, (look.sit ? 0.4 : 0.48) * s, 0.08 * s);
+    }
+    g.position.set(x, look.sit ? 0.02 : 0, z);
+    g.rotation.z = (look.lean || 0) * 0.35;
+    g.rotation.y = look.yaw ?? Math.PI / 2;
+    g.userData.mats = [skin, hair, shirt, shorts, note];
+    g.userData.homeColors = g.userData.mats.map((m) => m.color.clone());
+    g.userData.sit = Boolean(look.sit);
+    parent.add(g);
+    return g;
+  }
+
+  buildQueue(west, gateZ) {
+    this.queue = new THREE.Group();
+    this.wGroup.add(this.queue);
+    const looks = [
+      { skin: 0x8d5524, hair: 0x1a120c, shirt: 0xd8d0c4, shorts: 0x3a342c, lean: 0.12, note: true, yaw: Math.PI / 2 },
+      { skin: 0xc68642, hair: 0x2a2118, shirt: 0x8a9098, shorts: 0x2c2824, lean: -0.18, sit: true, yaw: 0.9 },
+      { skin: 0x3d2314, hair: 0x0e0c0a, shirt: 0xe6d2a8, shorts: 0x3e4638, lean: 0.2, note: true, yaw: 1.15 },
+      { skin: 0xe0b080, hair: 0x4a3728, shirt: 0xc9b7a4, shorts: 0x2a2c30, lean: -0.08, yaw: 0.6 },
+    ];
+    const spots = [
+      [west - 2.15, gateZ],
+      [west - 2.85, gateZ - 0.42],
+      [west - 2.75, gateZ + 0.48],
+      [west - 3.45, gateZ + 0.08],
+    ];
+    this.queueHome = [];
+    looks.forEach((look, i) => {
+      const fig = this.addRagged(this.queue, spots[i][0], spots[i][1], 2.15, look);
+      this.queueHome.push(fig.position.clone());
+    });
+    const pack = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, 0.04, 0.025),
+      new THREE.MeshStandardMaterial({ color: 0xf4f5f3, roughness: 0.35, transparent: true, opacity: 0.92 })
+    );
+    pack.position.set(west - 2.0, 1.35, gateZ + 0.15);
+    this.queue.add(pack);
+    this.queuePacket = pack;
+    this.queue.visible = false;
+  }
+
+  buildDeal(roadX, alleyZ, west) {
+    const root = new THREE.Group();
+    const paint = new THREE.MeshStandardMaterial({ color: 0x0c0d10, roughness: 0.28, metalness: 0.62 });
+    const gold = new THREE.MeshStandardMaterial({ color: 0xc4a35a, roughness: 0.32, metalness: 0.7 });
+    const glass = new THREE.MeshStandardMaterial({ color: 0x14181c, roughness: 0.08, metalness: 0.55, transparent: true, opacity: 0.72 });
+    const lampMat = new THREE.MeshStandardMaterial({ color: 0xfff1c9, emissive: 0xffe2a0, emissiveIntensity: 0.4, roughness: 0.2 });
+    const put = (geo, mat, x, y, z) => {
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      root.add(mesh);
+      return mesh;
+    };
+    put(new THREE.BoxGeometry(0.92, 0.28, 2.35), paint, 0, 0.32, 0);
+    put(new THREE.BoxGeometry(0.86, 0.2, 0.72), paint, 0, 0.5, 0.42);
+    put(new THREE.BoxGeometry(0.9, 0.035, 2.2), gold, 0, 0.22, 0);
+    const rear = put(new THREE.BoxGeometry(0.78, 0.16, 0.42), glass, 0, 0.56, -0.72);
+    put(new THREE.BoxGeometry(0.7, 0.12, 0.4), glass, 0, 0.54, 0.48);
+    const sideGlass = put(new THREE.BoxGeometry(0.04, 0.14, 0.36), glass, 0.44, 0.54, 0.46);
+    const lamps = [
+      put(new THREE.BoxGeometry(0.16, 0.08, 0.06), lampMat, -0.28, 0.34, 1.16),
+      put(new THREE.BoxGeometry(0.16, 0.08, 0.06), lampMat, 0.28, 0.34, 1.16),
+    ];
+    const wheels = [];
+    [-0.72, 0.78].forEach((z) => {
+      [-0.42, 0.42].forEach((x) => {
+        const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.1, 12), new THREE.MeshStandardMaterial({ color: 0x1a1c1f, roughness: 0.5 }));
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(x, 0.16, z);
+        root.add(wheel);
+        wheels.push(wheel);
+      });
+    });
+    const skin = new THREE.MeshStandardMaterial({ color: 0xd7a574, roughness: 0.6 });
+    const hair = new THREE.MeshStandardMaterial({ color: 0x1a120c, roughness: 0.8 });
+    const passenger = put(new THREE.SphereGeometry(0.12, 12, 10), skin, 0.02, 0.62, -0.72);
+    const passengerHair = put(new THREE.SphereGeometry(0.11, 10, 8), hair, 0.0, 0.7, -0.78);
+    const powder = put(
+      new THREE.SphereGeometry(0.09, 10, 8),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1, roughness: 0.2 }),
+      0.2, 0.72, -0.68
+    );
+    const line = put(
+      new THREE.BoxGeometry(0.28, 0.022, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xf7f7f5, emissiveIntensity: 0.55, roughness: 0.3 }),
+      0.48, 0.78, -0.68
+    );
+    const straw = put(
+      new THREE.CylinderGeometry(0.028, 0.028, 0.62, 8),
+      new THREE.MeshStandardMaterial({ color: 0xfffaf2, roughness: 0.25 }),
+      0.46, 0.82, -0.68
+    );
+    straw.rotation.z = Math.PI / 2;
+    const ravi = this.addRagged(root, 0.86, -0.66, 1.55, {
+      skin: 0x3d2314, hair: 0x140e0c, shirt: 0xff2436, shorts: 0x141414, lean: 0.9, yaw: -Math.PI / 2,
+    });
+    ravi.position.y = 0;
+    const chain = put(new THREE.TorusGeometry(0.045, 0.012, 6, 12), gold, 0.62, 0.82, -0.62);
+    chain.rotation.y = Math.PI / 2;
+    const serve = new THREE.Group();
+    [passenger, passengerHair, powder, line, straw, ravi, chain].forEach((obj) => {
+      root.remove(obj);
+      serve.add(obj);
+    });
+    root.add(serve);
+    root.visible = false;
+    root.scale.setScalar(1.72);
+    root.position.set(roadX, 0, alleyZ - 7);
+    this.wGroup.add(root);
+    this.deal = {
+      root, wheels, lamps, serve, sideGlass, powder, rear,
+      roadX, alleyZ, gateX: west, yardX: west + 1.35,
+      stopX: 7.35, stopZ: 9.45,
+      clock: -1,
+    };
+  }
+
+  tickDeal(dt, t) {
+    const beat = this.whistleBeat || 0;
+    const whistle = this.competition === "whistle" && this.whistleOutcome !== "jail";
+    if (this.queue) {
+      const showQ = whistle && beat >= 7;
+      this.queue.visible = showQ;
+      if (this.queuePacket) this.queuePacket.visible = showQ && beat >= 8;
+      if (showQ) {
+        this.queue.children.forEach((fig, i) => {
+          if (!fig.userData || !fig.userData.homeColors) return;
+          const home = this.queueHome[i];
+          if (!home) return;
+          const sit = fig.userData.sit && beat >= 8;
+          fig.position.x = home.x + Math.sin(t * 0.7 + i) * 0.03;
+          fig.position.y = sit ? 0.0 : home.y;
+          fig.position.z = home.z;
+          fig.rotation.z = (fig.userData.sit ? 0.22 : 0) + Math.sin(t * 1.1 + i) * 0.03;
+        });
+      }
+    }
+    if (this.gateLeaves) {
+      const target = whistle && beat >= 9 ? 1.15 : 0;
+      this.gateLeaves.open += (target - this.gateLeaves.open) * Math.min(1, dt * 2.4);
+      this.gateLeaves.left.rotation.y = this.gateLeaves.open;
+      this.gateLeaves.right.rotation.y = -this.gateLeaves.open;
+    }
+    const d = this.deal;
+    if (!d) return;
+    const run = whistle && beat >= 9;
+    d.root.visible = run;
+    if (!run) {
+      d.clock = -1;
+      d.root.position.set(d.roadX, 0, d.alleyZ - 7);
+      d.root.rotation.y = 0;
+      d.serve.visible = false;
+      if (this.citeTrees) this.citeTrees.forEach((tree) => { tree.visible = true; });
+      return;
+    }
+    const tRoad = 2.0;
+    const tAlley = 2.2;
+    const tYard = 1.3;
+    const tPad = 1.6;
+    const parkedAt = tRoad + tAlley + tYard + tPad;
+    if (d.clock < 0) d.clock = 0;
+    if (this.reduced || beat >= 10) d.clock = parkedAt;
+    else d.clock += dt;
+    const ease = (k) => { const u = Math.max(0, Math.min(1, k)); return u * u * (3 - 2 * u); };
+    let x = d.roadX;
+    let z = d.alleyZ - 7;
+    let yaw = 0;
+    let moving = false;
+    if (d.clock < tRoad) {
+      const e = ease(d.clock / tRoad);
+      z = (d.alleyZ - 7) + 7 * e;
+      moving = e < 0.995;
+    } else if (d.clock < tRoad + tAlley) {
+      const e = ease((d.clock - tRoad) / tAlley);
+      x = d.roadX + (d.gateX - d.roadX) * e;
+      z = d.alleyZ;
+      yaw = -Math.PI / 2;
+      moving = e < 0.995;
+    } else if (d.clock < tRoad + tAlley + tYard) {
+      const e = ease((d.clock - tRoad - tAlley) / tYard);
+      x = d.gateX + (d.yardX - d.gateX) * Math.min(1, e);
+      z = d.alleyZ;
+      yaw = -Math.PI / 2;
+      moving = e < 0.995;
+    } else {
+      const e = ease((d.clock - tRoad - tAlley - tYard) / tPad);
+      x = d.yardX + (d.stopX - d.yardX) * Math.min(1, e);
+      z = d.alleyZ + (d.stopZ - d.alleyZ) * Math.min(1, e);
+      yaw = -1.15;
+      moving = e < 0.995;
+    }
+    d.root.position.set(x, 0, z);
+    d.root.rotation.y = yaw;
+    if (moving) d.wheels.forEach((wheel) => { wheel.rotation.x += dt * 10; });
+    const parked = d.clock >= parkedAt - 0.05;
+    const serve = beat >= 10 && parked;
+    d.serve.visible = serve;
+    if (d.sideGlass) d.sideGlass.visible = !serve;
+    if (d.rear) d.rear.visible = !serve;
+    if (this.citeTrees) {
+      this.citeTrees.forEach((tree) => {
+        const dx = tree.position.x - d.stopX;
+        const dz = tree.position.z - d.stopZ;
+        const blocking = Math.hypot(dx, dz) < 3.4 || (tree.position.z > 9.4 && tree.position.x > 5 && tree.position.x < 13.2);
+        tree.visible = !(run && blocking);
+      });
+    }
+    d.lamps.forEach((lamp, i) => {
+      lamp.material.emissiveIntensity = parked ? 0.55 : (Math.sin(t * 18 + i) > 0 ? 1.8 : 0.25);
+    });
+    if (d.powder) {
+      const pulse = serve ? 0.85 + Math.sin(t * 6) * 0.15 : 0;
+      d.powder.material.opacity = pulse;
+      d.powder.scale.setScalar(serve ? 0.85 + Math.sin(t * 5) * 0.12 : 1);
+    }
+    if (d.sideGlass) d.sideGlass.position.y = serve ? 0.46 : 0.56;
+  }
+
   tickWhistle(dt, t) {
     const whistle = this.competition === "whistle";
     const outcome = this.whistleOutcome;
     const idle = outcome === "burn" ? new THREE.Color(PALETTE.amber) : GOLD;
     const seized = outcome === "jail" ? GREEN : outcome === "exile" ? CRIMSON : null;
     const show = whistle ? 1 : 0;
-    const n = Math.max(0, Math.min(6, this.whistleCorrect || 0));
+    const n = Math.max(0, Math.min(10, this.whistleCorrect || 0));
     if (outcome === "burn" || outcome === "exile") {
       this.paintParts(this.villa, seized ?? idle, 0.5 * show, 0.9 * show);
       this.floors.forEach((floor) => this.paintParts(floor, seized ?? idle, 0.5 * show, 0.9 * show));
@@ -1914,12 +2223,12 @@ class VillageEngine {
       this.paintParts(this.boatHull, n >= 4 ? CRIMSON : new THREE.Color(0x14161c), 0.9 * show, 0.9 * show);
       this.paintParts(this.pool, n >= 5 ? CRIMSON : POOL, 0.72 * show, 0.4 * show);
       this.paintParts(this.car, n >= 6 ? CRIMSON : new THREE.Color(0x1b3a32), 0.92 * show, 0.92 * show);
-      if (n >= 6) {
+      if (n >= 10) {
         this.paintParts(this.lodging, new THREE.Color(0x121212), 0.9 * show, 0.35 * show);
         const flag = [FLAG_GREEN, FLAG_GREEN, FLAG_YELLOW, FLAG_BLUE, FLAG_RED, FLAG_RED];
         this.lodgeSteps.forEach((step, i) => this.paintParts(step, flag[i], 0.94 * show, 1 * show));
       } else {
-        const house = RUST.clone().lerp(GREEN, n / 6);
+        const house = RUST.clone().lerp(GREEN, n / 10);
         this.paintParts(this.lodging, house, 0.88 * show, 0.95 * show);
         this.lodgeSteps.forEach((step, i) => this.paintParts(step, GREEN, (n > i ? 0.82 : 0.04) * show, (n > i ? 0.95 : 0.08) * show));
       }
@@ -1946,7 +2255,7 @@ class VillageEngine {
     for (let i = 0; i < this.figures.length; i++) {
       const fig = this.figures[i];
       const home = this.figureHome[i];
-      fig.visible = whistle;
+      fig.visible = whistle && (this.whistleBeat || 0) < 9;
       const mats = fig.userData.mats;
       if (outcome === "jail") { for (const m of mats) { m.color.copy(GREEN); m.opacity = 0.16; } }
       else if (outcome === "exile") {
@@ -1977,6 +2286,7 @@ class VillageEngine {
     this.watcher.position.z = this.watcherHome.z;
     this.watcher.position.y = this.watcherHome.y + Math.sin(t * 1.4) * 0.012;
     this.watcher.rotation.y = Math.PI / 2;
+    this.tickDeal(dt, t);
     this.tickPolice(dt, t);
   }
 
@@ -2221,6 +2531,13 @@ function loadState() {
       const src = HOUSES.find((s) => s.id === h.id);
       return src ? { ...h, x: src.x, z: src.z } : h;
     });
+    const whistleDone = new Set((loaded.whistleResults || []).map((r) => r.caseId));
+    const nextWhistle = WHISTLE_CASES.find((c) => !whistleDone.has(c.id));
+    if (nextWhistle) {
+      loaded.whistleOutcome = "open";
+      if (loaded.competition === "whistle") loaded.showOutcome = false;
+      if (!loaded.activeCaseId || whistleDone.has(loaded.activeCaseId)) loaded.activeCaseId = nextWhistle.id;
+    }
     return loaded;
   } catch {
     return defaultState();
@@ -2302,12 +2619,20 @@ const engine = new VillageEngine(canvas, state.houses, {
   },
   onPrizeLocked: () => showToast(L("toastPrizeLock"), "info"),
 });
+
+function whistleBeat() {
+  const idx = WHISTLE_CASES.findIndex((c) => c.id === state.activeCaseId);
+  const seen = idx < 0 ? 1 : idx + 1;
+  const correct = (state.whistleResults || []).filter((r) => r.correct).length;
+  return Math.max(correct, seen);
+}
 function syncPayload() {
   return {
     houses: state.houses, hoveredId: state.hoveredId, selectedId: state.selectedId,
     integrity: state.integrity, reducedMotion: reduced,
     competition: state.competition, whistleOutcome: state.whistleOutcome,
     whistleCorrect: (state.whistleResults || []).filter((r) => r.correct).length,
+    whistleBeat: whistleBeat(),
     havenOutcome: state.havenOutcome,
     havenCorrect: (state.havenResults || []).filter((r) => r.correct).length,
     landOutcome: state.landOutcome,
@@ -2688,7 +3013,7 @@ function renderTender() {
     <div class="side-foot">
       ${result ? `
         ${bidRows}
-        ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">${L("nextReno")}</button>` : (roundOneCleared(state.results, state.contractorId) ? `<button type="button" class="cta open-next" id="open-whistle">${L("openBrief")}</button>` : `<p style="margin:.5rem 0 0;font-size:.8rem;color:var(--crimson)">${L("noSweep")}</p>`)}
+        ${remaining ? `<button type="button" class="cta" id="next-week" style="margin-top:.75rem">${L("nextReno")}</button>` : (roundOneCleared(state.results, state.contractorId) && !campaignOpen() ? `<button type="button" class="cta open-next" id="open-whistle">${L("openBrief")}</button>` : roundOneCleared(state.results, state.contractorId) ? "" : `<p style="margin:.5rem 0 0;font-size:.8rem;color:var(--crimson)">${L("noSweep")}</p>`)}
       ` : ""}
     </div>`;
   document.querySelectorAll("[data-house]").forEach((btn) => {
@@ -2760,7 +3085,7 @@ function renderHaven() {
       ${result && remaining ? `<button type="button" class="cta" id="next-haven" style="margin-top:.75rem">${L("nextSignal")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker ${state.havenOutcome === "line" ? "green" : state.havenOutcome === "lamp" ? "amber" : "crimson"}" style="margin:.5rem 0 0">${
         state.havenOutcome === "line" ? L("doneLine") : state.havenOutcome === "lamp" ? L("doneLamp") : L("doneFog")
-      }</p>${roundThreeCleared(state.havenResults) ? `<button type="button" class="cta open-next" id="open-land">${L("openLand")}</button>` : ""}` : ""}
+      }</p>${roundThreeCleared(state.havenResults) && !campaignOpen() ? `<button type="button" class="cta open-next" id="open-land">${L("openLand")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-haven]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2850,7 +3175,7 @@ function renderLand() {
       ${result && remaining ? `<button type="button" class="cta" id="next-land" style="margin-top:.75rem;background:#e6c36a">${L("nextPlot")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.landOutcome === "held" ? "var(--green)" : state.landOutcome === "shift" ? "#e6c36a" : "var(--crimson)"}">${
         state.landOutcome === "held" ? L("doneHeld") : state.landOutcome === "shift" ? L("doneShift") : L("doneLost")
-      }</p>${roundFourCleared(state.landResults) ? `<button type="button" class="cta open-next" id="open-fair">${L("openFair")}</button>` : ""}` : ""}
+      }</p>${roundFourCleared(state.landResults) && !campaignOpen() ? `<button type="button" class="cta open-next" id="open-fair">${L("openFair")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-land]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2940,7 +3265,7 @@ function renderFair() {
       ${result && remaining ? `<button type="button" class="cta" id="next-fair" style="margin-top:.75rem;background:#b388ff">${L("nextGate")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.fairOutcome === "fair" ? "var(--green)" : state.fairOutcome === "half" ? "#b388ff" : "var(--crimson)"}">${
         state.fairOutcome === "fair" ? L("doneFair") : state.fairOutcome === "half" ? L("doneHalf") : L("doneBarred")
-      }</p>${roundFiveCleared(state.fairResults) ? `<button type="button" class="cta open-next" id="open-crop">${L("openCrop")}</button>` : ""}` : ""}
+      }</p>${roundFiveCleared(state.fairResults) && !campaignOpen() ? `<button type="button" class="cta open-next" id="open-crop">${L("openCrop")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-fair]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -3021,7 +3346,7 @@ function renderCrop() {
       ${result && remaining ? `<button type="button" class="cta" id="next-crop" style="margin-top:.75rem;background:#6fbf73">${L("nextRow")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.cropOutcome === "grown" ? "var(--green)" : state.cropOutcome === "thin" ? "#6fbf73" : "var(--crimson)"}">${
         state.cropOutcome === "grown" ? L("doneGrown") : state.cropOutcome === "thin" ? L("doneThin") : L("doneBare")
-      }</p>${roundSixCleared(state.cropResults) ? `<button type="button" class="cta open-next" id="open-wash">${L("openWash")}</button>` : ""}` : ""}
+      }</p>${roundSixCleared(state.cropResults) && !campaignOpen() ? `<button type="button" class="cta open-next" id="open-wash">${L("openWash")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-crop]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -3102,7 +3427,7 @@ function renderWash() {
       ${result && remaining ? `<button type="button" class="cta" id="next-wash" style="margin-top:.75rem;background:#c9a15a">${L("nextFloor")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.washOutcome === "clean" ? "var(--green)" : state.washOutcome === "thin" ? "#c9a15a" : "var(--crimson)"}">${
         state.washOutcome === "clean" ? L("doneClean") : state.washOutcome === "thin" ? L("doneWashThin") : L("doneWash")
-      }</p>${roundSevenCleared(state.washResults) ? `<button type="button" class="cta open-next" id="open-stamp">${L("openStamp")}</button>` : ""}` : ""}
+      }</p>${roundSevenCleared(state.washResults) && !campaignOpen() ? `<button type="button" class="cta open-next" id="open-stamp">${L("openStamp")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-wash]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -3185,7 +3510,7 @@ function renderStamp() {
       ${result && remaining ? `<button type="button" class="cta" id="next-stamp" style="margin-top:.75rem;background:#ea2839">${L("nextFile")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.stampOutcome === "click" ? "var(--green)" : state.stampOutcome === "smear" ? "#ea2839" : "var(--crimson)"}">${
         state.stampOutcome === "click" ? L("doneClick") : state.stampOutcome === "smear" ? L("doneSmear") : L("doneShut")
-      }</p>${roundEightCleared(state.stampResults) ? `<button type="button" class="cta open-next" id="open-roll">${L("openRoll")}</button>` : ""}` : ""}
+      }</p>${roundEightCleared(state.stampResults) && !campaignOpen() ? `<button type="button" class="cta open-next" id="open-roll">${L("openRoll")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-stamp]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -3267,7 +3592,7 @@ function renderRoll() {
       ${result && remaining ? `<button type="button" class="cta" id="next-roll" style="margin-top:.75rem;background:#2a6f8f">${L("nextName")}</button>` : ""}
       ${result && !remaining ? `<p class="kicker" style="margin:.5rem 0 0;color:${state.rollOutcome === "list" ? "var(--green)" : state.rollOutcome === "sheet" ? "#2a6f8f" : "var(--crimson)"}">${
         state.rollOutcome === "list" ? L("doneList") : state.rollOutcome === "sheet" ? L("doneSheet") : L("doneVan")
-      }</p>${roundNineCleared(state.rollResults) ? `<button type="button" class="cta open-next" id="open-oath">${L("openOath")}</button>` : ""}` : ""}
+      }</p>${roundNineCleared(state.rollResults) && !campaignOpen() ? `<button type="button" class="cta open-next" id="open-oath">${L("openOath")}</button>` : ""}` : ""}
     </div>`;
   panel.querySelectorAll("[data-roll]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -3443,7 +3768,7 @@ function renderCase() {
               state.whistleOutcome === "jail" ? L("doneJail")
               : state.whistleOutcome === "burn" ? L("doneBurn")
               : L("doneExile")
-            }</p>${roundTwoCleared(state.whistleResults) ? `<button type="button" class="cta open-next" id="open-haven">${L("openLine")}</button>` : ""}`}
+            }</p>${roundTwoCleared(state.whistleResults) && !campaignOpen() ? `<button type="button" class="cta open-next" id="open-haven">${L("openLine")}</button>` : ""}`}
       ` : `
         <p class="kicker mute">${L("scoring")}</p>
       `}
@@ -3908,7 +4233,7 @@ function sheetState() {
 function renderMobileFoot() {
   const foot = sheetState();
   const remaining = foot.n < foot.total;
-  const mode = !foot.answered ? "" : remaining ? "continue" : foot.perfect && !foot.last ? "next" : foot.perfect ? "" : "reset";
+  const mode = !foot.answered ? "" : remaining ? "continue" : foot.perfect && !foot.last && !campaignOpen() ? "next" : foot.perfect ? "" : "reset";
   const meta = document.getElementById("mobile-meta");
   const go = document.getElementById("mobile-go");
   const wipe = document.getElementById("mobile-reset-game");

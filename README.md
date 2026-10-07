@@ -6,7 +6,7 @@ A [Mkweli](https://mkweli.tech) product.
 
 Pick one of four contractors — Kuzin, Cheri, Malin, or Kokin. Answer a spec for each open renovation. Only a correct top-score bid awards the house. Wrong answers are rejected and the building stays decaying.
 
-This is not a court. Points show what you logged.
+Points show what you logged.
 
 | | |
 |--|--|

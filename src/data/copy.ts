@@ -54,8 +54,8 @@ export const UI = {
   stampPractice: { en: "Practice", fr: "Essai" },
   mkweli: { en: "Made by Mkweli", fr: "Fait par Mkweli" },
   disclaimer: {
-    en: "This is not the government. This is not the UN. Points show what you said. They are not a court case.",
-    fr: "Ce n’est pas le gouvernement. Ce n’est pas l’ONU. Les points montrent ce que vous avez dit. Ce n’est pas un procès.",
+    en: "Points show what you said.",
+    fr: "Les points montrent ce que vous avez dit.",
   },
   sit: { en: "Give your answer", fr: "Donnez votre réponse" },
   enter: { en: "Enter", fr: "Entrer" },
@@ -124,8 +124,8 @@ export const UI = {
   shadow: { en: "Who chose what", fr: "Qui a choisi quoi" },
   honestMark: { en: "Honest mark", fr: "Marque HONEST" },
   honestHint: {
-    en: "The three highest scores get a QR code. It is a receipt. It is not a prize for being a good person.",
-    fr: "Les trois meilleurs scores reçoivent un code QR. C’est un reçu. Ce n’est pas un prix pour être une bonne personne.",
+    en: "The three highest scores get a QR code. It is a receipt of the score.",
+    fr: "Les trois meilleurs scores reçoivent un code QR. C’est un reçu du score.",
   },
   jobsTitle: {
     en: "Jobs where money can go wrong",
@@ -167,8 +167,8 @@ export const UI = {
   sitDownName: { en: "Name on the house", fr: "Nom sur la maison" },
   sitDownPhone: { en: "Phone", fr: "Téléphone" },
   sitDownHint: {
-    en: "Mauritius number. We do not show it.",
-    fr: "Numéro de Maurice. On ne l’affiche pas.",
+    en: "Mauritius number. It stays on this phone.",
+    fr: "Numéro de Maurice. Il reste sur ce téléphone.",
   },
   sitDownNeed: {
     en: "Sit down with your name before you publish a score.",
@@ -179,8 +179,8 @@ export const UI = {
     fr: "Écrivez votre nom et un numéro de Maurice.",
   },
   methodLead: {
-    en: "The same answers always get the same score. A computer does not pick a winner. The rules below do.",
-    fr: "Les mêmes réponses donnent toujours le même score. Un ordinateur ne choisit pas un gagnant. Les règles ci-dessous le font.",
+    en: "The same answers always get the same score. The rules below set the score.",
+    fr: "Les mêmes réponses donnent toujours le même score. Les règles ci-dessous fixent le score.",
   },
   methodSteps: [
     {
@@ -204,17 +204,17 @@ export const UI = {
       fr: "Si vous changez d’histoire sans dire pourquoi : moins 12. Si vous ne répondez pas : 0 point, et des planches sur votre maison.",
     },
     {
-      en: "The three people with the most points get a QR code. It says “I scored as HONEST with Mkweli”. It is not a medal.",
-      fr: "Les trois personnes avec le plus de points reçoivent un code QR. Il dit « I scored as HONEST with Mkweli ». Ce n’est pas une médaille.",
+      en: "The three people with the most points get a QR code. It says “I scored as HONEST with Mkweli”.",
+      fr: "Les trois personnes avec le plus de points reçoivent un code QR. Il dit « I scored as HONEST with Mkweli ».",
     },
   ] as Copy[],
   aboutLead: {
-    en: "Honesty League is a game from Mkweli, made in Mauritius. Neighbours, people who work for the State, people we vote for, and people in world offices answer the same monthly question. It is not the government. It is not the UN.",
-    fr: "La Ligue de l’honnêteté est un jeu de Mkweli, fait à Maurice. Les voisins, les agents de l’État, les personnes que nous élisons, et les gens dans les bureaux mondiaux répondent à la même question chaque mois. Ce n’est pas le gouvernement. Ce n’est pas l’ONU.",
+    en: "Honesty League is a game from Mkweli, made in Mauritius. Neighbours, people who work for the State, people we vote for, and people in world offices answer the same monthly question.",
+    fr: "La Ligue de l’honnêteté est un jeu de Mkweli, fait à Maurice. Les voisins, les agents de l’État, les personnes que nous élisons, et les gens dans les bureaux mondiaux répondent à la même question chaque mois.",
   },
   aboutFrost: {
-    en: "A white house is not a crime. It means you stayed silent, you changed your story, or you did not sit down.",
-    fr: "Une maison blanche n’est pas un crime. Cela veut dire que vous avez gardé le silence, changé d’histoire, ou que vous ne vous êtes pas assis.",
+    en: "A white house means you stayed silent, you changed your story, or you did not sit down.",
+    fr: "Une maison blanche veut dire que vous avez gardé le silence, changé d’histoire, ou que vous ne vous êtes pas assis.",
   },
   aboutOpen: {
     en: "Season 1. Testers can play now. Month 1 scoring starts 1 October 2026, 9:00 in Mauritius, and runs to 31 October. Then a new question each month. Site: honesty.mkweli.tech.",

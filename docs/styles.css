@@ -616,3 +616,7 @@ button { font: inherit; color: inherit; }
   color: var(--mute);
   opacity: 0.55;
 }
+
+/* Small visit counter in the footer */
+.foot .visit-counter { opacity: 0.85; font-variant-numeric: tabular-nums; }
+.foot .visit-counter[hidden] { display: none; }
